@@ -638,19 +638,33 @@
                 method = 'PUT';
             }
 
-            $('#btnSave, #btnHeaderPosted, #btnPosted').prop('disabled', true);
+            $('#btnSave, #btnQuotation, #btnHeaderPosted, #btnPosted').prop('disabled', true);
 
             $.ajax({
                 url: url,
                 type: method,
                 data: serializeForm(),
                 success: function(res) {
-                    $('#btnSave, #btnHeaderPosted, #btnPosted').prop('disabled', false);
+                    $('#btnSave, #btnQuotation, #btnHeaderPosted, #btnPosted').prop('disabled', false);
                     if (res?.ok) {
                         const bid = res.booking_id || existing;
                         $('#booking_id').val(bid);
                         if ($('#action').val() === 'booking') {
-                            Swal.fire('Saved', 'Sale saved as booking successfully', 'success');
+                            Swal.fire({
+                                title: 'Saved',
+                                text: 'Sale saved as booking successfully',
+                                icon: 'success'
+                            }).then(() => {
+                                window.location.href = "{{ route('sale.index') }}";
+                            });
+                        } else if ($('#action').val() === 'quotation') {
+                            Swal.fire({
+                                title: 'Saved',
+                                text: 'Quotation created successfully!',
+                                icon: 'success'
+                            }).then(() => {
+                                window.location.href = "{{ route('sale.index') }}";
+                            });
                         }
                         resolve(res);
                     } else {
@@ -1472,6 +1486,25 @@
                 return;
             }
             $('#action').val('booking');
+            ensureSaved();
+        });
+
+        // Buttons: Quotation
+        $('#btnQuotation').off('click').on('click', function() {
+            cleanupEmptyRows();
+            updateGrandTotals();
+            refreshPostedState();
+
+            const v = validateFormAll();
+            if (!v.ok) {
+                showAlert('warning', v.message);
+                if (v.el && v.el.length) {
+                    v.el.focus();
+                    if (v.el.hasClass('js-customer')) v.el.select2?.('open');
+                }
+                return;
+            }
+            $('#action').val('quotation');
             ensureSaved();
         });
 

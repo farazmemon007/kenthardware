@@ -950,6 +950,13 @@ class SaleController extends Controller
         }
         $currentBalance = $previousBalance + $sale->total_net;
 
+        if ($sale->sale_status === 'booked' && !$sale->is_booking) {
+            return view('admin_panel.sale.salequotation', [
+                'sale' => $sale,
+                'saleItems' => $items,
+            ]);
+        }
+
         return view('admin_panel.sale.saleinvoice', [
             'sale' => $sale,
             'saleItems' => $items,
@@ -1842,21 +1849,37 @@ class SaleController extends Controller
                 } catch (\Exception $e) {
                     \Log::error('Professional Ledger Posting Error: '.$e->getMessage());
                 }
+            } elseif ($status === 'booked' && $sale->is_booking) {
+                // For Bookings, we don't deduct stock or post the sales invoice to the ledger,
+                // BUT we do want to record any advance payment made.
+                try {
+                    $transactionService = app(\App\Services\TransactionService::class);
+                    $transactionService->createReceiptFromSale(
+                        $sale,
+                        $request->input('receipt_account_id', []),
+                        $request->input('receipt_amount', []),
+                        $sale->change_account_id
+                    );
+                } catch (\Exception $e) {
+                    \Log::error('Booking Advance Payment Ledger Error: '.$e->getMessage());
+                }
             }
 
             // If AJAX/JSON response needed
+            $msgStatus = $status === 'booked' ? ($sale->is_booking ? 'Booked' : 'Quoted') : ucfirst($status);
+
             if ($request->ajax() || $request->wantsJson()) {
                 $receiptUrl = route('sales.receipt', $sale->id) . '?from=pos';
                 return response()->json([
                     'ok' => true,
                     'booking_id' => $sale->id,
-                    'msg' => 'Sale '.ucfirst($status).' Successfully',
+                    'msg' => 'Sale '.$msgStatus.' Successfully',
                     'invoice_url' => $receiptUrl,
                     'receipt_url' => $receiptUrl,
                 ]);
             }
 
-            return redirect()->route('sale.index')->with('success', 'Sale saved as '.$status);
+            return redirect()->route('sale.index')->with('success', 'Sale saved as '.$msgStatus);
         });
         } catch (\Exception $e) {
             $errorMsg = $e->getMessage();

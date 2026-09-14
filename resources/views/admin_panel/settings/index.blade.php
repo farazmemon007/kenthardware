@@ -55,7 +55,7 @@
                         @php
                             $canEditSettings = auth()->user()->hasAnyPermission(['settings.edit', 'settings.update']);
                         @endphp
-                        <form id="settingsForm" class="mt-4">
+                        <form id="settingsForm" class="mt-4" enctype="multipart/form-data">
                             @csrf
                             <div class="tab-content" id="settingsTabContent">
                                 <!-- Company Tab -->
@@ -66,6 +66,14 @@
                                                 <label>{{ $setting['label'] }}</label>
                                                 @if ($setting['type'] === 'text')
                                                     <textarea name="settings[{{ $setting['key'] }}]" class="form-control" rows="3" {{ !$canEditSettings ? 'disabled' : '' }}>{{ $setting['value'] }}</textarea>
+                                                @elseif ($setting['type'] === 'image')
+                                                    @if($setting['value'])
+                                                        <div class="mb-2">
+                                                            <img src="{{ asset($setting['value']) }}" alt="Logo" style="max-height: 80px;" class="border rounded p-1">
+                                                        </div>
+                                                    @endif
+                                                    <input type="file" name="settings_files[{{ $setting['key'] }}]" class="form-control-file" accept="image/*" {{ !$canEditSettings ? 'disabled' : '' }}>
+                                                    <input type="hidden" name="settings[{{ $setting['key'] }}]" value="{{ $setting['value'] }}">
                                                 @else
                                                     <input type="text" name="settings[{{ $setting['key'] }}]"
                                                         class="form-control" value="{{ $setting['value'] }}" {{ !$canEditSettings ? 'disabled' : '' }}>
@@ -161,11 +169,14 @@
             $(document).ready(function() {
                 $('#settingsForm').on('submit', function(e) {
                     e.preventDefault();
-
+                    let formData = new FormData(this);
+                    
                     $.ajax({
                         url: '{{ route('settings.update') }}',
                         method: 'POST',
-                        data: $(this).serialize(),
+                        data: formData,
+                        processData: false,
+                        contentType: false,
                         success: function(response) {
                             Swal.fire({
                                 icon: 'success',

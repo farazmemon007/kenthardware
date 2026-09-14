@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Delivery Challan - {{ $sale->invoice_no }}</title>
+    <title>Quotation - {{ $sale->invoice_no }}</title>
     <link href="{{ asset('assets/vendors/bootstrap5/css/bootstrap.min.css') }}" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
@@ -232,12 +232,12 @@
         <div class="d-flex align-items-center gap-2">
             <span class="fw-bold text-dark fs-6">
                 <i class="fa-solid fa-file-invoice me-1 text-primary"></i>
-                Delivery Challan Preview
+                Quotation Preview
             </span>
         </div>
         <div class="d-flex align-items-center gap-2">
             <button onclick="window.print()" class="btn btn-primary shadow-sm">
-                <i class="fa-solid fa-print"></i> Print DC
+                <i class="fa-solid fa-print"></i> Print Quotation
             </button>
             <a href="javascript:history.back()" class="btn btn-secondary shadow-sm">
                 <i class="fa-solid fa-arrow-left"></i> Back
@@ -255,7 +255,7 @@
                     <h2 style="margin:0; font-weight:900; font-size:28px; color: #1e40af;">{{ \App\Models\Setting::get('company_name', 'VAHLA') }}</h2>
                     <div style="font-size:12px; font-weight:bold; letter-spacing:1px; margin-bottom:8px; color: #1e40af;">INDUSTRIAL SOLUTIONS</div>
                 @endif
-                <div class="invoice-badge">DELIVERY CHALLAN</div>
+                <div class="invoice-badge">QUOTATION</div>
             </div>
             
             <div class="company-details-section">
@@ -283,16 +283,14 @@
         <div class="meta-section">
             <div class="meta-left">
                 <div class="meta-row">
-                    <div class="meta-label">No:</div>
+                    <div class="meta-label" style="width:60px;">S. No.</div>
                     <div class="meta-value" style="color: #1e40af;">{{ $sale->invoice_no }}</div>
                 </div>
                 <div class="meta-row mt-2">
                     <div class="meta-label">M/s.</div>
                     <div class="meta-value" style="color: #1e40af;">{{ $sale->walkin_name ?? ($sale->customer_relation->customer_name ?? 'Walk-in Customer') }}</div>
                 </div>
-                <div class="mt-3" style="font-size: 11px; color: #1e40af; font-weight: bold;">
-                    Please Receive the following goods, your order No. <span style="border-bottom: 1px solid var(--pad-border); display: inline-block; width: 150px; color: #000; font-weight: normal; text-align: center;">{{ $sale->reference ?? '' }}</span>
-                </div>
+                
             </div>
             <div class="meta-right">
                 <div class="meta-row">
@@ -305,11 +303,12 @@
         <!-- Table -->
         <table class="pad-table">
             <thead>
-                <tr>
+                                <tr>
+                    <th style="width: 5%;">S.NO</th>
+                    <th style="width: 50%; text-align: left;">DESCRIPTION</th>
                     <th style="width: 15%;">QTY</th>
-                    <th style="width: 55%; text-align: left;">PARTICULARS</th>
-                    <th style="width: 15%;">RATE</th>
-                    <th style="width: 15%;">UNIT</th>
+                    <th style="width: 15%;">Unit</th>
+                    <th style="width: 15%;">AMOUNT</th>
                 </tr>
             </thead>
             <tbody>
@@ -317,7 +316,7 @@
                     $emptyRows = max(0, 15 - count($saleItems)); 
                 @endphp
 
-                @foreach ($saleItems as $item)
+                @foreach ($saleItems as $index => $item)
                     @php
                         $piecesPerBox = (int)($item['pieces_per_box'] ?? 1);
                         if ($piecesPerBox <= 0) $piecesPerBox = 1;
@@ -381,11 +380,11 @@
                     @endphp
 
                     <tr>
-                        <td style="text-align: center; font-weight: bold;">{{ ($dispQty == (int)$dispQty) ? (int)$dispQty : number_format($dispQty, 3) }}</td>
-                        <td style="font-weight: 500;">{{ $productTitle }}</td>
-                        <td style="text-align: right;">{{ number_format((float)($item['price'] ?? 0), 2) }}</td>
+                        <td style="text-align: center;">{{ $index + 1 }}</td>
+                        <td style="text-align: left; font-weight: 500;">{{ $productTitle }}</td>
+                        <td style="text-align: center;">{{ ($dispQty == (int)$dispQty) ? (int)$dispQty : number_format($dispQty, 3) }}</td>
                         <td style="text-align: center;">{{ $dispUnit }}</td>
-                        
+                        <td style="text-align: right;">{{ number_format((float)($item['net_amount'] ?? 0), 2) }}</td>
                     </tr>
                 @endforeach
                 
@@ -395,17 +394,22 @@
                         <td></td>
                         <td></td>
                         <td></td>
-                        </tr>
+                        <td></td>
+                    </tr>
                 @endfor
                 
                 
+            <tr>
+                    <td colspan="4" style="text-align: right; font-weight: bold; padding-right: 15px;">TOTAL</td>
+                    <td style="text-align: right; font-weight: bold; color: #1e40af;">{{ number_format($sale->total_net, 2) }}</td>
+                </tr>
             </tbody>
         </table>
 
         <!-- Footer -->
         <div class="pad-footer">
             <div class="footer-note">
-                Received the above goods in good order & condition<br><br><br><br><i>Receiver's Signature</i>
+                Goods once sold can not be exchange<br>or taken back without receipt
             </div>
             <div class="footer-sign">
                 For {{ \App\Models\Setting::get('company_name', 'VAHLA MILL STORE') }}

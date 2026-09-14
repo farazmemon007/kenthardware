@@ -27,9 +27,8 @@ class TransactionService
         \Log::info("TransactionService V2: Called for Sale ID {$sale->id}");
 
         // 1. Validation
-        if ($sale->sale_status !== 'posted') {
-            \Log::warning('TransactionService: Not posted, aborting.');
-
+        if ($sale->sale_status !== 'posted' && !($sale->sale_status === 'booked' && $sale->is_booking)) {
+            \Log::warning('TransactionService: Neither posted sale nor confirmed booking, aborting receipt creation.');
             return;
         }
 

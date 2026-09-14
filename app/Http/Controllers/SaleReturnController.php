@@ -141,11 +141,46 @@ class SaleReturnController extends Controller
             $item->pieces_per_m2 = $product->m2_of_box ?? 0;
             $item->unit = $item->unit ?? 'pc';
             
+            // Infer unit for weight-based products based on price ratios
+            if (in_array($item->size_mode, ['by_kg', 'by_gm'])) {
+                $basePricePerKg = ($item->total_pieces > 0) ? ($item->total / $item->total_pieces) : 0;
+                $storedPrice = (float) $item->price;
+
+                if ($storedPrice > 0 && $basePricePerKg > 0) {
+                    $ratio = round($storedPrice / $basePricePerKg, 4);
+                    if (abs($ratio - $ppb) < 0.001) {
+                        $item->unit = 'pcs';
+                    } elseif (abs($ratio - 0.001) < 0.0001) {
+                        $item->unit = 'gm';
+                    } elseif (abs($ratio - 1) < 0.001) {
+                        $item->unit = 'kg';
+                    }
+                }
+            }
+            
             // Quantity calculations
             $item->qty = $item->total_pieces ?? $item->qty ?? 0;
             $item->original_qty = $item->qty;
             $item->returned_qty = $alreadyReturned;
             $item->max_returnable = max(0, $item->qty - $alreadyReturned);
+
+            // Convert to pieces or grams for display if sold in those units (for weight products)
+            if (in_array($item->size_mode, ['by_kg', 'by_gm'])) {
+                $saleUnit = strtolower($item->unit);
+                if (in_array($saleUnit, ['pcs', 'pc', 'piece', 'pieces'])) {
+                    if ($ppb > 0) {
+                        $item->qty = $item->qty / $ppb;
+                        $item->original_qty = $item->original_qty / $ppb;
+                        $item->returned_qty = $item->returned_qty / $ppb;
+                        $item->max_returnable = $item->max_returnable / $ppb;
+                    }
+                } elseif ($saleUnit === 'gm') {
+                    $item->qty = $item->qty * 1000;
+                    $item->original_qty = $item->original_qty * 1000;
+                    $item->returned_qty = $item->returned_qty * 1000;
+                    $item->max_returnable = $item->max_returnable * 1000;
+                }
+            }
             
             // Pricing: use actual sale price (price_per_piece from POS/Sale), not product master price
             $item->price = (!empty($item->price_per_piece) && $item->price_per_piece > 0) 
@@ -304,11 +339,22 @@ class SaleReturnController extends Controller
 
                 if ($ppb <= 0) $ppb = 1;
 
+                $saleUnit = strtolower($request->unit[$idx] ?? 'pc');
+                
+                // If weight product sold by pieces, the UI submits pieces. We must convert it to Kg (which is the actual total_pieces format).
+                if (in_array($sizeMode, ['by_kg', 'by_gm']) && in_array($saleUnit, ['pcs', 'pc', 'piece', 'pieces'])) {
+                    $qty = $qty * $ppb; // Convert pieces to Kg
+                } elseif (in_array($sizeMode, ['by_kg', 'by_gm']) && $saleUnit === 'gm') {
+                    $qty = $qty / 1000; // Convert gm back to Kg
+                }
+
                 // Calculate Line Total Logic based on size mode
                 if ($sizeMode === 'by_size') {
                     $lineTotal = round($ppm2 * $qty * $price, 2);
-                } elseif ($sizeMode === 'by_cartons' || $sizeMode === 'by_carton') {
+                } elseif ($sizeMode === 'by_cartons' || $sizeMode === 'by_carton' || (in_array($sizeMode, ['by_kg', 'by_gm']) && in_array($saleUnit, ['pcs', 'pc', 'piece', 'pieces']))) {
                     $lineTotal = round(($ppb > 0 ? ($qty / $ppb) : $qty) * $price, 2);
+                } elseif (in_array($sizeMode, ['by_kg', 'by_gm']) && $saleUnit === 'gm') {
+                    $lineTotal = round(($qty * 1000) * $price, 2);
                 } else {
                     $lineTotal = round($qty * $price, 2);
                 }

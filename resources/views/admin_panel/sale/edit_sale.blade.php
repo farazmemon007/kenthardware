@@ -731,9 +731,22 @@
                                                         }
                                                     } elseif ($sizeMode === 'by_kg' || $sizeMode === 'by_gm') {
                                                         $totalWt = (float) ($item->total_pieces ?: $item->qty);
-                                                        $variUnit = strtolower(trim($variantData['unit'] ?? ($liveVariant['unit'] ?? '')));
-                                                        $isWtPcs = in_array($variUnit, ['pcs', 'pc', 'piece', 'pieces']);
-                                                        $isWtGm = ($sizeMode === 'by_gm') || in_array($variUnit, ['gm', 'g']);
+                                                        
+                                                        // Infer unit based on price ratio to total
+                                                        $basePricePerKg = ($item->total_pieces > 0) ? ($item->total / $item->total_pieces) : 0;
+                                                        $storedPrice = (float) $item->price;
+                                                        
+                                                        $isWtPcs = false;
+                                                        $isWtGm = false;
+                                                        if ($storedPrice > 0 && $basePricePerKg > 0) {
+                                                            $ratio = round($storedPrice / $basePricePerKg, 4);
+                                                            if (abs($ratio - $ppb) < 0.001) {
+                                                                $isWtPcs = true;
+                                                            } elseif (abs($ratio - 0.001) < 0.0001) {
+                                                                $isWtGm = true;
+                                                            }
+                                                        }
+
                                                         if ($isWtPcs) {
                                                             $unitMode = 'pcs';
                                                             $toggleText = 'Pcs';
@@ -1130,7 +1143,8 @@
 
                 {{-- ACTION BUTTONS ROW --}}
                 <div class="d-flex flex-wrap gap-2 justify-content-center py-2 px-3 mt-3 border-top bg-light rounded-3">
-                    <button type="button" class="btn btn-outline-primary btn-sm px-3 fw-bold rounded-2 d-flex align-items-center gap-1" id="btnSave"><i class="fas fa-bookmark"></i> Booking</button>
+                    <button type="button" class="btn btn-outline-info btn-sm px-3 fw-bold rounded-2 d-flex align-items-center gap-1" id="btnQuotation"><i class="fas fa-file-invoice"></i> Quotation</button>
+                    <!-- <button type="button" class="btn btn-outline-warning btn-sm px-3 fw-bold rounded-2 d-flex align-items-center gap-1" id="btnSave"><i class="fas fa-bookmark"></i> Booking</button> -->
                     <button type="button" class="btn btn-primary btn-sm px-4 fw-bold rounded-2 d-flex align-items-center gap-1 shadow-sm" id="btnPosted"><i class="fas fa-shopping-cart"></i> Sale</button>
                     <button type="button" class="btn btn-outline-secondary btn-sm px-3 fw-bold rounded-2 d-flex align-items-center gap-1" id="btnPrint"><i class="fas fa-print"></i> A4 Print</button>
                     <button type="button" class="btn btn-outline-secondary btn-sm px-3 fw-bold rounded-2 d-flex align-items-center gap-1" id="btnEstimate"><i class="fas fa-file-invoice"></i> Estimate</button>
@@ -1394,8 +1408,15 @@
                 if (typeof $('#addCustomerModal').modal === 'function') {
                     $('#addCustomerModal').modal('show');
                 } else if (window.bootstrap && window.bootstrap.Modal) {
-                    let m = bootstrap.Modal.getOrCreateInstance(document.getElementById('addCustomerModal'));
-                    m.show();
+                    try {
+                        let m;
+                        if (typeof window.bootstrap.Modal.getOrCreateInstance === 'function') {
+                            m = window.bootstrap.Modal.getOrCreateInstance(document.getElementById('addCustomerModal'));
+                        } else {
+                            m = new window.bootstrap.Modal(document.getElementById('addCustomerModal'));
+                        }
+                        if (m) m.show();
+                    } catch(e) {}
                 }
 
                 setTimeout(function() {
@@ -1407,9 +1428,11 @@
                 try {
                     $('#addCustomerModal').modal('hide');
                 } catch(e) {}
-                if (window.bootstrap && window.bootstrap.Modal) {
-                    let m = bootstrap.Modal.getInstance(document.getElementById('addCustomerModal'));
-                    if (m) m.hide();
+                if (window.bootstrap && window.bootstrap.Modal && typeof window.bootstrap.Modal.getInstance === 'function') {
+                    try {
+                        let m = window.bootstrap.Modal.getInstance(document.getElementById('addCustomerModal'));
+                        if (m) m.hide();
+                    } catch(e) {}
                 }
                 $('.modal-backdrop').remove();
                 $('body').removeClass('modal-open').css('padding-right', '');

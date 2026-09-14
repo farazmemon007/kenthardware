@@ -327,9 +327,9 @@
                                     <th style="width: 10%;"><i class="fas fa-lock me-1"
                                             style="font-size: 0.65rem; opacity: 0.6;"></i>Purchased Price</th>
                                     <th style="width: 10%;"><i class="fas fa-lock me-1"
-                                            style="font-size: 0.65rem; opacity: 0.6;"></i>Purchased Qty PC</th>
-                                    <th style="width: 10%;">Return Qty (Box.Piece)</th>
-                                    <th style="width: 12%;">Total Return Pieces</th>
+                                            style="font-size: 0.65rem; opacity: 0.6;"></i>Purchased Qty</th>
+                                    <th style="width: 10%;">Return Qty</th>
+                                    <th style="width: 12%;">Total Return Qty</th>
                                     <th style="width: 12%;">Total Amount</th>
                                     <th style="width: 5%;" class="text-center">Action</th>
                                 </tr>
@@ -386,10 +386,21 @@
                                                     Per M²
                                                 @elseif(($item['size_mode'] ?? '') == 'by_cartons')
                                                     Per Box
+                                                @elseif(in_array($item['size_mode'] ?? '', ['by_kg', 'by_gm']))
+                                                    Per {{ Str::title($item['unit'] ?? 'Pc') }}
                                                 @else
                                                     Per Pc
                                                 @endif
                                             </small>
+                                            @if(($item['discount_amount'] ?? 0) > 0)
+                                                <small class="text-danger d-block text-end" style="font-size: 0.65rem;" title="Discount given during sale">
+                                                    Disc: {{ number_format($item['discount_amount'], 2) }}
+                                                </small>
+                                            @elseif(($item['discount_percent'] ?? 0) > 0)
+                                                <small class="text-danger d-block text-end" style="font-size: 0.65rem;" title="Discount given during sale">
+                                                    Disc: {{ (float) $item['discount_percent'] }}%
+                                                </small>
+                                            @endif
                                         </td>
 
                                         {{-- Purchased Qty (Read Only) --}}
@@ -676,9 +687,16 @@
                     // Set Total Pieces
                     $row.find('.quantity').val(maxQty);
 
-                    // Calculate Box.Piece representation
+                    const sizeMode = $row.find('.size-mode').val();
+                    const unit = $row.find('input[name="unit[]"]').val() || 'pc';
+                    const isWeightPieces = ['by_kg', 'by_gm'].includes(sizeMode) && ['pcs', 'pc', 'piece', 'pieces'].includes(unit.toLowerCase());
+                    const isWeightGm = ['by_kg', 'by_gm'].includes(sizeMode) && unit.toLowerCase() === 'gm';
+                    
                     let boxDisplay = '';
-                    if (ppb > 1) {
+
+                    if (isWeightPieces || isWeightGm) {
+                        boxDisplay = maxQty;
+                    } else if (ppb > 1) {
                         const boxes = Math.floor(maxQty / ppb);
                         const pieces = maxQty % ppb;
                         if (pieces > 0) {
@@ -708,11 +726,19 @@
                     const maxQty = parseFloat($row.find('.quantity').attr('data-max')) || 0;
                     const ppb = parseFloat($row.find('.pieces-per-box').val()) || 1;
 
-                    // Calculate Box.Piece representation
+                    const sizeMode = $row.find('.size-mode').val();
+                    const unit = $row.find('input[name="unit[]"]').val() || 'pc';
+                    const isWeightPieces = ['by_kg', 'by_gm'].includes(sizeMode) && ['pcs', 'pc', 'piece', 'pieces'].includes(unit.toLowerCase());
+                    const isWeightGm = ['by_kg', 'by_gm'].includes(sizeMode) && unit.toLowerCase() === 'gm';
+                    
                     let boxDisplay = '';
-                    if (ppb > 1) {
+
+                    if (isWeightPieces || isWeightGm) {
+                        boxDisplay = maxQty;
+                    } else if (ppb > 1) {
                         const boxes = Math.floor(maxQty / ppb);
                         const pieces = maxQty % ppb;
+
                         if (pieces > 0) {
                             boxDisplay = boxes + '.' + pieces;
                         } else {
@@ -763,8 +789,16 @@
                 // If I have 12 pieces/box and write 0.12, that is 12 pieces => 1 box.
                 // Let's just sum it up.
 
+                const sizeMode = $row.find('.size-mode').val();
+                const unit = $row.find('input[name="unit[]"]').val() || 'pc';
+                const isWeightPieces = ['by_kg', 'by_gm'].includes(sizeMode) && ['pcs', 'pc', 'piece', 'pieces'].includes(unit.toLowerCase());
+                const isWeightGm = ['by_kg', 'by_gm'].includes(sizeMode) && unit.toLowerCase() === 'gm';
+
                 let totalPieces = 0;
-                if (ppb > 0) {
+                
+                if (isWeightPieces || isWeightGm) {
+                    totalPieces = num(val);
+                } else if (ppb > 0) {
                     totalPieces = (boxes * ppb) + pieces;
                 } else {
                     totalPieces = boxes; // If no box size, inputs are pieces
@@ -793,8 +827,9 @@
 
                         // Show warning
                         if (!$(this).next('.text-danger').length) {
+                            const unitLabel = $row.find('input[name="unit[]"]').val() || 'qty';
                             $(this).after('<small class="text-danger d-block">Max: ' + maxReturnable +
-                                ' pieces (Purchased Qty)</small>');
+                                ' ' + unitLabel + ' (Purchased Qty)</small>');
                         }
 
                         setTimeout(() => {

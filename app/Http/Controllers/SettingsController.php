@@ -37,10 +37,19 @@ class SettingsController extends Controller
 
         $validated = $request->validate([
             'settings' => 'required|array',
+            'settings_files' => 'nullable|array',
+            'settings_files.*' => 'image|mimes:jpeg,png,jpg,gif|max:2048'
         ]);
 
         foreach ($validated['settings'] as $key => $value) {
             Setting::set($key, $value);
+        }
+
+        if ($request->hasFile('settings_files')) {
+            foreach ($request->file('settings_files') as $key => $file) {
+                $path = $file->store('settings', 'public');
+                Setting::set($key, 'storage/' . $path);
+            }
         }
 
         return response()->json([
