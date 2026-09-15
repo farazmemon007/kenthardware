@@ -1148,14 +1148,34 @@ class ProductController extends Controller
                     }
                 }
 
+                $variantStockSum = 0;
                 $baseConvForCarton = null;
                 for ($i = 0; $i < count($names); $i++) {
                     if (!empty($names[$i])) {
+                        $vStockRaw = (string)($stocks[$i] ?? '0');
+                        $vStock = (float)$vStockRaw;
                         $vConvFactor = (float)($conv_factors[$i] ?? 0);
                         $isBase = (int)($is_bases[$i] ?? 0);
                         if ($vConvFactor <= 0) $vConvFactor = 1;
-                        if ($mode === 'by_cartons' && ($isBase === 1 || $baseConvForCarton === null)) {
-                            $baseConvForCarton = $vConvFactor;
+
+                        if (in_array($mode, ['by_kg', 'by_gm', 'by_ton'])) {
+                            if ($isBase === 1) {
+                                $variantStockSum += $vStock;
+                            }
+                        } elseif ($mode === 'by_cartons') {
+                            if ($isBase === 1 || $baseConvForCarton === null) {
+                                $baseConvForCarton = $vConvFactor;
+                            }
+                            if (strpos($vStockRaw, '.') !== false) {
+                                $parts = explode('.', $vStockRaw);
+                                $boxes = (int)($parts[0] ?? 0);
+                                $loose = (int)($parts[1] ?? 0);
+                                $variantStockSum += ($boxes * $vConvFactor) + $loose;
+                            } else {
+                                $variantStockSum += ($vStock * $vConvFactor);
+                            }
+                        } else {
+                            $variantStockSum += $vStock;
                         }
 
                         $vSalePrice = (float)($sale_prices[$i] ?? 0);
@@ -1172,7 +1192,7 @@ class ProductController extends Controller
                             'name' => $names[$i],
                             'size' => $sizes[$i] ?? '-',
                             'color' => $colors[$i] ?? '-',
-                            'stock' => $stocks[$i] ?? 0,
+                            'stock' => $vStock,
                             'sale_price' => $vSalePrice,
                             'wholesale_price' => $vWholesalePrice,
                             'weight_per_piece' => $weight_factors[$i] ?? 0,
@@ -1185,10 +1205,16 @@ class ProductController extends Controller
                         ];
                     }
                 }
-                if ($mode === 'by_cartons' && $baseConvForCarton) {
-                    $piecesPerBox = (int)$baseConvForCarton;
+                
+                if (count($variants) > 0) {
+                    $totalStockQty = $variantStockSum;
+                    if ($mode === 'by_cartons' && $baseConvForCarton) {
+                        $piecesPerBox = (int)$baseConvForCarton;
+                    }
+                    $boxesQuantity = $piecesPerBox > 0 ? $totalStockQty / $piecesPerBox : $totalStockQty;
+
                     $baseVariant = collect($variants)->firstWhere('is_base_variant', 1) ?? $variants[0];
-                    if ($baseVariant) {
+                    if ($baseVariant && ($mode === 'by_cartons' || strtolower($baseVariant['unit'] ?? '') === 'carton')) {
                         $salePricePerPiece = (float)($baseVariant['sale_price'] ?? 0);
                         $purchasePricePerPiece = (float)($baseVariant['purch_price'] ?? 0);
                         $purchasePricePerBox = round($purchasePricePerPiece * $piecesPerBox, 2);
@@ -1289,15 +1315,53 @@ class ProductController extends Controller
                 }
             }
 
-            // ✅ Update WarehouseStock box quantity based on new pieces_per_box (preserve total_pieces)
+            // ✅ Update WarehouseStock based on initial stock changes (or new pieces_per_box)
             $warehouseStock = \App\Models\WarehouseStock::where('product_id', $id)->first();
             
             $ppb = $piecesPerBox > 0 ? $piecesPerBox : 1;
 
             if ($warehouseStock) {
-                // Keep the actual pieces we have, just update the box display approximation
-                $warehouseStock->quantity = round($warehouseStock->total_pieces / $ppb, 2);
-                $warehouseStock->save();
+                $currentTotalPieces = (float) $warehouseStock->total_pieces;
+                $newTotalPieces = (float) $totalStockQty;
+                
+                $qtyDelta = $newTotalPieces - $currentTotalPieces;
+                
+                if (abs($qtyDelta) > 0.0001) {
+                    $warehouseStock->total_pieces = $newTotalPieces;
+                    $warehouseStock->quantity = round($newTotalPieces / $ppb, 2);
+                    $warehouseStock->save();
+                    
+                    StockMovement::create([
+                        'product_id' => $id,
+                        'type'       => 'adjustment',
+                        'qty'        => $qtyDelta,
+                        'ref_type'   => 'EDIT_INIT',
+                        'note'       => 'Initial stock changed via product edit',
+                    ]);
+                } else {
+                    // Keep the actual pieces we have, just update the box display approximation
+                    $warehouseStock->quantity = round($warehouseStock->total_pieces / $ppb, 2);
+                    $warehouseStock->save();
+                }
+            } else if ($totalStockQty > 0) {
+                $targetWh = \App\Models\Warehouse::first() ?? \App\Models\Warehouse::create([
+                    'warehouse_name' => 'Main Warehouse',
+                    'location' => 'Main',
+                ]);
+                WarehouseStock::create([
+                    'warehouse_id' => $targetWh->id,
+                    'product_id' => $id,
+                    'quantity' => round($totalStockQty / $ppb, 2),
+                    'total_pieces' => $totalStockQty,
+                    'remarks' => 'Initial Stock',
+                ]);
+                StockMovement::create([
+                    'product_id' => $id,
+                    'type' => 'adjustment',
+                    'qty' => $totalStockQty,
+                    'ref_type' => 'INIT',
+                    'note' => 'Initial Stock',
+                ]);
             }
 
             // Manual stock adjustment (extra on top)
