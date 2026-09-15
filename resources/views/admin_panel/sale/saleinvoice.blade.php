@@ -225,6 +225,14 @@
             size: A4;
             margin: 0;
         }
+
+        .hide-rate .rate-col {
+            display: none !important;
+        }
+        
+        .hide-rate .desc-col {
+            width: 55% !important; /* 40% orig + 15% rate */
+        }
     </style>
 </head>
 <body>
@@ -236,6 +244,9 @@
             </span>
         </div>
         <div class="d-flex align-items-center gap-2">
+            <button onclick="toggleRate()" class="btn btn-warning shadow-sm" id="toggleRateBtn">
+                <i class="fa-solid fa-eye-slash"></i> Hide Rate
+            </button>
             <button onclick="window.print()" class="btn btn-primary shadow-sm">
                 <i class="fa-solid fa-print"></i> Print Invoice
             </button>
@@ -307,9 +318,10 @@
         <table class="pad-table">
             <thead>
                 <tr>
+                    <th style="width: 5%;">S.NO</th>
+                    <th class="desc-col" style="width: 40%; text-align: left;">DESCRIPTION</th>
                     <th style="width: 10%;">QTY</th>
-                    <th style="width: 45%; text-align: left;">PARTICULARS</th>
-                    <th style="width: 15%;">RATE</th>
+                    <th class="rate-col" style="width: 15%;">RATE</th>
                     <th style="width: 15%;">UNIT</th>
                     <th style="width: 15%;">AMOUNT</th>
                 </tr>
@@ -383,9 +395,10 @@
                     @endphp
 
                     <tr>
+                        <td style="text-align: center;">{{ $loop->iteration }}</td>
+                        <td class="desc-col" style="font-weight: 500;">{{ $productTitle }}</td>
                         <td style="text-align: center; font-weight: bold;">{{ ($dispQty == (int)$dispQty) ? (int)$dispQty : number_format($dispQty, 3) }}</td>
-                        <td style="font-weight: 500;">{{ $productTitle }}</td>
-                        <td style="text-align: right;">{{ number_format((float)($item['price'] ?? 0), 2) }}</td>
+                        <td class="rate-col" style="text-align: right;">{{ number_format((float)($item['price'] ?? 0), 2) }}</td>
                         <td style="text-align: center;">{{ $dispUnit }}</td>
                         <td style="text-align: right; font-weight: bold;">{{ number_format((float)($item['total'] ?? 0), 2) }}</td>
                     </tr>
@@ -394,15 +407,16 @@
                 @for($i=0; $i<$emptyRows; $i++)
                     <tr>
                         <td>&nbsp;</td>
+                        <td class="desc-col"></td>
                         <td></td>
-                        <td></td>
+                        <td class="rate-col"></td>
                         <td></td>
                         <td></td>
                     </tr>
                 @endfor
                 
                 <tr>
-                    <td colspan="4" style="text-align: right; font-weight: bold;">TOTAL:</td>
+                    <td colspan="5" style="text-align: right; font-weight: bold;">TOTAL:</td>
                     <td style="text-align: right; font-weight: bold; background-color: rgba(224, 242, 254, 0.5);">
                         {{ number_format($sale->total_net, 2) }}
                     </td>
@@ -421,5 +435,21 @@
             </div>
         </div>
     </div>
+
+    <script>
+        function toggleRate() {
+            document.body.classList.toggle('hide-rate');
+            const btn = document.getElementById('toggleRateBtn');
+            if (document.body.classList.contains('hide-rate')) {
+                btn.innerHTML = '<i class="fa-solid fa-eye"></i> Show Rate';
+                btn.classList.remove('btn-warning');
+                btn.classList.add('btn-success');
+            } else {
+                btn.innerHTML = '<i class="fa-solid fa-eye-slash"></i> Hide Rate';
+                btn.classList.remove('btn-success');
+                btn.classList.add('btn-warning');
+            }
+        }
+    </script>
 </body>
 </html>
