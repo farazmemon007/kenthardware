@@ -9,6 +9,7 @@ use App\Models\Stock;
 use App\Models\StockMovement;
 use App\Models\Subcategory;
 use App\Models\Unit;
+use App\Models\Warehouse;
 use App\Models\WarehouseStock;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -520,8 +521,9 @@ class ProductController extends Controller
         $categories = Category::select('id', 'name')->get();
         $units = Unit::select('id', 'name')->get();
         $brands = Brand::select('id', 'name')->get();
+        $warehouses = Warehouse::select('id', 'warehouse_name')->get();
 
-        return view('admin_panel.product.create', compact('categories', 'units', 'brands'));
+        return view('admin_panel.product.create', compact('categories', 'units', 'brands', 'warehouses'));
     }
 
     // ===== Dependent subcategories =====
@@ -712,6 +714,7 @@ class ProductController extends Controller
                 $conv_factors = $request->variant_conv_factor;
                 $is_bases = $request->variant_is_base;
                 $units = $request->variant_unit;
+                $refs = $request->variant_ref;
 
                 // Validate Conv Factors if Weight Unit is selected
                 if (in_array($mode, ['by_kg', 'by_gm', 'by_ton'])) {
@@ -795,6 +798,7 @@ class ProductController extends Controller
                             'purch_price' => $vPurchPrice,
                             'alert' => $alerts[$i] ?? 0,
                             'barcode' => $barcodes[$i] ?? '',
+                            'sku' => $refs[$i] ?? '',
                             'conv_factor' => $vConvFactor,
                             'is_base_variant' => $is_bases[$i] ?? 0,
                             'unit' => $units[$i] ?? 'Pcs',
@@ -824,9 +828,9 @@ class ProductController extends Controller
                 'creater_id' => $userId,
                 'category_id' => $request->category_id,
                 'sub_category_id' => $request->sub_category_id,
-                'item_code' => $nextCode,
+                'item_code' => !empty($request->reference) ? $request->reference : (!empty($request->item_code) ? $request->item_code : $nextCode),
                 'item_name' => $request->product_name,
-                'barcode_path' => $request->barcode_path ?? rand(100000000000, 999999999999),
+                'barcode_path' => $request->barcode ?? $request->barcode_path ?? rand(100000000000, 999999999999),
                 'unit_id' => $request->unit,
                 'brand_id' => $request->brand_id,
                 'model' => $request->model,
@@ -866,7 +870,7 @@ class ProductController extends Controller
                 'is_web_visible' => $request->has('is_web_visible') ? 1 : 0,
                 'show_on_homepage' => $request->has('show_on_homepage') ? 1 : 0,
                 'auto_hide_out_of_stock' => $request->has('auto_hide_out_of_stock') ? 1 : 0,
-                'promo_tag' => $request->promo_tag,
+                'promo_tag' => $request->promo_tag ?? $request->tags,
                 'web_sale_price' => $request->web_sale_price,
                 'meta_title' => $request->meta_title,
                 'meta_description' => $request->meta_description,
@@ -1116,6 +1120,7 @@ class ProductController extends Controller
                 $conv_factors = $request->variant_conv_factor;
                 $is_bases = $request->variant_is_base;
                 $units = $request->variant_unit;
+                $refs = $request->variant_ref;
 
                 // Validate Conv Factors if Weight Unit is selected
                 if (in_array($mode, ['by_kg', 'by_gm', 'by_ton'])) {
@@ -1199,6 +1204,7 @@ class ProductController extends Controller
                             'purch_price' => $vPurchPrice,
                             'alert' => $alerts[$i] ?? 0,
                             'barcode' => $barcodes[$i] ?? '',
+                            'sku' => $refs[$i] ?? '',
                             'conv_factor' => $vConvFactor,
                             'is_base_variant' => $is_bases[$i] ?? 0,
                             'unit' => $units[$i] ?? 'Pcs',
