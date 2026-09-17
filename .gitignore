@@ -16,3 +16,12 @@ yarn-error.log
 /.fleet
 /.idea
 /.vscode
+
+# Archive, dump, and large media files
+*.zip
+*.tar.gz
+*.rar
+*.sql
+*.mp4
+backup*
+/uploads/
