@@ -1723,14 +1723,14 @@
             {{-- Action Buttons (Top Right Desktop) --}}
             <div class="d-none d-md-flex align-items-center gap-2">
                 <a href="{{ route('product') }}" class="btn-cancel-odoo">Cancel</a>
-                <button type="button" class="btn-primary-odoo" onclick="document.getElementById('productForm').requestSubmit()">
+                <button type="button" class="btn-primary-odoo" id="topSaveProductBtn">
                     <i class="fas fa-save"></i> Save Product
                 </button>
             </div>
         </div>
 
         {{-- Main Form --}}
-        <form id="productForm" action="{{ route('store-product') }}" method="POST" enctype="multipart/form-data">
+        <form id="productForm" action="{{ route('store-product') }}" method="POST" enctype="multipart/form-data" novalidate>
             @csrf
 
             {{-- 1. TOP PRODUCT IDENTITY CARD --}}
@@ -2840,7 +2840,7 @@
         <a href="{{ route('product') }}" class="btn btn-outline-secondary fw-semibold" style="flex:1;border-radius:8px;height:40px;display:flex;align-items:center;justify-content:center;font-size:13px;">
             <i class="fas fa-times me-1"></i>Cancel
         </a>
-        <button type="button" id="mobileSubmitBtn" onclick="document.getElementById('productForm').requestSubmit()" style="flex:2;background:linear-gradient(135deg,#4f46e5,#4338ca);border:none;border-radius:8px;height:40px;color:#fff;font-weight:700;font-size:13px;display:flex;align-items:center;justify-content:center;gap:6px;">
+        <button type="button" id="mobileSubmitBtn" style="flex:2;background:linear-gradient(135deg,#4f46e5,#4338ca);border:none;border-radius:8px;height:40px;color:#fff;font-weight:700;font-size:13px;display:flex;align-items:center;justify-content:center;gap:6px;">
             <i class="fas fa-check-circle"></i> Save Product
         </button>
     </div>
@@ -4775,14 +4775,55 @@
             // =========================================================
             // 12. FORM SUBMISSION & BACKEND SYNCHRONIZATION
             // =========================================================
-            form.addEventListener('submit', function(e) {
-                e.preventDefault();
+            function submitProductForm(e) {
+                if (e && typeof e.preventDefault === 'function') {
+                    e.preventDefault();
+                }
 
-                // Validate Category
+                // 1. Validate Product Name
+                const pNameInput = document.getElementById('product_name');
+                const pNameVal = pNameInput ? pNameInput.value.trim() : '';
+                if (!pNameVal) {
+                    if (pNameInput) {
+                        pNameInput.focus();
+                        pNameInput.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                        pNameInput.style.border = '2px solid #ef4444';
+                        setTimeout(() => { pNameInput.style.border = ''; }, 3000);
+                    }
+                    Swal.fire({
+                        icon: 'warning',
+                        title: 'Product Name Required',
+                        text: 'Please enter a product title / name before saving.'
+                    });
+                    return;
+                }
+
+                // 2. Validate Category
                 const catEl = document.getElementById('category-dropdown');
                 const catVal = catEl ? catEl.value : '';
                 if (!catVal) {
-                    Swal.fire({icon: 'warning', title: 'Required Field', text: 'Please select a Category!'});
+                    // Automatically switch to General Information tab so user can see Category field!
+                    const genTabLink = document.querySelector('.odoo-tab-link[data-tab="tab-general"]');
+                    if (genTabLink) genTabLink.click();
+
+                    setTimeout(() => {
+                        if (catEl) {
+                            catEl.focus();
+                            catEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                            catEl.style.border = '2px solid #ef4444';
+                            catEl.style.boxShadow = '0 0 0 3px rgba(239, 68, 68, 0.25)';
+                            setTimeout(() => {
+                                catEl.style.border = '';
+                                catEl.style.boxShadow = '';
+                            }, 3500);
+                        }
+                    }, 120);
+
+                    Swal.fire({
+                        icon: 'warning',
+                        title: 'Category Required',
+                        text: 'Please select a Category under the General Information tab before saving!'
+                    });
                     return;
                 }
 
@@ -4811,24 +4852,38 @@
                 const mode = unitDropdown ? unitDropdown.value : 'by_pieces';
                 if (mode === 'by_cartons') {
                     let ppb = firstConv > 0 ? firstConv : 1;
-                    document.getElementById('boxes_quantity').value = totalStock;
-                    document.getElementById('pieces_per_box').value = ppb;
-                    document.getElementById('loose_pieces').value = 0;
-                    document.getElementById('piece_quantity').value = 0;
+                    const bq = document.getElementById('boxes_quantity');
+                    const ppbEl = document.getElementById('pieces_per_box');
+                    const lp = document.getElementById('loose_pieces');
+                    const pq = document.getElementById('piece_quantity');
+                    if (bq) bq.value = totalStock;
+                    if (ppbEl) ppbEl.value = ppb;
+                    if (lp) lp.value = 0;
+                    if (pq) pq.value = 0;
                 } else {
-                    document.getElementById('piece_quantity').value = totalStock;
-                    document.getElementById('boxes_quantity').value = 0;
-                    document.getElementById('pieces_per_box').value = 1;
+                    const pq = document.getElementById('piece_quantity');
+                    const bq = document.getElementById('boxes_quantity');
+                    const ppbEl = document.getElementById('pieces_per_box');
+                    if (pq) pq.value = totalStock;
+                    if (bq) bq.value = 0;
+                    if (ppbEl) ppbEl.value = 1;
                 }
-                document.getElementById('sale_price_per_box').value = firstSale;
-                document.getElementById('wholesale_price').value = firstWholesale;
-                document.getElementById('weight_per_piece').value = firstWeight;
-                document.getElementById('purchase_price_per_piece').value = firstPurch;
-                document.getElementById('alert_carton_quantity').value = firstAlert;
 
-                // Submit Button Spinner
-                const submitButtons = document.querySelectorAll('button[type="submit"], #mobileSubmitBtn');
-                submitButtons.forEach(btn => {
+                const spb = document.getElementById('sale_price_per_box');
+                const wp = document.getElementById('wholesale_price');
+                const wpp = document.getElementById('weight_per_piece');
+                const pppp = document.getElementById('purchase_price_per_piece');
+                const acq = document.getElementById('alert_carton_quantity');
+
+                if (spb) spb.value = firstSale;
+                if (wp) wp.value = firstWholesale;
+                if (wpp) wpp.value = firstWeight;
+                if (pppp) pppp.value = firstPurch;
+                if (acq) acq.value = firstAlert;
+
+                // Submit Button Spinner on ALL save buttons
+                const allSaveBtns = document.querySelectorAll('#topSaveProductBtn, #desktopSubmitBtn, #mobileSubmitBtn, button[type="submit"]');
+                allSaveBtns.forEach(btn => {
                     btn.dataset.origHtml = btn.innerHTML;
                     btn.innerHTML = '<i class="fas fa-spinner fa-spin me-1"></i> Saving...';
                     btn.disabled = true;
@@ -4838,11 +4893,22 @@
 
                 fetch(form.action, {
                     method: 'POST',
-                    headers: {'X-Requested-With': 'XMLHttpRequest', 'Accept': 'application/json'},
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest',
+                        'Accept': 'application/json'
+                    },
                     body: formData
                 })
-                .then(r => r.json().then(data => ({status: r.status, body: data})))
-                .then(({status, body}) => {
+                .then(async response => {
+                    let data;
+                    try {
+                        data = await response.json();
+                    } catch(e) {
+                        data = { message: 'Server status: ' + response.status };
+                    }
+                    return { status: response.status, body: data };
+                })
+                .then(({ status, body }) => {
                     if (status === 200 || body.status === 'success') {
                         Swal.fire({
                             icon: 'success', 
@@ -4852,18 +4918,51 @@
                             showConfirmButton: false
                         }).then(() => window.location.href = "{{ route('product') }}");
                     } else {
-                        const msg = body.errors ? Object.values(body.errors).flat().join('<br>') : (body.message || 'Error occurred while saving product');
-                        Swal.fire({icon: 'error', title: 'Validation Error', html: msg});
+                        let errorMsg = 'Error occurred while saving product.';
+                        if (body.errors) {
+                            errorMsg = Object.values(body.errors).flat().join('<br>');
+                        } else if (body.message) {
+                            errorMsg = body.message;
+                        }
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Validation Error',
+                            html: errorMsg
+                        });
                     }
                 })
-                .catch(err => Swal.fire({icon: 'error', title: 'Error', text: 'Server Error occurred!'}))
+                .catch(err => {
+                    console.error('Save error:', err);
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Server Error',
+                        text: 'An error occurred while saving product. Please check connection and try again.'
+                    });
+                })
                 .finally(() => {
-                    submitButtons.forEach(btn => {
+                    allSaveBtns.forEach(btn => {
                         btn.innerHTML = btn.dataset.origHtml || '<i class="fas fa-save"></i> Save Product';
                         btn.disabled = false;
                     });
                 });
-            });
+            }
+
+            form.addEventListener('submit', submitProductForm);
+
+            const topSaveBtn = document.getElementById('topSaveProductBtn');
+            if (topSaveBtn) {
+                topSaveBtn.addEventListener('click', submitProductForm);
+            }
+
+            const desktopSubmitBtn = document.getElementById('desktopSubmitBtn');
+            if (desktopSubmitBtn) {
+                desktopSubmitBtn.addEventListener('click', submitProductForm);
+            }
+
+            const mobileSubmitBtn = document.getElementById('mobileSubmitBtn');
+            if (mobileSubmitBtn) {
+                mobileSubmitBtn.addEventListener('click', submitProductForm);
+            }
 
             // =========================================================
             // 13. QUICKBOOKS POS DESKTOP STYLE: CUSTOMIZE MATRIX COLUMNS
