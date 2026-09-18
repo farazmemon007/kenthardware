@@ -37,6 +37,83 @@
             padding: 16px 16px 60px 16px;
         }
 
+        /* QuickBooks POS Desktop Style Context Menu */
+        .qb-custom-context-menu {
+            position: fixed !important;
+            margin: 0 !important;
+            padding: 6px !important;
+            background: #ffffff !important;
+            border: 1px solid #cbd5e1 !important;
+            border-radius: 8px !important;
+            box-shadow: 0 10px 25px -3px rgba(0, 0, 0, 0.18), 0 4px 6px -2px rgba(0, 0, 0, 0.08) !important;
+            z-index: 999999999 !important;
+            min-width: 200px !important;
+            font-family: inherit !important;
+            font-size: 13px !important;
+            display: none;
+            transform: none !important;
+        }
+
+        .qb-custom-context-menu .qb-ctx-header {
+            font-size: 11px !important;
+            font-weight: 700 !important;
+            text-transform: uppercase !important;
+            letter-spacing: 0.5px !important;
+            color: #64748b !important;
+            padding: 4px 8px 6px 8px !important;
+            display: flex !important;
+            align-items: center !important;
+            gap: 6px !important;
+            border-bottom: 1px solid #f1f5f9 !important;
+            margin-bottom: 4px !important;
+        }
+
+        .qb-custom-context-menu .qb-ctx-item {
+            display: flex !important;
+            align-items: center !important;
+            gap: 9px !important;
+            width: 100% !important;
+            padding: 7px 10px !important;
+            border: none !important;
+            background: transparent !important;
+            color: #1e293b !important;
+            font-size: 12.5px !important;
+            font-weight: 500 !important;
+            text-align: left !important;
+            border-radius: 6px !important;
+            cursor: pointer !important;
+            transition: background-color 0.15s ease, color 0.15s ease !important;
+            text-decoration: none !important;
+            line-height: 1.4 !important;
+        }
+
+        .qb-custom-context-menu .qb-ctx-item:hover {
+            background-color: #f1f5f9 !important;
+            color: #0f172a !important;
+        }
+
+        .qb-custom-context-menu .qb-ctx-item.text-primary:hover {
+            background-color: #eef2ff !important;
+            color: #4338ca !important;
+        }
+
+        .qb-custom-context-menu .qb-ctx-item i {
+            font-size: 13px !important;
+            width: 16px !important;
+            text-align: center !important;
+            flex-shrink: 0 !important;
+        }
+
+        .qb-custom-context-menu .qb-ctx-divider {
+            height: 1px !important;
+            background-color: #e2e8f0 !important;
+            margin: 4px 0 !important;
+        }
+
+        #variantsTable thead th {
+            cursor: context-menu;
+        }
+
         /* Top Bar */
         .page-header-bar {
             display: flex;
@@ -1968,61 +2045,11 @@
                                             </div>
                                         </div>
 
-                                        {{-- Sub Category --}}
-                                        <div class="form-row-item">
-                                            <label class="field-label">Sub Category</label>
-                                            <div class="field-value">
-                                                <div class="d-flex gap-1">
-                                                    <select class="odoo-select" id="subcategory-dropdown" name="sub_category_id">
-                                                        <option value="">Select subcategory...</option>
-                                                    </select>
-                                                    <button type="button" class="btn-quick-add" data-bs-toggle="modal" data-bs-target="#subcategoryModal" data-toggle="modal" data-target="#subcategoryModal" title="Add Subcategory">+</button>
-                                                </div>
-                                            </div>
-                                        </div>
-
-                                        {{-- Brand --}}
-                                        <div class="form-row-item">
-                                            <label class="field-label">Brand <span class="text-danger ms-1">*</span></label>
-                                            <div class="field-value">
-                                                <div class="d-flex gap-1">
-                                                    <select class="odoo-select" name="brand_id" id="brand_id" required>
-                                                        <option value="">Select brand...</option>
-                                                        @foreach ($brands as $brand)
-                                                            <option value="{{ $brand->id }}">{{ $brand->name }}</option>
-                                                        @endforeach
-                                                    </select>
-                                                    <button type="button" class="btn-quick-add" data-bs-toggle="modal" data-bs-target="#brandModal" data-toggle="modal" data-target="#brandModal" title="Add Brand">+</button>
-                                                </div>
-                                            </div>
-                                        </div>
-
                                         {{-- Reference --}}
                                         <div class="form-row-item">
                                             <label class="field-label">Reference</label>
                                             <div class="field-value">
                                                 <input type="text" class="odoo-input" name="reference" id="reference" placeholder="e.g. ITEM-0001 or SKU">
-                                            </div>
-                                        </div>
-
-                                        {{-- Barcode --}}
-                                        <div class="form-row-item">
-                                            <label class="field-label">Barcode</label>
-                                            <div class="field-value">
-                                                <div class="input-group input-group-sm">
-                                                    <input type="text" class="odoo-input" style="border-top-right-radius:0; border-bottom-right-radius:0;" name="barcode" id="barcode" placeholder="Scan or type barcode...">
-                                                    <button type="button" class="btn btn-light border px-2" id="genBarcodeBtn" title="Generate Barcode" style="border-color: var(--border-strong); height:30px; font-size:12px;">
-                                                        <i class="fas fa-barcode text-primary"></i>
-                                                    </button>
-                                                </div>
-                                            </div>
-                                        </div>
-
-                                        {{-- Tags --}}
-                                        <div class="form-row-item">
-                                            <label class="field-label">Tags</label>
-                                            <div class="field-value">
-                                                <input type="text" class="odoo-input" name="tags" id="tags" placeholder="e.g. Popular, Featured, Sale">
                                             </div>
                                         </div>
 
@@ -2106,6 +2133,9 @@
                                     <button type="button" class="btn btn-sm btn-outline-secondary py-1 px-2" id="toggleMatrixBtn" style="font-size: 11px;">
                                         <i class="fas fa-eye me-1"></i> <span id="toggleMatrixText">Hide Matrix</span>
                                     </button>
+                                    <button type="button" class="btn btn-sm btn-outline-dark py-1 px-2" id="customizeVariantColumnsBtn" data-toggle="modal" data-target="#customizeVariantsModal" data-bs-toggle="modal" data-bs-target="#customizeVariantsModal" style="font-size: 11px;" title="Customize Columns (or right-click table header)">
+                                        <i class="fas fa-columns me-1 text-primary"></i> Customize Columns
+                                    </button>
                                     <button type="button" class="btn btn-sm btn-primary py-1 px-2" id="enableVariantsBtn" style="font-size: 11px;">
                                         <i class="fas fa-plus me-1"></i> Add Custom Row
                                     </button>
@@ -2117,19 +2147,19 @@
                                         <table class="table table-bordered table-sm align-middle mb-1" id="variantsTable">
                                             <thead>
                                                 <tr>
-                                                    <th style="width: 32px;" class="text-center"><input type="checkbox" class="form-check-input" id="selectAllVariantsCheck" title="Select All"></th>
-                                                    <th style="width: 130px;">Internal Ref</th>
-                                                    <th style="min-width: 120px;">Product Name</th>
-                                                    <th style="min-width: 180px;">Attributes</th>
-                                                    <th style="width: 80px;">Unit</th>
-                                                    <th style="width: 90px;" class="text-center">On Hand (Stock)</th>
-                                                    <th style="width: 95px;" class="text-center conv-col" id="convFactorHeader">Pcs / Carton</th>
-                                                    <th style="width: 90px;" class="text-center piece-wt-only-col">Piece Wt (g)</th>
-                                                    <th style="width: 95px;">Sales Price</th>
-                                                    <th style="width: 95px;">Cost (Purch)</th>
-                                                    <th style="width: 85px;">Wholesale</th>
-                                                    <th style="width: 110px;">Barcode</th>
-                                                    <th style="width: 45px;" class="text-center">Action</th>
+                                                    <th style="width: 32px;" class="text-center col-select"><input type="checkbox" class="form-check-input" id="selectAllVariantsCheck" title="Select All"></th>
+                                                    <th style="width: 130px;" class="col-ref">Internal Ref</th>
+                                                    <th style="min-width: 120px;" class="col-name">Product Name</th>
+                                                    <th style="min-width: 180px;" class="col-attrs">Attributes</th>
+                                                    <th style="width: 80px;" class="col-unit">Unit</th>
+                                                    <th style="width: 90px;" class="text-center col-stock">On Hand (Stock)</th>
+                                                    <th style="width: 95px;" class="text-center conv-col col-conv" id="convFactorHeader">Pcs / Carton</th>
+                                                    <th style="width: 90px;" class="text-center piece-wt-only-col col-weight">Piece Wt (g)</th>
+                                                    <th style="width: 95px;" class="col-sale">Sales Price</th>
+                                                    <th style="width: 95px;" class="col-cost">Cost (Purch)</th>
+                                                    <th style="width: 85px;" class="col-wholesale">Wholesale</th>
+                                                    <th style="width: 110px;" class="col-barcode">Barcode</th>
+                                                    <th style="width: 45px;" class="text-center col-action">Action</th>
                                                 </tr>
                                             </thead>
                                             <tbody id="variantsBody">
@@ -2527,6 +2557,59 @@
                     </form>
                 </div>
             </div>
+        </div>
+
+        {{-- QuickBooks POS Style: Customize Variant Columns Modal --}}
+        <div id="customizeVariantsModal" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true" style="z-index: 1055;">
+            <div class="modal-dialog modal-dialog-centered" style="max-width: 520px;" role="document">
+                <div class="modal-content border-0 shadow-lg" style="border-radius: var(--radius-md); overflow: hidden;">
+                    <div class="modal-header py-2.5 px-3 bg-light border-bottom d-flex align-items-center justify-content-between">
+                        <div class="d-flex align-items-center gap-2">
+                            <i class="fas fa-columns text-primary fs-6"></i>
+                            <div>
+                                <h6 class="modal-title fw-bold mb-0 text-dark" style="font-size: 14px;">Customize Table Columns</h6>
+                                <span class="text-muted" style="font-size: 11px;">Show or hide columns in the Variants Matrix</span>
+                            </div>
+                        </div>
+                        <button type="button" class="close text-secondary qb-var-modal-close" data-dismiss="modal" data-bs-dismiss="modal" aria-label="Close" style="font-size:24px;border:none;background:transparent;line-height:1;cursor:pointer;padding:0 4px;">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body p-3">
+                        <div class="d-flex justify-content-between align-items-center mb-2 pb-2 border-bottom">
+                            <span class="fw-semibold text-secondary" style="font-size: 12px;">Available Columns:</span>
+                            <div class="btn-group btn-group-sm">
+                                <button type="button" class="btn btn-sm btn-outline-primary py-0 px-2" style="font-size: 11px;" id="varColSelectAll">Select All</button>
+                                <button type="button" class="btn btn-sm btn-outline-secondary py-0 px-2" style="font-size: 11px;" id="varColResetDefault">Reset Default</button>
+                            </div>
+                        </div>
+                        <div class="row g-2" id="variantColumnsChecklist">
+                            {{-- Injected dynamically by JavaScript --}}
+                        </div>
+                    </div>
+                    <div class="modal-footer py-2 px-3 bg-light border-top d-flex justify-content-between align-items-center">
+                        <span class="text-muted fst-italic" style="font-size: 11px;"><i class="fas fa-info-circle me-1 text-primary"></i> Right-click table header anytime to open</span>
+                        <button type="button" class="btn btn-primary btn-sm px-4 rounded-pill qb-var-modal-close" data-dismiss="modal" data-bs-dismiss="modal">Apply &amp; Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        {{-- QuickBooks POS Style: Right-click Header Context Menu --}}
+        <div id="qbVariantsContextMenu" class="qb-custom-context-menu">
+            <div class="qb-ctx-header">
+                <i class="fas fa-sliders-h text-primary"></i>
+                <span>Table Columns</span>
+            </div>
+            <button type="button" class="qb-ctx-item text-primary" id="qbCtxCustomizeVariantsBtn">
+                <i class="fas fa-columns"></i>
+                <span><strong>Customize Columns...</strong></span>
+            </button>
+            <div class="qb-ctx-divider"></div>
+            <button type="button" class="qb-ctx-item text-muted" id="qbCtxResetVariantsBtn">
+                <i class="fas fa-undo"></i>
+                <span>Reset to Default</span>
+            </button>
         </div>
 
         {{-- Search: Attribute Modal (Matching Image 2 Exactly) --}}
@@ -4418,7 +4501,7 @@
 
                     const tr = document.createElement('tr');
                     tr.innerHTML = `
-                        <td class="text-center p-1">
+                        <td class="text-center p-1 col-select">
                             <input type="checkbox" class="form-check-input variant-row-check">
                             <input type="hidden" name="variant_is_base[]" value="${isBase}">
                             <input type="hidden" name="variant_name[]" value="${comboName}">
@@ -4426,16 +4509,16 @@
                             <input type="hidden" name="variant_color[]" value="${colorVal}">
                             <input type="hidden" name="variant_alert_qty[]" value="0">
                         </td>
-                        <td class="p-1">
+                        <td class="p-1 col-ref">
                             <input type="text" class="form-control form-control-sm text-muted font-monospace" name="variant_ref[]" value="${vRef}" placeholder="Ref">
                         </td>
-                        <td class="p-1 fw-semibold text-dark" style="font-size: 12.5px; max-width: 140px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="${comboName}">
+                        <td class="p-1 fw-semibold text-dark col-name" style="font-size: 12.5px; max-width: 140px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="${comboName}">
                             ${productName}
                         </td>
-                        <td class="p-1">
+                        <td class="p-1 col-attrs">
                             ${comboPillsHtml}
                         </td>
-                        <td class="p-1">
+                        <td class="p-1 col-unit">
                             <select class="form-select form-select-sm px-1 fw-bold text-dark" name="variant_unit[]" style="font-size:11px;">
                                 <option value="Carton" ${vUnit==='Carton'?'selected':''}>Carton</option>
                                 <option value="Pcs" ${vUnit==='Pcs'?'selected':''}>Pcs</option>
@@ -4447,23 +4530,23 @@
                                 <option value="Dozen" ${vUnit==='Dozen'?'selected':''}>Dzn</option>
                             </select>
                         </td>
-                        <td class="p-1">
+                        <td class="p-1 col-stock">
                             <input type="number" class="form-control form-control-sm text-center fw-bold text-primary stock-input" name="variant_stock[]" step="any" value="${vStock}">
                         </td>
-                        <td class="p-0 conv-col">
+                        <td class="p-0 conv-col col-conv">
                             <input type="text" inputmode="decimal" class="form-control form-control-sm conv-factor-input text-center fw-bold text-success" name="variant_conv_factor[]" value="${vConv}" placeholder="1" style="border-radius:0; border:1px solid #198754; height:28px;">
                         </td>
-                        <td class="p-0 piece-wt-only-col">
+                        <td class="p-0 piece-wt-only-col col-weight">
                             <div style="position:relative;">
                                 <input type="number" class="form-control form-control-sm piece-wt-display" name="variant_weight_per_piece[]" step="any" value="" placeholder="—" readonly style="padding-right:16px; border-radius:0; border:1px solid #dee2e6; height:28px; background:#f0fff4; color:#198754; font-weight:600;">
                                 <span style="position:absolute;right:4px;top:50%;transform:translateY(-50%);font-size:9px;color:#198754;pointer-events:none;font-weight:700;">g</span>
                             </div>
                         </td>
-                        <td class="p-1"><input type="number" class="form-control form-control-sm sale-price-input" name="variant_sale_price[]" step="any" value="${vSale}" required></td>
-                        <td class="p-1"><input type="number" class="form-control form-control-sm purch-price-input" name="variant_purchase_price[]" step="any" value="${vPurch}" required></td>
-                        <td class="p-1"><input type="number" class="form-control form-control-sm" name="variant_wholesale_price[]" step="any" value="${vWholesale}"></td>
-                        <td class="p-1"><input type="text" class="form-control form-control-sm font-monospace" name="variant_barcode[]" value="${vBarcode}" placeholder="Barcode"></td>
-                        <td class="p-1 text-center">
+                        <td class="p-1 col-sale"><input type="number" class="form-control form-control-sm sale-price-input" name="variant_sale_price[]" step="any" value="${vSale}" required></td>
+                        <td class="p-1 col-cost"><input type="number" class="form-control form-control-sm purch-price-input" name="variant_purchase_price[]" step="any" value="${vPurch}" required></td>
+                        <td class="p-1 col-wholesale"><input type="number" class="form-control form-control-sm" name="variant_wholesale_price[]" step="any" value="${vWholesale}"></td>
+                        <td class="p-1 col-barcode"><input type="text" class="form-control form-control-sm font-monospace" name="variant_barcode[]" value="${vBarcode}" placeholder="Barcode"></td>
+                        <td class="p-1 text-center col-action">
                             ${isBase ? '<span class="badge bg-primary px-1" style="font-size:9px;">Base</span>' : '<button type="button" class="btn btn-sm btn-outline-danger remove-var-btn p-0 px-1" style="height:24px;width:24px;"><i class="fas fa-times" style="font-size:11px;"></i></button>'}
                         </td>
                     `;
@@ -4515,23 +4598,23 @@
                 const initCost = genCostInput ? (genCostInput.value || '0.00') : '0.00';
 
                 tr.innerHTML = `
-                    <td class="text-center p-1">
+                    <td class="text-center p-1 col-select">
                         <input type="checkbox" class="form-check-input" checked disabled>
                         <input type="hidden" name="variant_is_base[]" value="1">
                         <input type="hidden" name="variant_size[]" value="-">
                         <input type="hidden" name="variant_color[]" value="-">
                         <input type="hidden" name="variant_alert_qty[]" value="0">
                     </td>
-                    <td class="p-1">
+                    <td class="p-1 col-ref">
                         <input type="text" class="form-control form-control-sm text-muted font-monospace" name="variant_ref[]" value="" placeholder="Ref">
                     </td>
-                    <td class="p-1">
+                    <td class="p-1 col-name">
                         <input type="text" class="form-control form-control-sm base-name-input fw-bold" name="variant_name[]" value="${productName}" placeholder="Product Name">
                     </td>
-                    <td class="p-1 text-muted fst-italic" style="font-size:11px;">
+                    <td class="p-1 text-muted fst-italic col-attrs" style="font-size:11px;">
                         Standard (No Attributes)
                     </td>
-                    <td class="p-1">
+                    <td class="p-1 col-unit">
                         <select class="form-select form-select-sm fw-bold text-primary px-1" name="variant_unit[]" style="font-size:11px;">
                             <option value="Carton" ${isCartonMode||baseUnitName.includes('Carton')?'selected':''}>Carton</option>
                             <option value="Pcs" ${(!isCartonMode && (baseUnitName.includes('Pcs')||baseUnitName.includes('Pieces')))?'selected':''}>Pcs</option>
@@ -4543,23 +4626,23 @@
                             <option value="Dozen">Dzn</option>
                         </select>
                     </td>
-                    <td class="p-1">
+                    <td class="p-1 col-stock">
                         <input type="number" class="form-control form-control-sm text-center fw-bold text-primary stock-input" name="variant_stock[]" step="any" value="0" placeholder="0">
                     </td>
-                    <td class="p-0 conv-col">
+                    <td class="p-0 conv-col col-conv">
                         <input type="number" class="form-control form-control-sm conv-factor-input text-center fw-bold ${isCartonMode ? 'text-primary' : ''}" name="variant_conv_factor[]" step="any" value="${isCartonMode ? '' : '1'}" ${isCartonMode ? '' : 'readonly'} placeholder="${isCartonMode ? 'e.g. 6' : '1'}" style="border-radius:0; border:1px solid #dee2e6; height:28px; ${isCartonMode ? 'background:#fff;' : 'background:#f8f8f8;'}">
                     </td>
-                    <td class="p-0 piece-wt-only-col">
+                    <td class="p-0 piece-wt-only-col col-weight">
                         <div style="position:relative;">
                             <input type="number" class="form-control form-control-sm" name="variant_weight_per_piece[]" step="any" value="1000" readonly style="padding-right:16px; border-radius:0; border:1px solid #dee2e6; height:28px; background:#f8f8f8;">
                             <span style="position:absolute;right:4px;top:50%;transform:translateY(-50%);font-size:9px;color:#999;pointer-events:none;font-weight:600;">g</span>
                         </div>
                     </td>
-                    <td class="p-1"><input type="number" class="form-control form-control-sm base-sale-input" name="variant_sale_price[]" step="any" value="${initSale}" placeholder="0.00" required></td>
-                    <td class="p-1"><input type="number" class="form-control form-control-sm base-purch-input" name="variant_purchase_price[]" step="any" value="${initCost}" placeholder="0.00" required></td>
-                    <td class="p-1"><input type="number" class="form-control form-control-sm" name="variant_wholesale_price[]" step="any" placeholder="0.00" value="0"></td>
-                    <td class="p-1"><input type="text" class="form-control form-control-sm font-monospace" name="variant_barcode[]" value="${generateRandomBarcode()}" placeholder="Barcode"></td>
-                    <td class="p-1 text-center">
+                    <td class="p-1 col-sale"><input type="number" class="form-control form-control-sm base-sale-input" name="variant_sale_price[]" step="any" value="${initSale}" placeholder="0.00" required></td>
+                    <td class="p-1 col-cost"><input type="number" class="form-control form-control-sm base-purch-input" name="variant_purchase_price[]" step="any" value="${initCost}" placeholder="0.00" required></td>
+                    <td class="p-1 col-wholesale"><input type="number" class="form-control form-control-sm" name="variant_wholesale_price[]" step="any" placeholder="0.00" value="0"></td>
+                    <td class="p-1 col-barcode"><input type="text" class="form-control form-control-sm font-monospace" name="variant_barcode[]" value="${generateRandomBarcode()}" placeholder="Barcode"></td>
+                    <td class="p-1 text-center col-action">
                         <span class="badge bg-primary px-2 py-1" style="font-size:10px;">Base</span>
                     </td>
                 `;
@@ -4631,24 +4714,24 @@
                     const pName = productNameInput ? (productNameInput.value.trim() || 'Product') : 'Product';
                     const isCarton = unitDropdown && unitDropdown.value === 'by_cartons';
                     tr.innerHTML = `
-                        <td class="text-center p-1">
+                        <td class="text-center p-1 col-select">
                             <input type="checkbox" class="form-check-input variant-row-check">
                             <input type="hidden" name="variant_is_base[]" value="0">
                             <input type="hidden" name="variant_alert_qty[]" value="0">
                         </td>
-                        <td class="p-1">
+                        <td class="p-1 col-ref">
                             <input type="text" class="form-control form-control-sm text-muted font-monospace" name="variant_ref[]" value="" placeholder="Ref">
                         </td>
-                        <td class="p-1">
+                        <td class="p-1 col-name">
                             <input type="text" class="form-control form-control-sm" name="variant_name[]" value="${pName} - New Variant">
                         </td>
-                        <td class="p-1">
+                        <td class="p-1 col-attrs">
                             <div class="d-flex gap-1">
                                 <input type="text" class="form-control form-control-sm" name="variant_size[]" placeholder="Size" style="width:50%;font-size:11px;">
                                 <input type="text" class="form-control form-control-sm" name="variant_color[]" placeholder="Color" style="width:50%;font-size:11px;">
                             </div>
                         </td>
-                        <td class="p-1">
+                        <td class="p-1 col-unit">
                             <select class="form-select form-select-sm px-1 fw-bold text-dark" name="variant_unit[]" style="font-size:11px;">
                                 <option value="Carton" ${isCarton?'selected':''}>Carton</option>
                                 <option value="Pcs" ${!isCarton?'selected':''}>Pcs</option>
@@ -4660,14 +4743,14 @@
                                 <option value="Dozen">Dzn</option>
                             </select>
                         </td>
-                        <td class="p-1"><input type="number" class="form-control form-control-sm text-center fw-bold text-primary stock-input" name="variant_stock[]" value="0"></td>
-                        <td class="p-0 conv-col"><input type="text" class="form-control form-control-sm text-center fw-bold text-success" name="variant_conv_factor[]" value="${isCarton?'6':'1'}" style="border-radius:0; border:1px solid #198754; height:28px;"></td>
-                        <td class="p-0 piece-wt-only-col"><input type="number" class="form-control form-control-sm" name="variant_weight_per_piece[]" value="1000" readonly style="border-radius:0; border:1px solid #dee2e6; height:28px;"></td>
-                        <td class="p-1"><input type="number" class="form-control form-control-sm sale-price-input" name="variant_sale_price[]" value="${genSaleInput?.value || '1.00'}" required></td>
-                        <td class="p-1"><input type="number" class="form-control form-control-sm purch-price-input" name="variant_purchase_price[]" value="${genCostInput?.value || '0.00'}" required></td>
-                        <td class="p-1"><input type="number" class="form-control form-control-sm" name="variant_wholesale_price[]" value="0.00"></td>
-                        <td class="p-1"><input type="text" class="form-control form-control-sm font-monospace" name="variant_barcode[]" value="${generateRandomBarcode()}" placeholder="Barcode"></td>
-                        <td class="p-1 text-center"><button type="button" class="btn btn-sm btn-outline-danger remove-var-btn p-0 px-1" style="height:24px;width:24px;"><i class="fas fa-times" style="font-size:11px;"></i></button></td>
+                        <td class="p-1 col-stock"><input type="number" class="form-control form-control-sm text-center fw-bold text-primary stock-input" name="variant_stock[]" value="0"></td>
+                        <td class="p-0 conv-col col-conv"><input type="text" class="form-control form-control-sm text-center fw-bold text-success" name="variant_conv_factor[]" value="${isCarton?'6':'1'}" style="border-radius:0; border:1px solid #198754; height:28px;"></td>
+                        <td class="p-0 piece-wt-only-col col-weight"><input type="number" class="form-control form-control-sm" name="variant_weight_per_piece[]" value="1000" readonly style="border-radius:0; border:1px solid #dee2e6; height:28px;"></td>
+                        <td class="p-1 col-sale"><input type="number" class="form-control form-control-sm sale-price-input" name="variant_sale_price[]" value="${genSaleInput?.value || '1.00'}" required></td>
+                        <td class="p-1 col-cost"><input type="number" class="form-control form-control-sm purch-price-input" name="variant_purchase_price[]" value="${genCostInput?.value || '0.00'}" required></td>
+                        <td class="p-1 col-wholesale"><input type="number" class="form-control form-control-sm" name="variant_wholesale_price[]" value="0.00"></td>
+                        <td class="p-1 col-barcode"><input type="text" class="form-control form-control-sm font-monospace" name="variant_barcode[]" value="${generateRandomBarcode()}" placeholder="Barcode"></td>
+                        <td class="p-1 text-center col-action"><button type="button" class="btn btn-sm btn-outline-danger remove-var-btn p-0 px-1" style="height:24px;width:24px;"><i class="fas fa-times" style="font-size:11px;"></i></button></td>
                     `;
                     variantsBody.appendChild(tr);
                     toggleFactorColumns();
@@ -4695,11 +4778,11 @@
             form.addEventListener('submit', function(e) {
                 e.preventDefault();
 
-                // Validate Brand & Category
-                const catVal = document.getElementById('category-dropdown').value;
-                const brandVal = document.getElementById('brand_id').value;
-                if (!catVal || !brandVal) {
-                    Swal.fire({icon: 'warning', title: 'Required Fields', text: 'Please select both Category and Brand!'});
+                // Validate Category
+                const catEl = document.getElementById('category-dropdown');
+                const catVal = catEl ? catEl.value : '';
+                if (!catVal) {
+                    Swal.fire({icon: 'warning', title: 'Required Field', text: 'Please select a Category!'});
                     return;
                 }
 
@@ -4781,6 +4864,287 @@
                     });
                 });
             });
+
+            // =========================================================
+            // 13. QUICKBOOKS POS DESKTOP STYLE: CUSTOMIZE MATRIX COLUMNS
+            // =========================================================
+            const VARIANT_COLUMNS = [
+                { key: 'col-ref',       label: 'Internal Ref',       default: true },
+                { key: 'col-name',      label: 'Product Name',       default: true },
+                { key: 'col-attrs',     label: 'Attributes',         default: true },
+                { key: 'col-unit',      label: 'Unit',               default: true },
+                { key: 'col-stock',     label: 'On Hand (Stock)',    default: true },
+                { key: 'col-conv',      label: 'Pcs / Carton',       default: true },
+                { key: 'col-weight',    label: 'Piece Wt (g)',       default: true },
+                { key: 'col-sale',      label: 'Sales Price',        default: true },
+                { key: 'col-cost',      label: 'Cost (Purch)',       default: true },
+                { key: 'col-wholesale', label: 'Wholesale',          default: true },
+                { key: 'col-barcode',   label: 'Barcode',            default: true },
+                { key: 'col-action',    label: 'Action',             default: true },
+            ];
+
+            const VAR_STORAGE_KEY = 'kent_variants_table_columns_v1';
+
+            function getVariantColPrefs() {
+                try {
+                    const saved = localStorage.getItem(VAR_STORAGE_KEY);
+                    if (saved) return JSON.parse(saved);
+                } catch(e) {}
+                const defaults = {};
+                VARIANT_COLUMNS.forEach(c => defaults[c.key] = c.default);
+                return defaults;
+            }
+
+            function saveVariantColPrefs(prefs) {
+                try {
+                    localStorage.setItem(VAR_STORAGE_KEY, JSON.stringify(prefs));
+                } catch(e) {}
+            }
+
+            function applyVariantColVisibility(prefs) {
+                let styleEl = document.getElementById('kentVariantColumnsCustomStyle');
+                if (!styleEl) {
+                    styleEl = document.createElement('style');
+                    styleEl.id = 'kentVariantColumnsCustomStyle';
+                    document.head.appendChild(styleEl);
+                }
+
+                let cssRules = [];
+                VARIANT_COLUMNS.forEach(col => {
+                    const isVisible = prefs[col.key] !== false;
+                    if (!isVisible) {
+                        cssRules.push(`#variantsTable .${col.key} { display: none !important; }`);
+                    }
+                    document.querySelectorAll(`#variantsTable .${col.key}`).forEach(el => {
+                        el.style.display = isVisible ? '' : 'none';
+                    });
+                });
+                styleEl.textContent = cssRules.join('\n');
+            }
+
+            function renderVariantColumnsChecklist() {
+                const checklistContainer = document.getElementById('variantColumnsChecklist');
+                if (!checklistContainer) return;
+
+                const prefs = getVariantColPrefs();
+                checklistContainer.innerHTML = '';
+
+                VARIANT_COLUMNS.forEach(col => {
+                    const isChecked = prefs[col.key] !== false;
+                    const colDiv = document.createElement('div');
+                    colDiv.className = 'col-6';
+                    colDiv.innerHTML = `
+                        <div class="form-check p-2 rounded border bg-light d-flex align-items-center gap-2" style="cursor: pointer; transition: background 0.15s;">
+                            <input class="form-check-input ms-0 mt-0 var-col-chk" type="checkbox" id="chk_var_${col.key}" data-col="${col.key}" ${isChecked ? 'checked' : ''} style="cursor: pointer; width: 16px; height: 16px;">
+                            <label class="form-check-label small fw-semibold text-dark mb-0 text-truncate" for="chk_var_${col.key}" style="cursor: pointer; user-select: none;">
+                                ${col.label}
+                            </label>
+                        </div>
+                    `;
+                    checklistContainer.appendChild(colDiv);
+                });
+
+                checklistContainer.querySelectorAll('.var-col-chk').forEach(chk => {
+                    chk.addEventListener('change', function() {
+                        const colKey = this.dataset.col;
+                        const currentPrefs = getVariantColPrefs();
+                        currentPrefs[colKey] = this.checked;
+                        saveVariantColPrefs(currentPrefs);
+                        applyVariantColVisibility(currentPrefs);
+                    });
+                });
+            }
+
+            const customizeVariantsModalEl = document.getElementById('customizeVariantsModal');
+
+            function showCustomizeVariantsModal() {
+                renderVariantColumnsChecklist();
+                if (!customizeVariantsModalEl) return;
+                try {
+                    if (typeof jQuery !== 'undefined' && typeof jQuery(customizeVariantsModalEl).modal === 'function') {
+                        jQuery(customizeVariantsModalEl).modal('show');
+                        return;
+                    }
+                } catch(e) {}
+                try {
+                    if (window.bootstrap && typeof bootstrap.Modal === 'function') {
+                        const inst = bootstrap.Modal.getInstance ? bootstrap.Modal.getInstance(customizeVariantsModalEl) : null;
+                        (inst || new bootstrap.Modal(customizeVariantsModalEl)).show();
+                        return;
+                    }
+                } catch(e) {}
+                // Pure CSS/JS Guaranteed Fallback
+                customizeVariantsModalEl.classList.add('show');
+                customizeVariantsModalEl.style.display = 'block';
+                customizeVariantsModalEl.removeAttribute('aria-hidden');
+                document.body.classList.add('modal-open');
+                let bd = document.querySelector('.qb-custom-backdrop');
+                if (!bd) {
+                    bd = document.createElement('div');
+                    bd.className = 'modal-backdrop fade show qb-custom-backdrop';
+                    document.body.appendChild(bd);
+                    bd.onclick = hideCustomizeVariantsModal;
+                }
+            }
+
+            function hideCustomizeVariantsModal() {
+                if (!customizeVariantsModalEl) return;
+                try {
+                    if (typeof jQuery !== 'undefined' && typeof jQuery(customizeVariantsModalEl).modal === 'function') {
+                        jQuery(customizeVariantsModalEl).modal('hide');
+                    }
+                } catch(e) {}
+                try {
+                    if (window.bootstrap && typeof bootstrap.Modal === 'function') {
+                        const inst = bootstrap.Modal.getInstance ? bootstrap.Modal.getInstance(customizeVariantsModalEl) : null;
+                        if (inst) inst.hide();
+                    }
+                } catch(e) {}
+                customizeVariantsModalEl.classList.remove('show');
+                customizeVariantsModalEl.style.display = 'none';
+                customizeVariantsModalEl.setAttribute('aria-hidden', 'true');
+                document.body.classList.remove('modal-open');
+                const bd = document.querySelector('.qb-custom-backdrop');
+                if (bd) bd.remove();
+            }
+
+            // Close buttons in modal
+            document.querySelectorAll('.qb-var-modal-close').forEach(btn => {
+                btn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    hideCustomizeVariantsModal();
+                });
+            });
+
+            // Trigger button
+            const customizeBtn = document.getElementById('customizeVariantColumnsBtn');
+            if (customizeBtn) {
+                customizeBtn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    showCustomizeVariantsModal();
+                });
+            }
+
+            if (customizeVariantsModalEl && typeof jQuery !== 'undefined') {
+                jQuery(customizeVariantsModalEl).on('show.bs.modal', function() {
+                    renderVariantColumnsChecklist();
+                });
+            }
+
+            const varColSelectAllBtn = document.getElementById('varColSelectAll');
+            if (varColSelectAllBtn) {
+                varColSelectAllBtn.addEventListener('click', function() {
+                    const prefs = {};
+                    VARIANT_COLUMNS.forEach(c => prefs[c.key] = true);
+                    saveVariantColPrefs(prefs);
+                    applyVariantColVisibility(prefs);
+                    renderVariantColumnsChecklist();
+                });
+            }
+
+            const varColResetDefaultBtn = document.getElementById('varColResetDefault');
+            if (varColResetDefaultBtn) {
+                varColResetDefaultBtn.addEventListener('click', function() {
+                    const prefs = {};
+                    VARIANT_COLUMNS.forEach(c => prefs[c.key] = c.default);
+                    saveVariantColPrefs(prefs);
+                    applyVariantColVisibility(prefs);
+                    renderVariantColumnsChecklist();
+                });
+            }
+
+            // Right-click Header Context Menu (QuickBooks POS Desktop style)
+            const qbContextMenu = document.getElementById('qbVariantsContextMenu');
+            const variantsThead = document.querySelector('#variantsTable thead');
+
+            if (qbContextMenu && qbContextMenu.parentElement !== document.body) {
+                document.body.appendChild(qbContextMenu);
+            }
+
+            const hideVariantsContextMenu = function() {
+                if (qbContextMenu) {
+                    qbContextMenu.style.display = 'none';
+                }
+            };
+
+            const positionVariantsContextMenu = function(e) {
+                if (!qbContextMenu) return;
+                if (qbContextMenu.parentElement !== document.body) {
+                    document.body.appendChild(qbContextMenu);
+                }
+
+                qbContextMenu.style.visibility = 'hidden';
+                qbContextMenu.style.display = 'block';
+
+                const menuWidth = qbContextMenu.offsetWidth || 210;
+                const menuHeight = qbContextMenu.offsetHeight || 105;
+
+                let posX = e.clientX;
+                let posY = e.clientY;
+
+                if (posX + menuWidth > window.innerWidth - 8) {
+                    posX = window.innerWidth - menuWidth - 8;
+                }
+                if (posY + menuHeight > window.innerHeight - 8) {
+                    posY = window.innerHeight - menuHeight - 8;
+                }
+
+                posX = Math.max(8, posX);
+                posY = Math.max(8, posY);
+
+                qbContextMenu.style.left = posX + 'px';
+                qbContextMenu.style.top = posY + 'px';
+                qbContextMenu.style.visibility = 'visible';
+            };
+
+            if (variantsThead && qbContextMenu) {
+                variantsThead.addEventListener('contextmenu', function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    positionVariantsContextMenu(e);
+                });
+
+                // Dismiss immediately on any scroll (page or container) or resize
+                window.addEventListener('scroll', hideVariantsContextMenu, { passive: true });
+                window.addEventListener('resize', hideVariantsContextMenu, { passive: true });
+                document.addEventListener('scroll', hideVariantsContextMenu, { passive: true, capture: true });
+
+                // Dismiss on click outside
+                document.addEventListener('click', function(e) {
+                    if (qbContextMenu && !qbContextMenu.contains(e.target)) {
+                        hideVariantsContextMenu();
+                    }
+                });
+
+                // Dismiss on Esc key
+                document.addEventListener('keydown', function(e) {
+                    if (e.key === 'Escape') {
+                        hideVariantsContextMenu();
+                    }
+                });
+
+                const qbCtxCustomizeBtn = document.getElementById('qbCtxCustomizeVariantsBtn');
+                if (qbCtxCustomizeBtn) {
+                    qbCtxCustomizeBtn.addEventListener('click', function(e) {
+                        e.preventDefault();
+                        hideVariantsContextMenu();
+                        showCustomizeVariantsModal();
+                    });
+                }
+
+                const qbCtxResetBtn = document.getElementById('qbCtxResetVariantsBtn');
+                if (qbCtxResetBtn) {
+                    qbCtxResetBtn.addEventListener('click', function(e) {
+                        e.preventDefault();
+                        hideVariantsContextMenu();
+                        if (varColResetDefaultBtn) varColResetDefaultBtn.click();
+                    });
+                }
+            }
+
+            // CRITICAL: Render checklist and apply column visibility immediately on page load!
+            renderVariantColumnsChecklist();
+            applyVariantColVisibility(getVariantColPrefs());
         });
     </script>
 @endsection

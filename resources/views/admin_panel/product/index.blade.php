@@ -437,6 +437,83 @@
         #productTable { min-width: 660px !important; }
         .btn-act { padding: 3px 6px; font-size: .68rem; }
     }
+
+    /* QuickBooks POS Desktop Style Context Menu */
+    .qb-custom-context-menu {
+        position: fixed !important;
+        margin: 0 !important;
+        padding: 6px !important;
+        background: #ffffff !important;
+        border: 1px solid #cbd5e1 !important;
+        border-radius: 8px !important;
+        box-shadow: 0 10px 25px -3px rgba(0, 0, 0, 0.18), 0 4px 6px -2px rgba(0, 0, 0, 0.08) !important;
+        z-index: 999999999 !important;
+        min-width: 200px !important;
+        font-family: inherit !important;
+        font-size: 13px !important;
+        display: none;
+        transform: none !important;
+    }
+
+    .qb-custom-context-menu .qb-ctx-header {
+        font-size: 11px !important;
+        font-weight: 700 !important;
+        text-transform: uppercase !important;
+        letter-spacing: 0.5px !important;
+        color: #64748b !important;
+        padding: 4px 8px 6px 8px !important;
+        display: flex !important;
+        align-items: center !important;
+        gap: 6px !important;
+        border-bottom: 1px solid #f1f5f9 !important;
+        margin-bottom: 4px !important;
+    }
+
+    .qb-custom-context-menu .qb-ctx-item {
+        display: flex !important;
+        align-items: center !important;
+        gap: 9px !important;
+        width: 100% !important;
+        padding: 7px 10px !important;
+        border: none !important;
+        background: transparent !important;
+        color: #1e293b !important;
+        font-size: 12.5px !important;
+        font-weight: 500 !important;
+        text-align: left !important;
+        border-radius: 6px !important;
+        cursor: pointer !important;
+        transition: background-color 0.15s ease, color 0.15s ease !important;
+        text-decoration: none !important;
+        line-height: 1.4 !important;
+    }
+
+    .qb-custom-context-menu .qb-ctx-item:hover {
+        background-color: #f1f5f9 !important;
+        color: #0f172a !important;
+    }
+
+    .qb-custom-context-menu .qb-ctx-item.text-primary:hover {
+        background-color: #eef2ff !important;
+        color: #4338ca !important;
+    }
+
+    .qb-custom-context-menu .qb-ctx-item i {
+        font-size: 13px !important;
+        width: 16px !important;
+        text-align: center !important;
+        flex-shrink: 0 !important;
+    }
+
+    .qb-custom-context-menu .qb-ctx-divider {
+        height: 1px !important;
+        background-color: #e2e8f0 !important;
+        margin: 4px 0 !important;
+    }
+
+    #productTable thead th {
+        cursor: context-menu;
+    }
 </style>
 
 <div class="main-content">
@@ -501,6 +578,9 @@
                 <a href="{{ route('products.export') }}" class="btn-hdr btn-hdr-success" title="Export all products to CSV">
                     <i class="fas fa-file-download"></i> Export CSV
                 </a>
+                <button type="button" class="btn-hdr btn-hdr-outline" id="customizeIndexColumnsBtn" data-toggle="modal" data-target="#customizeIndexColumnsModal" data-bs-toggle="modal" data-bs-target="#customizeIndexColumnsModal" title="Customize Columns (or right-click table header)">
+                    <i class="fas fa-columns text-primary"></i> Customize Columns
+                </button>
                 @if (auth()->user()->can('products.create') || auth()->user()->email === 'admin@admin.com')
                     <button type="button" class="btn-hdr btn-hdr-warning" id="openImportModalBtn">
                         <i class="fas fa-file-upload"></i> Import CSV
@@ -898,6 +978,59 @@
     </div>
 </div>
 
+{{-- QuickBooks POS Style: Customize Item List Columns Modal --}}
+<div class="modal fade" id="customizeIndexColumnsModal" tabindex="-1" role="dialog" aria-hidden="true" style="z-index: 1055;">
+    <div class="modal-dialog modal-dialog-centered" style="max-width: 480px;" role="document">
+        <div class="modal-content border-0 shadow-lg" style="border-radius: 12px; overflow: hidden;">
+            <div class="modal-header py-2.5 px-3 bg-light border-bottom d-flex align-items-center justify-content-between">
+                <div class="d-flex align-items-center gap-2">
+                    <i class="fas fa-columns text-primary fs-6"></i>
+                    <div>
+                        <h6 class="modal-title fw-bold mb-0 text-dark" style="font-size: 14px;">Customize Item List Columns</h6>
+                        <span class="text-muted" style="font-size: 11px;">Show or hide columns in the Product Catalog table</span>
+                    </div>
+                </div>
+                <button type="button" class="close text-secondary qb-idx-modal-close" data-dismiss="modal" data-bs-dismiss="modal" aria-label="Close" style="font-size:24px;border:none;background:transparent;cursor:pointer;line-height:1;padding:0 4px;">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body p-3">
+                <div class="d-flex justify-content-between align-items-center mb-2 pb-2 border-bottom">
+                    <span class="fw-semibold text-secondary" style="font-size: 12px;">Available Columns:</span>
+                    <div class="btn-group btn-group-sm">
+                        <button type="button" class="btn btn-sm btn-outline-primary py-0 px-2" style="font-size: 11px;" id="idxColSelectAll">Select All</button>
+                        <button type="button" class="btn btn-sm btn-outline-secondary py-0 px-2" style="font-size: 11px;" id="idxColResetDefault">Reset Default</button>
+                    </div>
+                </div>
+                <div class="row g-2" id="indexColumnsChecklist">
+                    {{-- Injected dynamically by JavaScript --}}
+                </div>
+            </div>
+            <div class="modal-footer py-2 px-3 bg-light border-top d-flex justify-content-between align-items-center">
+                <span class="text-muted fst-italic" style="font-size: 11px;"><i class="fas fa-info-circle me-1 text-primary"></i> Right-click table header anytime to open</span>
+                <button type="button" class="btn btn-primary btn-sm px-4 rounded-pill qb-idx-modal-close" data-dismiss="modal" data-bs-dismiss="modal">Apply &amp; Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+{{-- QuickBooks POS Style: Right-click Header Context Menu for Product Table --}}
+<div id="qbIndexContextMenu" class="qb-custom-context-menu">
+    <div class="qb-ctx-header">
+        <i class="fas fa-sliders-h text-primary"></i>
+        <span>Catalog Columns</span>
+    </div>
+    <button type="button" class="qb-ctx-item text-primary" id="qbCtxCustomizeIndexBtn">
+        <i class="fas fa-columns"></i>
+        <span><strong>Customize Columns...</strong></span>
+    </button>
+    <div class="qb-ctx-divider"></div>
+    <button type="button" class="qb-ctx-item text-muted" id="qbCtxResetIndexBtn">
+        <i class="fas fa-undo"></i>
+        <span>Reset to Default</span>
+    </button>
+</div>
+
 {{-- ══════════════════════════════════════════════════════════════
      PRODUCT VIEW MODAL
 ══════════════════════════════════════════════════════════════ --}}
@@ -976,6 +1109,254 @@ $(document).ready(function () {
         scrollX:    false,
         columnDefs: [{ targets: [0, 8], orderable: false, searchable: false }]
     });   // DataTable closes here
+
+    // ══════════════════════════════════════════════════════════════
+    // QUICKBOOKS POS STYLE: CUSTOMIZE PRODUCT TABLE COLUMNS
+    // ══════════════════════════════════════════════════════════════
+    const INDEX_COLUMNS = [
+        { index: 1, key: 'index_num',     label: '# Number',       default: true },
+        { index: 2, key: 'image',         label: 'Image',          default: true },
+        { index: 3, key: 'item_details',  label: 'Item Details',   default: true },
+        { index: 4, key: 'stock',         label: 'Stock',          default: true },
+        { index: 5, key: 'cost_price',    label: 'Purchase Price', default: true },
+        { index: 6, key: 'sale_price',    label: 'Sale Price',     default: true },
+        { index: 7, key: 'status',        label: 'Status',         default: true },
+        { index: 8, key: 'actions',       label: 'Actions',        default: true },
+    ];
+
+    const IDX_STORAGE_KEY = 'kent_product_table_columns_v1';
+
+    function getIndexColPrefs() {
+        try {
+            const saved = localStorage.getItem(IDX_STORAGE_KEY);
+            if (saved) return JSON.parse(saved);
+        } catch(e) {}
+        const defaults = {};
+        INDEX_COLUMNS.forEach(c => defaults[c.key] = c.default);
+        return defaults;
+    }
+
+    function saveIndexColPrefs(prefs) {
+        try {
+            localStorage.setItem(IDX_STORAGE_KEY, JSON.stringify(prefs));
+        } catch(e) {}
+    }
+
+    function applyIndexColVisibility(prefs) {
+        INDEX_COLUMNS.forEach(col => {
+            const isVisible = prefs[col.key] !== false;
+            table.column(col.index).visible(isVisible, false);
+        });
+        table.columns.adjust().draw(false);
+    }
+
+    function renderIndexColumnsChecklist() {
+        const checklistContainer = document.getElementById('indexColumnsChecklist');
+        if (!checklistContainer) return;
+
+        const prefs = getIndexColPrefs();
+        checklistContainer.innerHTML = '';
+
+        INDEX_COLUMNS.forEach(col => {
+            const isChecked = prefs[col.key] !== false;
+            const colDiv = document.createElement('div');
+            colDiv.className = 'col-6';
+            colDiv.innerHTML = `
+                <div class="form-check p-2 rounded border bg-light d-flex align-items-center gap-2" style="cursor: pointer; transition: background 0.15s;">
+                    <input class="form-check-input ms-0 mt-0 idx-col-chk" type="checkbox" id="chk_idx_${col.key}" data-key="${col.key}" data-index="${col.index}" ${isChecked ? 'checked' : ''} style="cursor: pointer; width: 16px; height: 16px;">
+                    <label class="form-check-label small fw-semibold text-dark mb-0 text-truncate" for="chk_idx_${col.key}" style="cursor: pointer; user-select: none;">
+                        ${col.label}
+                    </label>
+                </div>
+            `;
+            checklistContainer.appendChild(colDiv);
+        });
+
+        checklistContainer.querySelectorAll('.idx-col-chk').forEach(chk => {
+            chk.addEventListener('change', function() {
+                const colKey = this.dataset.key;
+                const colIdx = parseInt(this.dataset.index, 10);
+                const currentPrefs = getIndexColPrefs();
+                currentPrefs[colKey] = this.checked;
+                saveIndexColPrefs(currentPrefs);
+                table.column(colIdx).visible(this.checked);
+                table.columns.adjust().draw(false);
+            });
+        });
+    }
+
+    const customizeIndexModalEl = document.getElementById('customizeIndexColumnsModal');
+
+    function showCustomizeIndexModal() {
+        renderIndexColumnsChecklist();
+        if (!customizeIndexModalEl) return;
+        try {
+            if (typeof jQuery !== 'undefined' && typeof jQuery(customizeIndexModalEl).modal === 'function') {
+                jQuery(customizeIndexModalEl).modal('show');
+                return;
+            }
+        } catch(e) {}
+        try {
+            if (window.bootstrap && typeof bootstrap.Modal === 'function') {
+                const inst = bootstrap.Modal.getInstance ? bootstrap.Modal.getInstance(customizeIndexModalEl) : null;
+                (inst || new bootstrap.Modal(customizeIndexModalEl)).show();
+                return;
+            }
+        } catch(e) {}
+        // Fallback display
+        customizeIndexModalEl.classList.add('show');
+        customizeIndexModalEl.style.display = 'block';
+        customizeIndexModalEl.removeAttribute('aria-hidden');
+        document.body.classList.add('modal-open');
+        let bd = document.querySelector('.qb-idx-backdrop');
+        if (!bd) {
+            bd = document.createElement('div');
+            bd.className = 'modal-backdrop fade show qb-idx-backdrop';
+            document.body.appendChild(bd);
+            bd.onclick = hideCustomizeIndexModal;
+        }
+    }
+
+    function hideCustomizeIndexModal() {
+        if (!customizeIndexModalEl) return;
+        try {
+            if (typeof jQuery !== 'undefined' && typeof jQuery(customizeIndexModalEl).modal === 'function') {
+                jQuery(customizeIndexModalEl).modal('hide');
+            }
+        } catch(e) {}
+        try {
+            if (window.bootstrap && typeof bootstrap.Modal === 'function') {
+                const inst = bootstrap.Modal.getInstance ? bootstrap.Modal.getInstance(customizeIndexModalEl) : null;
+                if (inst) inst.hide();
+            }
+        } catch(e) {}
+        customizeIndexModalEl.classList.remove('show');
+        customizeIndexModalEl.style.display = 'none';
+        customizeIndexModalEl.setAttribute('aria-hidden', 'true');
+        document.body.classList.remove('modal-open');
+        const bd = document.querySelector('.qb-idx-backdrop');
+        if (bd) bd.remove();
+    }
+
+    $('.qb-idx-modal-close').on('click', function(e) {
+        e.preventDefault();
+        hideCustomizeIndexModal();
+    });
+
+    $('#customizeIndexColumnsBtn').on('click', function(e) {
+        e.preventDefault();
+        showCustomizeIndexModal();
+    });
+
+    if (customizeIndexModalEl && typeof jQuery !== 'undefined') {
+        jQuery(customizeIndexModalEl).on('show.bs.modal', function() {
+            renderIndexColumnsChecklist();
+        });
+    }
+
+    $('#idxColSelectAll').on('click', function() {
+        const prefs = {};
+        INDEX_COLUMNS.forEach(c => {
+            prefs[c.key] = true;
+            table.column(c.index).visible(true, false);
+        });
+        table.columns.adjust().draw(false);
+        saveIndexColPrefs(prefs);
+        renderIndexColumnsChecklist();
+    });
+
+    $('#idxColResetDefault').on('click', function() {
+        const prefs = {};
+        INDEX_COLUMNS.forEach(c => {
+            prefs[c.key] = c.default;
+            table.column(c.index).visible(c.default, false);
+        });
+        table.columns.adjust().draw(false);
+        saveIndexColPrefs(prefs);
+        renderIndexColumnsChecklist();
+    });
+
+    // Right click on table header (QuickBooks POS Desktop style)
+    const qbIndexContextMenu = document.getElementById('qbIndexContextMenu');
+
+    if (qbIndexContextMenu && qbIndexContextMenu.parentElement !== document.body) {
+        document.body.appendChild(qbIndexContextMenu);
+    }
+
+    const hideIndexContextMenu = function() {
+        if (qbIndexContextMenu) {
+            qbIndexContextMenu.style.display = 'none';
+        }
+    };
+
+    const positionIndexContextMenu = function(e) {
+        if (!qbIndexContextMenu) return;
+        if (qbIndexContextMenu.parentElement !== document.body) {
+            document.body.appendChild(qbIndexContextMenu);
+        }
+
+        qbIndexContextMenu.style.visibility = 'hidden';
+        qbIndexContextMenu.style.display = 'block';
+
+        const menuWidth = qbIndexContextMenu.offsetWidth || 210;
+        const menuHeight = qbIndexContextMenu.offsetHeight || 105;
+
+        let posX = e.clientX;
+        let posY = e.clientY;
+
+        if (posX + menuWidth > window.innerWidth - 8) {
+            posX = window.innerWidth - menuWidth - 8;
+        }
+        if (posY + menuHeight > window.innerHeight - 8) {
+            posY = window.innerHeight - menuHeight - 8;
+        }
+
+        posX = Math.max(8, posX);
+        posY = Math.max(8, posY);
+
+        qbIndexContextMenu.style.left = posX + 'px';
+        qbIndexContextMenu.style.top = posY + 'px';
+        qbIndexContextMenu.style.visibility = 'visible';
+    };
+
+    $('#productTable thead').on('contextmenu', function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        positionIndexContextMenu(e.originalEvent || e);
+    });
+
+    // Dismiss on any scroll or resize
+    window.addEventListener('scroll', hideIndexContextMenu, { passive: true });
+    window.addEventListener('resize', hideIndexContextMenu, { passive: true });
+    document.addEventListener('scroll', hideIndexContextMenu, { passive: true, capture: true });
+
+    $(document).on('click', function(e) {
+        if (qbIndexContextMenu && !qbIndexContextMenu.contains(e.target)) {
+            hideIndexContextMenu();
+        }
+    });
+
+    $(document).on('keydown', function(e) {
+        if (e.key === 'Escape') {
+            hideIndexContextMenu();
+        }
+    });
+
+    $('#qbCtxCustomizeIndexBtn').on('click', function(e) {
+        e.preventDefault();
+        hideIndexContextMenu();
+        showCustomizeIndexModal();
+    });
+
+    $('#qbCtxResetIndexBtn').on('click', function(e) {
+        e.preventDefault();
+        hideIndexContextMenu();
+        $('#idxColResetDefault').click();
+    });
+
+    // CRITICAL: Render checklist and apply column visibility immediately on page load!
+    renderIndexColumnsChecklist();
+    applyIndexColVisibility(getIndexColPrefs());
 
     // ── Select All ──
     $('#selectAll').click(function() {
