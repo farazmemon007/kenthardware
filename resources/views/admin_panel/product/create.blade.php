@@ -1277,6 +1277,23 @@
             color: #ffffff;
         }
 
+        .btn-edit-attr {
+            background: #475569;
+            color: #ffffff;
+            border: none;
+            border-radius: var(--radius-sm);
+            padding: 3px 8px;
+            font-size: 11px;
+            font-weight: 600;
+            transition: all 0.12s;
+            cursor: pointer;
+        }
+
+        .btn-edit-attr:hover {
+            background: #334155;
+            color: #ffffff;
+        }
+
         .btn-delete-attr {
             background: transparent;
             border: none;
@@ -1289,6 +1306,14 @@
 
         .btn-delete-attr:hover {
             color: #ef4444;
+        }
+
+        .btn-edit-master-attr:hover {
+            color: #38bdf8 !important;
+        }
+
+        .btn-delete-master-attr:hover {
+            color: #ef4444 !important;
         }
 
         .add-line-btn {
@@ -2076,7 +2101,7 @@
                                                 <th style="width: 32px;" class="text-center"></th>
                                                 <th style="width: 280px;">Attribute</th>
                                                 <th>Values</th>
-                                                <th style="width: 130px;" class="text-end pe-3">Actions</th>
+                                                <th style="width: 180px;" class="text-end pe-3">Actions</th>
                                             </tr>
                                         </thead>
                                         <tbody id="attributesConfigBody">
@@ -2638,8 +2663,9 @@
                                 <tr style="background: #212530 !important; position: sticky; top: 0; z-index: 10;">
                                     <th style="width: 42px; padding: 9px 14px; border-bottom: 1.5px solid #2e3544 !important; background: #212530 !important; color: #94a3b8; font-size: 12px; font-weight: 600;"></th>
                                     <th style="min-width: 200px; padding: 9px 14px; border-bottom: 1.5px solid #2e3544 !important; background: #212530 !important; color: #cbd5e1; font-size: 13px; font-weight: 600;">Attribute</th>
-                                    <th style="width: 200px; padding: 9px 14px; border-bottom: 1.5px solid #2e3544 !important; background: #212530 !important; color: #cbd5e1; font-size: 13px; font-weight: 600;">Display Type</th>
-                                    <th style="width: 200px; padding: 9px 14px; border-bottom: 1.5px solid #2e3544 !important; background: #212530 !important; color: #cbd5e1; font-size: 13px; font-weight: 600;">Variant Creation</th>
+                                    <th style="width: 160px; padding: 9px 14px; border-bottom: 1.5px solid #2e3544 !important; background: #212530 !important; color: #cbd5e1; font-size: 13px; font-weight: 600;">Display Type</th>
+                                    <th style="width: 160px; padding: 9px 14px; border-bottom: 1.5px solid #2e3544 !important; background: #212530 !important; color: #cbd5e1; font-size: 13px; font-weight: 600;">Variant Creation</th>
+                                    <th style="width: 90px; padding: 9px 14px; border-bottom: 1.5px solid #2e3544 !important; background: #212530 !important; color: #cbd5e1; font-size: 13px; font-weight: 600; text-align: right;">Actions</th>
                                 </tr>
                             </thead>
                             <tbody id="modalAttrTableBody" style="background: #212530 !important;">
@@ -2665,7 +2691,7 @@
                 <div class="modal-content border-0 shadow-lg" style="background: #212530 !important; border-radius: 6px; overflow: hidden; border: 1px solid #333d4e !important;">
                     {{-- Header --}}
                     <div class="modal-header py-2 px-3 border-0 d-flex align-items-center justify-content-between" style="background: #212530 !important; border-bottom: 1px solid #2e3544 !important;">
-                        <h6 class="modal-title fw-bold mb-0" style="color: #ffffff !important; font-size: 15px; letter-spacing: 0.01em;">Create Attribute</h6>
+                        <h6 class="modal-title fw-bold mb-0" id="createAttrModalTitle" style="color: #ffffff !important; font-size: 15px; letter-spacing: 0.01em;">Create Attribute</h6>
                         <div class="d-flex align-items-center gap-2">
                             <button type="button" class="btn-toggle-create-fullscreen" id="createAttrFullscreenBtn" title="Toggle Fullscreen" style="background: transparent; border: none; color: #94a3b8; font-size: 13px; cursor: pointer; padding: 2px 6px;">
                                 <i class="fas fa-expand-arrows-alt"></i>
@@ -3046,40 +3072,135 @@
             const genCostInput = document.getElementById('general_cost_price');
             const matrixBadge = document.getElementById('matrixVariantCountBadge');
 
-            // 29 Master Attributes matching Image 2 screenshot exactly
+            // 29 Master Attributes matching Image 2 screenshot exactly with rich preset values
             let masterAttributes = [
-                { name: 'Brand', display_type: 'Radio', creation: 'Instantly' },
-                { name: 'gender', display_type: 'Radio', creation: 'Instantly' },
-                { name: 'manufacturer', display_type: 'Radio', creation: 'Instantly' },
-                { name: 'age group', display_type: 'Radio', creation: 'Instantly' },
-                { name: 'Wictor Blue', display_type: 'Multi-checkbox', creation: 'Never' },
-                { name: 'Shoes size', display_type: 'Pills', creation: 'Never' },
-                { name: 'Sale Description', display_type: 'Radio', creation: 'Dynamically' },
-                { name: 'Attribute', display_type: 'Radio', creation: 'Dynamically' },
-                { name: 'Color', display_type: 'Color', creation: 'Instantly' },
-                { name: 'Size', display_type: 'Pills', creation: 'Instantly' },
-                { name: 'Material', display_type: 'Select', creation: 'Instantly' },
-                { name: 'Finish', display_type: 'Radio', creation: 'Dynamically' },
-                { name: 'Weight', display_type: 'Radio', creation: 'Never' },
-                { name: 'Dimensions', display_type: 'Radio', creation: 'Never' },
-                { name: 'Style', display_type: 'Radio', creation: 'Dynamically' },
-                { name: 'Pattern', display_type: 'Radio', creation: 'Instantly' },
-                { name: 'Capacity', display_type: 'Radio', creation: 'Never' },
-                { name: 'Grade', display_type: 'Radio', creation: 'Instantly' },
-                { name: 'Warranty', display_type: 'Radio', creation: 'Never' },
-                { name: 'Power', display_type: 'Radio', creation: 'Never' },
-                { name: 'Voltage', display_type: 'Radio', creation: 'Never' },
-                { name: 'Packaging', display_type: 'Radio', creation: 'Never' },
-                { name: 'Series', display_type: 'Radio', creation: 'Dynamically' },
-                { name: 'Thickness', display_type: 'Radio', creation: 'Instantly' },
-                { name: 'Length', display_type: 'Radio', creation: 'Never' },
-                { name: 'Model Year', display_type: 'Radio', creation: 'Never' },
-                { name: 'Fabric', display_type: 'Radio', creation: 'Instantly' },
-                { name: 'Fit Type', display_type: 'Pills', creation: 'Instantly' },
-                { name: 'Origin Country', display_type: 'Radio', creation: 'Never' }
+                { name: 'Brand', display_type: 'Radio', creation: 'Instantly', default_values: ['Kent', 'Standard'] },
+                { name: 'gender', display_type: 'Radio', creation: 'Instantly', default_values: ['Men', 'Women', 'Unisex', 'Kids'] },
+                { name: 'manufacturer', display_type: 'Radio', creation: 'Instantly', default_values: ['Local', 'Imported'] },
+                { name: 'age group', display_type: 'Radio', creation: 'Instantly', default_values: ['Adult', 'Teen', 'Kids', 'Infant'] },
+                { name: 'Wictor Blue', display_type: 'Multi-checkbox', creation: 'Never', default_values: ['Default'] },
+                { name: 'Shoes size', display_type: 'Pills', creation: 'Never', default_values: ['6', '7', '8', '9', '10', '11', '12'] },
+                { name: 'Sale Description', display_type: 'Radio', creation: 'Dynamically', default_values: ['Standard', 'Promo', 'Clearance'] },
+                { name: 'Attribute', display_type: 'Radio', creation: 'Dynamically', default_values: ['Option 1', 'Option 2', 'Option 3'] },
+                { name: 'Color', display_type: 'Color', creation: 'Instantly', default_values: ['White', 'Black', 'Blue', 'Red', 'Green', 'Yellow', 'Silver', 'Gold'] },
+                { name: 'Size', display_type: 'Pills', creation: 'Instantly', default_values: ['1/2', '3/4', '3/8', '1', '1 1/4', '1 1/2', '2', '2 1/2', '3'] },
+                { name: 'Material', display_type: 'Select', creation: 'Instantly', default_values: ['Steel', 'Stainless Steel', 'Brass', 'Iron', 'Aluminum', 'Plastic', 'Wood'] },
+                { name: 'Finish', display_type: 'Radio', creation: 'Dynamically', default_values: ['Zinc Plated', 'Black Oxide', 'Polished', 'Chrome', 'Nickel', 'Matte'] },
+                { name: 'Weight', display_type: 'Radio', creation: 'Never', default_values: ['50g', '100g', '250g', '500g', '1kg', '5kg'] },
+                { name: 'Dimensions', display_type: 'Radio', creation: 'Never', default_values: ['Small', 'Medium', 'Large', 'XL'] },
+                { name: 'Style', display_type: 'Radio', creation: 'Dynamically', default_values: ['Standard', 'Modern', 'Classic', 'Heavy Duty'] },
+                { name: 'Pattern', display_type: 'Radio', creation: 'Instantly', default_values: ['Plain', 'Striped', 'Textured'] },
+                { name: 'Capacity', display_type: 'Radio', creation: 'Never', default_values: ['100ml', '250ml', '500ml', '1L', '5L'] },
+                { name: 'Grade', display_type: 'Radio', creation: 'Instantly', default_values: ['Grade 2', 'Grade 5', 'Grade 8', 'Class 8.8', 'Class 10.9', 'Class 12.9', 'A2-70', 'A4-80'] },
+                { name: 'Warranty', display_type: 'Radio', creation: 'Never', default_values: ['No Warranty', '6 Months', '1 Year', '2 Years', '5 Years'] },
+                { name: 'Power', display_type: 'Radio', creation: 'Never', default_values: ['100W', '250W', '500W', '1000W'] },
+                { name: 'Voltage', display_type: 'Radio', creation: 'Never', default_values: ['12V', '24V', '110V', '220V', '240V'] },
+                { name: 'Packaging', display_type: 'Radio', creation: 'Never', default_values: ['Box', 'Packet', 'Carton', 'Bag', 'Roll'] },
+                { name: 'Series', display_type: 'Radio', creation: 'Dynamically', default_values: ['Series A', 'Series B', 'Series Pro', 'Series Max'] },
+                { name: 'Thickness', display_type: 'Radio', creation: 'Instantly', default_values: ['0.5mm', '1mm', '1.5mm', '2mm', '3mm', '4mm', '5mm'] },
+                { name: 'Length', display_type: 'Radio', creation: 'Never', default_values: ['1/2', '3/4', '1', '1 1/4', '1 1/2', '2', '2 1/2', '3', '4'] },
+                { name: 'Model Year', display_type: 'Radio', creation: 'Never', default_values: ['2022', '2023', '2024', '2025', '2026'] },
+                { name: 'Fabric', display_type: 'Radio', creation: 'Instantly', default_values: ['Cotton', 'Polyester', 'Wool', 'Silk', 'Nylon'] },
+                { name: 'Fit Type', display_type: 'Pills', creation: 'Instantly', default_values: ['Regular', 'Slim', 'Loose', 'Comfort'] },
+                { name: 'Origin Country', display_type: 'Radio', creation: 'Never', default_values: ['Pakistan', 'China', 'Japan', 'Germany', 'USA', 'Taiwan'] }
             ];
 
+            // Helper to fetch all known/preset values for an attribute name
+            function getAttributeDefaultValues(attrName) {
+                if (!attrName) return [];
+                const clean = attrName.toLowerCase().trim();
+                const found = masterAttributes.find(a => a.name.toLowerCase() === clean);
+                if (found && Array.isArray(found.default_values) && found.default_values.length > 0) {
+                    return [...found.default_values];
+                }
+                if (clean.includes('size')) {
+                    return ['1/2', '3/4', '3/8', '1', '1 1/4', '1 1/2', '2', '2 1/2', '3'];
+                }
+                if (clean.includes('length')) {
+                    return ['1/2', '3/4', '1', '1 1/4', '1 1/2', '2', '2 1/2', '3', '4'];
+                }
+                if (clean.includes('color') || clean.includes('colour')) {
+                    return ['White', 'Black', 'Blue', 'Red', 'Green', 'Yellow', 'Silver', 'Gold'];
+                }
+                if (clean.includes('finish')) {
+                    return ['Zinc Plated', 'Black Oxide', 'Polished', 'Chrome', 'Nickel', 'Matte'];
+                }
+                if (clean.includes('material')) {
+                    return ['Steel', 'Stainless Steel', 'Brass', 'Iron', 'Aluminum', 'Plastic', 'Wood'];
+                }
+                if (clean.includes('grade')) {
+                    return ['Grade 2', 'Grade 5', 'Grade 8', 'Class 8.8', 'Class 10.9', 'Class 12.9', 'A2-70', 'A4-80'];
+                }
+                if (clean.includes('thickness')) {
+                    return ['0.5mm', '1mm', '1.5mm', '2mm', '3mm', '4mm', '5mm'];
+                }
+                return [];
+            }
+            window.getAttributeDefaultValues = getAttributeDefaultValues;
+
             let activeTargetRow = null; // Currently targeted attribute line for search / selection
+            let editingMasterAttr = null; // Currently edited master attribute (null when creating new)
+            let editingRowTarget = null; // Currently edited attribute row (null when editing from master modal)
+
+            // Sleek Toast / Alert for Duplicate & System Messages
+            function showSmallAlert(msg, type = 'warning') {
+                if (typeof Swal !== 'undefined') {
+                    const Toast = Swal.mixin({
+                        toast: true,
+                        position: 'top-end',
+                        showConfirmButton: false,
+                        timer: 2600,
+                        timerProgressBar: true,
+                        background: '#212530',
+                        color: '#ffffff',
+                        iconColor: type === 'warning' ? '#f59e0b' : (type === 'info' ? '#38bdf8' : '#10b981'),
+                        didOpen: (toast) => {
+                            toast.addEventListener('mouseenter', Swal.stopTimer);
+                            toast.addEventListener('mouseleave', Swal.resumeTimer);
+                        }
+                    });
+                    Toast.fire({
+                        icon: type,
+                        title: msg
+                    });
+                    return;
+                }
+
+                // Fallback floating toast banner
+                let toast = document.getElementById('smallAlertToast');
+                if (!toast) {
+                    toast = document.createElement('div');
+                    toast.id = 'smallAlertToast';
+                    toast.style.cssText = 'position: fixed; top: 24px; right: 24px; z-index: 99999999; background: #212530; color: #ffffff; padding: 10px 18px; border-radius: 6px; box-shadow: 0 10px 30px rgba(0,0,0,0.55); font-size: 13px; font-weight: 500; display: flex; align-items: center; gap: 8px; border-left: 4px solid #f59e0b; transition: opacity 0.2s, transform 0.2s;';
+                    document.body.appendChild(toast);
+                }
+                toast.style.borderLeftColor = type === 'warning' ? '#f59e0b' : (type === 'info' ? '#38bdf8' : '#10b981');
+                toast.innerHTML = `<i class="fas fa-exclamation-circle" style="color: ${type === 'warning' ? '#f59e0b' : '#38bdf8'}"></i> <span>${msg}</span>`;
+                toast.style.display = 'flex';
+                toast.style.opacity = '1';
+                toast.style.transform = 'translateY(0)';
+                setTimeout(() => {
+                    toast.style.opacity = '0';
+                    toast.style.transform = 'translateY(-10px)';
+                    setTimeout(() => { toast.style.display = 'none'; }, 200);
+                }, 2400);
+            }
+            window.showSmallAlert = showSmallAlert;
+
+            // Check if attribute name is already used in another row in attributesConfigTable
+            function isAttributeDuplicateInRows(attrName, currentRow = null) {
+                if (!attrName) return false;
+                const clean = attrName.toLowerCase().trim();
+                const allRows = attributesConfigBody ? attributesConfigBody.querySelectorAll('.attr-row') : [];
+                for (let r of allRows) {
+                    if (currentRow && r === currentRow) continue;
+                    const val = r.querySelector('.attr-name-input')?.value?.toLowerCase().trim();
+                    if (val && val === clean) {
+                        return true;
+                    }
+                }
+                return false;
+            }
 
             function renderModalAttributes(filterQuery = '') {
                 const tbody = document.getElementById('modalAttrTableBody');
@@ -3099,7 +3220,7 @@
                 if (filtered.length === 0) {
                     tbody.innerHTML = `
                         <tr>
-                            <td colspan="4" class="text-center py-4" style="font-size: 13px; color: #94a3b8; background-color: #212530 !important;">
+                            <td colspan="5" class="text-center py-4" style="font-size: 13px; color: #94a3b8; background-color: #212530 !important;">
                                 No attribute found matching "<b>${filterQuery}</b>". Click <b>Create New</b> to add it.
                             </td>
                         </tr>
@@ -3122,10 +3243,49 @@
                         <td class="attr-col-name" style="background: inherit !important; color: #ffffff !important; font-weight: 500; font-size: 13px; border-bottom: 1px solid #2a313e !important;">${attr.name}</td>
                         <td class="attr-col-meta" style="background: inherit !important; color: #94a3b8 !important; font-size: 13px; border-bottom: 1px solid #2a313e !important;">${attr.display_type}</td>
                         <td class="attr-col-meta" style="background: inherit !important; color: #94a3b8 !important; font-size: 13px; border-bottom: 1px solid #2a313e !important;">${attr.creation}</td>
+                        <td class="text-end" style="background: inherit !important; border-bottom: 1px solid #2a313e !important; padding: 6px 14px; width: 90px;">
+                            <button type="button" class="btn btn-sm p-0 me-2 btn-edit-master-attr" style="background: transparent; border: none; color: #94a3b8; font-size: 13px;" title="Edit attribute"><i class="fas fa-pen"></i></button>
+                            <button type="button" class="btn btn-sm p-0 btn-delete-master-attr" style="background: transparent; border: none; color: #94a3b8; font-size: 13px;" title="Delete attribute"><i class="fas fa-trash-alt"></i></button>
+                        </td>
                     `;
 
-                    tr.addEventListener('click', function() {
+                    // Row selection
+                    tr.addEventListener('click', function(e) {
+                        if (e.target.closest('.btn-edit-master-attr') || e.target.closest('.btn-delete-master-attr')) return;
+                        if (isAttributeDuplicateInRows(attr.name, activeTargetRow)) {
+                            showSmallAlert('attribute name exist.', 'warning');
+                            return;
+                        }
                         selectAttributeForActiveRow(attr.name);
+                    });
+
+                    // Edit master attribute
+                    tr.querySelector('.btn-edit-master-attr').addEventListener('click', function(e) {
+                        e.stopPropagation();
+                        hideSearchAttrModal();
+                        setTimeout(() => {
+                            showCreateAttributeModal(activeTargetRow, attr);
+                        }, 120);
+                    });
+
+                    // Delete master attribute
+                    tr.querySelector('.btn-delete-master-attr').addEventListener('click', function(e) {
+                        e.stopPropagation();
+                        Swal.fire({
+                            title: 'Delete Attribute?',
+                            text: `Are you sure you want to delete "${attr.name}" from attributes list?`,
+                            icon: 'warning',
+                            showCancelButton: true,
+                            confirmButtonColor: '#ef4444',
+                            cancelButtonColor: '#334155',
+                            confirmButtonText: 'Yes, Delete'
+                        }).then((result) => {
+                            if (result.isConfirmed) {
+                                masterAttributes = masterAttributes.filter(a => a.name.toLowerCase() !== attr.name.toLowerCase());
+                                renderModalAttributes(modalAttrSearchInput ? modalAttrSearchInput.value : '');
+                                showSmallAlert(`Attribute "${attr.name}" deleted.`, 'info');
+                            }
+                        });
                     });
 
                     tbody.appendChild(tr);
@@ -3240,6 +3400,10 @@
             }
 
             function selectAttributeForActiveRow(attrName) {
+                if (isAttributeDuplicateInRows(attrName, activeTargetRow)) {
+                    showSmallAlert('attribute name exist.', 'warning');
+                    return;
+                }
                 if (!activeTargetRow) {
                     activeTargetRow = attributesConfigBody.querySelector('.attr-row') || createAttributeRow('', []);
                 }
@@ -3258,9 +3422,10 @@
             }
 
             // -------------------------------------------------------------
-            // Create Attribute Modal Handlers (Image 3 exact replica)
+            // Create / Edit Attribute Modal Handlers (Image 3 exact replica)
             // -------------------------------------------------------------
             const createAttrModalEl = document.getElementById('createAttributeModal');
+            const createAttrModalTitle = document.getElementById('createAttrModalTitle');
             const createAttrNameInput = document.getElementById('createAttrNameInput');
             const createAttrDisplayType = document.getElementById('createAttrDisplayType');
             const createAttrAddLineBtn = document.getElementById('createAttrAddLineBtn');
@@ -3372,6 +3537,24 @@
                     });
                 }
 
+                // Check duplicate value on blur/change
+                const valInp = tr.querySelector('.val-name-input');
+                if (valInp) {
+                    valInp.addEventListener('change', function() {
+                        const val = this.value.trim();
+                        if (!val) return;
+                        let duplicates = 0;
+                        document.querySelectorAll('#createAttrValuesTableBody .val-name-input').forEach(input => {
+                            if (input.value.trim().toLowerCase() === val.toLowerCase()) duplicates++;
+                        });
+                        if (duplicates > 1) {
+                            showSmallAlert('attribute value exist.', 'warning');
+                            this.value = '';
+                            this.focus();
+                        }
+                    });
+                }
+
                 // Image upload feedback with thumbnail preview
                 const fileInp = tr.querySelector('.val-image-input');
                 const tileBtn = tr.querySelector('.val-image-tile-btn');
@@ -3409,8 +3592,11 @@
                 });
             }
 
-            window.showCreateAttributeModal = function(targetRow) {
+            window.showCreateAttributeModal = function(targetRow = null, editAttrObj = null) {
+                editingRowTarget = targetRow || null;
+                editingMasterAttr = editAttrObj || null;
                 if (targetRow) activeTargetRow = targetRow;
+
                 const modalEl = document.getElementById('createAttributeModal');
                 if (!modalEl) return;
 
@@ -3418,13 +3604,80 @@
                     document.body.appendChild(modalEl);
                 }
 
-                // Reset inputs
-                if (createAttrNameInput) createAttrNameInput.value = '';
-                if (createAttrDisplayType) createAttrDisplayType.value = 'Radio';
-                toggleCreateAttrColumns();
-                const instRadio = document.querySelector('input[name="createAttrVariantCreation"][value="Instantly"]');
-                if (instRadio) instRadio.checked = true;
                 if (createAttrValuesTableBody) createAttrValuesTableBody.innerHTML = '';
+
+                // Configure for Edit vs Create Mode
+                if (editAttrObj) {
+                    if (createAttrModalTitle) createAttrModalTitle.textContent = `Edit Attribute: ${editAttrObj.name}`;
+                    if (saveCreateAttrBtn) saveCreateAttrBtn.textContent = 'Save Changes';
+                    if (createAttrNameInput) createAttrNameInput.value = editAttrObj.name || '';
+                    if (createAttrDisplayType) createAttrDisplayType.value = editAttrObj.display_type || 'Radio';
+
+                    const creationVal = editAttrObj.creation || 'Instantly';
+                    const targetRadio = document.querySelector(`input[name="createAttrVariantCreation"][value="${creationVal}"]`);
+                    if (targetRadio) targetRadio.checked = true;
+
+                    // Load values: fetch all values belonging to this attribute
+                    let valuesToLoad = [];
+                    // 1. Current pills in target row (if any)
+                    if (targetRow) {
+                        const rowPills = Array.from(targetRow.querySelectorAll('.tag-pill')).map(p => p.dataset.val.trim()).filter(v => v);
+                        rowPills.forEach(v => {
+                            if (!valuesToLoad.map(x => x.toLowerCase()).includes(v.toLowerCase())) {
+                                valuesToLoad.push(v);
+                            }
+                        });
+                    }
+                    // 2. Default/preset values for this attribute
+                    const defaultVals = getAttributeDefaultValues(editAttrObj.name);
+                    defaultVals.forEach(v => {
+                        if (!valuesToLoad.map(x => x.toLowerCase()).includes(v.toLowerCase())) {
+                            valuesToLoad.push(v);
+                        }
+                    });
+
+                    // 3. Any values from attributeConfigurations
+                    const attrCfg = getAttrConfig(editAttrObj.name);
+                    if (attrCfg) {
+                        for (const valKey in attrCfg) {
+                            if (!valuesToLoad.map(x => x.toLowerCase()).includes(valKey.toLowerCase())) {
+                                valuesToLoad.push(valKey);
+                            }
+                        }
+                    }
+
+                    if (valuesToLoad.length > 0) {
+                        valuesToLoad.forEach(v => {
+                            // Check if extra price or custom color exists
+                            const valCfg = getValConfig(attrCfg, v);
+                            const extraPrice = valCfg && valCfg.extra_price ? parseFloat(valCfg.extra_price).toFixed(2) : '0.00';
+                            let colorHex = '#3b82f6';
+                            if (editAttrObj.display_type === 'Color') {
+                                const vClean = v.toLowerCase();
+                                if (vClean.includes('white')) colorHex = '#ffffff';
+                                else if (vClean.includes('black')) colorHex = '#000000';
+                                else if (vClean.includes('red')) colorHex = '#ef4444';
+                                else if (vClean.includes('blue')) colorHex = '#3b82f6';
+                                else if (vClean.includes('green')) colorHex = '#10b981';
+                                else if (vClean.includes('yellow')) colorHex = '#eab308';
+                                else if (vClean.includes('silver')) colorHex = '#94a3b8';
+                                else if (vClean.includes('gold')) colorHex = '#f59e0b';
+                            }
+                            addCreateAttrValLine(v, false, colorHex, extraPrice);
+                        });
+                    } else {
+                        addCreateAttrValLine();
+                    }
+                } else {
+                    if (createAttrModalTitle) createAttrModalTitle.textContent = 'Create Attribute';
+                    if (saveCreateAttrBtn) saveCreateAttrBtn.textContent = 'Save';
+                    if (createAttrNameInput) createAttrNameInput.value = '';
+                    if (createAttrDisplayType) createAttrDisplayType.value = 'Radio';
+                    const instRadio = document.querySelector('input[name="createAttrVariantCreation"][value="Instantly"]');
+                    if (instRadio) instRadio.checked = true;
+                }
+
+                toggleCreateAttrColumns();
 
                 let opened = false;
                 if (typeof jQuery !== 'undefined' && typeof jQuery(modalEl).modal === 'function') {
@@ -3491,6 +3744,9 @@
                     document.querySelectorAll('.modal-backdrop').forEach(b => b.remove());
                     document.body.classList.remove('modal-open');
                 }, 200);
+
+                editingMasterAttr = null;
+                editingRowTarget = null;
             };
 
             // Toggle Fullscreen in Create Attribute Modal
@@ -3511,7 +3767,7 @@
                     e.stopPropagation();
                     window.hideSearchAttrModal();
                     setTimeout(() => {
-                        window.showCreateAttributeModal(activeTargetRow);
+                        window.showCreateAttributeModal(activeTargetRow, null);
                     }, 120);
                 });
             }
@@ -3527,49 +3783,90 @@
                 });
             }
 
-            // Click "Save" in Create Attribute Modal
+            // Click "Save" in Create/Edit Attribute Modal
             if (saveCreateAttrBtn) {
                 saveCreateAttrBtn.addEventListener('click', function() {
                     const name = createAttrNameInput ? createAttrNameInput.value.trim() : '';
                     if (!name) {
-                        Swal.fire({icon: 'warning', title: 'Attribute Name Required', text: 'Please enter attribute name!'});
+                        showSmallAlert('Attribute name is required!', 'warning');
                         if (createAttrNameInput) createAttrNameInput.focus();
+                        return;
+                    }
+
+                    // 1. Check Duplicate Attribute Name
+                    if (!editingMasterAttr) {
+                        // Creating new
+                        const exists = masterAttributes.some(a => a.name.toLowerCase() === name.toLowerCase());
+                        if (exists) {
+                            showSmallAlert('attribute name exist.', 'warning');
+                            if (createAttrNameInput) createAttrNameInput.focus();
+                            return;
+                        }
+                    } else {
+                        // Editing existing
+                        const oldName = editingMasterAttr.name;
+                        if (name.toLowerCase() !== oldName.toLowerCase()) {
+                            const exists = masterAttributes.some(a => a.name.toLowerCase() === name.toLowerCase());
+                            if (exists) {
+                                showSmallAlert('attribute name exist.', 'warning');
+                                if (createAttrNameInput) createAttrNameInput.focus();
+                                return;
+                            }
+                        }
+                    }
+
+                    // 2. Check Duplicate Values in Table
+                    const enteredVals = [];
+                    let hasValDuplicate = false;
+                    const rows = document.querySelectorAll('#createAttrValuesTableBody .create-val-row');
+                    for (let tr of rows) {
+                        const inp = tr.querySelector('.val-name-input');
+                        const v = inp ? inp.value.trim() : '';
+                        if (v) {
+                            if (enteredVals.map(x => x.toLowerCase()).includes(v.toLowerCase())) {
+                                hasValDuplicate = true;
+                                if (inp) inp.focus();
+                                break;
+                            }
+                            enteredVals.push(v);
+                        }
+                    }
+
+                    if (hasValDuplicate) {
+                        showSmallAlert('attribute value exist.', 'warning');
                         return;
                     }
 
                     const displayType = createAttrDisplayType ? createAttrDisplayType.value : 'Radio';
                     const creation = document.querySelector('input[name="createAttrVariantCreation"]:checked')?.value || 'Instantly';
 
-                    // Collect any values entered in the table
-                    const enteredVals = [];
-                    document.querySelectorAll('#createAttrValuesTableBody .create-val-row').forEach(tr => {
-                        const v = tr.querySelector('.val-name-input')?.value?.trim();
-                        if (v) enteredVals.push(v);
-                    });
+                    if (editingMasterAttr) {
+                        // EDIT MODE: Update existing attribute
+                        const oldName = editingMasterAttr.name;
+                        editingMasterAttr.name = name;
+                        editingMasterAttr.display_type = displayType;
+                        editingMasterAttr.creation = creation;
+                        editingMasterAttr.default_values = enteredVals;
 
-                    // Add to masterAttributes list if not exists
-                    const existing = masterAttributes.find(a => a.name.toLowerCase() === name.toLowerCase());
-                    if (!existing) {
-                        masterAttributes.unshift({ name, display_type: displayType, creation });
-                    }
+                        // Update attributeConfigurations map if name changed
+                        if (oldName.toLowerCase() !== name.toLowerCase() && attributeConfigurations[oldName]) {
+                            attributeConfigurations[name] = attributeConfigurations[oldName];
+                            delete attributeConfigurations[oldName];
+                        }
 
-                    // Assign to active row
-                    if (!activeTargetRow) {
-                        activeTargetRow = attributesConfigBody.querySelector('.attr-row') || createAttributeRow('', []);
-                    }
+                        // Update targeting row
+                        const rowToUpdate = editingRowTarget || (activeTargetRow && activeTargetRow.querySelector('.attr-name-input')?.value.toLowerCase() === oldName.toLowerCase() ? activeTargetRow : null);
+                        if (rowToUpdate) {
+                            const attrInput = rowToUpdate.querySelector('.attr-name-input');
+                            const valuesBox = rowToUpdate.querySelector('.values-tag-box');
+                            const tagInput = rowToUpdate.querySelector('.tag-input-field');
 
-                    if (activeTargetRow) {
-                        const attrInput = activeTargetRow.querySelector('.attr-name-input');
-                        const valuesBox = activeTargetRow.querySelector('.values-tag-box');
-                        const tagInput = activeTargetRow.querySelector('.tag-input-field');
+                            if (attrInput) attrInput.value = name;
 
-                        if (attrInput) attrInput.value = name;
-
-                        // Insert values pills into values tag box
-                        if (enteredVals.length > 0 && valuesBox && tagInput) {
-                            enteredVals.forEach(v => {
-                                const currentPills = Array.from(valuesBox.querySelectorAll('.tag-pill')).map(p => p.dataset.val.toLowerCase());
-                                if (!currentPills.includes(v.toLowerCase())) {
+                            // Re-populate values tag pills
+                            if (valuesBox && tagInput) {
+                                valuesBox.querySelectorAll('.tag-pill').forEach(p => p.remove());
+                                enteredVals.forEach(v => {
                                     const pill = document.createElement('span');
                                     pill.className = 'tag-pill';
                                     pill.dataset.val = v;
@@ -3580,21 +3877,60 @@
                                         syncAttributesToVariants();
                                     });
                                     valuesBox.insertBefore(pill, tagInput);
-                                    tagInput.placeholder = '';
-                                }
-                            });
+                                });
+                                tagInput.placeholder = enteredVals.length > 0 ? '' : 'List of possible values (e.g. Blue, Green, White, ... )';
+                            }
                         }
-                        syncAttributesToVariants();
-                    }
 
-                    window.hideCreateAttributeModal();
-                    Swal.fire({
-                        icon: 'success',
-                        title: 'Attribute Created',
-                        text: `"${name}" added successfully!`,
-                        timer: 1200,
-                        showConfirmButton: false
-                    });
+                        syncAttributesToVariants();
+                        window.hideCreateAttributeModal();
+                        showSmallAlert('Attribute updated successfully!', 'success');
+
+                    } else {
+                        // CREATE MODE: Add new attribute
+                        masterAttributes.unshift({ name, display_type: displayType, creation, default_values: enteredVals });
+
+                        // Assign to active row if present
+                        if (!activeTargetRow) {
+                            activeTargetRow = attributesConfigBody.querySelector('.attr-row') || createAttributeRow('', []);
+                        }
+
+                        if (activeTargetRow) {
+                            if (isAttributeDuplicateInRows(name, activeTargetRow)) {
+                                showSmallAlert('attribute name exist.', 'warning');
+                                return;
+                            }
+
+                            const attrInput = activeTargetRow.querySelector('.attr-name-input');
+                            const valuesBox = activeTargetRow.querySelector('.values-tag-box');
+                            const tagInput = activeTargetRow.querySelector('.tag-input-field');
+
+                            if (attrInput) attrInput.value = name;
+
+                            if (enteredVals.length > 0 && valuesBox && tagInput) {
+                                enteredVals.forEach(v => {
+                                    const currentPills = Array.from(valuesBox.querySelectorAll('.tag-pill')).map(p => p.dataset.val.toLowerCase());
+                                    if (!currentPills.includes(v.toLowerCase())) {
+                                        const pill = document.createElement('span');
+                                        pill.className = 'tag-pill';
+                                        pill.dataset.val = v;
+                                        pill.innerHTML = `<span>${v}</span><span class="remove-tag">&times;</span>`;
+                                        pill.querySelector('.remove-tag').addEventListener('click', function(e) {
+                                            e.stopPropagation();
+                                            pill.remove();
+                                            syncAttributesToVariants();
+                                        });
+                                        valuesBox.insertBefore(pill, tagInput);
+                                        tagInput.placeholder = '';
+                                    }
+                                });
+                            }
+                            syncAttributesToVariants();
+                        }
+
+                        window.hideCreateAttributeModal();
+                        showSmallAlert('Attribute created successfully!', 'success');
+                    }
                 });
             }
 
@@ -3698,6 +4034,11 @@
                         li.addEventListener('mousedown', function(e) {
                             e.preventDefault();
                             if (activeTargetRow) {
+                                if (isAttributeDuplicateInRows(attr.name, activeTargetRow)) {
+                                    showSmallAlert('attribute name exist.', 'warning');
+                                    closeAttrDropdown();
+                                    return;
+                                }
                                 const attrInput = activeTargetRow.querySelector('.attr-name-input');
                                 const tagInput = activeTargetRow.querySelector('.tag-input-field');
                                 if (attrInput) attrInput.value = attr.name;
@@ -3777,8 +4118,9 @@
                             <input type="text" class="tag-input-field" placeholder="List of possible values (e.g. Blue, Green, White, ... )">
                         </div>
                     </td>
-                    <td class="text-end pe-3" style="width: 130px;">
+                    <td class="text-end pe-3" style="width: 180px;">
                         <button type="button" class="btn-configure-attr me-1" title="Configure variant values & prices">Configure</button>
+                        <button type="button" class="btn-edit-attr me-1" title="Edit attribute"><i class="fas fa-pen"></i> Edit</button>
                         <button type="button" class="btn-delete-attr" title="Delete attribute line"><i class="fas fa-trash-alt"></i></button>
                     </td>
                 `;
@@ -3790,6 +4132,7 @@
                 const valuesBox = tr.querySelector('.values-tag-box');
                 const tagInput = tr.querySelector('.tag-input-field');
                 const configBtn = tr.querySelector('.btn-configure-attr');
+                const editBtn = tr.querySelector('.btn-edit-attr');
                 const deleteBtn = tr.querySelector('.btn-delete-attr');
 
                 attrInput.addEventListener('click', (e) => { e.stopPropagation(); openAttrDropdown(attrInput, tr); });
@@ -3808,13 +4151,26 @@
                     syncAttributesToVariants();
                 });
 
+                attrInput.addEventListener('change', function() {
+                    const val = this.value.trim();
+                    if (val && isAttributeDuplicateInRows(val, tr)) {
+                        showSmallAlert('attribute name exist.', 'warning');
+                        this.value = '';
+                        syncAttributesToVariants();
+                    }
+                });
+
                 // Add tag pill helper
                 function addTagPill(val) {
                     val = val.trim();
                     if (!val) return;
                     // Prevent duplicate tags within the same row
                     const existing = Array.from(valuesBox.querySelectorAll('.tag-pill')).map(p => p.dataset.val.toLowerCase());
-                    if (existing.includes(val.toLowerCase())) return;
+                    if (existing.includes(val.toLowerCase())) {
+                        showSmallAlert('attribute value exist.', 'warning');
+                        tagInput.value = '';
+                        return;
+                    }
 
                     const pill = document.createElement('span');
                     pill.className = 'tag-pill';
@@ -3845,17 +4201,7 @@
                     const typed = tagInput.value.trim();
                     const existingPills = Array.from(valuesBox.querySelectorAll('.tag-pill')).map(p => p.dataset.val.toLowerCase());
 
-                    let presetVals = [];
-                    const masterMatch = masterAttributes.find(m => m.name.toLowerCase() === attrName.toLowerCase());
-                    if (masterMatch && masterMatch.default_values) {
-                        presetVals = masterMatch.default_values;
-                    } else if (attrName.toLowerCase().includes('size')) {
-                        presetVals = ['1/2', '3/4', '3/8', '1', '1 1/4', '1 1/2', '2', '2 1/2', '3'];
-                    } else if (attrName.toLowerCase().includes('length')) {
-                        presetVals = ['1', '1/2', '3/4', '1 1/4', '1 1/2', '2', '3', '4'];
-                    } else if (attrName.toLowerCase().includes('color') || attrName.toLowerCase().includes('colour')) {
-                        presetVals = ['White', 'Black', 'Blue', 'Red', 'Green', 'Yellow', 'Silver', 'Gold'];
-                    }
+                    const presetVals = getAttributeDefaultValues(attrName);
 
                     const rect = tagInput.getBoundingClientRect();
                     globalValueSuggestDropdown.style.top = (rect.bottom + 4) + 'px';
@@ -3935,11 +4281,49 @@
                     window.openConfigureAttributeModal(tr);
                 });
 
-                // Delete attribute row
+                // Edit button: opens Create/Edit Attribute Modal in Edit mode
+                editBtn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    const aName = attrInput.value.trim();
+                    if (!aName) {
+                        showSmallAlert('Please enter or select an attribute first.', 'info');
+                        attrInput.focus();
+                        return;
+                    }
+                    let masterAttr = masterAttributes.find(a => a.name.toLowerCase() === aName.toLowerCase());
+                    if (!masterAttr) {
+                        masterAttr = { name: aName, display_type: 'Radio', creation: 'Instantly' };
+                    }
+                    window.showCreateAttributeModal(tr, masterAttr);
+                });
+
+                // Delete attribute row with confirmation if values or name present
                 deleteBtn.addEventListener('click', function() {
-                    tr.remove();
-                    closeValueSuggestDropdown();
-                    syncAttributesToVariants();
+                    const aName = attrInput.value.trim();
+                    const pills = Array.from(valuesBox.querySelectorAll('.tag-pill'));
+                    if (aName || pills.length > 0) {
+                        Swal.fire({
+                            title: 'Remove Attribute Line?',
+                            text: `Are you sure you want to remove "${aName || 'this attribute'}"? All variants using this attribute will be updated.`,
+                            icon: 'warning',
+                            showCancelButton: true,
+                            confirmButtonColor: '#ef4444',
+                            cancelButtonColor: '#334155',
+                            confirmButtonText: 'Yes, Remove'
+                        }).then((result) => {
+                            if (result.isConfirmed) {
+                                tr.remove();
+                                closeValueSuggestDropdown();
+                                syncAttributesToVariants();
+                                showSmallAlert('Attribute line removed.', 'info');
+                            }
+                        });
+                    } else {
+                        tr.remove();
+                        closeValueSuggestDropdown();
+                        syncAttributesToVariants();
+                    }
                 });
 
                 return tr;
