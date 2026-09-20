@@ -730,9 +730,19 @@
 
                                             <!-- PRODUCT -->
                                             <td class="col-product">
-                                                <select class="form-select product" style="width:100%">
-                                                    <option value=""></option>
-                                                </select>
+                                                <div class="d-flex align-items-center gap-1">
+                                                    <div class="flex-grow-1 position-relative">
+                                                        <select class="form-select product" style="width:100%">
+                                                            <option value=""></option>
+                                                        </select>
+                                                    </div>
+                                                    <button type="button" class="btn btn-sm btn-outline-primary btn-browse-variants px-1 py-0" title="Browse / Pick Variants" style="height: 28px; width: 28px; font-size: 0.75rem; border-radius: 4px;" tabindex="-1">
+                                                        <i class="fas fa-cubes"></i>
+                                                    </button>
+                                                </div>
+                                                <div class="variant-serial-badge-wrapper mt-1 d-none">
+                                                    <span class="badge bg-primary-subtle text-primary border border-primary-subtle font-monospace py-0 px-1 variant-serial-badge" style="font-size: 0.68rem;"></span>
+                                                </div>
                                                 <input type="hidden" class="product-id-hidden" name="product_id[]">
                                                 <input type="hidden" class="variant-data-hidden" name="color[]">
                                                 <input type="hidden" class="item-code-display">
@@ -1572,6 +1582,65 @@
                         </button>
                     </div>
                 </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal: Modern Visual Variant Picker -->
+    <div class="modal fade" id="modalVariantPicker" tabindex="-1" aria-labelledby="modalVariantPickerLabel" aria-hidden="true" style="z-index: 1060;">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content border-0 shadow-lg rounded-4 overflow-hidden">
+                <div class="modal-header bg-dark text-white px-3 py-2 d-flex justify-content-between align-items-center">
+                    <div class="d-flex align-items-center gap-2">
+                        <i class="fas fa-layer-group text-warning fs-5"></i>
+                        <div>
+                            <h6 class="modal-title fw-bold mb-0 text-white" id="modalVariantPickerLabel">Select Product Variant</h6>
+                            <small class="text-white-50" id="variantPickerProductSubtitle" style="font-size: 11px;">Select a variant by serial number, name, or attributes</small>
+                        </div>
+                    </div>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+
+                <div class="modal-body p-3 bg-light">
+                    <!-- Search / Filter Bar -->
+                    <div class="d-flex gap-2 mb-2">
+                        <div class="input-group input-group-sm">
+                            <span class="input-group-text bg-white border-end-0"><i class="fas fa-search text-muted"></i></span>
+                            <input type="text" id="variantPickerSearchInput" class="form-control border-start-0" placeholder="Type Serial No (e.g. CS-0001), size, color, name to filter..." autocomplete="off">
+                            <button class="btn btn-outline-secondary" type="button" id="variantPickerClearSearch"><i class="fas fa-times"></i></button>
+                        </div>
+                    </div>
+
+                    <!-- Variants Table Container -->
+                    <div class="table-responsive bg-white border rounded-3 shadow-sm" style="max-height: 380px; overflow-y: auto;">
+                        <table class="table table-hover table-sm align-middle mb-0" id="variantPickerTable">
+                            <thead class="table-light sticky-top" style="font-size: 11px; z-index: 1;">
+                                <tr>
+                                    <th class="text-center" style="width: 110px;">Serial No</th>
+                                    <th>Variant / Attribute</th>
+                                    <th class="text-center" style="width: 75px;">Size</th>
+                                    <th class="text-center" style="width: 75px;">Color</th>
+                                    <th class="text-center" style="width: 85px;">Stock</th>
+                                    <th class="text-end" style="width: 90px;">Retail</th>
+                                    <th class="text-end" style="width: 90px;">Wholesale</th>
+                                    <th class="text-center" style="width: 90px;">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody id="variantPickerTableBody">
+                                <tr>
+                                    <td colspan="8" class="text-center py-4 text-muted">
+                                        <div class="spinner-border spinner-border-sm text-primary me-1" role="status"></div> Loading variants...
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="modal-footer bg-white border-top px-3 py-2 d-flex justify-content-between align-items-center">
+                    <span class="text-muted small" id="variantPickerCountInfo">Showing 0 variants</span>
+                    <button type="button" class="btn btn-secondary btn-sm px-3" data-bs-dismiss="modal">Close</button>
+                </div>
             </div>
         </div>
     </div>

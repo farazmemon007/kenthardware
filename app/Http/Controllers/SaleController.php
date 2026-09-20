@@ -160,7 +160,8 @@ class SaleController extends Controller
             ->where(function ($query) use ($q) {
                 $query->where('products.item_name', 'like', "%{$q}%")
                     ->orWhere('products.item_code', 'like', "%{$q}%")
-                    ->orWhere('products.barcode_path', 'like', "%{$q}%");
+                    ->orWhere('products.barcode_path', 'like', "%{$q}%")
+                    ->orWhere('products.color', 'like', "%{$q}%");
             })
             ->select(
                 'products.*',
@@ -1247,7 +1248,10 @@ class SaleController extends Controller
                     if ($product && !empty($product->color)) {
                         $prodVariants = json_decode($product->color, true);
                         if (is_array($prodVariants)) {
-                            if (!empty($vData['barcode'])) {
+                            if (!empty($vData['serial_no'])) {
+                                $liveVariant = collect($prodVariants)->firstWhere('serial_no', $vData['serial_no']);
+                            }
+                            if (!$liveVariant && !empty($vData['barcode'])) {
                                 $liveVariant = collect($prodVariants)->firstWhere('barcode', $vData['barcode']);
                             }
                             if (!$liveVariant && !empty($vData['name'])) {

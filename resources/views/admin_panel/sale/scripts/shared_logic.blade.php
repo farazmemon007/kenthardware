@@ -136,9 +136,19 @@
 
     <!-- PRODUCT -->
     <td class="col-product">
-      <select class="form-select product" style="width:100%">
-        <option value=""></option>
-      </select>
+      <div class="d-flex align-items-center gap-1">
+        <div class="flex-grow-1 position-relative">
+          <select class="form-select product" style="width:100%">
+            <option value=""></option>
+          </select>
+        </div>
+        <button type="button" class="btn btn-sm btn-outline-primary btn-browse-variants px-1 py-0" title="Browse / Pick Variants" style="height: 28px; width: 28px; font-size: 0.75rem; border-radius: 4px;" tabindex="-1">
+          <i class="fas fa-cubes"></i>
+        </button>
+      </div>
+      <div class="variant-serial-badge-wrapper mt-1 d-none">
+        <span class="badge bg-primary-subtle text-primary border border-primary-subtle font-monospace py-0 px-1 variant-serial-badge" style="font-size: 0.68rem;"></span>
+      </div>
       <input type="hidden" class="product-id-hidden" name="product_id[]">
       <input type="hidden" class="variant-data-hidden" name="color[]">
       <input type="hidden" class="item-code-display">
@@ -982,11 +992,13 @@
             let variantSize = '-';
             let variantColor = '-';
             let variantStock = null;
+            let variantSerial = data.serial_no || '';
             if (data.variant_data) {
                 try {
                     const vd = JSON.parse(atob(data.variant_data));
                     variantSize = (vd.size && vd.size !== '-') ? vd.size : '-';
                     variantColor = (vd.color && vd.color !== '-') ? vd.color : '-';
+                    if (!variantSerial && vd.serial_no) variantSerial = vd.serial_no;
                     // Prefer vd.current_stock from parsed variant_data (highly reliable), fallback to data.stock or vd.stock
                     variantStock = vd.current_stock !== undefined ? vd.current_stock : (data.stock !== undefined ? data.stock : (vd.stock !== undefined ? vd.stock : null));
                 } catch(ex) {}
@@ -995,6 +1007,14 @@
             // Set size and color display
             $row.find('.size-display').val(variantSize !== '-' ? variantSize : '');
             $row.find('.color-display').val(variantColor);
+
+            // Display Unique Variant Serial No Badge
+            if (variantSerial) {
+                $row.find('.variant-serial-badge').text('SN: ' + variantSerial);
+                $row.find('.variant-serial-badge-wrapper').removeClass('d-none');
+            } else {
+                $row.find('.variant-serial-badge-wrapper').addClass('d-none');
+            }
             
             // Store variant stock for later use (after warehouse loads)
             if (variantStock !== null) {
@@ -1051,6 +1071,219 @@
             setupRowQtyToggle($row, data.size_mode, variantUnit);
 
             computeRow($row);
+        });
+
+        // Product clear
+        $('#salesTableBody').on('select2:clear', '.product', function(e) {
+            const $row = $(this).closest('tr');
+            $row.find('.variant-serial-badge-wrapper').addClass('d-none');
+            $row.find('.variant-serial-badge').text('');
+            $row.find('.product-id-hidden').val('');
+            $row.find('.variant-data-hidden').val('');
+            $row.find('.stock').val('');
+            $row.find('.carton-qty').val('');
+            $row.find('.visible-price').val('');
+            $row.find('.sales-amount').val('0');
+            computeRow($row);
+        });
+
+        /* =========================================
+           MODERN VARIANT PICKER MODAL
+           ========================================= */
+        let currentPickerVariants = [];
+        let activeVariantRow = null;
+
+        $(document).on('click', '.btn-browse-variants', function(e) {
+            e.preventDefault();
+            activeVariantRow = $(this).closest('tr');
+            const pid = activeVariantRow.find('.product-id-hidden').val();
+            const pText = activeVariantRow.find('.product option:selected').text() || '';
+            openVariantPickerModal(pid, pText);
+        });
+
+        function openVariantPickerModal(productId, productName = '') {
+            const modalEl = document.getElementById('modalVariantPicker');
+            if (!modalEl) return;
+            const modal = bootstrap.Modal.getOrCreateInstance(modalEl);
+
+            $('#variantPickerSearchInput').val('');
+            $('#variantPickerTableBody').html(`
+                <tr>
+                    <td colspan="8" class="text-center py-4 text-muted">
+                        <div class="spinner-border spinner-border-sm text-primary me-2" role="status"></div> Loading product variants...
+                    </td>
+                </tr>
+            `);
+
+            if (productName) {
+                $('#variantPickerProductSubtitle').text(`Variants for: ${productName}`);
+            } else {
+                $('#variantPickerProductSubtitle').text('Select a variant by serial number, name, or attributes');
+            }
+
+            modal.show();
+
+            const params = productId ? { product_id: productId } : {};
+            $.get('{{ route('products.ajax.search') }}', params)
+                .done(function(res) {
+                    currentPickerVariants = res.results || [];
+                    renderVariantPickerRows(currentPickerVariants);
+                })
+                .fail(function() {
+                    $('#variantPickerTableBody').html(`
+                        <tr>
+                            <td colspan="8" class="text-center py-4 text-danger">
+                                <i class="fas fa-exclamation-circle me-1"></i> Failed to load variants. Please try again.
+                            </td>
+                        </tr>
+                    `);
+                });
+        }
+
+        function renderVariantPickerRows(variants) {
+            const $tbody = $('#variantPickerTableBody');
+            $tbody.empty();
+
+            if (!variants || variants.length === 0) {
+                $tbody.html(`
+                    <tr>
+                        <td colspan="8" class="text-center py-4 text-muted">
+                            <i class="fas fa-info-circle me-1"></i> No variants found.
+                        </td>
+                    </tr>
+                `);
+                $('#variantPickerCountInfo').text('Showing 0 variants');
+                return;
+            }
+
+            $('#variantPickerCountInfo').text(`Showing ${variants.length} variant${variants.length > 1 ? 's' : ''}`);
+
+            variants.forEach(function(v) {
+                const serialNo = v.serial_no || '-';
+                const stockPieces = parseFloat(v.stock_pieces !== undefined ? v.stock_pieces : v.stock) || 0;
+                const stockBadgeClass = stockPieces > 0 ? 'bg-success' : 'bg-danger';
+                const vName = v.name || v.text || 'Variant';
+                const vSize = v.size || '-';
+                const vColor = v.color || '-';
+                const retailPrice = parseFloat(v.retail_price || 0).toFixed(2);
+                const wholesalePrice = parseFloat(v.wholesale_price || 0).toFixed(2);
+
+                const vJson = encodeURIComponent(JSON.stringify(v));
+
+                const tr = `
+                    <tr>
+                        <td class="text-center">
+                            <span class="badge bg-primary-subtle text-primary border border-primary-subtle font-monospace fw-bold" style="font-size: 11px;">
+                                ${serialNo}
+                            </span>
+                        </td>
+                        <td>
+                            <div class="fw-bold text-dark" style="font-size: 12px;">${vName}</div>
+                            ${v.sku ? `<small class="text-muted font-monospace">SKU: ${v.sku}</small>` : ''}
+                        </td>
+                        <td class="text-center text-secondary font-monospace" style="font-size: 11px;">${vSize}</td>
+                        <td class="text-center text-secondary font-monospace" style="font-size: 11px;">${vColor}</td>
+                        <td class="text-center">
+                            <span class="badge ${stockBadgeClass} rounded-pill" style="font-size: 10px;">
+                                ${v.stock}
+                            </span>
+                        </td>
+                        <td class="text-end fw-semibold text-dark font-monospace" style="font-size: 12px;">Rs. ${retailPrice}</td>
+                        <td class="text-end text-muted font-monospace" style="font-size: 11px;">Rs. ${wholesalePrice}</td>
+                        <td class="text-center">
+                            <button type="button" class="btn btn-sm btn-primary btn-select-variant py-0 px-2 fw-semibold d-inline-flex align-items-center gap-1" data-variant="${vJson}" style="font-size: 11px; height: 26px;">
+                                <i class="fas fa-check"></i> Select
+                            </button>
+                        </td>
+                    </tr>
+                `;
+                $tbody.append(tr);
+            });
+        }
+
+        // Modal Search / Filter
+        let pickerSearchTimer = null;
+        $(document).on('input', '#variantPickerSearchInput', function() {
+            const q = $(this).val().toLowerCase().trim();
+            clearTimeout(pickerSearchTimer);
+            
+            // Instant client-side filter first
+            if (currentPickerVariants.length > 0) {
+                const filtered = currentPickerVariants.filter(function(v) {
+                    const sNo = (v.serial_no || '').toLowerCase();
+                    const name = (v.name || v.text || '').toLowerCase();
+                    const sku = (v.sku || '').toLowerCase();
+                    const size = (v.size || '').toLowerCase();
+                    const color = (v.color || '').toLowerCase();
+                    return sNo.includes(q) || name.includes(q) || sku.includes(q) || size.includes(q) || color.includes(q);
+                });
+                renderVariantPickerRows(filtered);
+            }
+
+            // If nothing found or query is longer than 2 chars and row had no product, search backend
+            if ((!currentPickerVariants.length || (q.length >= 2 && currentPickerVariants.length <= 1)) && q.length >= 2) {
+                pickerSearchTimer = setTimeout(function() {
+                    $.get('{{ route('products.ajax.search') }}', { term: q }).done(function(res) {
+                        currentPickerVariants = res.results || [];
+                        renderVariantPickerRows(currentPickerVariants);
+                    });
+                }, 300);
+            }
+        });
+
+        $(document).on('click', '#variantPickerClearSearch', function() {
+            $('#variantPickerSearchInput').val('').trigger('input');
+        });
+
+        // Variant Select Handler
+        $(document).on('click', '.btn-select-variant', function(e) {
+            e.preventDefault();
+            const vDataRaw = $(this).attr('data-variant');
+            if (!vDataRaw) return;
+
+            let v = null;
+            try {
+                v = JSON.parse(decodeURIComponent(vDataRaw));
+            } catch(ex) {
+                console.error('Failed to parse variant data', ex);
+                return;
+            }
+
+            let $targetRow = activeVariantRow;
+            if (!$targetRow || !$targetRow.length) {
+                $targetRow = $('#salesTableBody tr:last');
+            }
+
+            // If target row already has a different product and was filled, add a new row
+            const existingPid = $targetRow.find('.product-id-hidden').val();
+            const existingQty = parseFloat($targetRow.find('.carton-qty').val()) || 0;
+            if (existingPid && existingQty > 0) {
+                addNewRow();
+                $targetRow = $('#salesTableBody tr:last');
+            }
+
+            // Set select2 with option
+            const $select = $targetRow.find('.product');
+            const newOption = new Option(v.text, v.id, true, true);
+            $select.empty().append(newOption);
+
+            // Trigger select2:select
+            $select.trigger({
+                type: 'select2:select',
+                params: { data: v }
+            });
+
+            // Close modal
+            const modalEl = document.getElementById('modalVariantPicker');
+            if (modalEl) {
+                const modal = bootstrap.Modal.getInstance(modalEl);
+                if (modal) modal.hide();
+            }
+
+            // Focus carton quantity input
+            setTimeout(function() {
+                $targetRow.find('.carton-qty').focus().select();
+            }, 300);
         });
 
     function setupRowQtyToggle($row, sizeMode, variantUnit = null) {

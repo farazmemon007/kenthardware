@@ -310,7 +310,7 @@
 
     /* ── Actions column – force min-width so buttons never wrap ── */
     #productTable th:last-child,
-    #productTable td:last-child { min-width: 190px; }
+    #productTable td:last-child { min-width: 220px; }
 
     /* ── Select checkbox ── */
     input[type="checkbox"].row-check { width: 16px; height: 16px; accent-color: var(--erp-primary); cursor: pointer; }
@@ -320,6 +320,44 @@
     .dataTables_wrapper .dataTables_info,
     .dataTables_wrapper .dataTables_paginate { display: none !important; }
     .dataTables_wrapper { overflow-x: visible !important; }
+
+    /* ── Odoo Video Matrix View: Attribute Pills & Radios ── */
+    .matrix-radio-pill {
+        display: inline-flex !important;
+        align-items: center !important;
+        padding: 7px 16px !important;
+        border: 1.5px solid #cbd5e1 !important;
+        border-radius: 8px !important;
+        background: #ffffff !important;
+        cursor: pointer !important;
+        margin: 0 !important;
+        transition: all 0.15s ease !important;
+        box-shadow: 0 1px 2px rgba(0,0,0,0.03) !important;
+        user-select: none !important;
+    }
+    .matrix-radio-pill:hover {
+        border-color: #00A09D !important;
+        background: #f0fdfa !important;
+    }
+    .matrix-radio-pill.selected-pill {
+        border-color: #00A09D !important;
+        background: #e6fffa !important;
+        box-shadow: 0 0 0 2px rgba(0, 160, 157, 0.25) !important;
+    }
+    .matrix-radio-pill.selected-pill .matrix-attr-val {
+        color: #00A09D !important;
+        font-weight: 700 !important;
+    }
+    .matrix-radio-pill.disabled-pill {
+        opacity: 0.35 !important;
+        cursor: not-allowed !important;
+        pointer-events: none !important;
+        background: #f8fafc !important;
+        border-color: #e2e8f0 !important;
+    }
+    .matrix-radio-pill.disabled-pill .matrix-attr-val {
+        color: #94a3b8 !important;
+    }
 
     /* ════════════════════════════════════════════════════
        MOBILE RESPONSIVE  ≤ 768px
@@ -705,8 +743,16 @@
                             <th>Stock</th>
                             <th>Purchase Price</th>
                             <th>Sale Price</th>
-                            <th style="width:90px;">Status</th>
-                            <th class="text-center" style="width:180px;">Actions</th>
+                            <th style="width:75px;">Status</th>
+                            <th class="text-center" style="width:220px;">
+                                <div class="d-flex align-items-center justify-content-center gap-2">
+                                    <span>Actions</span>
+                                    <label class="d-inline-flex align-items-center gap-1 m-0 px-2 py-0 rounded border" style="background:#fdf4ff; border-color:#f5d0fe; cursor:pointer;" title="Check to open all products in Matrix View on View click">
+                                        <input type="checkbox" id="globalMatrixRadio" style="cursor:pointer; width:12px; height:12px; accent-color:#714B67; margin:0;">
+                                        <span style="font-size:9.5px; font-weight:700; color:#714B67;">Matrix</span>
+                                    </label>
+                                </div>
+                            </th>
                         </tr>
                     </thead>
                     <tbody>
@@ -774,11 +820,17 @@
                                     @endif
                                 </td>
                                 <td>
-                                    <div class="action-group">
-                                        <button type="button" class="btn-act btn-act-view viewProductBtn"
-                                            data-id="{{ $product->id }}" title="View Details">
-                                            <i class="fas fa-eye"></i> View
-                                        </button>
+                                    <div class="action-group align-items-center">
+                                        <div class="d-flex flex-column align-items-center me-1" style="min-width: 58px;">
+                                            <div class="d-flex align-items-center justify-content-center gap-1 mb-1" style="cursor: pointer; line-height: 1;" title="Radio Matrix View (from Video)">
+                                                <input type="radio" class="form-check-input row-matrix-radio" name="row_matrix_radio" id="rowMatrixRadio_{{ $product->id }}" data-id="{{ $product->id }}" style="cursor: pointer; width: 13px; height: 13px; accent-color: #714B67; margin: 0;">
+                                                <label for="rowMatrixRadio_{{ $product->id }}" class="form-check-label m-0 fw-bold" style="font-size: 10px; color: #714B67; cursor: pointer; white-space: nowrap;">Matrix</label>
+                                            </div>
+                                            <button type="button" class="btn-act btn-act-view viewProductBtn w-100 justify-content-center"
+                                                data-id="{{ $product->id }}" title="View Details">
+                                                <i class="fas fa-eye"></i> View
+                                            </button>
+                                        </div>
                                         @if (auth()->user()->can('products.edit') || auth()->user()->email === 'admin@admin.com')
                                             <a href="{{ route('products.edit', $product->id) }}"
                                                 class="btn-act btn-act-edit" title="Edit Product">
@@ -875,9 +927,15 @@
                         </div>
                     </div>
                     <div class="prod-mcard-actions">
-                        <button type="button" class="btn-act btn-act-view viewProductBtn" data-id="{{ $product->id }}">
-                            <i class="fas fa-eye"></i> View
-                        </button>
+                        <div class="d-flex flex-column align-items-center w-100">
+                            <div class="d-flex align-items-center gap-1 mb-1">
+                                <input type="radio" class="form-check-input row-matrix-radio" name="row_matrix_radio" id="mRowMatrixRadio_{{ $product->id }}" data-id="{{ $product->id }}" style="cursor: pointer; width: 13px; height: 13px; accent-color: #714B67; margin: 0;">
+                                <label for="mRowMatrixRadio_{{ $product->id }}" class="form-check-label m-0 fw-bold" style="font-size: 9px; color: #714B67; cursor: pointer;">Matrix View</label>
+                            </div>
+                            <button type="button" class="btn-act btn-act-view viewProductBtn w-100" data-id="{{ $product->id }}">
+                                <i class="fas fa-eye"></i> View
+                            </button>
+                        </div>
                         @if (auth()->user()->can('products.edit') || auth()->user()->email === 'admin@admin.com')
                             <a href="{{ route('products.edit', $product->id) }}" class="btn-act btn-act-edit">
                                 <i class="fas fa-pencil-alt"></i> Edit
@@ -1032,49 +1090,107 @@
 </div>
 
 {{-- ══════════════════════════════════════════════════════════════
-     PRODUCT VIEW MODAL
+     PRODUCT VIEW MODAL (Compact Kent ERP Theme)
 ══════════════════════════════════════════════════════════════ --}}
 <div class="modal fade" id="productViewModal" tabindex="-1" aria-labelledby="productViewModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-xl modal-dialog-centered">
-        <div class="modal-content border-0 shadow-lg" style="border-radius:16px; overflow:hidden;">
-            <div class="modal-header border-bottom bg-white px-4 py-3">
-                <div>
-                    <h5 class="modal-title fw-bold text-dark mb-0" id="productViewModalLabel">
-                        <span id="view_item_name">Product</span>
-                    </h5>
-                    <small class="text-muted" id="view_item_subtext">CODE</small>
+    <div class="modal-dialog modal-lg modal-dialog-centered" style="max-width: 740px;">
+        <div class="modal-content border-0 shadow-lg" style="border-radius: 14px; overflow: hidden;">
+            {{-- Header --}}
+            <div class="modal-header border-bottom bg-light px-4 py-2.5 d-flex justify-content-between align-items-center">
+                <div class="d-flex align-items-center gap-2.5">
+                    <div style="width: 36px; height: 36px; border-radius: 9px; background: #f3e8ff; color: #714B67; display: flex; align-items: center; justify-content: center; font-size: 16px; flex-shrink: 0;">
+                        <i class="fas fa-boxes-stacked"></i>
+                    </div>
+                    <div>
+                        <h5 class="modal-title fw-bold text-dark mb-0" id="productViewModalLabel" style="font-size: 1.08rem; letter-spacing: -0.2px;">
+                            <span id="view_item_name">Product</span>
+                        </h5>
+                        <small class="text-muted font-monospace" id="view_item_subtext" style="font-size: 11px;">CODE</small>
+                    </div>
                 </div>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
+                
+                <div class="d-flex align-items-center gap-2">
+                    <!-- View Mode Switcher: Table List vs Video Matrix -->
+                    <div class="btn-group btn-group-sm p-0.5 bg-white rounded-pill border shadow-sm" role="group" aria-label="View Mode">
+                        <button type="button" class="btn btn-sm px-3 fw-bold active rounded-pill" id="btnModeMatrix" style="font-size: 11px; transition: all 0.2s; background: #714B67; color: #ffffff; padding: 4px 12px;">
+                            <i class="fas fa-th-large me-1"></i> Matrix
+                        </button>
+                        <button type="button" class="btn btn-sm px-3 fw-bold rounded-pill btn-light text-muted" id="btnModeTable" style="font-size: 11px; transition: all 0.2s; padding: 4px 12px;">
+                            <i class="fas fa-table me-1"></i> Table
+                        </button>
+                    </div>
+
+                    <button type="button" class="close text-secondary ms-1" data-dismiss="modal" data-bs-dismiss="modal" aria-label="Close" style="font-size: 22px; border: none; background: transparent; line-height: 1; cursor: pointer; padding: 0 4px; outline: none;">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
             </div>
+
+            {{-- Body --}}
             <div class="modal-body p-0">
                 <div id="modalLoadingSpinner" class="text-center py-5 d-none">
-                    <div class="spinner-border text-primary" role="status">
+                    <div class="spinner-border text-primary spinner-border-sm" role="status">
                         <span class="sr-only">Loading...</span>
                     </div>
-                    <p class="text-muted small mt-2">Fetching product details…</p>
+                    <p class="text-muted small mt-2 mb-0">Fetching product details…</p>
                 </div>
-                <div id="modalContentRow" class="table-responsive">
-                    <table class="table table-hover align-middle mb-0 text-center" style="font-size:.88rem;">
+
+                <!-- Video / Odoo POS Style Matrix View -->
+                <div id="modalMatrixContainer" class="p-3 px-4" style="background: #ffffff; min-height: 260px;">
+                    <!-- Top Product Quick Info Bar -->
+                    <div class="d-flex justify-content-between align-items-center p-2.5 px-3 rounded-3 mb-3" style="background: #f8fafc; border: 1px solid #e2e8f0;">
+                        <div class="d-flex align-items-center gap-4">
+                            <div>
+                                <span class="text-muted fw-semibold" style="font-size: 10.5px; text-transform: uppercase; letter-spacing: 0.5px;">Unit Price</span>
+                                <div class="fw-bold font-monospace" id="matrix_item_price" style="font-size: 1.15rem; color: #059669;">Rs. 0.00</div>
+                            </div>
+                            <div style="width: 1px; height: 26px; background: #cbd5e1;"></div>
+                            <div>
+                                <span class="text-muted fw-semibold" style="font-size: 10.5px; text-transform: uppercase; letter-spacing: 0.5px;">Free To Use</span>
+                                <div class="fw-bold text-dark font-monospace" id="matrix_stock_display" style="font-size: 1.1rem;">0 Units</div>
+                            </div>
+                        </div>
+                        <div id="matrix_serial_badge_container" class="d-none">
+                            <span class="badge bg-primary-subtle text-primary border border-primary-subtle font-monospace px-2.5 py-1.5" style="font-size: 12px;" id="matrix_serial_badge"></span>
+                        </div>
+                    </div>
+
+                    <!-- Attribute Groups with Radio Options (e.g. Gauge, Length) -->
+                    <div id="matrixAttributeGroups" class="d-flex flex-column gap-2.5 mb-1">
+                        <!-- Dynamic attribute rows injected via JS -->
+                    </div>
+                </div>
+
+                <!-- Standard Table View -->
+                <div id="modalContentRow" class="table-responsive d-none p-3">
+                    <table class="table table-hover table-sm align-middle mb-0 text-center" style="font-size:.84rem;">
                         <thead style="background:#f8fafc;">
                             <tr>
-                                <th class="text-start ps-4" style="font-size:.7rem; font-weight:700; text-transform:uppercase; letter-spacing:.5px; color:#475569;">Variant Name</th>
-                                <th style="font-size:.7rem; font-weight:700; text-transform:uppercase; letter-spacing:.5px; color:#475569;">Size</th>
-                                <th style="font-size:.7rem; font-weight:700; text-transform:uppercase; letter-spacing:.5px; color:#475569;">Color</th>
-                                <th style="font-size:.7rem; font-weight:700; text-transform:uppercase; letter-spacing:.5px; color:#475569;">Stock</th>
-                                <th style="font-size:.7rem; font-weight:700; text-transform:uppercase; letter-spacing:.5px; color:#475569;">Sale Price</th>
-                                <th style="font-size:.7rem; font-weight:700; text-transform:uppercase; letter-spacing:.5px; color:#475569;">Purch Price</th>
-                                <th style="font-size:.7rem; font-weight:700; text-transform:uppercase; letter-spacing:.5px; color:#475569;">Alert</th>
-                                <th class="text-end pe-4" style="font-size:.7rem; font-weight:700; text-transform:uppercase; letter-spacing:.5px; color:#475569;">Barcode</th>
+                                <th class="text-start ps-3" style="font-size:.68rem; font-weight:700; text-transform:uppercase; letter-spacing:.5px; color:#475569;">Variant Name</th>
+                                <th style="font-size:.68rem; font-weight:700; text-transform:uppercase; letter-spacing:.5px; color:#475569;">Size</th>
+                                <th style="font-size:.68rem; font-weight:700; text-transform:uppercase; letter-spacing:.5px; color:#475569;">Color</th>
+                                <th style="font-size:.68rem; font-weight:700; text-transform:uppercase; letter-spacing:.5px; color:#475569;">Stock</th>
+                                <th style="font-size:.68rem; font-weight:700; text-transform:uppercase; letter-spacing:.5px; color:#475569;">Sale Price</th>
+                                <th style="font-size:.68rem; font-weight:700; text-transform:uppercase; letter-spacing:.5px; color:#475569;">Purch Price</th>
+                                <th class="text-end pe-3" style="font-size:.68rem; font-weight:700; text-transform:uppercase; letter-spacing:.5px; color:#475569;">Barcode</th>
                             </tr>
                         </thead>
                         <tbody id="variantTableBody"></tbody>
                     </table>
                 </div>
             </div>
-            <div class="modal-footer bg-white py-2 px-4">
-                <button type="button" class="btn btn-secondary btn-sm px-4" data-dismiss="modal">Close</button>
+
+            {{-- Single Unified Footer --}}
+            <div class="modal-footer bg-light border-top py-2 px-4 d-flex justify-content-between align-items-center">
+                <div id="matrixSelectedVariantInfo" class="text-muted small font-monospace d-flex align-items-center flex-wrap gap-1">
+                    <span class="text-muted"><i class="fas fa-info-circle me-1 text-primary"></i> Select options above to view availability</span>
+                </div>
+                <div class="d-flex align-items-center gap-2">
+                    <button type="button" class="btn btn-sm btn-outline-secondary px-3 rounded-pill" data-dismiss="modal" data-bs-dismiss="modal" id="btnMatrixDiscard" style="font-size: 12px;">Close</button>
+                    <button type="button" class="btn btn-sm px-4 fw-bold rounded-pill shadow-sm" id="btnMatrixAdd" style="background: #714B67; color: #ffffff; border: none; font-size: 12.5px; min-width: 120px;" disabled>
+                        <i class="fas fa-check me-1"></i> Add Variant
+                    </button>
+                </div>
             </div>
         </div>
     </div>
@@ -1363,20 +1479,95 @@ $(document).ready(function () {
         $('.selectProduct').prop('checked', this.checked);
     });
 
-    // ── View Product Modal ──
+    // ══════════════════════════════════════════════════════════════
+    // ODOO VIDEO 2 STYLE: DYNAMIC RADIO MATRIX VARIANT VIEW
+    // ══════════════════════════════════════════════════════════════
+    let currentLoadedProduct = null;
+    let currentLoadedVariants = [];
+    let currentSelectedAttrs = {};
+    let currentMatchedVariant = null;
+
+    // View mode switch buttons inside modal
+    $('#btnModeMatrix').on('click', function() {
+        $('#modalMatrixContainer').removeClass('d-none');
+        $('#modalContentRow').addClass('d-none');
+        $('#btnModeMatrix').addClass('active').css({'background': '#714B67', 'color': '#ffffff'}).removeClass('btn-light text-muted');
+        $('#btnModeTable').removeClass('active btn-primary').css({'background': '', 'color': ''}).addClass('btn-light text-muted');
+    });
+
+    $('#btnModeTable').on('click', function() {
+        $('#modalMatrixContainer').addClass('d-none');
+        $('#modalContentRow').removeClass('d-none');
+        $('#btnModeTable').addClass('active btn-primary').removeClass('btn-light text-muted');
+        $('#btnModeMatrix').removeClass('active').css({'background': '', 'color': ''}).addClass('btn-light text-muted');
+    });
+
+    // Row radio button click -> automatically opens Matrix View for that product
+    $(document).on('click', '.row-matrix-radio', function(e) {
+        let productId = $(this).data('id');
+        openProductView(productId, 'matrix');
+    });
+
+    // Global matrix radio toggle
+    $('#globalMatrixRadio').on('change', function() {
+        if ($(this).is(':checked')) {
+            $('.row-matrix-radio').prop('checked', true);
+        } else {
+            $('.row-matrix-radio').prop('checked', false);
+        }
+    });
+
+    // View Button click
     $(document).on('click', '.viewProductBtn', function() {
         let productId = $(this).data('id');
+        let isRowMatrix = $(`#rowMatrixRadio_${productId}`).is(':checked') || $(`#mRowMatrixRadio_${productId}`).is(':checked');
+        let isGlobalMatrix = $('#globalMatrixRadio').is(':checked');
+        let mode = (isRowMatrix || isGlobalMatrix) ? 'matrix' : 'table';
+        openProductView(productId, mode);
+    });
+
+    function openProductView(productId, mode = 'matrix') {
         $('#modalContentRow').addClass('d-none');
+        $('#modalMatrixContainer').addClass('d-none');
         $('#modalLoadingSpinner').removeClass('d-none');
-        $('#productViewModal').modal('show');
+
+        // Set mode buttons in modal
+        if (mode === 'matrix') {
+            $('#btnModeMatrix').addClass('active').css({'background': '#714B67', 'color': '#ffffff'}).removeClass('btn-light text-muted');
+            $('#btnModeTable').removeClass('active btn-primary').css({'background': '', 'color': ''}).addClass('btn-light text-muted');
+            $('#modalMatrixContainer').removeClass('d-none');
+            $('#modalContentRow').addClass('d-none');
+        } else {
+            $('#btnModeTable').addClass('active btn-primary').removeClass('btn-light text-muted');
+            $('#btnModeMatrix').removeClass('active').css({'background': '', 'color': ''}).addClass('btn-light text-muted');
+            $('#modalContentRow').removeClass('d-none');
+            $('#modalMatrixContainer').addClass('d-none');
+        }
+
+        const modalEl = document.getElementById('productViewModal');
+        if (modalEl) {
+            try {
+                if (typeof jQuery !== 'undefined' && typeof jQuery(modalEl).modal === 'function') {
+                    jQuery(modalEl).modal('show');
+                } else if (window.bootstrap && typeof bootstrap.Modal === 'function') {
+                    const inst = bootstrap.Modal.getInstance ? bootstrap.Modal.getInstance(modalEl) : null;
+                    (inst || new bootstrap.Modal(modalEl)).show();
+                } else {
+                    $('#productViewModal').modal('show');
+                }
+            } catch(e) {
+                try { $('#productViewModal').modal('show'); } catch(err) {}
+            }
+        }
 
         $.ajax({
-            url:  "/productview/" + productId,
+            url: "/productview/" + productId,
             type: "GET",
             success: function(product) {
                 $('#modalLoadingSpinner').addClass('d-none');
-                $('#modalContentRow').removeClass('d-none');
+                currentLoadedProduct = product;
 
+                // 1. Setup Header
                 $('#view_item_name').text(product.item_name ?? 'Unknown');
                 $('#view_item_subtext').text(
                     (product.item_code ?? '') + ' | ' +
@@ -1384,11 +1575,9 @@ $(document).ready(function () {
                     (product.brand?.name ?? '')
                 );
 
-                let tbody = $('#variantTableBody');
-                tbody.empty();
-
+                // 2. Parse Variants
+                let variants = [];
                 let colorList = ['-'];
-                let variants  = [];
                 if (product.color) {
                     let parsed = product.color;
                     if (typeof parsed === 'string') {
@@ -1409,67 +1598,20 @@ $(document).ready(function () {
                         colorList = [parsed];
                     }
                 }
+                currentLoadedVariants = variants;
 
-                let sizeStr = '-';
-                if (product.size_mode === 'by_size')
-                    sizeStr = (product.height || 0) + ' x ' + (product.width || 0) + ' cm';
+                // 3. Render Table View (for Table Mode)
+                renderTableView(product, variants, colorList);
 
-                let stock     = product.calculated_total_stock_qty ?? 0;
-                let alertDef  = product.alert_carton_quantity != null ? product.alert_carton_quantity + '' : '-';
-                let salePrice = product.size_mode === 'by_size' ? product.price_per_m2 : (product.sale_price_per_piece || product.sale_price_per_box || 0);
-                let purchPrice= product.size_mode === 'by_size' ? product.purchase_price_per_m2 : (product.purchase_price_per_piece || 0);
-                let priceLabel= product.size_mode === 'by_size' ? '/m²' : '/pc';
+                // 4. Render Odoo Video 2 Style Matrix View
+                renderOdooMatrixView(product, variants);
 
-                function stockBadgeHtml(qty, alert) {
-                    let isLow = qty > 0 && alert != null && qty <= alert;
-                    let cls   = qty == 0 ? 'background:#fef3c7;color:#b45309;border:1px solid #fde68a;' : (isLow ? 'background:#fef2f2;color:#dc2626;border:1px solid #fecaca;' : 'background:#ecfdf5;color:#059669;border:1px solid #a7f3d0;');
-                    return `<span style="${cls} border-radius:6px; padding:3px 8px; font-size:.78rem; font-weight:600;">${qty}</span>`;
-                }
-
-                if (variants.length > 0) {
-                    variants.forEach(v => {
-                        let vName     = v.name || v.variant_name || product.item_name;
-                        let vSize     = v.size || v.variant_size || '-';
-                        let vColorVal = v.color || v.variant_color || '-';
-                        let vStock    = (v.stock !== undefined && v.stock !== null && v.stock !== '') ? v.stock : (v.variant_stock ?? 0);
-                        let vSale     = (v.sale_price !== undefined && v.sale_price !== null && v.sale_price !== '') ? v.sale_price : (v.variant_sale_price ?? 0);
-                        let vPurch    = (v.purch_price !== undefined && v.purch_price !== null && v.purch_price !== '') ? v.purch_price : (v.purchase_price ?? v.variant_purchase_price ?? 0);
-                        let vAlert    = (v.alert !== undefined && v.alert !== null && v.alert !== '') ? v.alert : (v.variant_alert_qty ?? 0);
-                        let vBarcode  = v.barcode || v.variant_barcode || (product.barcode_path ?? product.item_code);
-                        let vUnit     = v.unit || v.variant_unit || (product.unit ? product.unit.name : 'Pcs');
-
-                        let colorBadge = (vColorVal && vColorVal !== '-') ? `<span style="background:#e2e8f0;border-radius:4px;padding:2px 6px;font-size:.72rem;">${vColorVal}</span>` : '<span style="color:#94a3b8;">—</span>';
-                        let alertQty  = (vAlert != null && vAlert != 0) ? vAlert : '-';
-                        
-                        if (product.size_mode === 'by_kg' && v.conv_factor != 1 && !v.unit) vUnit = 'Pcs';
-                        let vPriceLabel = product.size_mode === 'by_size' ? '/m²' : '/' + vUnit;
-
-                        tbody.append(`<tr>
-                            <td class="text-start ps-4 fw-semibold">${vName}</td>
-                            <td>${vSize}</td>
-                            <td>${colorBadge}</td>
-                            <td>${stockBadgeHtml(vStock, vAlert)}</td>
-                            <td class="fw-bold" style="color:#059669;">Rs. ${parseFloat(vSale||0).toFixed(2)} <small class="fw-normal text-muted">${vPriceLabel}</small></td>
-                            <td class="text-muted">Rs. ${parseFloat(vPurch||0).toFixed(2)} <small>${vPriceLabel}</small></td>
-                            <td><span style="background:#fef2f2;color:#dc2626;border:1px solid #fecaca;border-radius:4px;padding:2px 6px;font-size:.72rem;">${alertQty}</span></td>
-                            <td class="text-end pe-4"><code style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:4px;padding:2px 6px;font-size:.75rem;">${vBarcode}</code></td>
-                        </tr>`);
-                    });
+                if (mode === 'matrix') {
+                    $('#modalMatrixContainer').removeClass('d-none');
+                    $('#modalContentRow').addClass('d-none');
                 } else {
-                    colorList.forEach((color, index) => {
-                        let barcode   = (product.barcode_path ?? product.item_code ?? '') + (index > 0 ? '-' + String(index+1).padStart(2,'0') : '');
-                        let colorBadge = (color && color !== '-') ? `<span style="background:#e2e8f0;border-radius:4px;padding:2px 6px;font-size:.72rem;">${color}</span>` : '<span style="color:#94a3b8;">—</span>';
-                        tbody.append(`<tr>
-                            <td class="text-start ps-4 fw-semibold">${product.item_name}</td>
-                            <td>${sizeStr}</td>
-                            <td>${colorBadge}</td>
-                            <td>${stockBadgeHtml(stock, product.alert_carton_quantity)}</td>
-                            <td class="fw-bold" style="color:#059669;">Rs. ${parseFloat(salePrice||0).toFixed(2)} <small class="fw-normal text-muted">${priceLabel}</small></td>
-                            <td class="text-muted">Rs. ${parseFloat(purchPrice||0).toFixed(2)} <small>${priceLabel}</small></td>
-                            <td><span style="background:#fef2f2;color:#dc2626;border:1px solid #fecaca;border-radius:4px;padding:2px 6px;font-size:.72rem;">${alertDef}</span></td>
-                            <td class="text-end pe-4"><code style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:4px;padding:2px 6px;font-size:.75rem;">${barcode}</code></td>
-                        </tr>`);
-                    });
+                    $('#modalContentRow').removeClass('d-none');
+                    $('#modalMatrixContainer').addClass('d-none');
                 }
             },
             error: function() {
@@ -1477,7 +1619,399 @@ $(document).ready(function () {
                 Swal.fire('Error', 'Could not fetch product details.', 'error');
             }
         });
+    }
+
+    function renderOdooMatrixView(product, variants) {
+        // Base Info
+        $('#matrix_item_name').text(product.item_name || 'Product');
+        let basePrice = product.size_mode === 'by_size' ? product.price_per_m2 : (product.sale_price_per_piece || product.sale_price_per_box || 0);
+        $('#matrix_item_price').text('Rs. ' + parseFloat(basePrice).toFixed(2));
+        
+        let totalStock = product.calculated_total_stock_qty ?? 0;
+        let baseUnit = product.unit ? product.unit.name : 'Units';
+        $('#matrix_stock_display').text(totalStock + ' ' + baseUnit);
+
+        $('#matrix_serial_badge_container').addClass('d-none');
+        $('#btnMatrixAdd').prop('disabled', true);
+        $('#matrixSelectedVariantInfo').html('<span class="text-muted"><i class="fas fa-info-circle me-1"></i> Select attributes above to view stock and pricing</span>');
+
+        currentSelectedAttrs = {};
+        currentMatchedVariant = null;
+
+        const $attrGroups = $('#matrixAttributeGroups');
+        $attrGroups.empty();
+
+        if (!variants || variants.length === 0) {
+            $attrGroups.html(`
+                <div class="alert alert-light border text-center py-4">
+                    <i class="fas fa-box-open fa-2x text-muted mb-2"></i>
+                    <p class="text-muted mb-0">This product has no variants configured. It is a single standard product.</p>
+                </div>
+            `);
+            $('#btnMatrixAdd').prop('disabled', false).html('<i class="fas fa-plus me-1"></i> Add Product');
+            return;
+        }
+
+        // Extract Attributes from variants with smart fractional preservation
+        const attrMap = extractProductAttributes(product, variants);
+        const attrKeys = Object.keys(attrMap);
+
+        if (attrKeys.length === 0) {
+            $attrGroups.html(`
+                <div class="alert alert-light border text-center py-4">
+                    <p class="text-muted mb-0">No distinct attributes found.</p>
+                </div>
+            `);
+            return;
+        }
+
+        // Build UI for each attribute
+        attrKeys.forEach((attrKey, aIdx) => {
+            const values = attrMap[attrKey];
+            let radioItemsHtml = '';
+
+            values.forEach((val, vIdx) => {
+                const radioId = `matrix_radio_${aIdx}_${vIdx}`;
+                radioItemsHtml += `
+                    <label class="matrix-radio-pill" for="${radioId}">
+                        <input type="radio" 
+                               name="matrix_attr_${aIdx}" 
+                               id="${radioId}" 
+                               value="${val}" 
+                               data-attr="${attrKey}" 
+                               class="matrix-attr-input" 
+                               style="position: static !important; width: 16px; height: 16px; accent-color: #00A09D; cursor: pointer; margin: 0; vertical-align: middle;">
+                        <span class="matrix-attr-val" style="font-size: 13.5px; color: #1e293b; font-weight: 600; margin-left: 7px; user-select: none;">
+                            ${val}
+                        </span>
+                    </label>
+                `;
+            });
+
+            const groupHtml = `
+                <div class="matrix-attr-row mb-3" data-attr="${attrKey}">
+                    <div class="fw-bold text-dark mb-2" style="font-size: 14px; letter-spacing: -0.2px;">
+                        ${attrKey}
+                    </div>
+                    <div class="d-flex flex-wrap align-items-center gap-2 matrix-values-wrap">
+                        ${radioItemsHtml}
+                    </div>
+                </div>
+            `;
+            $attrGroups.append(groupHtml);
+        });
+
+        // Pill change event handler
+        $('.matrix-attr-input').on('change', function() {
+            const changedAttr = $(this).data('attr');
+            const changedVal = $(this).val();
+            currentSelectedAttrs[changedAttr] = changedVal;
+
+            // Highlight selected pill
+            $(this).closest('.matrix-attr-row').find('.matrix-radio-pill').removeClass('selected-pill');
+            $(this).closest('.matrix-radio-pill').addClass('selected-pill');
+
+            updateMatrixCombinations(product, variants, attrKeys);
+        });
+    }
+
+    function extractProductAttributes(product, variants) {
+        let attrMap = {};
+        let nameParts = [];
+        let hasNamePattern = false;
+
+        variants.forEach(v => {
+            let vName = v.name || v.variant_name || '';
+            let match = vName.match(/\((.*?)\)/);
+            if (match && match[1]) {
+                // Split strictly by ' / ' (space slash space) so fractions like 1/2 or 3/4 are not broken!
+                let parts = match[1].split(/\s+\/\s+/).map(s => s.trim()).filter(Boolean);
+                if (parts.length >= 2) {
+                    hasNamePattern = true;
+                    nameParts.push(parts);
+                }
+            }
+        });
+
+        if (hasNamePattern && nameParts.length === variants.length) {
+            let numParts = nameParts[0].length;
+            let partDefs = [];
+
+            for (let i = 0; i < numParts; i++) {
+                let distinctVals = [...new Set(nameParts.map(p => p[i]))];
+                let isFractionOrMeasurement = distinctVals.some(v => v.includes('/') || /\d+["']|\d+mm|\d+cm/i.test(v));
+                let isAllNumbers = distinctVals.every(v => /^\d+(\.\d+)?$/.test(v));
+                
+                // Check if matches v.size or v.color
+                let matchesSize = variants.every((v, idx) => (v.size && v.size !== '-' && v.size === nameParts[idx][i]));
+                let matchesColor = variants.every((v, idx) => (v.color && v.color !== '-' && v.color === nameParts[idx][i]));
+
+                partDefs.push({
+                    partIndex: i,
+                    distinctVals: distinctVals,
+                    isFractionOrMeasurement: isFractionOrMeasurement,
+                    isAllNumbers: isAllNumbers,
+                    matchesSize: matchesSize,
+                    matchesColor: matchesColor,
+                    count: distinctVals.length
+                });
+            }
+
+            // Determine labels
+            let pNameLower = (product.item_name || '').toLowerCase();
+            let isScrewOrFastener = pNameLower.includes('screw') || pNameLower.includes('bolt') || pNameLower.includes('nut') || pNameLower.includes('nail');
+
+            partDefs.forEach((pd, i) => {
+                let label = '';
+                if (pd.matchesSize || pd.isFractionOrMeasurement) {
+                    label = isScrewOrFastener ? 'Length' : 'Size';
+                } else if (pd.matchesColor || (isScrewOrFastener && pd.isAllNumbers)) {
+                    label = isScrewOrFastener ? 'Gauge' : 'Color';
+                } else {
+                    label = `Option ${i + 1}`;
+                }
+
+                // If label already exists, append counter
+                let finalLabel = label;
+                let counter = 2;
+                while (partDefs.some((other, oIdx) => oIdx < i && other.label === finalLabel)) {
+                    finalLabel = `${label} ${counter++}`;
+                }
+                pd.label = finalLabel;
+            });
+
+            // If some parts vary (count > 1), only show parts that vary so single constant labels don't clutter
+            let varyingCount = partDefs.filter(p => p.count > 1).length;
+            let activeDefs = varyingCount > 0 ? partDefs.filter(p => p.count > 1) : partDefs;
+
+            // Sort so Gauge comes before Length (standard video order)
+            activeDefs.sort((a, b) => {
+                if (a.label === 'Gauge' && b.label === 'Length') return -1;
+                if (a.label === 'Length' && b.label === 'Gauge') return 1;
+                return 0;
+            });
+
+            // Build attrMap and variant attributes
+            activeDefs.forEach(pd => {
+                attrMap[pd.label] = pd.distinctVals;
+            });
+
+            variants.forEach((v, vIdx) => {
+                v._attrs = {};
+                partDefs.forEach(pd => {
+                    v._attrs[pd.label] = nameParts[vIdx][pd.partIndex];
+                });
+            });
+        } else {
+            let sizes = [...new Set(variants.map(v => v.size || v.variant_size).filter(s => s && s !== '-'))];
+            let colors = [...new Set(variants.map(v => v.color || v.variant_color).filter(c => c && c !== '-'))];
+
+            let pNameLower = (product.item_name || '').toLowerCase();
+            let isScrewOrFastener = pNameLower.includes('screw') || pNameLower.includes('bolt') || pNameLower.includes('nut') || pNameLower.includes('nail');
+            let sizeLabel = isScrewOrFastener ? 'Length' : 'Size';
+            let colorLabel = isScrewOrFastener ? 'Gauge' : 'Color';
+
+            if (colors.length > 0) attrMap[colorLabel] = colors;
+            if (sizes.length > 0) attrMap[sizeLabel] = sizes;
+
+            variants.forEach(v => {
+                v._attrs = {};
+                if (colors.length > 0) v._attrs[colorLabel] = v.color || v.variant_color || '-';
+                if (sizes.length > 0) v._attrs[sizeLabel] = v.size || v.variant_size || '-';
+            });
+        }
+
+        return attrMap;
+    }
+
+    function updateMatrixCombinations(product, variants, attrKeys) {
+        // Dynamic Inactive / Disabled state as shown in video:
+        // For each attribute row, check which options are valid with currentSelectedAttrs
+        attrKeys.forEach((attrKey, aIdx) => {
+            const $row = $(`.matrix-attr-row[data-attr="${attrKey}"]`);
+            $row.find('.matrix-attr-input').each(function() {
+                const $radio = $(this);
+                const val = $radio.val();
+                const $pill = $radio.closest('.matrix-radio-pill');
+
+                // Hypothetical selection
+                const testAttrs = Object.assign({}, currentSelectedAttrs);
+                testAttrs[attrKey] = val;
+
+                // Check if ANY variant matches testAttrs on all set keys
+                const hasValidVariant = variants.some(v => {
+                    return Object.entries(testAttrs).every(([k, vVal]) => {
+                        return !vVal || v._attrs[k] === vVal;
+                    });
+                });
+
+                if (hasValidVariant) {
+                    $radio.prop('disabled', false);
+                    $pill.removeClass('disabled-pill');
+                } else {
+                    $radio.prop('disabled', true);
+                    if ($radio.is(':checked')) {
+                        $radio.prop('checked', false);
+                        delete currentSelectedAttrs[attrKey];
+                        $pill.removeClass('selected-pill');
+                    }
+                    $pill.addClass('disabled-pill');
+                }
+            });
+        });
+
+        // Check if all attributes have been selected
+        const allSelected = attrKeys.every(k => !!currentSelectedAttrs[k]);
+
+        if (allSelected) {
+            // Find exact variant
+            const matched = variants.find(v => {
+                return attrKeys.every(k => v._attrs[k] === currentSelectedAttrs[k]);
+            });
+
+            if (matched) {
+                currentMatchedVariant = matched;
+                
+                // Update Price
+                const salePrice = matched.sale_price !== undefined ? matched.sale_price : (product.sale_price_per_piece || 0);
+                $('#matrix_item_price').text('Rs. ' + parseFloat(salePrice).toFixed(2));
+
+                // Update Free to use stock
+                const stockQty = matched.stock !== undefined ? matched.stock : 0;
+                const unit = matched.unit || product.unit?.name || 'Units';
+                $('#matrix_stock_display').text(`${stockQty} ${unit}`);
+
+                // Serial No
+                if (matched.serial_no) {
+                    $('#matrix_serial_badge').text(matched.serial_no);
+                    $('#matrix_serial_badge_container').removeClass('d-none');
+                } else {
+                    $('#matrix_serial_badge_container').addClass('d-none');
+                }
+
+                $('#matrixSelectedVariantInfo').html(`
+                    <span class="badge bg-success-subtle text-success border border-success-subtle px-2 py-1 me-2 font-monospace">
+                        <i class="fas fa-check-circle me-1"></i> Ready
+                    </span>
+                    <span class="fw-bold text-dark font-monospace">${matched.name || matched.variant_name || product.item_name}</span>
+                    ${matched.serial_no ? `<span class="badge bg-primary-subtle text-primary border border-primary-subtle font-monospace ms-2">[${matched.serial_no}]</span>` : ''}
+                    <span class="text-muted ms-2">(Stock: ${stockQty} ${unit})</span>
+                `);
+
+                $('#btnMatrixAdd').prop('disabled', false).html('<i class="fas fa-check me-1"></i> Add Variant');
+            } else {
+                currentMatchedVariant = null;
+                $('#matrix_serial_badge_container').addClass('d-none');
+                $('#matrixSelectedVariantInfo').html('<span class="text-warning"><i class="fas fa-exclamation-triangle me-1"></i> Combination not available in stock</span>');
+                $('#btnMatrixAdd').prop('disabled', true).text('Add');
+            }
+        } else {
+            currentMatchedVariant = null;
+            $('#matrix_serial_badge_container').addClass('d-none');
+            const remainingCount = attrKeys.filter(k => !currentSelectedAttrs[k]).length;
+            $('#matrixSelectedVariantInfo').html(`<span class="text-muted"><i class="fas fa-info-circle me-1"></i> Select remaining ${remainingCount} attribute(s) to view exact variant</span>`);
+            $('#btnMatrixAdd').prop('disabled', true).text('Add');
+        }
+    }
+
+    // Add button handler
+    $(document).on('click', '#btnMatrixAdd', function() {
+        if (!currentMatchedVariant && (!currentLoadedVariants || currentLoadedVariants.length > 0)) return;
+
+        const vName = currentMatchedVariant ? (currentMatchedVariant.name || currentLoadedProduct.item_name) : currentLoadedProduct.item_name;
+        const vSerial = currentMatchedVariant ? (currentMatchedVariant.serial_no || 'N/A') : 'N/A';
+        const vStock = currentMatchedVariant ? currentMatchedVariant.stock : (currentLoadedProduct.calculated_total_stock_qty ?? 0);
+        const vUnit = currentMatchedVariant ? (currentMatchedVariant.unit || 'Units') : 'Units';
+
+        Swal.fire({
+            title: 'Variant Selected!',
+            html: `
+                <div class="text-start p-2">
+                    <div class="fw-bold fs-6 text-dark mb-1">${vName}</div>
+                    <div class="text-muted small mb-2 font-monospace">Serial No: <strong>${vSerial}</strong></div>
+                    <div class="badge bg-success-subtle text-success border border-success-subtle mb-3">Free To Use: ${vStock} ${vUnit}</div>
+                    <p class="small text-secondary mb-0">What would you like to do?</p>
+                </div>
+            `,
+            icon: 'success',
+            showCancelButton: true,
+            confirmButtonText: '<i class="fas fa-cash-register me-1"></i> Open in Sales Invoice',
+            confirmButtonColor: '#714B67',
+            cancelButtonText: 'Stay on Page'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                window.location.href = "{{ route('sale.add') }}";
+            }
+        });
     });
+
+    // Render Table View Helper
+    function renderTableView(product, variants, colorList) {
+        let tbody = $('#variantTableBody');
+        tbody.empty();
+
+        let sizeStr = '-';
+        if (product.size_mode === 'by_size')
+            sizeStr = (product.height || 0) + ' x ' + (product.width || 0) + ' cm';
+
+        let stock     = product.calculated_total_stock_qty ?? 0;
+        let alertDef  = product.alert_carton_quantity != null ? product.alert_carton_quantity + '' : '-';
+        let salePrice = product.size_mode === 'by_size' ? product.price_per_m2 : (product.sale_price_per_piece || product.sale_price_per_box || 0);
+        let purchPrice= product.size_mode === 'by_size' ? product.purchase_price_per_m2 : (product.purchase_price_per_piece || 0);
+        let priceLabel= product.size_mode === 'by_size' ? '/m²' : '/pc';
+
+        function stockBadgeHtml(qty, alert) {
+            let isLow = qty > 0 && alert != null && qty <= alert;
+            let cls   = qty == 0 ? 'background:#fef3c7;color:#b45309;border:1px solid #fde68a;' : (isLow ? 'background:#fef2f2;color:#dc2626;border:1px solid #fecaca;' : 'background:#ecfdf5;color:#059669;border:1px solid #a7f3d0;');
+            return `<span style="${cls} border-radius:6px; padding:3px 8px; font-size:.78rem; font-weight:600;">${qty}</span>`;
+        }
+
+        if (variants.length > 0) {
+            variants.forEach(v => {
+                let vName     = v.name || v.variant_name || product.item_name;
+                let vSize     = v.size || v.variant_size || '-';
+                let vColorVal = v.color || v.variant_color || '-';
+                let vStock    = (v.stock !== undefined && v.stock !== null && v.stock !== '') ? v.stock : (v.variant_stock ?? 0);
+                let vSale     = (v.sale_price !== undefined && v.sale_price !== null && v.sale_price !== '') ? v.sale_price : (v.variant_sale_price ?? 0);
+                let vPurch    = (v.purch_price !== undefined && v.purch_price !== null && v.purch_price !== '') ? v.purch_price : (v.purchase_price ?? v.variant_purchase_price ?? 0);
+                let vAlert    = (v.alert !== undefined && v.alert !== null && v.alert !== '') ? v.alert : (v.variant_alert_qty ?? 0);
+                let vBarcode  = v.barcode || v.variant_barcode || (product.barcode_path ?? product.item_code);
+                let vUnit     = v.unit || v.variant_unit || (product.unit ? product.unit.name : 'Pcs');
+
+                let colorBadge = (vColorVal && vColorVal !== '-') ? `<span style="background:#e2e8f0;border-radius:4px;padding:2px 6px;font-size:.72rem;">${vColorVal}</span>` : '<span style="color:#94a3b8;">—</span>';
+                let alertQty  = (vAlert != null && vAlert != 0) ? vAlert : '-';
+                
+                if (product.size_mode === 'by_kg' && v.conv_factor != 1 && !v.unit) vUnit = 'Pcs';
+                let vPriceLabel = product.size_mode === 'by_size' ? '/m²' : '/' + vUnit;
+
+                tbody.append(`<tr>
+                    <td class="text-start ps-4 fw-semibold">${vName}</td>
+                    <td>${vSize}</td>
+                    <td>${colorBadge}</td>
+                    <td>${stockBadgeHtml(vStock, vAlert)}</td>
+                    <td class="fw-bold" style="color:#059669;">Rs. ${parseFloat(vSale||0).toFixed(2)} <small class="fw-normal text-muted">${vPriceLabel}</small></td>
+                    <td class="text-muted">Rs. ${parseFloat(vPurch||0).toFixed(2)} <small>${vPriceLabel}</small></td>
+                    <td><span style="background:#fef2f2;color:#dc2626;border:1px solid #fecaca;border-radius:4px;padding:2px 6px;font-size:.72rem;">${alertQty}</span></td>
+                    <td class="text-end pe-4"><code style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:4px;padding:2px 6px;font-size:.75rem;">${vBarcode}</code></td>
+                </tr>`);
+            });
+        } else {
+            colorList.forEach((color, index) => {
+                let barcode   = (product.barcode_path ?? product.item_code ?? '') + (index > 0 ? '-' + String(index+1).padStart(2,'0') : '');
+                let colorBadge = (color && color !== '-') ? `<span style="background:#e2e8f0;border-radius:4px;padding:2px 6px;font-size:.72rem;">${color}</span>` : '<span style="color:#94a3b8;">—</span>';
+                tbody.append(`<tr>
+                    <td class="text-start ps-4 fw-semibold">${product.item_name}</td>
+                    <td>${sizeStr}</td>
+                    <td>${colorBadge}</td>
+                    <td>${stockBadgeHtml(stock, product.alert_carton_quantity)}</td>
+                    <td class="fw-bold" style="color:#059669;">Rs. ${parseFloat(salePrice||0).toFixed(2)} <small class="fw-normal text-muted">${priceLabel}</small></td>
+                    <td class="text-muted">Rs. ${parseFloat(purchPrice||0).toFixed(2)} <small>${priceLabel}</small></td>
+                    <td><span style="background:#fef2f2;color:#dc2626;border:1px solid #fecaca;border-radius:4px;padding:2px 6px;font-size:.72rem;">${alertDef}</span></td>
+                    <td class="text-end pe-4"><code style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:4px;padding:2px 6px;font-size:.75rem;">${barcode}</code></td>
+                </tr>`);
+            });
+        }
+    }
 
     // ── Toggle Active ──
     $(document).on('click', '.toggle-active-btn', function () {

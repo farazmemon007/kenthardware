@@ -1757,7 +1757,7 @@
                         </div>
 
                         {{-- Operational Checkboxes --}}
-                        <div class="flags-row">
+                        <div class="flags-row d-flex align-items-center flex-wrap gap-3">
                             <label class="odoo-check-label">
                                 <input type="checkbox" name="can_be_sold" id="can_be_sold" value="1" checked>
                                 <span>Sales</span>
@@ -1772,6 +1772,15 @@
                                 <input type="checkbox" name="point_of_sale" id="point_of_sale" value="1">
                                 <span>Point of Sale</span>
                                 <span class="tooltip-icon" data-bs-toggle="tooltip" title="Available in Point of Sale (POS) register"><i class="fas fa-question-circle"></i></span>
+                            </label>
+
+                            <div class="vr mx-1 text-muted d-none d-sm-block" style="height: 18px;"></div>
+
+                            {{-- Product Status (Active vs Draft / Planning Mode - Video2 00:48 - 02:37) --}}
+                            <label class="odoo-check-label d-flex align-items-center gap-1.5" title="Active: Visible in catalog & sales. Uncheck for Draft/Planning mode.">
+                                <input type="checkbox" name="is_active" id="is_active" value="1" checked onchange="document.getElementById('statusLabelBadge').textContent = this.checked ? 'Active' : 'Draft (Planned)'; document.getElementById('statusLabelBadge').className = this.checked ? 'badge bg-success-subtle text-success border border-success-subtle px-2 py-0.5' : 'badge bg-warning-subtle text-warning border border-warning-subtle px-2 py-0.5';">
+                                <span>Status:</span>
+                                <span class="badge bg-success-subtle text-success border border-success-subtle px-2 py-0.5" id="statusLabelBadge" style="font-size: 11px;">Active</span>
                             </label>
                         </div>
                     </div>
@@ -1910,39 +1919,24 @@
                             {{-- Right Column: Pricing & Identification --}}
                             <div class="col-lg-7 col-md-12">
                                 
-                                {{-- Card 1: Pricing & Taxes --}}
+                                {{-- Card 1: Taxation Settings (Pricing managed via Variants Matrix) --}}
                                 <div class="erp-section-card mb-2">
-                                    <div class="erp-section-header">
-                                        <h6 class="erp-section-title">
-                                            <i class="fas fa-calculator text-primary"></i> Pricing & Taxation
+                                    <div class="erp-section-header d-flex justify-content-between align-items-center">
+                                        <h6 class="erp-section-title mb-0">
+                                            <i class="fas fa-percent text-primary"></i> Taxation Settings
                                         </h6>
+                                        <span class="badge bg-primary bg-opacity-10 text-primary border border-primary border-opacity-25" style="font-size:11px;">
+                                            <i class="fas fa-info-circle me-1"></i> Pricing managed in Variants Matrix
+                                        </span>
                                     </div>
                                     <div class="erp-section-body">
-                                        <div class="row g-2">
-                                            <div class="col-md-6">
-                                                {{-- Sales Price ? --}}
-                                                <div class="form-row-item">
-                                                    <label class="field-label">
-                                                        Sales Price
-                                                        <span class="tooltip-icon" title="Standard customer selling price per unit"><i class="fas fa-question-circle"></i></span>
-                                                    </label>
-                                                    <div class="field-value">
-                                                        <div class="currency-input-wrap">
-                                                            <span class="currency-prefix">Rs.</span>
-                                                            <input type="number" 
-                                                                   step="any" 
-                                                                   class="odoo-input text-end fw-bold text-primary" 
-                                                                   style="max-width: 95px;" 
-                                                                   name="general_sale_price" 
-                                                                   id="general_sale_price" 
-                                                                   placeholder="1.00" 
-                                                                   value="1.00">
-                                                            <span class="unit-suffix" id="unitSuffixSale">per Units</span>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
+                                        {{-- Hidden inputs to preserve backend and script compatibility --}}
+                                        <input type="hidden" name="general_sale_price" id="general_sale_price" value="1.00">
+                                        <input type="hidden" name="general_cost_price" id="general_cost_price" value="0.00">
+                                        <span id="unitSuffixSale" class="d-none">per Units</span>
+                                        <span id="unitSuffixCost" class="d-none">per Units</span>
 
+                                        <div class="row g-2">
                                             <div class="col-md-6">
                                                 {{-- Sales Taxes ? --}}
                                                 <div class="form-row-item">
@@ -1963,30 +1957,6 @@
                                                                 <option value="10">10%</option>
                                                                 <option value="18">18%</option>
                                                             </select>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-
-                                            <div class="col-md-6">
-                                                {{-- Cost ? --}}
-                                                <div class="form-row-item">
-                                                    <label class="field-label">
-                                                        Cost
-                                                        <span class="tooltip-icon" title="Product purchase / manufacturing cost per unit"><i class="fas fa-question-circle"></i></span>
-                                                    </label>
-                                                    <div class="field-value">
-                                                        <div class="currency-input-wrap">
-                                                            <span class="currency-prefix">Rs.</span>
-                                                            <input type="number" 
-                                                                   step="any" 
-                                                                   class="odoo-input text-end fw-bold" 
-                                                                   style="max-width: 95px;" 
-                                                                   name="general_cost_price" 
-                                                                   id="general_cost_price" 
-                                                                   placeholder="0.00" 
-                                                                   value="0.00">
-                                                            <span class="unit-suffix" id="unitSuffixCost">per Units</span>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -2148,6 +2118,7 @@
                                             <thead>
                                                 <tr>
                                                     <th style="width: 32px;" class="text-center col-select"><input type="checkbox" class="form-check-input" id="selectAllVariantsCheck" title="Select All"></th>
+                                                    <th style="width: 105px;" class="col-serial text-center">Serial No</th>
                                                     <th style="width: 130px;" class="col-ref">Internal Ref</th>
                                                     <th style="min-width: 120px;" class="col-name">Product Name</th>
                                                     <th style="min-width: 180px;" class="col-attrs">Attributes</th>
@@ -2388,6 +2359,25 @@
                                                     <option value="">Main Warehouse</option>
                                                 @endif
                                             </select>
+                                        </div>
+
+                                        <div class="mb-2">
+                                            <label class="form-label fw-semibold text-muted d-flex justify-content-between align-items-center" style="font-size:12px;">
+                                                <span><i class="fas fa-layer-group text-primary me-1"></i> Rack / Shelf Location</span>
+                                                <span class="badge bg-light text-secondary border" style="font-size:10px;">Godown & Shop</span>
+                                            </label>
+                                            <div class="input-group input-group-sm">
+                                                <span class="input-group-text bg-white text-muted"><i class="fas fa-map-marker-alt"></i></span>
+                                                <input type="text" 
+                                                       class="form-control" 
+                                                       name="remarks" 
+                                                       id="remarks" 
+                                                       placeholder="e.g. SA, SB, SC (Shop) or GA, GB, Shelf 48 (Godown)"
+                                                       title="Specify the exact rack or shelf location for this product">
+                                            </div>
+                                            <small class="text-muted" style="font-size:11px;">
+                                                Warehouse/Godown shelves (e.g. GA to GZ, 1 to 48) ya Shop rack code enter karein.
+                                            </small>
                                         </div>
                                     </div>
                                 </div>
@@ -4386,12 +4376,30 @@
                 const isCartonMode = unitDropdown && unitDropdown.value === 'by_cartons';
                 const itemCodeVal = document.getElementById('reference')?.value.trim() || document.getElementById('item_code')?.value.trim() || '';
 
+                function getProductPrefix(pName) {
+                    let clean = (pName || '').trim().replace(/[^a-zA-Z0-9\s]/g, '');
+                    if (!clean) return 'VAR';
+                    let words = clean.split(/\s+/);
+                    if (words.length >= 2) {
+                        let p = '';
+                        for (let w of words) {
+                            if (w) p += w[0].toUpperCase();
+                            if (p.length >= 4) break;
+                        }
+                        return p || 'VAR';
+                    } else {
+                        let single = words[0].toUpperCase();
+                        return single.length >= 3 ? single.substring(0, 3) : single.padEnd(3, 'X');
+                    }
+                }
+
                 // Preserve existing prices / barcodes if previously modified
                 const existingData = {};
                 variantsBody.querySelectorAll('tr').forEach(tr => {
                     const vName = tr.querySelector('[name="variant_name[]"]')?.value;
                     if (vName) {
                         existingData[vName] = {
+                            serial: tr.querySelector('[name="variant_serial_no[]"]')?.value,
                             ref: tr.querySelector('[name="variant_ref[]"]')?.value,
                             stock: tr.querySelector('[name="variant_stock[]"]')?.value,
                             sale: tr.querySelector('[name="variant_sale_price[]"]')?.value,
@@ -4488,6 +4496,9 @@
                     });
 
                     const prev = existingData[comboName] || {};
+                    const vPrefix = getProductPrefix(productName);
+                    const defaultSerial = `${vPrefix}-${String(idx + 1).padStart(4, '0')}`;
+                    const vSerial = prev.serial !== undefined ? prev.serial : defaultSerial;
                     const vRef = prev.ref !== undefined ? prev.ref : (itemCodeVal ? `${itemCodeVal}-${comboLabels.replace(/\s+/g, '')}` : '');
                     const vStock = prev.stock !== undefined ? prev.stock : '0';
                     const vSale = prev.sale !== undefined ? prev.sale : (baseSale + extraPriceTotal).toFixed(2);
@@ -4508,6 +4519,9 @@
                             <input type="hidden" name="variant_size[]" value="${sizeVal}">
                             <input type="hidden" name="variant_color[]" value="${colorVal}">
                             <input type="hidden" name="variant_alert_qty[]" value="0">
+                        </td>
+                        <td class="p-1 col-serial text-center">
+                            <input type="text" class="form-control form-control-sm text-center fw-bold text-primary font-monospace" name="variant_serial_no[]" value="${vSerial}" placeholder="SN" style="font-size:11px; max-width:95px;">
                         </td>
                         <td class="p-1 col-ref">
                             <input type="text" class="form-control form-control-sm text-muted font-monospace" name="variant_ref[]" value="${vRef}" placeholder="Ref">
@@ -4596,6 +4610,7 @@
                 const isCartonMode = unitDropdown && unitDropdown.value === 'by_cartons';
                 const initSale = genSaleInput ? (genSaleInput.value || '1.00') : '1.00';
                 const initCost = genCostInput ? (genCostInput.value || '0.00') : '0.00';
+                const baseSerial = `${getProductPrefix(productName)}-0001`;
 
                 tr.innerHTML = `
                     <td class="text-center p-1 col-select">
@@ -4604,6 +4619,9 @@
                         <input type="hidden" name="variant_size[]" value="-">
                         <input type="hidden" name="variant_color[]" value="-">
                         <input type="hidden" name="variant_alert_qty[]" value="0">
+                    </td>
+                    <td class="p-1 col-serial text-center">
+                        <input type="text" class="form-control form-control-sm text-center fw-bold text-primary font-monospace" name="variant_serial_no[]" value="${baseSerial}" placeholder="SN" style="font-size:11px; max-width:95px;">
                     </td>
                     <td class="p-1 col-ref">
                         <input type="text" class="form-control form-control-sm text-muted font-monospace" name="variant_ref[]" value="" placeholder="Ref">
@@ -4968,6 +4986,7 @@
             // 13. QUICKBOOKS POS DESKTOP STYLE: CUSTOMIZE MATRIX COLUMNS
             // =========================================================
             const VARIANT_COLUMNS = [
+                { key: 'col-serial',     label: 'Serial No',          default: true },
                 { key: 'col-ref',       label: 'Internal Ref',       default: true },
                 { key: 'col-name',      label: 'Product Name',       default: true },
                 { key: 'col-attrs',     label: 'Attributes',         default: true },

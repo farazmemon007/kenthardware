@@ -208,6 +208,7 @@ class POSController extends Controller
                     $variantItems[] = [
                         'id' => $p->id . '|variant|' . base64_encode($variantJson),
                         'name' => $vName,
+                        'serial_no' => $v['serial_no'] ?? '',
                         'size_val' => $v['size'] ?? '-',
                         'color_val' => $v['color'] ?? '-',
                         'price' => $v['sale_price'] ?? $p->sale_price_per_piece ?? 0,

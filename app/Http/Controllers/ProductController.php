@@ -89,19 +89,27 @@ class ProductController extends Controller
     public function ajaxSearch(Request $request)
     {
         $term = $request->get('term') ?? $request->get('q') ?? '';
+        $productId = $request->get('product_id');
 
         $query = Product::query()
             ->select('id', 'item_name', 'item_code', 'barcode_path', 'size_mode', 'unit_id', 'height', 'width', 'pieces_per_box', 'purchase_price_per_box', 'purchase_price_per_m2', 'purchase_price_per_piece', 'pieces_per_m2', 'purchase_discount_percent', 'sale_discount_percent', 'color', 'sale_price_per_piece')
             ->with(['unit'])
             ->withSum('warehouseStocks', 'total_pieces') /* Sum PIECES, not boxes */
-            ->where('is_active', true) /* Only active products */
-            ->where(function ($q) use ($term) {
+            ->where('is_active', true); /* Only active products */
+
+        if (!empty($productId)) {
+            $query->where('id', $productId);
+        } elseif (!empty($term)) {
+            $query->where(function ($q) use ($term) {
                 $q->where('item_name', 'like', "%{$term}%")
                     ->orWhere('item_code', 'like', "%{$term}%")
-                    ->orWhere('barcode_path', 'like', "%{$term}%");
+                    ->orWhere('barcode_path', 'like', "%{$term}%")
+                    ->orWhere('color', 'like', "%{$term}%");
             });
+        }
 
-        $products = $query->paginate(10); // Lazy loading (10 per request)
+        $perPage = !empty($productId) ? 50 : 10;
+        $products = $query->paginate($perPage); // Lazy loading
 
         $results = $products->getCollection()->flatMap(function ($p) {
             $stockPieces = (float) ($p->warehouse_stocks_sum_total_pieces ?? 0);
@@ -325,12 +333,36 @@ class ProductController extends Controller
                         $vStockDisplay = $vLoose > 0 ? "$vBoxes.$vLoose" : $vBoxes;
                     }
 
+                    $vSerial = $v['serial_no'] ?? '';
+                    $serialBadge = !empty($vSerial) ? "[{$vSerial}] " : '';
+
+                    // If a search term was entered and product_id is not specified, check if this variant matches
+                    if (!empty($term) && empty($productId)) {
+                        $termLower = strtolower(trim($term));
+                        $vBarcode = strtolower($v['barcode'] ?? '');
+                        $vSerialLower = strtolower($vSerial);
+                        $vNameLower = strtolower($vName);
+                        $pNameLower = strtolower($p->item_name);
+                        $pCodeLower = strtolower($p->item_code ?? '');
+                        
+                        $isMatch = str_contains($vSerialLower, $termLower)
+                                || str_contains($vBarcode, $termLower)
+                                || str_contains($vNameLower, $termLower)
+                                || str_contains($pNameLower, $termLower)
+                                || str_contains($pCodeLower, $termLower);
+
+                        if (!$isMatch) {
+                            continue;
+                        }
+                    }
+
                     $v['current_stock'] = $vStockDisplay;
                     $variantJson = json_encode($v);
 
                     $expanded[] = [
                         'id' => $p->id . '|variant|' . base64_encode($variantJson),
-                        'text' => $vName." (SKU: {$p->item_code})",
+                        'text' => "{$serialBadge}{$vName} (SKU: {$p->item_code})",
+                        'serial_no' => $vSerial,
                         'sku' => $p->item_code ?? '',
                         'stock' => $vStockDisplay,
                         'stock_pieces' => $vBalance,
@@ -507,6 +539,62 @@ class ProductController extends Controller
         $product->setAttribute('calculated_total_stock_qty', $totalPieces);
         $product->setAttribute('calculated_boxes_quantity', $boxes);
         $product->setAttribute('calculated_loose_pieces', $loose);
+
+        if ($product->color) {
+            $parsed = is_string($product->color) ? json_decode($product->color, true) : $product->color;
+            if (is_array($parsed) && count($parsed) > 0 && is_array($parsed[0])) {
+                $sales = \Illuminate\Support\Facades\DB::table('sale_items')->where('product_id', $id)->get();
+                $purchases = \Illuminate\Support\Facades\DB::table('purchase_items')->where('product_id', $id)->get();
+                $returns = \Illuminate\Support\Facades\DB::table('sale_return_items')->where('product_id', $id)->get();
+                $purchReturns = \Illuminate\Support\Facades\DB::table('purchase_return_items')->where('product_id', $id)->get();
+
+                foreach ($parsed as &$v) {
+                    $vPpb = isset($v['conv_factor']) && (float)$v['conv_factor'] > 0 ? (float)$v['conv_factor'] : $ppb;
+                    $vInitial = (float)($v['stock'] ?? 0);
+                    if ($product->size_mode === 'by_cartons') {
+                        $vInitial = $vInitial * $vPpb;
+                    }
+
+                    $sold = 0;
+                    foreach ($sales as $s) {
+                        if ($this->matchSaleItemToVariant($s, $v)) {
+                            $sold += (float)$s->total_pieces;
+                        }
+                    }
+
+                    $purchased = 0;
+                    foreach ($purchases as $pi) {
+                        if ($this->matchSaleItemToVariant($pi, $v)) {
+                            $pUnit = strtolower(trim($pi->unit ?? ''));
+                            if (in_array($pUnit, ['carton', 'ctn', 'box'])) {
+                                $purchased += ((float)$pi->qty) * $vPpb;
+                            } else {
+                                $purchased += (float)$pi->qty;
+                            }
+                        }
+                    }
+
+                    $returned = 0;
+                    foreach ($returns as $r) {
+                        if ($this->matchSaleItemToVariant($r, $v)) {
+                            $returned += (float)$r->qty;
+                        }
+                    }
+
+                    $pReturned = 0;
+                    foreach ($purchReturns as $pr) {
+                        if ($this->matchSaleItemToVariant($pr, $v)) {
+                            $pReturned += (float)$pr->qty;
+                        }
+                    }
+
+                    $vBalance = max(0, $vInitial + $purchased - $sold + $returned - $pReturned);
+                    $v['stock'] = $vBalance;
+                    $v['current_stock'] = $vBalance;
+                }
+                $product->color = $parsed;
+            }
+        }
 
         return response()->json($product);
     }
@@ -715,6 +803,8 @@ class ProductController extends Controller
                 $is_bases = $request->variant_is_base;
                 $units = $request->variant_unit;
                 $refs = $request->variant_ref;
+                $serial_nos = $request->variant_serial_no ?? [];
+                $prefix = \App\Services\VariantSerialService::generatePrefix($request->product_name ?? 'Product');
 
                 // Validate Conv Factors if Weight Unit is selected
                 if (in_array($mode, ['by_kg', 'by_gm', 'by_ton'])) {
@@ -787,6 +877,8 @@ class ProductController extends Controller
                             $vWholesalePrice = round($vWholesalePrice / $vConvFactor, 4);
                         }
 
+                        $vSerial = !empty($serial_nos[$i]) ? $serial_nos[$i] : sprintf('%s-%04d', $prefix, count($variants) + 1);
+
                         $variants[] = [
                             'name' => $names[$i],
                             'size' => $sizes[$i] ?? '-',
@@ -799,6 +891,7 @@ class ProductController extends Controller
                             'alert' => $alerts[$i] ?? 0,
                             'barcode' => $barcodes[$i] ?? '',
                             'sku' => $refs[$i] ?? '',
+                            'serial_no' => $vSerial,
                             'conv_factor' => $vConvFactor,
                             'is_base_variant' => $is_bases[$i] ?? 0,
                             'unit' => $units[$i] ?? 'Pcs',
@@ -840,6 +933,7 @@ class ProductController extends Controller
                 'sale_discount_percent' => $request->sale_discount_percent ?? 0,
                 'alert_quantity' => $request->alert_quantity,
                 'alert_carton_quantity' => $request->alert_carton_quantity,
+                'is_active' => $request->has('is_active') ? $request->boolean('is_active') : true,
 
                 // New Fields
                 'size_mode' => $mode,
@@ -895,7 +989,7 @@ class ProductController extends Controller
                 'product_id' => $product->id,
                 'quantity' => $boxesQuantity ?? 0,
                 'total_pieces' => $totalStockQty,
-                'remarks' => 'Initial Stock',
+                'remarks' => $request->filled('remarks') ? $request->remarks : 'Initial Stock',
             ]);
 
             // Log Stock Movement (Initial)
@@ -1121,6 +1215,8 @@ class ProductController extends Controller
                 $is_bases = $request->variant_is_base;
                 $units = $request->variant_unit;
                 $refs = $request->variant_ref;
+                $serial_nos = $request->variant_serial_no ?? [];
+                $prefix = \App\Services\VariantSerialService::generatePrefix($request->product_name ?? 'Product');
 
                 // Validate Conv Factors if Weight Unit is selected
                 if (in_array($mode, ['by_kg', 'by_gm', 'by_ton'])) {
@@ -1193,6 +1289,8 @@ class ProductController extends Controller
                             $vWholesalePrice = round($vWholesalePrice / $vConvFactor, 4);
                         }
 
+                        $vSerial = !empty($serial_nos[$i]) ? $serial_nos[$i] : sprintf('%s-%04d', $prefix, count($variants) + 1);
+
                         $variants[] = [
                             'name' => $names[$i],
                             'size' => $sizes[$i] ?? '-',
@@ -1205,6 +1303,7 @@ class ProductController extends Controller
                             'alert' => $alerts[$i] ?? 0,
                             'barcode' => $barcodes[$i] ?? '',
                             'sku' => $refs[$i] ?? '',
+                            'serial_no' => $vSerial,
                             'conv_factor' => $vConvFactor,
                             'is_base_variant' => $is_bases[$i] ?? 0,
                             'unit' => $units[$i] ?? 'Pcs',
