@@ -45,13 +45,15 @@
             background: #ffffff !important;
             border: 1px solid #cbd5e1 !important;
             border-radius: 8px !important;
-            box-shadow: 0 10px 25px -3px rgba(0, 0, 0, 0.18), 0 4px 6px -2px rgba(0, 0, 0, 0.08) !important;
-            z-index: 999999999 !important;
-            min-width: 200px !important;
+            box-shadow: 0 10px 25px -3px rgba(0, 0, 0, 0.22), 0 4px 6px -2px rgba(0, 0, 0, 0.1) !important;
+            z-index: 2147483647 !important;
+            min-width: 210px !important;
             font-family: inherit !important;
             font-size: 13px !important;
             display: none;
             transform: none !important;
+            pointer-events: auto !important;
+            user-select: none !important;
         }
 
         .qb-custom-context-menu .qb-ctx-header {
@@ -111,7 +113,91 @@
         }
 
         #variantsTable thead th {
-            cursor: context-menu;
+            cursor: pointer;
+        }
+
+        #variantsTable tbody tr {
+            cursor: default;
+        }
+
+        /* Customize Columns Modal Card Styles (Clean Modern ERP UI) */
+        .col-toggle-card {
+            display: flex !important;
+            align-items: center !important;
+            gap: 10px !important;
+            padding: 9px 12px !important;
+            background: #ffffff !important;
+            border: 1.5px solid #e2e8f0 !important;
+            border-radius: 7px !important;
+            cursor: pointer !important;
+            user-select: none !important;
+            transition: all 0.15s ease-in-out !important;
+            margin-bottom: 0 !important;
+            position: relative !important;
+            width: 100% !important;
+            box-sizing: border-box !important;
+        }
+
+        .col-toggle-card * {
+            pointer-events: none !important;
+        }
+
+        .col-toggle-card:hover {
+            border-color: #4f46e5 !important;
+            background: #f8fafc !important;
+            box-shadow: 0 2px 6px rgba(79, 70, 229, 0.1) !important;
+        }
+
+        .col-toggle-card.is-active {
+            border-color: #4f46e5 !important;
+            background: #f5f3ff !important;
+        }
+
+        .col-toggle-checkbox {
+            width: 18px !important;
+            height: 18px !important;
+            border-radius: 4px !important;
+            border: 1.5px solid #94a3b8 !important;
+            background: #ffffff !important;
+            display: inline-flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            flex-shrink: 0 !important;
+            transition: all 0.15s ease-in-out !important;
+            color: #ffffff !important;
+            font-size: 10px !important;
+        }
+
+        .col-toggle-checkbox i {
+            display: none !important;
+        }
+
+        .col-toggle-card.is-active .col-toggle-checkbox {
+            background: #4f46e5 !important;
+            border-color: #4f46e5 !important;
+            color: #ffffff !important;
+        }
+
+        .col-toggle-card.is-active .col-toggle-checkbox i {
+            display: inline-block !important;
+        }
+
+        .col-toggle-card .col-toggle-label {
+            font-size: 13px !important;
+            font-weight: 600 !important;
+            color: #1e293b !important;
+            white-space: nowrap !important;
+            overflow: hidden !important;
+            text-overflow: ellipsis !important;
+            line-height: 1.2 !important;
+            flex-grow: 1 !important;
+            margin: 0 !important;
+            padding: 0 !important;
+        }
+
+        .col-toggle-card.is-active .col-toggle-label,
+        .col-toggle-card:has(input.var-col-chk:checked) .col-toggle-label {
+            color: #312e81 !important;
         }
 
         /* Top Bar */
@@ -2128,7 +2214,7 @@
                                     <button type="button" class="btn btn-sm btn-outline-secondary py-1 px-2" id="toggleMatrixBtn" style="font-size: 11px;">
                                         <i class="fas fa-eye me-1"></i> <span id="toggleMatrixText">Hide Matrix</span>
                                     </button>
-                                    <button type="button" class="btn btn-sm btn-outline-dark py-1 px-2" id="customizeVariantColumnsBtn" data-toggle="modal" data-target="#customizeVariantsModal" data-bs-toggle="modal" data-bs-target="#customizeVariantsModal" style="font-size: 11px;" title="Customize Columns (or right-click table header)">
+                                    <button type="button" class="btn btn-sm btn-outline-dark py-1 px-2" id="customizeVariantColumnsBtn" data-toggle="modal" data-target="#customizeVariantsModal" data-bs-toggle="modal" data-bs-target="#customizeVariantsModal" onclick="showCustomizeVariantsModal()" style="font-size: 11px;" title="Customize Columns (or right-click table header)">
                                         <i class="fas fa-columns me-1 text-primary"></i> Customize Columns
                                     </button>
                                     <button type="button" class="btn btn-sm btn-primary py-1 px-2" id="enableVariantsBtn" style="font-size: 11px;">
@@ -2148,6 +2234,7 @@
                                                     <th style="min-width: 120px;" class="col-name">Product Name</th>
                                                     <th style="min-width: 180px;" class="col-attrs">Attributes</th>
                                                     <th style="width: 80px;" class="col-unit">Unit</th>
+                                                    <th style="width: 120px;" class="col-location">Rack / Shelf</th>
                                                     <th style="width: 90px;" class="text-center col-stock">On Hand (Stock)</th>
                                                     <th style="width: 95px;" class="text-center conv-col col-conv" id="convFactorHeader">Pcs / Carton</th>
                                                     <th style="width: 90px;" class="text-center piece-wt-only-col col-weight">Piece Wt (g)</th>
@@ -2155,7 +2242,7 @@
                                                     <th style="width: 95px;" class="col-cost">Cost (Purch)</th>
                                                     <th style="width: 85px;" class="col-wholesale">Wholesale</th>
                                                     <th style="width: 110px;" class="col-barcode">Barcode</th>
-                                                    <th style="width: 45px;" class="text-center col-action">Action</th>
+                                                    <th style="width: 55px;" class="text-center col-action" title="Customize Columns (or right-click any row)">Action <i class="fas fa-sliders-h text-primary ms-1" style="font-size: 11px; cursor: pointer;" onclick="showCustomizeVariantsModal()" title="Customize Columns"></i></th>
                                                 </tr>
                                             </thead>
                                             <tbody id="variantsBody">
@@ -2388,20 +2475,32 @@
 
                                         <div class="mb-2">
                                             <label class="form-label fw-semibold text-muted d-flex justify-content-between align-items-center" style="font-size:12px;">
-                                                <span><i class="fas fa-layer-group text-primary me-1"></i> Rack / Shelf Location</span>
-                                                <span class="badge bg-light text-secondary border" style="font-size:10px;">Godown & Shop</span>
+                                                <span><i class="fas fa-layer-group text-primary me-1"></i> Default Rack / Shelf Location</span>
+                                                <a href="{{ route('storage_locations.index') }}" target="_blank" class="text-primary text-decoration-none fw-bold" style="font-size:11px;">
+                                                    <i class="fas fa-external-link-alt mr-1"></i> Racks & Shelves
+                                                </a>
                                             </label>
-                                            <div class="input-group input-group-sm">
+                                            <div class="input-group input-group-sm mb-1">
                                                 <span class="input-group-text bg-white text-muted"><i class="fas fa-map-marker-alt"></i></span>
                                                 <input type="text" 
                                                        class="form-control" 
                                                        name="remarks" 
                                                        id="remarks" 
-                                                       placeholder="e.g. SA, SB, SC (Shop) or GA, GB, Shelf 48 (Godown)"
-                                                       title="Specify the exact rack or shelf location for this product">
+                                                       list="storageLocationsDatalist"
+                                                       placeholder="e.g. Rack A-1 or Shelf 2"
+                                                       title="Specify default rack or shelf location">
+                                                <button type="button" class="btn btn-outline-primary btn-sm" id="btnApplyLocationToAllVariants" title="Apply this location to all matrix variants">
+                                                    <i class="fas fa-check-double me-1"></i> Apply to All
+                                                </button>
+                                                <button type="button" class="btn btn-primary btn-sm" id="btnOpenVariantLocationsModal"
+                                                    data-toggle="modal" data-target="#variantLocationsModal"
+                                                    data-bs-toggle="modal" data-bs-target="#variantLocationsModal"
+                                                    onclick="openVariantLocationsModal()" title="Manage locations for each variant">
+                                                    <i class="fas fa-tasks me-1"></i> Variant Locations
+                                                </button>
                                             </div>
                                             <small class="text-muted" style="font-size:11px;">
-                                                Warehouse/Godown shelves (e.g. GA to GZ, 1 to 48) ya Shop rack code enter karein.
+                                                Warehouse rack ya Shop shelf select karein. "Apply to All" se sabhi par set hoga, ya "Variant Locations" button se har variant ko alag alag assign karein.
                                             </small>
                                         </div>
                                     </div>
@@ -2586,7 +2685,7 @@
                                 <span class="text-muted" style="font-size: 11px;">Show or hide columns in the Variants Matrix</span>
                             </div>
                         </div>
-                        <button type="button" class="close text-secondary qb-var-modal-close" data-dismiss="modal" data-bs-dismiss="modal" aria-label="Close" style="font-size:24px;border:none;background:transparent;line-height:1;cursor:pointer;padding:0 4px;">
+                        <button type="button" class="close text-secondary qb-var-modal-close" onclick="hideCustomizeVariantsModal()" data-dismiss="modal" data-bs-dismiss="modal" aria-label="Close" style="font-size:24px;border:none;background:transparent;line-height:1;cursor:pointer;padding:0 4px;">
                             <span aria-hidden="true">&times;</span>
                         </button>
                     </div>
@@ -2599,12 +2698,132 @@
                             </div>
                         </div>
                         <div class="row g-2" id="variantColumnsChecklist">
-                            {{-- Injected dynamically by JavaScript --}}
+                            @php
+                                $matrixCols = [
+                                    ['key' => 'col-serial',     'label' => 'Serial No'],
+                                    ['key' => 'col-ref',        'label' => 'Internal Ref'],
+                                    ['key' => 'col-name',       'label' => 'Product Name'],
+                                    ['key' => 'col-attrs',      'label' => 'Attributes'],
+                                    ['key' => 'col-unit',       'label' => 'Unit'],
+                                    ['key' => 'col-location',   'label' => 'Rack / Shelf'],
+                                    ['key' => 'col-stock',      'label' => 'On Hand (Stock)'],
+                                    ['key' => 'col-conv',       'label' => 'Pcs / Carton'],
+                                    ['key' => 'col-weight',     'label' => 'Piece Wt (g)'],
+                                    ['key' => 'col-sale',       'label' => 'Sales Price'],
+                                    ['key' => 'col-cost',       'label' => 'Cost (Purch)'],
+                                    ['key' => 'col-wholesale',  'label' => 'Wholesale'],
+                                    ['key' => 'col-barcode',    'label' => 'Barcode'],
+                                    ['key' => 'col-action',     'label' => 'Action'],
+                                ];
+                            @endphp
+                            @foreach($matrixCols as $mc)
+                                <div class="col-6 col-sm-6">
+                                    <div class="col-toggle-card is-active" data-col="{{ $mc['key'] }}" id="card_var_{{ $mc['key'] }}" onclick="toggleVariantColumnCard('{{ $mc['key'] }}')">
+                                        <input type="checkbox" id="chk_var_{{ $mc['key'] }}" data-col="{{ $mc['key'] }}" class="var-col-chk d-none" checked>
+                                        <span class="col-toggle-checkbox">
+                                            <i class="fas fa-check"></i>
+                                        </span>
+                                        <span class="col-toggle-label">
+                                            {{ $mc['label'] }}
+                                        </span>
+                                    </div>
+                                </div>
+                            @endforeach
                         </div>
                     </div>
                     <div class="modal-footer py-2 px-3 bg-light border-top d-flex justify-content-between align-items-center">
-                        <span class="text-muted fst-italic" style="font-size: 11px;"><i class="fas fa-info-circle me-1 text-primary"></i> Right-click table header anytime to open</span>
-                        <button type="button" class="btn btn-primary btn-sm px-4 rounded-pill qb-var-modal-close" data-dismiss="modal" data-bs-dismiss="modal">Apply &amp; Close</button>
+                        <span class="text-muted fst-italic" style="font-size: 11px;"><i class="fas fa-info-circle me-1 text-primary"></i> Right-click table rows or header anytime to open</span>
+                        <button type="button" class="btn btn-primary btn-sm px-4 rounded-pill qb-var-modal-close" onclick="applyAndCloseCustomizeModal()" data-dismiss="modal" data-bs-dismiss="modal">Apply &amp; Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        {{-- Global Datalist for Storage Locations (Warehouse Racks & Shop Shelves) --}}
+        <datalist id="storageLocationsDatalist">
+            @if(isset($storageLocations) && count($storageLocations) > 0)
+                @foreach($storageLocations as $sl)
+                    <option value="{{ $sl->name }}{{ $sl->code ? ' ('.$sl->code.')' : '' }}">{{ $sl->full_display_name }}</option>
+                @endforeach
+            @endif
+        </datalist>
+
+        {{-- Modal: Manage Variant Locations (Bulk and Per-Variant Assignment) --}}
+        <div id="variantLocationsModal" class="modal fade" tabindex="-1" aria-hidden="true" style="z-index: 1055;">
+            <div class="modal-dialog modal-dialog-centered modal-lg" style="max-width: 850px;">
+                <div class="modal-content border-0 shadow-lg" style="border-radius: 12px; overflow: hidden;">
+                    <div class="modal-header bg-dark text-white py-3 px-4 d-flex align-items-center justify-content-between">
+                        <div class="d-flex align-items-center gap-2">
+                            <i class="fas fa-layer-group text-primary fs-5"></i>
+                            <div>
+                                <h6 class="modal-title font-weight-bold mb-0 text-white" style="font-size: 15px;">Manage Variant Locations (Racks &amp; Shelves)</h6>
+                                <small class="text-light opacity-75" style="font-size: 11px;">Assign specific warehouse racks or shop shelves to individual variants</small>
+                            </div>
+                        </div>
+                        <button type="button" class="btn-close btn-close-white" data-dismiss="modal" data-bs-dismiss="modal" aria-label="Close" style="background: transparent; border: none; color: white; font-size: 18px; cursor: pointer;" onclick="hideVariantLocationsModal()">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+
+                    <div class="modal-body p-3 bg-light">
+                        <!-- Quick Bulk Assign Bar -->
+                        <div class="card border-0 shadow-sm mb-3" style="border-radius: 8px;">
+                            <div class="card-body p-3">
+                                <label class="fw-bold text-dark mb-1" style="font-size: 12px;">
+                                    <i class="fas fa-magic text-primary me-1"></i> Quick Bulk Assign Location
+                                </label>
+                                <div class="input-group input-group-sm">
+                                    <span class="input-group-text bg-white"><i class="fas fa-map-marker-alt text-muted"></i></span>
+                                    <input type="text" id="modalBulkLocationInput" class="form-control" list="storageLocationsDatalist" placeholder="Select or type Rack / Shelf...">
+                                    <button type="button" class="btn btn-outline-primary" id="btnModalApplyToSelected" title="Assign to checked variants">
+                                        <i class="fas fa-check-square me-1"></i> Apply to Selected
+                                    </button>
+                                    <button type="button" class="btn btn-primary" id="btnModalApplyToAll" title="Assign to all variants in the table">
+                                        <i class="fas fa-check-double me-1"></i> Apply to ALL
+                                    </button>
+                                </div>
+                                <div class="d-flex justify-content-between align-items-center mt-2">
+                                    <small class="text-muted" style="font-size: 11px;">
+                                        Tip: Datalist me se Rack/Shelf select karein ya naya code likh kar "Apply to ALL" karein.
+                                    </small>
+                                    <a href="{{ route('storage_locations.index') }}" target="_blank" class="text-primary fw-bold" style="font-size: 11px;">
+                                        <i class="fas fa-plus-circle me-1"></i> Create New Rack / Shelf
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Variants Location Table -->
+                        <div class="card border-0 shadow-sm" style="border-radius: 8px;">
+                            <div class="table-responsive" style="max-height: 380px; overflow-y: auto;">
+                                <table class="table table-hover table-bordered table-sm mb-0 align-middle" id="modalVariantLocationsTable">
+                                    <thead class="table-light sticky-top" style="z-index: 5;">
+                                        <tr>
+                                            <th style="width: 35px;" class="text-center">
+                                                <input type="checkbox" class="form-check-input" id="modalSelectAllLocCheck" title="Select All">
+                                            </th>
+                                            <th style="width: 90px;">Serial No</th>
+                                            <th>Variant Details</th>
+                                            <th style="min-width: 220px;">Assigned Location (Rack / Shelf)</th>
+                                            <th style="width: 60px;" class="text-center">Action</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="modalVariantLocationsBody">
+                                        <!-- Injected dynamically from matrix rows -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="modal-footer bg-white py-2 px-3 border-top d-flex justify-content-between align-items-center">
+                        <span class="text-muted" style="font-size: 11px;" id="modalLocCountSummary">0 variants listed</span>
+                        <div>
+                            <button type="button" class="btn btn-secondary btn-sm px-3 me-2" data-dismiss="modal" data-bs-dismiss="modal" onclick="hideVariantLocationsModal()">Cancel</button>
+                            <button type="button" class="btn btn-success btn-sm px-4 fw-bold" id="btnSaveVariantLocationsModal">
+                                <i class="fas fa-save me-1"></i> Save &amp; Apply Locations
+                            </button>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -2614,7 +2833,7 @@
         <div id="qbVariantsContextMenu" class="qb-custom-context-menu">
             <div class="qb-ctx-header">
                 <i class="fas fa-sliders-h text-primary"></i>
-                <span>Table Columns</span>
+                <span>Matrix Table Options</span>
             </div>
             <button type="button" class="qb-ctx-item text-primary" id="qbCtxCustomizeVariantsBtn">
                 <i class="fas fa-columns"></i>
@@ -2865,6 +3084,336 @@
 
 @section('js')
     <script>
+        // =========================================================
+        // HTML Escaping Utility
+        // =========================================================
+        function escapeHtml(str) {
+            if (str === null || str === undefined) return '';
+            return String(str)
+                .replace(/&/g, '&amp;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#39;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;');
+        }
+        window.escapeHtml = escapeHtml;
+
+        // =========================================================
+        // VARIANT LOCATIONS MODAL CONTROLS (Global Early Declaration)
+        // =========================================================
+        window.showVariantLocationsModal = function() {
+            var modalEl = document.getElementById('variantLocationsModal');
+            if (!modalEl) return;
+            if (modalEl.parentElement !== document.body) {
+                document.body.appendChild(modalEl);
+            }
+            var opened = false;
+            if (typeof jQuery !== 'undefined' && typeof jQuery(modalEl).modal === 'function') {
+                try { jQuery(modalEl).modal('show'); opened = true; } catch (e) {}
+            }
+            if (!opened && typeof bootstrap !== 'undefined' && typeof bootstrap.Modal === 'function') {
+                try {
+                    var inst = bootstrap.Modal.getInstance ? bootstrap.Modal.getInstance(modalEl) : null;
+                    if (!inst) inst = new bootstrap.Modal(modalEl);
+                    inst.show();
+                    opened = true;
+                } catch (e) {}
+            }
+            if (!opened) {
+                modalEl.classList.add('show');
+                modalEl.style.display = 'block';
+                modalEl.style.opacity = '1';
+                modalEl.removeAttribute('aria-hidden');
+                modalEl.setAttribute('aria-modal', 'true');
+                document.body.classList.add('modal-open');
+
+                var backdrop = document.querySelector('.variant-loc-custom-backdrop');
+                if (!backdrop) {
+                    backdrop = document.createElement('div');
+                    backdrop.className = 'modal-backdrop fade show variant-loc-custom-backdrop';
+                    backdrop.style.cssText = 'position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.6); z-index: 1050 !important;';
+                    document.body.appendChild(backdrop);
+                    backdrop.addEventListener('click', window.hideVariantLocationsModal);
+                }
+            }
+        };
+
+        window.hideVariantLocationsModal = function() {
+            var modalEl = document.getElementById('variantLocationsModal');
+            if (!modalEl) return;
+            var closed = false;
+            if (typeof jQuery !== 'undefined' && typeof jQuery(modalEl).modal === 'function') {
+                try { jQuery(modalEl).modal('hide'); closed = true; } catch (e) {}
+            }
+            if (!closed && typeof bootstrap !== 'undefined' && typeof bootstrap.Modal === 'function') {
+                try {
+                    var inst = bootstrap.Modal.getInstance ? bootstrap.Modal.getInstance(modalEl) : null;
+                    if (inst) inst.hide();
+                    closed = true;
+                } catch (e) {}
+            }
+            modalEl.classList.remove('show');
+            modalEl.style.display = 'none';
+            modalEl.setAttribute('aria-hidden', 'true');
+            document.body.classList.remove('modal-open');
+            document.querySelectorAll('.variant-loc-custom-backdrop').forEach(function(el) { el.remove(); });
+        };
+
+        window.openVariantLocationsModal = function() {
+            var trs = document.querySelectorAll('#variantsTable #variantsBody tr');
+            var modalBody = document.getElementById('modalVariantLocationsBody');
+            var summaryEl = document.getElementById('modalLocCountSummary');
+
+            if (modalBody) {
+                modalBody.innerHTML = '';
+                if (trs.length === 0) {
+                    modalBody.innerHTML = '<tr><td colspan="5" class="text-center py-4 text-muted">' +
+                        '<i class="fas fa-cubes fa-2x mb-2 text-secondary d-block"></i>' +
+                        'Matrix table has no variants yet. Please define attributes or add custom rows first.' +
+                        '</td></tr>';
+                    if (summaryEl) summaryEl.textContent = '0 variants';
+                } else {
+                    if (summaryEl) summaryEl.textContent = trs.length + ' variants listed';
+                    trs.forEach(function(tr, idx) {
+                        var vSerialInp = tr.querySelector('[name="variant_serial_no[]"]');
+                        var vSerial = vSerialInp ? vSerialInp.value : ('VAR-' + String(idx + 1).padStart(4, '0'));
+                        
+                        var colNameEl = tr.querySelector('.col-name');
+                        var vNameInp = tr.querySelector('[name="variant_name[]"]');
+                        var vName = (colNameEl && colNameEl.textContent ? colNameEl.textContent.trim() : '') || (vNameInp ? vNameInp.value : 'Product');
+                        
+                        var colAttrsEl = tr.querySelector('.col-attrs');
+                        var vAttrs = colAttrsEl ? colAttrsEl.innerHTML : '';
+                        
+                        var locInp = tr.querySelector('.variant-location-input');
+                        var currentLoc = locInp ? locInp.value : '';
+
+                        var rowTr = document.createElement('tr');
+                        rowTr.dataset.matrixIndex = idx;
+                        rowTr.innerHTML = 
+                            '<td class="text-center">' +
+                                '<input type="checkbox" class="form-check-input modal-loc-check" data-idx="' + idx + '">' +
+                            '</td>' +
+                            '<td class="fw-bold font-monospace text-primary small">' +
+                                escapeHtml(vSerial) +
+                            '</td>' +
+                            '<td>' +
+                                '<div class="fw-bold text-dark" style="font-size: 12.5px;">' + escapeHtml(vName) + '</div>' +
+                                '<div class="mt-1" style="font-size: 11px;">' + vAttrs + '</div>' +
+                            '</td>' +
+                            '<td>' +
+                                '<div class="input-group input-group-sm">' +
+                                    '<span class="input-group-text bg-white"><i class="fas fa-map-pin text-primary" style="font-size:11px;"></i></span>' +
+                                    '<input type="text" class="form-control modal-row-loc-input" list="storageLocationsDatalist" value="' + escapeHtml(currentLoc) + '" placeholder="e.g. Rack A-1 or Shelf 2">' +
+                                '</div>' +
+                            '</td>' +
+                            '<td class="text-center">' +
+                                '<button type="button" class="btn btn-outline-danger btn-xs py-0 px-2" onclick="this.closest(\'tr\').querySelector(\'.modal-row-loc-input\').value=\'\'" title="Clear Location">' +
+                                    '<i class="fas fa-times"></i>' +
+                                '</button>' +
+                            '</td>';
+                        modalBody.appendChild(rowTr);
+                    });
+                }
+            }
+
+            window.showVariantLocationsModal();
+        };
+        var openVariantLocationsModal = window.openVariantLocationsModal;
+
+        // =========================================================
+        // QUICKBOOKS POS DESKTOP STYLE: MATRIX COLUMN DEFINITIONS
+        // (Must be declared at top of script to avoid TDZ ReferenceError)
+        // =========================================================
+        window.VARIANT_COLUMNS = [
+            { key: 'col-serial',     label: 'Serial No',          default: true },
+            { key: 'col-ref',        label: 'Internal Ref',       default: true },
+            { key: 'col-name',       label: 'Product Name',       default: true },
+            { key: 'col-attrs',      label: 'Attributes',         default: true },
+            { key: 'col-unit',       label: 'Unit',               default: true },
+            { key: 'col-location',   label: 'Rack / Shelf',       default: true },
+            { key: 'col-stock',      label: 'On Hand (Stock)',    default: true },
+            { key: 'col-conv',       label: 'Pcs / Carton',       default: true },
+            { key: 'col-weight',     label: 'Piece Wt (g)',       default: true },
+            { key: 'col-sale',       label: 'Sales Price',        default: true },
+            { key: 'col-cost',       label: 'Cost (Purch)',       default: true },
+            { key: 'col-wholesale',  label: 'Wholesale',          default: true },
+            { key: 'col-barcode',    label: 'Barcode',            default: true },
+            { key: 'col-action',     label: 'Action',             default: true },
+        ];
+        var VARIANT_COLUMNS = window.VARIANT_COLUMNS;
+        var VAR_STORAGE_KEY = 'kent_variants_col_prefs_v2';
+        window.VAR_STORAGE_KEY = VAR_STORAGE_KEY;
+
+        window.getVariantColPrefs = function() {
+            var defaults = {};
+            window.VARIANT_COLUMNS.forEach(function(c) { defaults[c.key] = c.default; });
+            try {
+                var saved = localStorage.getItem(window.VAR_STORAGE_KEY);
+                if (saved) {
+                    var parsed = JSON.parse(saved);
+                    if (parsed && typeof parsed === 'object') {
+                        return Object.assign({}, defaults, parsed);
+                    }
+                }
+            } catch(e) {}
+            return defaults;
+        };
+        var getVariantColPrefs = window.getVariantColPrefs;
+
+        window.saveVariantColPrefs = function(prefs) {
+            try {
+                localStorage.setItem(window.VAR_STORAGE_KEY, JSON.stringify(prefs));
+            } catch(e) {}
+        };
+        var saveVariantColPrefs = window.saveVariantColPrefs;
+
+        window.applyVariantColVisibility = function(prefs) {
+            if (!prefs) prefs = window.getVariantColPrefs();
+            var styleEl = document.getElementById('kentVariantColumnsCustomStyle');
+            if (!styleEl) {
+                styleEl = document.createElement('style');
+                styleEl.id = 'kentVariantColumnsCustomStyle';
+                document.head.appendChild(styleEl);
+            }
+
+            var cssRules = [];
+            window.VARIANT_COLUMNS.forEach(function(col) {
+                var isVisible = (prefs[col.key] !== false);
+                if (!isVisible) {
+                    cssRules.push(
+                        '#variantsTable .' + col.key + ' { display: none !important; }\n' +
+                        '#variantsTable th.' + col.key + ' { display: none !important; }\n' +
+                        '#variantsTable td.' + col.key + ' { display: none !important; }'
+                    );
+                }
+                // Direct element inline style override with !important
+                document.querySelectorAll('#variantsTable .' + col.key).forEach(function(el) {
+                    if (isVisible) {
+                        el.style.removeProperty('display');
+                        el.style.display = '';
+                    } else {
+                        el.style.setProperty('display', 'none', 'important');
+                    }
+                });
+            });
+            styleEl.textContent = cssRules.join('\n');
+        };
+        var applyVariantColVisibility = window.applyVariantColVisibility;
+
+        window.updateCardUI = function(colKey, isChecked) {
+            var card = document.getElementById('card_var_' + colKey) || document.querySelector('.col-toggle-card[data-col="' + colKey + '"]');
+            if (card) {
+                if (isChecked) {
+                    card.classList.add('is-active');
+                } else {
+                    card.classList.remove('is-active');
+                }
+                var chk = card.querySelector('input.var-col-chk');
+                if (chk) chk.checked = isChecked;
+            }
+        };
+        var updateCardUI = window.updateCardUI;
+
+        window.toggleVariantColumnCard = function(colKey) {
+            var prefs = window.getVariantColPrefs();
+            var currentState = (prefs[colKey] !== false);
+            var newState = !currentState;
+            prefs[colKey] = newState;
+
+            window.saveVariantColPrefs(prefs);
+            window.updateCardUI(colKey, newState);
+            window.applyVariantColVisibility(prefs);
+        };
+        var toggleVariantColumnCard = window.toggleVariantColumnCard;
+
+        window.renderVariantColumnsChecklist = function() {
+            var prefs = window.getVariantColPrefs();
+            window.VARIANT_COLUMNS.forEach(function(col) {
+                var isChecked = (prefs[col.key] !== false);
+                window.updateCardUI(col.key, isChecked);
+            });
+        };
+        var renderVariantColumnsChecklist = window.renderVariantColumnsChecklist;
+
+        window.applyAndCloseCustomizeModal = function() {
+            var prefs = {};
+            window.VARIANT_COLUMNS.forEach(function(col) {
+                var card = document.getElementById('card_var_' + col.key) || document.querySelector('.col-toggle-card[data-col="' + col.key + '"]');
+                if (card) {
+                    prefs[col.key] = card.classList.contains('is-active');
+                } else {
+                    prefs[col.key] = true;
+                }
+            });
+            window.saveVariantColPrefs(prefs);
+            window.applyVariantColVisibility(prefs);
+            window.hideCustomizeVariantsModal();
+        };
+        var applyAndCloseCustomizeModal = window.applyAndCloseCustomizeModal;
+
+        window.showCustomizeVariantsModal = function() {
+            window.renderVariantColumnsChecklist();
+            var modalEl = document.getElementById('customizeVariantsModal');
+            if (!modalEl) return;
+
+            try {
+                if (window.bootstrap && typeof bootstrap.Modal === 'function') {
+                    var inst = bootstrap.Modal.getInstance ? bootstrap.Modal.getInstance(modalEl) : null;
+                    (inst || new bootstrap.Modal(modalEl)).show();
+                    return;
+                }
+            } catch(e) {}
+
+            try {
+                if (typeof jQuery !== 'undefined' && typeof jQuery(modalEl).modal === 'function') {
+                    jQuery(modalEl).modal('show');
+                    return;
+                }
+            } catch(e) {}
+
+            // Pure CSS/JS Guaranteed Fallback
+            modalEl.classList.add('show');
+            modalEl.style.display = 'block';
+            modalEl.removeAttribute('aria-hidden');
+            document.body.classList.add('modal-open');
+            var bd = document.querySelector('.qb-custom-backdrop');
+            if (!bd) {
+                bd = document.createElement('div');
+                bd.className = 'modal-backdrop fade show qb-custom-backdrop';
+                document.body.appendChild(bd);
+                bd.onclick = window.hideCustomizeVariantsModal;
+            }
+        };
+        var showCustomizeVariantsModal = window.showCustomizeVariantsModal;
+
+        window.hideCustomizeVariantsModal = function() {
+            var modalEl = document.getElementById('customizeVariantsModal');
+            if (!modalEl) return;
+
+            try {
+                if (window.bootstrap && typeof bootstrap.Modal === 'function') {
+                    var inst = bootstrap.Modal.getInstance ? bootstrap.Modal.getInstance(modalEl) : null;
+                    if (inst) inst.hide();
+                }
+            } catch(e) {}
+
+            try {
+                if (typeof jQuery !== 'undefined' && typeof jQuery(modalEl).modal === 'function') {
+                    jQuery(modalEl).modal('hide');
+                }
+            } catch(e) {}
+
+            modalEl.classList.remove('show');
+            modalEl.style.display = 'none';
+            modalEl.setAttribute('aria-hidden', 'true');
+            document.body.classList.remove('modal-open');
+            var bd = document.querySelector('.qb-custom-backdrop');
+            if (bd) bd.remove();
+            document.querySelectorAll('.modal-backdrop').forEach(function(b) { b.remove(); });
+        };
+        var hideCustomizeVariantsModal = window.hideCustomizeVariantsModal;
+
         document.addEventListener('DOMContentLoaded', function() {
             const form = document.getElementById('productForm');
             const unitDropdown = document.getElementById('unit-dropdown');
@@ -4751,6 +5300,23 @@
                 return null;
             }
 
+            function getProductPrefix(pName) {
+                let clean = (pName || '').trim().replace(/[^a-zA-Z0-9\s]/g, '');
+                if (!clean) return 'VAR';
+                let words = clean.split(/\s+/);
+                if (words.length >= 2) {
+                    let p = '';
+                    for (let w of words) {
+                        if (w) p += w[0].toUpperCase();
+                        if (p.length >= 4) break;
+                    }
+                    return p || 'VAR';
+                } else {
+                    let single = words[0].toUpperCase();
+                    return single.length >= 3 ? single.substring(0, 3) : single.padEnd(3, 'X');
+                }
+            }
+
             function syncAttributesToVariants() {
                 const attrs = getDefinedAttributes();
                 const productName = productNameInput ? (productNameInput.value.trim() || 'Product') : 'Product';
@@ -4759,23 +5325,6 @@
                 const baseUnitName = unitDropdown ? unitDropdown.options[unitDropdown.selectedIndex].text.split(' ')[0] : 'Pcs';
                 const isCartonMode = unitDropdown && unitDropdown.value === 'by_cartons';
                 const itemCodeVal = document.getElementById('reference')?.value.trim() || document.getElementById('item_code')?.value.trim() || '';
-
-                function getProductPrefix(pName) {
-                    let clean = (pName || '').trim().replace(/[^a-zA-Z0-9\s]/g, '');
-                    if (!clean) return 'VAR';
-                    let words = clean.split(/\s+/);
-                    if (words.length >= 2) {
-                        let p = '';
-                        for (let w of words) {
-                            if (w) p += w[0].toUpperCase();
-                            if (p.length >= 4) break;
-                        }
-                        return p || 'VAR';
-                    } else {
-                        let single = words[0].toUpperCase();
-                        return single.length >= 3 ? single.substring(0, 3) : single.padEnd(3, 'X');
-                    }
-                }
 
                 // Preserve existing prices / barcodes if previously modified
                 const existingData = {};
@@ -4792,6 +5341,7 @@
                             barcode: tr.querySelector('[name="variant_barcode[]"]')?.value,
                             conv: tr.querySelector('[name="variant_conv_factor[]"]')?.value,
                             unit: tr.querySelector('[name="variant_unit[]"]')?.value,
+                            location: tr.querySelector('[name="variant_location[]"]')?.value,
                         };
                     }
                 });
@@ -4891,6 +5441,8 @@
                     const vBarcode = prev.barcode || generateRandomBarcode();
                     const vConv = prev.conv !== undefined ? prev.conv : (isCartonMode ? '' : '1');
                     const vUnit = prev.unit || (isCartonMode ? 'Carton' : baseUnitName);
+                    const defaultLoc = document.getElementById('remarks')?.value.trim() || '';
+                    const vLocation = prev.location !== undefined ? prev.location : defaultLoc;
 
                     const comboPillsHtml = combo.map(c => `<span class="variant-combo-pill" title="${c.attr}">${c.val}</span>`).join(' ');
 
@@ -4927,6 +5479,9 @@
                                 <option value="Box" ${vUnit==='Box'?'selected':''}>Box</option>
                                 <option value="Dozen" ${vUnit==='Dozen'?'selected':''}>Dzn</option>
                             </select>
+                        </td>
+                        <td class="p-1 col-location">
+                            <input type="text" class="form-control form-control-sm variant-location-input" name="variant_location[]" value="${escapeHtml(vLocation)}" list="storageLocationsDatalist" placeholder="Rack / Shelf" style="font-size:11px;">
                         </td>
                         <td class="p-1 col-stock">
                             <input type="number" class="form-control form-control-sm text-center fw-bold text-primary stock-input" name="variant_stock[]" step="any" value="${vStock}">
@@ -5028,6 +5583,9 @@
                             <option value="Dozen">Dzn</option>
                         </select>
                     </td>
+                    <td class="p-1 col-location">
+                        <input type="text" class="form-control form-control-sm variant-location-input" name="variant_location[]" value="${escapeHtml(document.getElementById('remarks')?.value.trim() || '')}" list="storageLocationsDatalist" placeholder="Rack / Shelf" style="font-size:11px;">
+                    </td>
                     <td class="p-1 col-stock">
                         <input type="number" class="form-control form-control-sm text-center fw-bold text-primary stock-input" name="variant_stock[]" step="any" value="0" placeholder="0">
                     </td>
@@ -5084,6 +5642,10 @@
                 document.querySelectorAll('.piece-wt-only-col').forEach(el => {
                     el.style.display = isWeight ? '' : 'none';
                 });
+
+                if (typeof applyVariantColVisibility === 'function') {
+                    applyVariantColVisibility();
+                }
             }
 
             if (unitDropdown) {
@@ -5120,6 +5682,9 @@
                             <input type="checkbox" class="form-check-input variant-row-check">
                             <input type="hidden" name="variant_is_base[]" value="0">
                             <input type="hidden" name="variant_alert_qty[]" value="0">
+                        </td>
+                        <td class="p-1 col-serial text-center">
+                            <input type="text" class="form-control form-control-sm text-center fw-bold text-primary font-monospace" name="variant_serial_no[]" value="" placeholder="SN" style="font-size:11px; max-width:95px;">
                         </td>
                         <td class="p-1 col-ref">
                             <input type="text" class="form-control form-control-sm text-muted font-monospace" name="variant_ref[]" value="" placeholder="Ref">
@@ -5349,7 +5914,10 @@
                 });
             }
 
-            form.addEventListener('submit', submitProductForm);
+            const mainProductForm = document.getElementById('productForm') || (typeof form !== 'undefined' ? form : null);
+            if (mainProductForm) {
+                mainProductForm.addEventListener('submit', submitProductForm);
+            }
 
             const topSaveBtn = document.getElementById('topSaveProductBtn');
             if (topSaveBtn) {
@@ -5367,158 +5935,11 @@
             }
 
             // =========================================================
-            // 13. QUICKBOOKS POS DESKTOP STYLE: CUSTOMIZE MATRIX COLUMNS
+            // 13. QUICKBOOKS POS DESKTOP STYLE: CUSTOMIZE MATRIX COLUMNS EVENT LISTENERS
             // =========================================================
-            const VARIANT_COLUMNS = [
-                { key: 'col-serial',     label: 'Serial No',          default: true },
-                { key: 'col-ref',       label: 'Internal Ref',       default: true },
-                { key: 'col-name',      label: 'Product Name',       default: true },
-                { key: 'col-attrs',     label: 'Attributes',         default: true },
-                { key: 'col-unit',      label: 'Unit',               default: true },
-                { key: 'col-stock',     label: 'On Hand (Stock)',    default: true },
-                { key: 'col-conv',      label: 'Pcs / Carton',       default: true },
-                { key: 'col-weight',    label: 'Piece Wt (g)',       default: true },
-                { key: 'col-sale',      label: 'Sales Price',        default: true },
-                { key: 'col-cost',      label: 'Cost (Purch)',       default: true },
-                { key: 'col-wholesale', label: 'Wholesale',          default: true },
-                { key: 'col-barcode',   label: 'Barcode',            default: true },
-                { key: 'col-action',    label: 'Action',             default: true },
-            ];
-
-            const VAR_STORAGE_KEY = 'kent_variants_table_columns_v1';
-
-            function getVariantColPrefs() {
-                try {
-                    const saved = localStorage.getItem(VAR_STORAGE_KEY);
-                    if (saved) return JSON.parse(saved);
-                } catch(e) {}
-                const defaults = {};
-                VARIANT_COLUMNS.forEach(c => defaults[c.key] = c.default);
-                return defaults;
-            }
-
-            function saveVariantColPrefs(prefs) {
-                try {
-                    localStorage.setItem(VAR_STORAGE_KEY, JSON.stringify(prefs));
-                } catch(e) {}
-            }
-
-            function applyVariantColVisibility(prefs) {
-                let styleEl = document.getElementById('kentVariantColumnsCustomStyle');
-                if (!styleEl) {
-                    styleEl = document.createElement('style');
-                    styleEl.id = 'kentVariantColumnsCustomStyle';
-                    document.head.appendChild(styleEl);
-                }
-
-                let cssRules = [];
-                VARIANT_COLUMNS.forEach(col => {
-                    const isVisible = prefs[col.key] !== false;
-                    if (!isVisible) {
-                        cssRules.push(`#variantsTable .${col.key} { display: none !important; }`);
-                    }
-                    document.querySelectorAll(`#variantsTable .${col.key}`).forEach(el => {
-                        el.style.display = isVisible ? '' : 'none';
-                    });
-                });
-                styleEl.textContent = cssRules.join('\n');
-            }
-
-            function renderVariantColumnsChecklist() {
-                const checklistContainer = document.getElementById('variantColumnsChecklist');
-                if (!checklistContainer) return;
-
-                const prefs = getVariantColPrefs();
-                checklistContainer.innerHTML = '';
-
-                VARIANT_COLUMNS.forEach(col => {
-                    const isChecked = prefs[col.key] !== false;
-                    const colDiv = document.createElement('div');
-                    colDiv.className = 'col-6';
-                    colDiv.innerHTML = `
-                        <div class="form-check p-2 rounded border bg-light d-flex align-items-center gap-2" style="cursor: pointer; transition: background 0.15s;">
-                            <input class="form-check-input ms-0 mt-0 var-col-chk" type="checkbox" id="chk_var_${col.key}" data-col="${col.key}" ${isChecked ? 'checked' : ''} style="cursor: pointer; width: 16px; height: 16px;">
-                            <label class="form-check-label small fw-semibold text-dark mb-0 text-truncate" for="chk_var_${col.key}" style="cursor: pointer; user-select: none;">
-                                ${col.label}
-                            </label>
-                        </div>
-                    `;
-                    checklistContainer.appendChild(colDiv);
-                });
-
-                checklistContainer.querySelectorAll('.var-col-chk').forEach(chk => {
-                    chk.addEventListener('change', function() {
-                        const colKey = this.dataset.col;
-                        const currentPrefs = getVariantColPrefs();
-                        currentPrefs[colKey] = this.checked;
-                        saveVariantColPrefs(currentPrefs);
-                        applyVariantColVisibility(currentPrefs);
-                    });
-                });
-            }
-
             const customizeVariantsModalEl = document.getElementById('customizeVariantsModal');
 
-            function showCustomizeVariantsModal() {
-                renderVariantColumnsChecklist();
-                if (!customizeVariantsModalEl) return;
-                try {
-                    if (typeof jQuery !== 'undefined' && typeof jQuery(customizeVariantsModalEl).modal === 'function') {
-                        jQuery(customizeVariantsModalEl).modal('show');
-                        return;
-                    }
-                } catch(e) {}
-                try {
-                    if (window.bootstrap && typeof bootstrap.Modal === 'function') {
-                        const inst = bootstrap.Modal.getInstance ? bootstrap.Modal.getInstance(customizeVariantsModalEl) : null;
-                        (inst || new bootstrap.Modal(customizeVariantsModalEl)).show();
-                        return;
-                    }
-                } catch(e) {}
-                // Pure CSS/JS Guaranteed Fallback
-                customizeVariantsModalEl.classList.add('show');
-                customizeVariantsModalEl.style.display = 'block';
-                customizeVariantsModalEl.removeAttribute('aria-hidden');
-                document.body.classList.add('modal-open');
-                let bd = document.querySelector('.qb-custom-backdrop');
-                if (!bd) {
-                    bd = document.createElement('div');
-                    bd.className = 'modal-backdrop fade show qb-custom-backdrop';
-                    document.body.appendChild(bd);
-                    bd.onclick = hideCustomizeVariantsModal;
-                }
-            }
-
-            function hideCustomizeVariantsModal() {
-                if (!customizeVariantsModalEl) return;
-                try {
-                    if (typeof jQuery !== 'undefined' && typeof jQuery(customizeVariantsModalEl).modal === 'function') {
-                        jQuery(customizeVariantsModalEl).modal('hide');
-                    }
-                } catch(e) {}
-                try {
-                    if (window.bootstrap && typeof bootstrap.Modal === 'function') {
-                        const inst = bootstrap.Modal.getInstance ? bootstrap.Modal.getInstance(customizeVariantsModalEl) : null;
-                        if (inst) inst.hide();
-                    }
-                } catch(e) {}
-                customizeVariantsModalEl.classList.remove('show');
-                customizeVariantsModalEl.style.display = 'none';
-                customizeVariantsModalEl.setAttribute('aria-hidden', 'true');
-                document.body.classList.remove('modal-open');
-                const bd = document.querySelector('.qb-custom-backdrop');
-                if (bd) bd.remove();
-            }
-
-            // Close buttons in modal
-            document.querySelectorAll('.qb-var-modal-close').forEach(btn => {
-                btn.addEventListener('click', function(e) {
-                    e.preventDefault();
-                    hideCustomizeVariantsModal();
-                });
-            });
-
-            // Trigger button
+            // Trigger button in header
             const customizeBtn = document.getElementById('customizeVariantColumnsBtn');
             if (customizeBtn) {
                 customizeBtn.addEventListener('click', function(e) {
@@ -5527,126 +5948,330 @@
                 });
             }
 
-            if (customizeVariantsModalEl && typeof jQuery !== 'undefined') {
-                jQuery(customizeVariantsModalEl).on('show.bs.modal', function() {
+            if (customizeVariantsModalEl) {
+                customizeVariantsModalEl.addEventListener('show.bs.modal', function() {
                     renderVariantColumnsChecklist();
                 });
+                customizeVariantsModalEl.addEventListener('shown.bs.modal', function() {
+                    renderVariantColumnsChecklist();
+                });
+                if (typeof jQuery !== 'undefined') {
+                    jQuery(customizeVariantsModalEl).on('show.bs.modal shown.bs.modal', function() {
+                        renderVariantColumnsChecklist();
+                    });
+                }
             }
 
             const varColSelectAllBtn = document.getElementById('varColSelectAll');
             if (varColSelectAllBtn) {
-                varColSelectAllBtn.addEventListener('click', function() {
+                varColSelectAllBtn.onclick = function(e) {
+                    e.preventDefault();
                     const prefs = {};
-                    VARIANT_COLUMNS.forEach(c => prefs[c.key] = true);
+                    VARIANT_COLUMNS.forEach(c => {
+                        prefs[c.key] = true;
+                        updateCardUI(c.key, true);
+                    });
                     saveVariantColPrefs(prefs);
                     applyVariantColVisibility(prefs);
-                    renderVariantColumnsChecklist();
-                });
+                };
             }
 
             const varColResetDefaultBtn = document.getElementById('varColResetDefault');
             if (varColResetDefaultBtn) {
-                varColResetDefaultBtn.addEventListener('click', function() {
+                varColResetDefaultBtn.onclick = function(e) {
+                    e.preventDefault();
                     const prefs = {};
-                    VARIANT_COLUMNS.forEach(c => prefs[c.key] = c.default);
+                    VARIANT_COLUMNS.forEach(c => {
+                        prefs[c.key] = c.default;
+                        updateCardUI(c.key, c.default);
+                    });
                     saveVariantColPrefs(prefs);
                     applyVariantColVisibility(prefs);
-                    renderVariantColumnsChecklist();
-                });
+                };
             }
 
-            // Right-click Header Context Menu (QuickBooks POS Desktop style)
+            // =========================================================
+            // Right-click Context Menu (QuickBooks POS Desktop style)
+            // =========================================================
             const qbContextMenu = document.getElementById('qbVariantsContextMenu');
-            const variantsThead = document.querySelector('#variantsTable thead');
+            let contextMenuOpenedTime = 0;
 
             if (qbContextMenu && qbContextMenu.parentElement !== document.body) {
                 document.body.appendChild(qbContextMenu);
             }
 
-            const hideVariantsContextMenu = function() {
-                if (qbContextMenu) {
-                    qbContextMenu.style.display = 'none';
+            function hideVariantsContextMenu() {
+                if (!qbContextMenu) return;
+                // Guard: ignore dismiss attempts within 250ms of opening (prevents premature dismissal from mouseup/click/scroll)
+                if (Date.now() - contextMenuOpenedTime < 250) {
+                    return;
                 }
-            };
+                qbContextMenu.style.setProperty('display', 'none', 'important');
+            }
 
-            const positionVariantsContextMenu = function(e) {
+            function showVariantsContextMenu(clientX, clientY) {
                 if (!qbContextMenu) return;
                 if (qbContextMenu.parentElement !== document.body) {
                     document.body.appendChild(qbContextMenu);
                 }
 
-                qbContextMenu.style.visibility = 'hidden';
-                qbContextMenu.style.display = 'block';
+                // Show temporarily hidden to measure dimensions
+                qbContextMenu.style.setProperty('visibility', 'hidden', 'important');
+                qbContextMenu.style.setProperty('display', 'block', 'important');
+                qbContextMenu.style.setProperty('opacity', '0', 'important');
+                qbContextMenu.style.setProperty('z-index', '2147483647', 'important');
 
-                const menuWidth = qbContextMenu.offsetWidth || 210;
-                const menuHeight = qbContextMenu.offsetHeight || 105;
+                const menuWidth = qbContextMenu.offsetWidth || 215;
+                const menuHeight = qbContextMenu.offsetHeight || 110;
 
-                let posX = e.clientX;
-                let posY = e.clientY;
+                let posX = clientX;
+                let posY = clientY;
 
-                if (posX + menuWidth > window.innerWidth - 8) {
-                    posX = window.innerWidth - menuWidth - 8;
+                if (posX + menuWidth > window.innerWidth - 10) {
+                    posX = window.innerWidth - menuWidth - 10;
                 }
-                if (posY + menuHeight > window.innerHeight - 8) {
-                    posY = window.innerHeight - menuHeight - 8;
+                if (posY + menuHeight > window.innerHeight - 10) {
+                    posY = window.innerHeight - menuHeight - 10;
                 }
 
-                posX = Math.max(8, posX);
-                posY = Math.max(8, posY);
+                posX = Math.max(10, posX);
+                posY = Math.max(10, posY);
 
-                qbContextMenu.style.left = posX + 'px';
-                qbContextMenu.style.top = posY + 'px';
-                qbContextMenu.style.visibility = 'visible';
-            };
+                qbContextMenu.style.setProperty('left', posX + 'px', 'important');
+                qbContextMenu.style.setProperty('top', posY + 'px', 'important');
+                qbContextMenu.style.setProperty('visibility', 'visible', 'important');
+                qbContextMenu.style.setProperty('opacity', '1', 'important');
 
-            if (variantsThead && qbContextMenu) {
-                variantsThead.addEventListener('contextmenu', function(e) {
+                contextMenuOpenedTime = Date.now();
+            }
+
+            window.showVariantsContextMenu = showVariantsContextMenu;
+            window.hideVariantsContextMenu = hideVariantsContextMenu;
+
+            const handleVariantsContextMenu = function(e) {
+                const target = e.target;
+                if (!target) return;
+
+                // Match any row, cell, header, input, or container in the Generated Variants Matrix
+                const isVariantsArea = target.closest('#variantsTable, #variantsContainer, #matrixBodyContainer, #generatedVariantsCard');
+                if (isVariantsArea) {
                     e.preventDefault();
                     e.stopPropagation();
-                    positionVariantsContextMenu(e);
-                });
+                    showVariantsContextMenu(e.clientX, e.clientY);
+                }
+            };
 
-                // Dismiss immediately on any scroll (page or container) or resize
-                window.addEventListener('scroll', hideVariantsContextMenu, { passive: true });
-                window.addEventListener('resize', hideVariantsContextMenu, { passive: true });
-                document.addEventListener('scroll', hideVariantsContextMenu, { passive: true, capture: true });
+            // CAPTURE phase on document guarantees catching right-click before any input or library suppresses it
+            document.addEventListener('contextmenu', handleVariantsContextMenu, true);
 
-                // Dismiss on click outside
-                document.addEventListener('click', function(e) {
-                    if (qbContextMenu && !qbContextMenu.contains(e.target)) {
+            // Also attach directly to table & container elements in bubble phase
+            const variantsTableEl = document.getElementById('variantsTable');
+            if (variantsTableEl) {
+                variantsTableEl.addEventListener('contextmenu', handleVariantsContextMenu);
+            }
+            const variantsContainerEl = document.getElementById('variantsContainer');
+            if (variantsContainerEl) {
+                variantsContainerEl.addEventListener('contextmenu', handleVariantsContextMenu);
+            }
+            const genCardEl = document.getElementById('generatedVariantsCard');
+            if (genCardEl) {
+                genCardEl.addEventListener('contextmenu', handleVariantsContextMenu);
+            }
+
+            // Dismiss on window scroll or resize
+            window.addEventListener('scroll', function() {
+                if (qbContextMenu && qbContextMenu.style.display !== 'none') {
+                    hideVariantsContextMenu();
+                }
+            }, { passive: true });
+
+            window.addEventListener('resize', function() {
+                if (qbContextMenu && qbContextMenu.style.display !== 'none') {
+                    hideVariantsContextMenu();
+                }
+            }, { passive: true });
+
+            // Dismiss on click outside (capture phase so it detects clicks reliably)
+            document.addEventListener('click', function(e) {
+                if (qbContextMenu && qbContextMenu.style.display !== 'none') {
+                    if (!qbContextMenu.contains(e.target)) {
                         hideVariantsContextMenu();
                     }
-                });
+                }
+            }, true);
 
-                // Dismiss on Esc key
-                document.addEventListener('keydown', function(e) {
-                    if (e.key === 'Escape') {
+            // Dismiss on mousedown with left click outside
+            document.addEventListener('mousedown', function(e) {
+                if (e.button === 0 && qbContextMenu && qbContextMenu.style.display !== 'none') {
+                    if (!qbContextMenu.contains(e.target)) {
                         hideVariantsContextMenu();
                     }
+                }
+            }, true);
+
+            // Dismiss on Esc key
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape') {
+                    if (qbContextMenu) qbContextMenu.style.setProperty('display', 'none', 'important');
+                }
+            });
+
+            // Context Menu Items Handlers
+            const qbCtxCustomizeBtn = document.getElementById('qbCtxCustomizeVariantsBtn');
+            if (qbCtxCustomizeBtn) {
+                qbCtxCustomizeBtn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    if (qbContextMenu) qbContextMenu.style.setProperty('display', 'none', 'important');
+                    showCustomizeVariantsModal();
                 });
+            }
 
-                const qbCtxCustomizeBtn = document.getElementById('qbCtxCustomizeVariantsBtn');
-                if (qbCtxCustomizeBtn) {
-                    qbCtxCustomizeBtn.addEventListener('click', function(e) {
-                        e.preventDefault();
-                        hideVariantsContextMenu();
-                        showCustomizeVariantsModal();
-                    });
-                }
+            const qbCtxResetBtn = document.getElementById('qbCtxResetVariantsBtn');
+            if (qbCtxResetBtn) {
+                qbCtxResetBtn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    if (qbContextMenu) qbContextMenu.style.setProperty('display', 'none', 'important');
+                    if (varColResetDefaultBtn) varColResetDefaultBtn.click();
+                });
+            }
 
-                const qbCtxResetBtn = document.getElementById('qbCtxResetVariantsBtn');
-                if (qbCtxResetBtn) {
-                    qbCtxResetBtn.addEventListener('click', function(e) {
-                        e.preventDefault();
-                        hideVariantsContextMenu();
-                        if (varColResetDefaultBtn) varColResetDefaultBtn.click();
+            // =========================================================
+            // VARIANT STORAGE LOCATIONS & BULK ASSIGNMENT LOGIC
+            // =========================================================
+            // 1. "Apply to All" button in Inventory Tab
+            const btnApplyLocationToAll = document.getElementById('btnApplyLocationToAllVariants');
+            if (btnApplyLocationToAll) {
+                btnApplyLocationToAll.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const defaultLoc = document.getElementById('remarks')?.value.trim();
+                    if (!defaultLoc) {
+                        Swal.fire({
+                            icon: 'info',
+                            title: 'Location Blank',
+                            text: 'Please select or enter a location in the "Default Rack / Shelf Location" field first.'
+                        });
+                        return;
+                    }
+                    const inputs = document.querySelectorAll('#variantsTable .variant-location-input');
+                    if (inputs.length === 0) {
+                        Swal.fire({ icon: 'warning', title: 'No Variants', text: 'No variants available in the matrix table.' });
+                        return;
+                    }
+                    inputs.forEach(inp => {
+                        inp.value = defaultLoc;
                     });
-                }
+                    showSmallAlert(`Location "${defaultLoc}" applied to all ${inputs.length} variants!`, 'success');
+                });
+            }
+
+            // 2. Open Variant Locations Modal Button Handler
+            const btnOpenVariantLoc = document.getElementById('btnOpenVariantLocationsModal');
+            if (btnOpenVariantLoc) {
+                btnOpenVariantLoc.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    window.openVariantLocationsModal();
+                });
+            }
+
+            // Select all in modal table
+            const modalSelectAllLocCheck = document.getElementById('modalSelectAllLocCheck');
+            if (modalSelectAllLocCheck) {
+                modalSelectAllLocCheck.addEventListener('change', function() {
+                    document.querySelectorAll('.modal-loc-check').forEach(chk => {
+                        chk.checked = modalSelectAllLocCheck.checked;
+                    });
+                });
+            }
+
+            // Modal: Bulk Apply to ALL
+            const btnModalApplyToAll = document.getElementById('btnModalApplyToAll');
+            if (btnModalApplyToAll) {
+                btnModalApplyToAll.addEventListener('click', function() {
+                    const val = document.getElementById('modalBulkLocationInput')?.value.trim();
+                    if (!val) {
+                        Swal.fire({ icon: 'info', title: 'Location Blank', text: 'Please enter a Rack or Shelf location in the bulk location box first.' });
+                        return;
+                    }
+                    const inputs = document.querySelectorAll('#modalVariantLocationsBody .modal-row-loc-input');
+                    inputs.forEach(inp => inp.value = val);
+                    showSmallAlert(`All ${inputs.length} variants updated to "${val}"!`, 'success');
+                });
+            }
+
+            // Modal: Bulk Apply to SELECTED
+            const btnModalApplyToSelected = document.getElementById('btnModalApplyToSelected');
+            if (btnModalApplyToSelected) {
+                btnModalApplyToSelected.addEventListener('click', function() {
+                    const val = document.getElementById('modalBulkLocationInput')?.value.trim();
+                    if (!val) {
+                        Swal.fire({ icon: 'info', title: 'Location Blank', text: 'Please enter a Rack or Shelf location in the bulk location box first.' });
+                        return;
+                    }
+                    let count = 0;
+                    document.querySelectorAll('#modalVariantLocationsBody tr').forEach(row => {
+                        const chk = row.querySelector('.modal-loc-check');
+                        if (chk && chk.checked) {
+                            const inp = row.querySelector('.modal-row-loc-input');
+                            if (inp) {
+                                inp.value = val;
+                                count++;
+                            }
+                        }
+                    });
+                    if (count === 0) {
+                        Swal.fire({ icon: 'warning', title: 'No Variants Selected', text: 'Please select at least one variant checkbox from the table.' });
+                    } else {
+                        showSmallAlert(`Selected ${count} variants updated to "${val}"!`, 'success');
+                    }
+                });
+            }
+
+            // Modal: Save & Apply Locations back to matrix table
+            const btnSaveVariantLocationsModal = document.getElementById('btnSaveVariantLocationsModal');
+            if (btnSaveVariantLocationsModal) {
+                btnSaveVariantLocationsModal.addEventListener('click', function() {
+                    const matrixRows = document.querySelectorAll('#variantsTable #variantsBody tr');
+                    const modalRows = document.querySelectorAll('#modalVariantLocationsBody tr');
+
+                    modalRows.forEach(row => {
+                        const idx = row.dataset.matrixIndex;
+                        if (idx !== undefined && matrixRows[idx]) {
+                            const newLoc = row.querySelector('.modal-row-loc-input')?.value.trim() || '';
+                            const matrixInp = matrixRows[idx].querySelector('.variant-location-input');
+                            if (matrixInp) {
+                                matrixInp.value = newLoc;
+                            }
+                        }
+                    });
+
+                    // Hide modal safely
+                    window.hideVariantLocationsModal();
+
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Locations Saved!',
+                        text: 'All variant locations have been successfully updated in the matrix table.',
+                        timer: 2000,
+                        showConfirmButton: false
+                    });
+                });
             }
 
             // CRITICAL: Render checklist and apply column visibility immediately on page load!
             renderVariantColumnsChecklist();
             applyVariantColVisibility(getVariantColPrefs());
+        });
+
+        // Fail-safe: Also ensure rendered once full window loads
+        window.addEventListener('load', function() {
+            if (typeof renderVariantColumnsChecklist === 'function') {
+                renderVariantColumnsChecklist();
+            }
+            if (typeof applyVariantColVisibility === 'function') {
+                applyVariantColVisibility();
+            }
         });
     </script>
 @endsection

@@ -321,8 +321,9 @@
                                                         <th class="text-uppercase text-muted p-1" style="min-width: 140px; font-size: 10px;">Variant Name</th>
                                                         <th class="text-uppercase text-muted p-1" style="width: 80px; font-size: 10px;">Size</th>
                                                         <th class="text-uppercase text-muted p-1" style="width: 80px; font-size: 10px;">Color</th>
-                                                        <th class="text-uppercase text-muted p-1" style="width: 75px; font-size: 10px;">Unit</th>
-                                                        <th class="text-uppercase text-muted p-1 text-center" style="width: 90px; font-size: 10px;">Initial Stock</th>
+                                                         <th class="text-uppercase text-muted p-1" style="width: 75px; font-size: 10px;">Unit</th>
+                                                         <th class="text-uppercase text-muted p-1" style="width: 110px; font-size: 10px;">Rack / Shelf</th>
+                                                         <th class="text-uppercase text-muted p-1 text-center" style="width: 90px; font-size: 10px;">Initial Stock</th>
                                                         <th class="text-uppercase text-muted p-1 text-center conv-col" id="convFactorHeader" style="width: 95px; font-size: 10px;">Pcs / Carton</th>
                                                         <th class="text-uppercase text-muted p-1 text-center piece-wt-only-col" style="width: 90px; font-size: 10px;">Piece Wt (g)</th>
                                                         <th class="text-uppercase text-muted p-1" style="width: 90px; font-size: 10px;">Sale Price</th>
@@ -540,6 +541,15 @@
             </div>
         </div>
 
+        {{-- Global Datalist for Storage Locations (Warehouse Racks & Shop Shelves) --}}
+        <datalist id="storageLocationsDatalist">
+            @if(isset($storageLocations) && count($storageLocations) > 0)
+                @foreach($storageLocations as $sl)
+                    <option value="{{ $sl->name }}{{ $sl->code ? ' ('.$sl->code.')' : '' }}">{{ $sl->full_display_name }}</option>
+                @endforeach
+            @endif
+        </datalist>
+
     </div>
 @endsection
 
@@ -659,8 +669,8 @@
                 const alertVal = (v && v.alert !== undefined && v.alert !== null) ? v.alert : '0';
                 const barcodeVal = (v && v.barcode !== undefined && v.barcode !== null && v.barcode !== '') ? v.barcode : generateRandomBarcode();
                 
-                const uNorm = (unitVal || '').toLowerCase();
-                
+                const locationVal = (v && v.location !== undefined && v.location !== null) ? v.location : '';
+
                 tr.innerHTML = `
                     <td class="p-1 align-middle">
                         <input type="text" class="form-control-pro form-control-sm base-name-input fw-bold" name="variant_name[]" value="${escapeHtml(nameVal)}" placeholder="Name" data-vid="${vid}">
@@ -679,6 +689,9 @@
                             <option value="Box" ${uNorm==='box'?'selected':''}>Box</option>
                             <option value="Dozen" ${uNorm==='dozen'||uNorm==='dzn'?'selected':''}>Dzn</option>
                         </select>
+                    </td>
+                    <td class="p-1">
+                        <input type="text" class="form-control-pro form-control-sm variant-location-input" name="variant_location[]" value="${escapeHtml(locationVal)}" list="storageLocationsDatalist" placeholder="Rack / Shelf">
                     </td>
                     <td class="p-1">
                         <input type="number" class="form-control-pro form-control-sm text-center fw-bold text-primary" name="variant_stock[]" step="any" value="${escapeHtml(stockVal)}" placeholder="0" title="${isCartonMode ? 'Initial Stock (Cartons)' : 'Initial Stock'}">
@@ -838,6 +851,7 @@
                 const alertVal = (v && v.alert !== undefined && v.alert !== null) ? v.alert : '0';
                 const barcodeVal = (v && v.barcode !== undefined && v.barcode !== null && v.barcode !== '') ? v.barcode : generateRandomBarcode();
                 
+                const locationVal = (v && v.location !== undefined && v.location !== null) ? v.location : '';
                 const uNorm = (unitVal || '').toLowerCase();
 
                 tr.innerHTML = `
@@ -858,6 +872,9 @@
                             <option value="Box" ${uNorm==='box'?'selected':''}>Box</option>
                             <option value="Dozen" ${uNorm==='dozen'||uNorm==='dzn'?'selected':''}>Dzn</option>
                         </select>
+                    </td>
+                    <td class="p-1">
+                        <input type="text" class="form-control-pro form-control-sm variant-location-input" name="variant_location[]" value="${escapeHtml(locationVal)}" list="storageLocationsDatalist" placeholder="Rack / Shelf">
                     </td>
                     <td class="p-1">
                         <input type="number" class="form-control-pro form-control-sm text-center fw-bold text-primary stock-input" name="variant_stock[]" step="any" value="${escapeHtml(stockVal)}" placeholder="0" title="${isCartonMode ? 'Initial Stock (Cartons)' : 'Initial Stock'}" ${variantMode === 'weight' ? 'readonly style="background:#f8f9ff;color:#0d6efd;font-weight:bold;"' : ''}>

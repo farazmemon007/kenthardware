@@ -9,6 +9,7 @@ use App\Models\Stock;
 use App\Models\StockMovement;
 use App\Models\Subcategory;
 use App\Models\Unit;
+use App\Models\StorageLocation;
 use App\Models\Warehouse;
 use App\Models\WarehouseStock;
 use Illuminate\Http\Request;
@@ -610,8 +611,9 @@ class ProductController extends Controller
         $units = Unit::select('id', 'name')->get();
         $brands = Brand::select('id', 'name')->get();
         $warehouses = Warehouse::select('id', 'warehouse_name')->get();
+        $storageLocations = StorageLocation::with(['warehouse:id,warehouse_name', 'branch:id,name'])->orderBy('name')->get();
 
-        return view('admin_panel.product.create', compact('categories', 'units', 'brands', 'warehouses'));
+        return view('admin_panel.product.create', compact('categories', 'units', 'brands', 'warehouses', 'storageLocations'));
     }
 
     // ===== Dependent subcategories =====
@@ -803,6 +805,7 @@ class ProductController extends Controller
                 $is_bases = $request->variant_is_base;
                 $units = $request->variant_unit;
                 $refs = $request->variant_ref;
+                $locations = $request->variant_location ?? [];
                 $serial_nos = $request->variant_serial_no ?? [];
                 $prefix = \App\Services\VariantSerialService::generatePrefix($request->product_name ?? 'Product');
 
@@ -895,6 +898,7 @@ class ProductController extends Controller
                             'conv_factor' => $vConvFactor,
                             'is_base_variant' => $is_bases[$i] ?? 0,
                             'unit' => $units[$i] ?? 'Pcs',
+                            'location' => $locations[$i] ?? '',
                         ];
                     }
                 }
@@ -1215,6 +1219,7 @@ class ProductController extends Controller
                 $is_bases = $request->variant_is_base;
                 $units = $request->variant_unit;
                 $refs = $request->variant_ref;
+                $locations = $request->variant_location ?? [];
                 $serial_nos = $request->variant_serial_no ?? [];
                 $prefix = \App\Services\VariantSerialService::generatePrefix($request->product_name ?? 'Product');
 
@@ -1307,6 +1312,7 @@ class ProductController extends Controller
                             'conv_factor' => $vConvFactor,
                             'is_base_variant' => $is_bases[$i] ?? 0,
                             'unit' => $units[$i] ?? 'Pcs',
+                            'location' => $locations[$i] ?? '',
                         ];
                     }
                 }
@@ -1727,7 +1733,9 @@ class ProductController extends Controller
             }
         }
 
-        return view('admin_panel.product.edit', compact('product', 'categories', 'subcategories', 'brands', 'variants'));
+        $storageLocations = StorageLocation::with(['warehouse:id,warehouse_name', 'branch:id,name'])->orderBy('name')->get();
+
+        return view('admin_panel.product.edit', compact('product', 'categories', 'subcategories', 'brands', 'variants', 'storageLocations'));
     }
 
     // ===== Barcode view =====

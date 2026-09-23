@@ -14,10 +14,12 @@ class Warehouse extends Model
     public function user(){
         return $this->belongsTo(User::class, 'creater_id');
     }
-public function products() {
-    return $this->belongsToMany(Product::class, 'product_warehouse')
-                ->withPivot('stock');
-}
+    public function products() {
+        return $this->belongsToMany(Product::class, 'product_warehouse')
+                    ->withPivot('stock');
+    }
 
-
+    public function racks() {
+        return $this->hasMany(StorageLocation::class, 'warehouse_id')->where('type', 'warehouse_rack');
+    }
 }

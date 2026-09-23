@@ -15,4 +15,9 @@ class Branch extends Model
     {
         return $this->belongsTo(User::class);
     }
+
+    public function shelves()
+    {
+        return $this->hasMany(StorageLocation::class, 'branch_id')->where('type', 'shop_shelf');
+    }
 }

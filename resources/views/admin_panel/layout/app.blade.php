@@ -900,10 +900,12 @@
                                                     @can('warehouse.view')
                                                         <li><a href="{{ url('warehouse') }}"><i class="fas fa-warehouse"></i>
                                                                 Warehouse</a></li>
+                                                        <li><a href="{{ route('storage_locations.index') }}"><i class="fas fa-layer-group"></i>
+                                                                Racks & Shelves</a></li>
                                                     @endcan
                                                     @can('warehouse.stock.view')
                                                         <li><a href="{{ url('warehouse_stocks') }}"><i class="fas fa-boxes"></i>
-                                                                Warehouse Stock</a></li>
+                                                                Stock</a></li>
                                                     @endcan
                                                     @can('stock.transfer.view')
                                                         <li><a href="{{ url('stock_transfers') }}"><i

@@ -32,6 +32,7 @@ use App\Http\Controllers\VendorController;
 use App\Http\Controllers\VoucherController;
 use App\Http\Controllers\WarehouseController;
 use App\Http\Controllers\WarehouseStockController;
+use App\Http\Controllers\StorageLocationController;
 use App\Http\Controllers\ZoneController;
 use Illuminate\Support\Facades\Route;
 
@@ -242,6 +243,12 @@ Route::middleware('auth')->group(function () {
     Route::get('/warehouse', [WarehouseController::class, 'index'])->middleware('permission:warehouse.view');
     Route::post('/warehouse/store', [WarehouseController::class, 'store'])->middleware('permission:warehouse.create|warehouse.edit');
     Route::get('/warehouse/delete/{id}', [WarehouseController::class, 'delete'])->middleware('permission:warehouse.delete');
+
+    // Storage Locations (Warehouse Racks & Shop Shelves)
+    Route::get('/storage-locations', [StorageLocationController::class, 'index'])->name('storage_locations.index');
+    Route::post('/storage-locations/store', [StorageLocationController::class, 'store'])->name('storage_locations.store');
+    Route::get('/storage-locations/delete/{id}', [StorageLocationController::class, 'delete'])->name('storage_locations.delete');
+    Route::get('/storage-locations/get-json', [StorageLocationController::class, 'getJson'])->name('storage_locations.get_json');
 
     // Branches
     // Branches
