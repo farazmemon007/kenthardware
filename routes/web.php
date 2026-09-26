@@ -34,6 +34,7 @@ use App\Http\Controllers\WarehouseController;
 use App\Http\Controllers\WarehouseStockController;
 use App\Http\Controllers\StorageLocationController;
 use App\Http\Controllers\ZoneController;
+use App\Http\Controllers\PCodeController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -131,6 +132,12 @@ Route::middleware('auth')->group(function () {
     route::get('/Unit', [UnitController::class, 'index'])->middleware('permission:units.view')->name('Unit.home');
     Route::get('/Unit/delete/{id}', [UnitController::class, 'delete'])->middleware('permission:units.delete')->name('delete.Unit');
     route::post('/Unit/store', [UnitController::class, 'store'])->middleware('permission:units.create|units.edit')->name('store.Unit');
+    Route::post('/package-type/store', [ProductController::class, 'storePackageType'])->name('store.package_type');
+
+    // P-Code Mapping & Encoding Routes
+    Route::get('/pcode/mapping', [PCodeController::class, 'getMapping'])->name('pcode.mapping.get');
+    Route::post('/pcode/mapping', [PCodeController::class, 'updateMapping'])->name('pcode.mapping.update');
+    Route::post('/pcode/encode', [PCodeController::class, 'encodeAjax'])->name('pcode.encode');
 
     route::get('/subcategory', [SubcategoryController::class, 'index'])->middleware('permission:subcategories.view')->name('subcategory.home');
     Route::get('/subcategory/delete/{id}', [SubcategoryController::class, 'delete'])->middleware('permission:subcategories.delete')->name('delete.subcategory');

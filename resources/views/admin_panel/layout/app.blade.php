@@ -523,6 +523,80 @@
     </style>
 
     @vite(['resources/js/app.js'])
+
+    <script>
+        window.openPCodeModal = function(e) {
+            if (e) {
+                if (typeof e.preventDefault === 'function') e.preventDefault();
+                if (typeof e.stopPropagation === 'function') e.stopPropagation();
+            }
+            if (typeof $ !== 'undefined') {
+                $('.nav-item.show-submenu').removeClass('show-submenu');
+                $('.rt_nav_header.horizontal-layout .nav-bottom').removeClass('header-toggled');
+                $('.dropdown-menu').removeClass('show');
+            }
+            var modalEl = document.getElementById('pcodeModal');
+            if (!modalEl) {
+                console.error('P-Code Modal element (#pcodeModal) not found!');
+                return false;
+            }
+            if (modalEl.parentNode !== document.body) {
+                document.body.appendChild(modalEl);
+            }
+            if (typeof $ !== 'undefined' && typeof $(modalEl).modal === 'function') {
+                $(modalEl).modal('show');
+                return false;
+            }
+            if (typeof bootstrap !== 'undefined' && typeof bootstrap.Modal !== 'undefined') {
+                var bsModal = bootstrap.Modal.getOrCreateInstance(modalEl);
+                bsModal.show();
+                return false;
+            }
+            modalEl.classList.add('show');
+            modalEl.style.display = 'block';
+            modalEl.removeAttribute('aria-hidden');
+            modalEl.setAttribute('aria-modal', 'true');
+            document.body.classList.add('modal-open');
+            if (!document.querySelector('.modal-backdrop')) {
+                var bd = document.createElement('div');
+                bd.className = 'modal-backdrop fade show';
+                bd.id = 'pcodeManualBackdrop';
+                bd.onclick = function() { window.closePCodeModal(); };
+                document.body.appendChild(bd);
+            }
+            return false;
+        };
+
+        window.closePCodeModal = function() {
+            var modalEl = document.getElementById('pcodeModal');
+            if (modalEl) {
+                if (typeof $ !== 'undefined' && typeof $(modalEl).modal === 'function') {
+                    $(modalEl).modal('hide');
+                } else if (typeof bootstrap !== 'undefined' && typeof bootstrap.Modal !== 'undefined') {
+                    var bsModal = bootstrap.Modal.getInstance(modalEl);
+                    if (bsModal) bsModal.hide();
+                }
+                modalEl.classList.remove('show');
+                modalEl.style.display = 'none';
+                modalEl.setAttribute('aria-hidden', 'true');
+                modalEl.removeAttribute('aria-modal');
+            }
+            document.body.classList.remove('modal-open');
+            var bd = document.getElementById('pcodeManualBackdrop');
+            if (bd) bd.remove();
+            document.querySelectorAll('.modal-backdrop').forEach(function(b) { b.remove(); });
+        };
+
+        // Capture phase click listener on document
+        document.addEventListener('click', function(e) {
+            var btn = e.target.closest ? e.target.closest('.open-pcode-modal-btn') : null;
+            if (btn) {
+                e.preventDefault();
+                e.stopPropagation();
+                window.openPCodeModal(e);
+            }
+        }, true);
+    </script>
 </head>
 
 <body>
@@ -867,6 +941,11 @@
                                                                     class="fas fa-balance-scale"></i> Units</a></li>
                                                     @endcan
 
+                                                    <li>
+                                                        <a href="javascript:void(0)" class="open-pcode-modal-btn" onclick="window.openPCodeModal(event); return false;" data-bs-toggle="modal" data-bs-target="#pcodeModal" data-toggle="modal" data-target="#pcodeModal">
+                                                            <i class="fas fa-barcode text-warning"></i> P-Code
+                                                        </a>
+                                                    </li>
                                                 </ul>
                                             </div>
                                         @endcanany
@@ -1546,6 +1625,7 @@
             });
         });
     </script>
+    @include('admin_panel.partials.pcode_modal')
     @stack('scripts')
 </body>
 

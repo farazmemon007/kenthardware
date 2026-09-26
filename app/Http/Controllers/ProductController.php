@@ -12,6 +12,8 @@ use App\Models\Unit;
 use App\Models\StorageLocation;
 use App\Models\Warehouse;
 use App\Models\WarehouseStock;
+use App\Models\PackageType;
+use App\Services\PCodeService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -93,7 +95,7 @@ class ProductController extends Controller
         $productId = $request->get('product_id');
 
         $query = Product::query()
-            ->select('id', 'item_name', 'item_code', 'barcode_path', 'size_mode', 'unit_id', 'height', 'width', 'pieces_per_box', 'purchase_price_per_box', 'purchase_price_per_m2', 'purchase_price_per_piece', 'pieces_per_m2', 'purchase_discount_percent', 'sale_discount_percent', 'color', 'sale_price_per_piece')
+            ->select('id', 'item_name', 'item_code', 'barcode_path', 'size_mode', 'unit_id', 'height', 'width', 'pieces_per_box', 'purchase_price_per_box', 'purchase_price_per_m2', 'purchase_price_per_piece', 'pieces_per_m2', 'purchase_discount_percent', 'sale_discount_percent', 'color', 'sale_price_per_piece', 'wholesale_price', 'p_code', 'rot_p_code')
             ->with(['unit'])
             ->withSum('warehouseStocks', 'total_pieces') /* Sum PIECES, not boxes */
             ->where('is_active', true); /* Only active products */
@@ -380,7 +382,10 @@ class ProductController extends Controller
                         'purchase_price_per_box' => ($v['purch_price'] ?? $p->purchase_price_per_piece ?? 0) * $vPpb,
                         'purchase_price_per_m2' => $p->purchase_price_per_m2 ?? 0,
                         'sale_discount_percent' => $p->sale_discount_percent ?? 0,
-                        'variant_data' => base64_encode($variantJson)
+                        'variant_data' => base64_encode($variantJson),
+                        'p_code' => !empty($v['sky_p_code']) ? $v['sky_p_code'] : (!empty($v['p_code']) ? $v['p_code'] : PCodeService::encode($v['sale_price'] ?? 0)),
+                        'sky_p_code' => !empty($v['sky_p_code']) ? $v['sky_p_code'] : (!empty($v['p_code']) ? $v['p_code'] : PCodeService::encode($v['sale_price'] ?? 0)),
+                        'rot_p_code' => !empty($v['rot_p_code']) ? $v['rot_p_code'] : PCodeService::encode($v['wholesale_price'] ?? 0),
                     ];
                 }
                 return $expanded;
@@ -405,7 +410,10 @@ class ProductController extends Controller
                 'purchase_price_per_box' => $p->purchase_price_per_box ?? (($p->purchase_price_per_piece ?? 0) * $ppb),
                 'purchase_price_per_m2' => $p->purchase_price_per_m2 ?? 0,
                 'sale_discount_percent' => $p->sale_discount_percent ?? 0,
-                'variant_data' => ''
+                'variant_data' => '',
+                'p_code' => !empty($p->p_code) ? $p->p_code : PCodeService::encode($p->sale_price_per_piece ?? 0),
+                'sky_p_code' => !empty($p->p_code) ? $p->p_code : PCodeService::encode($p->sale_price_per_piece ?? 0),
+                'rot_p_code' => !empty($p->rot_p_code) ? $p->rot_p_code : PCodeService::encode($p->wholesale_price ?? 0),
             ]];
         });
 
@@ -463,6 +471,7 @@ class ProductController extends Controller
                 'price_per_m2' => number_format($p->price_per_m2 ?? 0, 2),
                 'total_price' => number_format($p->total_price ?? 0, 2),
                 'brand_name' => $p->brand->name ?? '-',
+                'p_code' => !empty($p->p_code) ? $p->p_code : PCodeService::encode($p->purchase_price_per_piece ?? 0),
             ];
         }));
     }
@@ -592,9 +601,28 @@ class ProductController extends Controller
                     $vBalance = max(0, $vInitial + $purchased - $sold + $returned - $pReturned);
                     $v['stock'] = $vBalance;
                     $v['current_stock'] = $vBalance;
+                    if (empty($v['sky_p_code'])) {
+                        $v['sky_p_code'] = !empty($v['p_code']) ? $v['p_code'] : PCodeService::encode($v['sale_price'] ?? 0);
+                    }
+                    if (empty($v['rot_p_code'])) {
+                        $v['rot_p_code'] = PCodeService::encode($v['wholesale_price'] ?? 0);
+                    }
+                    if (empty($v['p_code'])) {
+                        $v['p_code'] = $v['sky_p_code'];
+                    }
+                    if (empty($v['location'])) {
+                        $v['location'] = !empty($v['rack_shelf']) ? $v['rack_shelf'] : (!empty($product->remarks) ? $product->remarks : '');
+                    }
                 }
                 $product->color = $parsed;
             }
+        }
+
+        if (empty($product->p_code)) {
+            $product->p_code = PCodeService::encode($product->sale_price_per_piece ?: ($product->sale_price_per_box ?? 0));
+        }
+        if (empty($product->rot_p_code)) {
+            $product->rot_p_code = PCodeService::encode($product->wholesale_price ?? 0);
         }
 
         return response()->json($product);
@@ -612,8 +640,32 @@ class ProductController extends Controller
         $brands = Brand::select('id', 'name')->get();
         $warehouses = Warehouse::select('id', 'warehouse_name')->get();
         $storageLocations = StorageLocation::with(['warehouse:id,warehouse_name', 'branch:id,name'])->orderBy('name')->get();
+        $packageTypes = PackageType::orderBy('pieces_per_box', 'asc')->get();
 
-        return view('admin_panel.product.create', compact('categories', 'units', 'brands', 'warehouses', 'storageLocations'));
+        return view('admin_panel.product.create', compact('categories', 'units', 'brands', 'warehouses', 'storageLocations', 'packageTypes'));
+    }
+
+    public function storePackageType(Request $request)
+    {
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'pieces_per_box' => 'required|numeric|min:1',
+        ]);
+
+        $pkg = PackageType::firstOrCreate(
+            ['name' => trim($request->name)],
+            ['pieces_per_box' => (int) $request->pieces_per_box]
+        );
+
+        return response()->json([
+            'status' => 'success',
+            'success' => true,
+            'message' => 'Standard packaging created successfully',
+            'package_type' => $pkg,
+            'id' => $pkg->id,
+            'name' => $pkg->name,
+            'pieces_per_box' => $pkg->pieces_per_box,
+        ]);
     }
 
     // ===== Dependent subcategories =====
@@ -785,9 +837,42 @@ class ProductController extends Controller
             $imagePath = null;
         }
 
+        // Master Unit & Packaging Resolution
+        $masterUnitId = $request->unit_id ?? $request->unit;
+        $masterUnit = $masterUnitId ? Unit::find($masterUnitId) : null;
+        $masterUnitName = $masterUnit ? $masterUnit->name : 'Pcs';
+
+        $packingType = $request->packing_type ?? 'standard';
+        $packingName = null;
+        if ($packingType === 'custom') {
+            $packingName = $request->custom_packing_name ?: 'Custom';
+            $customPpb = (int) ($request->custom_pieces_per_box ?? $request->pieces_per_box ?? 1);
+            if ($customPpb > 0) {
+                $piecesPerBox = $customPpb;
+            }
+        } else {
+            if ($request->filled('package_type_id')) {
+                $pkg = PackageType::find($request->package_type_id);
+                if ($pkg) {
+                    $packingName = $pkg->name;
+                    if ($pkg->pieces_per_box > 0) {
+                        $piecesPerBox = (int) $pkg->pieces_per_box;
+                    }
+                }
+            }
+            if (!$packingName) {
+                $packingName = $request->packing_name ?? 'Standard';
+            }
+        }
+        if ($piecesPerBox <= 0) {
+            $piecesPerBox = (int) ($request->pieces_per_box ?? 1);
+            if ($piecesPerBox <= 0) $piecesPerBox = 1;
+        }
+
         DB::transaction(function () use ($request, $userId, $nextCode, $imagePath, $mode, $height, $width, $piecesPerBox, $boxesQuantity,
             $totalM2, $pricePerM2, $purchasePricePerM2, $totalStockQty, $piecesPerM2,
-            $salePricePerPiece, $salePricePerBox, $purchasePricePerPiece, $purchasePricePerBox) {
+            $salePricePerPiece, $salePricePerBox, $purchasePricePerPiece, $purchasePricePerBox,
+            $masterUnitId, $masterUnitName, $packingType, $packingName) {
 
             $variants = [];
             if ($request->has('variant_name')) {
@@ -807,6 +892,9 @@ class ProductController extends Controller
                 $refs = $request->variant_ref;
                 $locations = $request->variant_location ?? [];
                 $serial_nos = $request->variant_serial_no ?? [];
+                $variant_pcodes = $request->variant_p_code ?? [];
+                $variant_sky_pcodes = $request->variant_sky_pcode ?? ($request->variant_p_code ?? []);
+                $variant_rot_pcodes = $request->variant_rot_pcode ?? [];
                 $prefix = \App\Services\VariantSerialService::generatePrefix($request->product_name ?? 'Product');
 
                 // Validate Conv Factors if Weight Unit is selected
@@ -882,6 +970,9 @@ class ProductController extends Controller
 
                         $vSerial = !empty($serial_nos[$i]) ? $serial_nos[$i] : sprintf('%s-%04d', $prefix, count($variants) + 1);
 
+                        $vSkyPCode = !empty($variant_sky_pcodes[$i]) ? $variant_sky_pcodes[$i] : (!empty($variant_pcodes[$i]) ? $variant_pcodes[$i] : PCodeService::encode($vSalePrice));
+                        $vRotPCode = !empty($variant_rot_pcodes[$i]) ? $variant_rot_pcodes[$i] : PCodeService::encode($vWholesalePrice);
+
                         $variants[] = [
                             'name' => $names[$i],
                             'size' => $sizes[$i] ?? '-',
@@ -897,38 +988,50 @@ class ProductController extends Controller
                             'serial_no' => $vSerial,
                             'conv_factor' => $vConvFactor,
                             'is_base_variant' => $is_bases[$i] ?? 0,
-                            'unit' => $units[$i] ?? 'Pcs',
+                            'unit' => !empty($units[$i]) ? $units[$i] : $masterUnitName,
                             'location' => $locations[$i] ?? '',
+                            'p_code' => $vSkyPCode,
+                            'sky_p_code' => $vSkyPCode,
+                            'rot_p_code' => $vRotPCode,
                         ];
                     }
                 }
-                
-                if (count($variants) > 0) {
-                    $totalStockQty = $variantStockSum;
-                    if ($mode === 'by_cartons' && $baseConvForCarton) {
-                        $piecesPerBox = (int)$baseConvForCarton;
-                    }
-                    $boxesQuantity = $piecesPerBox > 0 ? $totalStockQty / $piecesPerBox : $totalStockQty;
+                    
+                    if (count($variants) > 0) {
+                        $totalStockQty = $variantStockSum;
+                        if ($mode === 'by_cartons' && $baseConvForCarton) {
+                            $piecesPerBox = (int)$baseConvForCarton;
+                        }
+                        $boxesQuantity = $piecesPerBox > 0 ? $totalStockQty / $piecesPerBox : $totalStockQty;
 
-                    $baseVariant = collect($variants)->firstWhere('is_base_variant', 1) ?? $variants[0];
-                    if ($baseVariant && ($mode === 'by_cartons' || strtolower($baseVariant['unit'] ?? '') === 'carton')) {
-                        $salePricePerPiece = (float)($baseVariant['sale_price'] ?? 0);
-                        $purchasePricePerPiece = (float)($baseVariant['purch_price'] ?? 0);
-                        $purchasePricePerBox = round($purchasePricePerPiece * $piecesPerBox, 2);
-                        $salePricePerBox = round($salePricePerPiece * $piecesPerBox, 2);
+                        $baseVariant = collect($variants)->firstWhere('is_base_variant', 1) ?? $variants[0];
+                        if ($baseVariant && ($mode === 'by_cartons' || strtolower($baseVariant['unit'] ?? '') === 'carton')) {
+                            $salePricePerPiece = (float)($baseVariant['sale_price'] ?? 0);
+                            $purchasePricePerPiece = (float)($baseVariant['purch_price'] ?? 0);
+                            $purchasePricePerBox = round($purchasePricePerPiece * $piecesPerBox, 2);
+                            $salePricePerBox = round($salePricePerPiece * $piecesPerBox, 2);
+                        }
                     }
                 }
-            }
 
-            // Create product
-            $product = Product::create([
-                'creater_id' => $userId,
-                'category_id' => $request->category_id,
-                'sub_category_id' => $request->sub_category_id,
-                'item_code' => !empty($request->reference) ? $request->reference : (!empty($request->item_code) ? $request->item_code : $nextCode),
-                'item_name' => $request->product_name,
-                'barcode_path' => $request->barcode ?? $request->barcode_path ?? rand(100000000000, 999999999999),
-                'unit_id' => $request->unit,
+                $skyPrice = $salePricePerPiece > 0 ? $salePricePerPiece : (float)($request->retail_price ?? ($request->sale_price_per_piece ?? 0));
+                $rotPrice = (float)($request->wholesale_price ?? 0);
+                $productSkyPCode = !empty($request->sky_p_code) ? $request->sky_p_code : (!empty($request->p_code) ? $request->p_code : PCodeService::encode($skyPrice));
+                $productRotPCode = !empty($request->rot_p_code) ? $request->rot_p_code : PCodeService::encode($rotPrice);
+
+                // Create product
+                $product = Product::create([
+                    'creater_id' => $userId,
+                    'category_id' => $request->category_id,
+                    'sub_category_id' => $request->sub_category_id,
+                    'item_code' => !empty($request->reference) ? $request->reference : (!empty($request->item_code) ? $request->item_code : $nextCode),
+                    'item_name' => $request->product_name,
+                    'barcode_path' => $request->barcode ?? $request->barcode_path ?? rand(100000000000, 999999999999),
+                    'p_code' => $productSkyPCode,
+                    'rot_p_code' => $productRotPCode,
+                'unit_id' => $masterUnitId,
+                'packing_type' => $packingType,
+                'packing_name' => $packingName,
                 'brand_id' => $request->brand_id,
                 'model' => $request->model,
                 'image' => $imagePath,
@@ -1198,10 +1301,43 @@ class ProductController extends Controller
             $imagePath = $imageName;
         }
 
+        // Master Unit & Packaging Resolution
+        $masterUnitId = $request->unit_id ?? $request->unit ?? Product::where('id', $id)->value('unit_id');
+        $masterUnit = $masterUnitId ? Unit::find($masterUnitId) : null;
+        $masterUnitName = $masterUnit ? $masterUnit->name : 'Pcs';
+
+        $packingType = $request->packing_type ?? (Product::where('id', $id)->value('packing_type') ?? 'standard');
+        $packingName = null;
+        if ($packingType === 'custom') {
+            $packingName = $request->custom_packing_name ?: (Product::where('id', $id)->value('packing_name') ?? 'Custom');
+            $customPpb = (int) ($request->custom_pieces_per_box ?? $request->pieces_per_box ?? 1);
+            if ($customPpb > 0) {
+                $piecesPerBox = $customPpb;
+            }
+        } else {
+            if ($request->filled('package_type_id')) {
+                $pkg = PackageType::find($request->package_type_id);
+                if ($pkg) {
+                    $packingName = $pkg->name;
+                    if ($pkg->pieces_per_box > 0) {
+                        $piecesPerBox = (int) $pkg->pieces_per_box;
+                    }
+                }
+            }
+            if (!$packingName) {
+                $packingName = $request->packing_name ?? Product::where('id', $id)->value('packing_name') ?? 'Standard';
+            }
+        }
+        if ($piecesPerBox <= 0) {
+            $piecesPerBox = (int) ($request->pieces_per_box ?? Product::where('id', $id)->value('pieces_per_box') ?? 1);
+            if ($piecesPerBox <= 0) $piecesPerBox = 1;
+        }
+
         DB::transaction(function () use ($request, $id, $userId, $imagePath, $mode, $height, $width, $piecesPerBox,
             $boxesQuantity, $loosePieces, $pieceQuantity,
             $totalM2, $pricePerM2, $purchasePricePerM2, $salePricePerBox, $purchasePricePerPiece, $piecesPerM2,
-            $salePricePerPiece, $purchasePricePerBox) {
+            $salePricePerPiece, $purchasePricePerBox,
+            $masterUnitId, $masterUnitName, $packingType, $packingName) {
 
             $variants = [];
             if ($request->has('variant_name')) {
@@ -1221,6 +1357,9 @@ class ProductController extends Controller
                 $refs = $request->variant_ref;
                 $locations = $request->variant_location ?? [];
                 $serial_nos = $request->variant_serial_no ?? [];
+                $variant_pcodes = $request->variant_p_code ?? [];
+                $variant_sky_pcodes = $request->variant_sky_pcode ?? ($request->variant_p_code ?? []);
+                $variant_rot_pcodes = $request->variant_rot_pcode ?? [];
                 $prefix = \App\Services\VariantSerialService::generatePrefix($request->product_name ?? 'Product');
 
                 // Validate Conv Factors if Weight Unit is selected
@@ -1296,6 +1435,9 @@ class ProductController extends Controller
 
                         $vSerial = !empty($serial_nos[$i]) ? $serial_nos[$i] : sprintf('%s-%04d', $prefix, count($variants) + 1);
 
+                        $vSkyPCode = !empty($variant_sky_pcodes[$i]) ? $variant_sky_pcodes[$i] : (!empty($variant_pcodes[$i]) ? $variant_pcodes[$i] : PCodeService::encode($vSalePrice));
+                        $vRotPCode = !empty($variant_rot_pcodes[$i]) ? $variant_rot_pcodes[$i] : PCodeService::encode($vWholesalePrice);
+
                         $variants[] = [
                             'name' => $names[$i],
                             'size' => $sizes[$i] ?? '-',
@@ -1311,48 +1453,60 @@ class ProductController extends Controller
                             'serial_no' => $vSerial,
                             'conv_factor' => $vConvFactor,
                             'is_base_variant' => $is_bases[$i] ?? 0,
-                            'unit' => $units[$i] ?? 'Pcs',
+                            'unit' => !empty($units[$i]) ? $units[$i] : $masterUnitName,
                             'location' => $locations[$i] ?? '',
+                            'p_code' => $vSkyPCode,
+                            'sky_p_code' => $vSkyPCode,
+                            'rot_p_code' => $vRotPCode,
                         ];
                     }
                 }
-                
-                if (count($variants) > 0) {
-                    $totalStockQty = $variantStockSum;
-                    if ($mode === 'by_cartons' && $baseConvForCarton) {
-                        $piecesPerBox = (int)$baseConvForCarton;
-                    }
-                    $boxesQuantity = $piecesPerBox > 0 ? $totalStockQty / $piecesPerBox : $totalStockQty;
+                    
+                    if (count($variants) > 0) {
+                        $totalStockQty = $variantStockSum;
+                        if ($mode === 'by_cartons' && $baseConvForCarton) {
+                            $piecesPerBox = (int)$baseConvForCarton;
+                        }
+                        $boxesQuantity = $piecesPerBox > 0 ? $totalStockQty / $piecesPerBox : $totalStockQty;
 
-                    $baseVariant = collect($variants)->firstWhere('is_base_variant', 1) ?? $variants[0];
-                    if ($baseVariant && ($mode === 'by_cartons' || strtolower($baseVariant['unit'] ?? '') === 'carton')) {
-                        $salePricePerPiece = (float)($baseVariant['sale_price'] ?? 0);
-                        $purchasePricePerPiece = (float)($baseVariant['purch_price'] ?? 0);
-                        $purchasePricePerBox = round($purchasePricePerPiece * $piecesPerBox, 2);
-                        $salePricePerBox = round($salePricePerPiece * $piecesPerBox, 2);
+                        $baseVariant = collect($variants)->firstWhere('is_base_variant', 1) ?? $variants[0];
+                        if ($baseVariant && ($mode === 'by_cartons' || strtolower($baseVariant['unit'] ?? '') === 'carton')) {
+                            $salePricePerPiece = (float)($baseVariant['sale_price'] ?? 0);
+                            $purchasePricePerPiece = (float)($baseVariant['purch_price'] ?? 0);
+                            $purchasePricePerBox = round($purchasePricePerPiece * $piecesPerBox, 2);
+                            $salePricePerBox = round($salePricePerPiece * $piecesPerBox, 2);
+                        }
                     }
                 }
-            }
 
-            // color update logic
-            $final_color = null;
-            if (count($variants) > 0) {
-                $final_color = json_encode($variants);
-            } else if ($request->has('color')) {
-                $final_color = json_encode($request->color);
-            } else {
-                // keep old color if not submitted
-                $final_color = Product::where('id', $id)->value('color');
-            }
+                // color update logic
+                $final_color = null;
+                if (count($variants) > 0) {
+                    $final_color = json_encode($variants);
+                } else if ($request->has('color')) {
+                    $final_color = json_encode($request->color);
+                } else {
+                    // keep old color if not submitted
+                    $final_color = Product::where('id', $id)->value('color');
+                }
 
-            Product::where('id', $id)->update([
-                'creater_id' => $userId,
-                'category_id' => $request->category_id,
-                'sub_category_id' => $request->sub_category_id,
-                'item_code' => $request->item_code ?? Product::where('id', $id)->value('item_code'),
-                'item_name' => $request->product_name,
-                'barcode_path' => $request->barcode_path ?? rand(100000000000, 999999999999),
-                'unit_id' => $request->unit,
+                $skyPrice = $salePricePerPiece > 0 ? $salePricePerPiece : (float)($request->retail_price ?? ($request->sale_price_per_piece ?? 0));
+                $rotPrice = (float)($request->wholesale_price ?? 0);
+                $productSkyPCode = !empty($request->sky_p_code) ? $request->sky_p_code : (!empty($request->p_code) ? $request->p_code : PCodeService::encode($skyPrice));
+                $productRotPCode = !empty($request->rot_p_code) ? $request->rot_p_code : PCodeService::encode($rotPrice);
+
+                Product::where('id', $id)->update([
+                    'creater_id' => $userId,
+                    'category_id' => $request->category_id,
+                    'sub_category_id' => $request->sub_category_id,
+                    'item_code' => $request->item_code ?? Product::where('id', $id)->value('item_code'),
+                    'item_name' => $request->product_name,
+                    'barcode_path' => $request->barcode_path ?? rand(100000000000, 999999999999),
+                    'p_code' => $productSkyPCode,
+                    'rot_p_code' => $productRotPCode,
+                'unit_id' => $masterUnitId,
+                'packing_type' => $packingType,
+                'packing_name' => $packingName,
                 'brand_id' => $request->brand_id,
                 'model' => $request->model,
                 'image' => $imagePath,
@@ -1734,8 +1888,10 @@ class ProductController extends Controller
         }
 
         $storageLocations = StorageLocation::with(['warehouse:id,warehouse_name', 'branch:id,name'])->orderBy('name')->get();
+        $units = Unit::all();
+        $packageTypes = PackageType::orderBy('pieces_per_box', 'asc')->get();
 
-        return view('admin_panel.product.edit', compact('product', 'categories', 'subcategories', 'brands', 'variants', 'storageLocations'));
+        return view('admin_panel.product.edit', compact('product', 'categories', 'subcategories', 'brands', 'variants', 'storageLocations', 'units', 'packageTypes'));
     }
 
     // ===== Barcode view =====

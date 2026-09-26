@@ -252,6 +252,11 @@
                                                                         href="{{ url('transport') }}"><i
                                                                             class="menu_icon ti-alert"></i><span>Transport</span></a>
                                                                 </li>
+                                                                <li class="nav-item">
+                                                                    <a class="nav-link open-pcode-modal-btn" href="javascript:void(0)" onclick="window.openPCodeModal(event); return false;" data-bs-toggle="modal" data-bs-target="#pcodeModal" data-toggle="modal" data-target="#pcodeModal">
+                                                                        <i class="menu_icon fas fa-barcode"></i><span>P-Code</span>
+                                                                    </a>
+                                                                </li>
                                                                 {{-- <li class="nav-item"><a class="nav-link" href="accordion.html"><i class="menu_icon ti-layout-accordion-separated"></i><span>Accordion</span></a></li>
                                                                 <li class="nav-item"><a class="nav-link" href="buttons.html"><i class="menu_icon icon-focus"></i><span>Buttons</span></a></li>
                                                                 <li class="nav-item"><a class="nav-link" href="badges.html"><i class="menu_icon icon-ribbon"></i><span>Badges</span></a></li> --}}

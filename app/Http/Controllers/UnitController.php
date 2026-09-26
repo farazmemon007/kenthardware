@@ -44,6 +44,7 @@ class UnitController extends Controller
         }
         $Company->name = $request->name;
         $Company->save();
+        $msg['unit'] = $Company;
 
         return response()->json($msg);
     }

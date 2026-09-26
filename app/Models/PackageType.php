@@ -8,5 +8,5 @@ use Illuminate\Database\Eloquent\Model;
 class PackageType extends Model
 {
     use HasFactory;
-    protected $fillable = ['name'];
+    protected $fillable = ['name', 'pieces_per_box'];
 }

@@ -272,7 +272,7 @@
                                             </div>
                                         </div>
                                         <div class="col-md-3">
-                                            <label class="form-label-pro">Unit</label>
+                                            <label class="form-label-pro">Mode / Calculation</label>
                                             <select class="form-select form-control-pro form-select-pro fw-bold" name="size_mode" id="unit-dropdown">
                                                 <option value="by_pieces" {{ $product->size_mode == 'by_pieces' ? 'selected' : '' }}>Pcs</option>
                                                 <option value="by_cartons" {{ $product->size_mode == 'by_cartons' ? 'selected' : '' }}>Carton</option>
@@ -282,6 +282,63 @@
                                                 <option value="by_gm" {{ $product->size_mode == 'by_gm' ? 'selected' : '' }}>Gm</option>
                                                 <option value="by_ton" {{ $product->size_mode == 'by_ton' ? 'selected' : '' }}>Ton</option>
                                             </select>
+                                        </div>
+
+                                        {{-- Master Unit of Measure --}}
+                                        <div class="col-md-3">
+                                            <label class="form-label-pro">Unit of Measure <span class="text-danger">*</span></label>
+                                            <div class="d-flex gap-1">
+                                                <select class="form-select form-control-pro form-select-pro fw-bold" id="general_unit_id" name="unit_id" required>
+                                                    <option value="">Select Unit...</option>
+                                                    @if(isset($units))
+                                                        @foreach ($units as $u)
+                                                            <option value="{{ $u->id }}" data-name="{{ $u->name }}" {{ ($product->unit_id == $u->id || (!$product->unit_id && (strtolower($u->name) === 'pcs' || strtolower($u->name) === 'pieces'))) ? 'selected' : '' }}>{{ $u->name }}</option>
+                                                        @endforeach
+                                                    @endif
+                                                </select>
+                                                <button type="button" class="btn btn-light border px-2 shadow-sm" data-toggle="modal" data-target="#unitModal">+</button>
+                                            </div>
+                                        </div>
+
+                                        {{-- Packing (Standard vs Custom) --}}
+                                        <div class="col-md-6">
+                                            <label class="form-label-pro">Packing</label>
+                                            <div class="d-flex align-items-center gap-3 mb-1">
+                                                <div class="form-check form-check-inline m-0">
+                                                    <input class="form-check-input" type="radio" name="packing_type" id="packing_type_standard" value="standard" {{ ($product->packing_type !== 'custom') ? 'checked' : '' }}>
+                                                    <label class="form-check-label fw-bold text-dark" for="packing_type_standard" style="font-size:12px;">Standard</label>
+                                                </div>
+                                                <div class="form-check form-check-inline m-0">
+                                                    <input class="form-check-input" type="radio" name="packing_type" id="packing_type_custom" value="custom" {{ ($product->packing_type === 'custom') ? 'checked' : '' }}>
+                                                    <label class="form-check-label fw-bold text-dark" for="packing_type_custom" style="font-size:12px;">Custom</label>
+                                                </div>
+                                            </div>
+                                            <div id="standardPackingContainer" style="{{ $product->packing_type === 'custom' ? 'display:none;' : '' }}">
+                                                <div class="d-flex gap-1">
+                                                    <select class="form-select form-control-pro form-select-pro" id="package_type_id" name="package_type_id">
+                                                        <option value="" data-pieces="1">Select Standard Packing...</option>
+                                                        @if(isset($packageTypes))
+                                                            @foreach ($packageTypes as $pkg)
+                                                                <option value="{{ $pkg->id }}" data-pieces="{{ $pkg->pieces_per_box }}" data-name="{{ $pkg->name }}" {{ ($product->packing_name === $pkg->name || $product->pieces_per_box == $pkg->pieces_per_box) ? 'selected' : '' }}>{{ $pkg->name }}</option>
+                                                            @endforeach
+                                                        @endif
+                                                    </select>
+                                                    <button type="button" class="btn btn-light border px-2 shadow-sm" data-toggle="modal" data-target="#packageTypeModal">+</button>
+                                                </div>
+                                            </div>
+                                            <div id="customPackingContainer" style="{{ $product->packing_type === 'custom' ? '' : 'display:none;' }}">
+                                                <div class="row g-1">
+                                                    <div class="col-7">
+                                                        <input type="text" class="form-control-pro" name="custom_packing_name" id="custom_packing_name" value="{{ $product->packing_name }}" placeholder="Packing Name (e.g. Bundle of 8)">
+                                                    </div>
+                                                    <div class="col-5">
+                                                        <div class="input-group input-group-sm">
+                                                            <input type="number" class="form-control-pro text-center fw-bold" name="custom_pieces_per_box" id="custom_pieces_per_box" min="1" value="{{ $product->pieces_per_box ?: 1 }}" placeholder="Pcs">
+                                                            <span class="input-group-text py-0 px-2 bg-light text-muted" style="font-size:11px;" id="customPiecesBadge">Pcs/Pk</span>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -321,14 +378,15 @@
                                                         <th class="text-uppercase text-muted p-1" style="min-width: 140px; font-size: 10px;">Variant Name</th>
                                                         <th class="text-uppercase text-muted p-1" style="width: 80px; font-size: 10px;">Size</th>
                                                         <th class="text-uppercase text-muted p-1" style="width: 80px; font-size: 10px;">Color</th>
-                                                         <th class="text-uppercase text-muted p-1" style="width: 75px; font-size: 10px;">Unit</th>
                                                          <th class="text-uppercase text-muted p-1" style="width: 110px; font-size: 10px;">Rack / Shelf</th>
                                                          <th class="text-uppercase text-muted p-1 text-center" style="width: 90px; font-size: 10px;">Initial Stock</th>
                                                         <th class="text-uppercase text-muted p-1 text-center conv-col" id="convFactorHeader" style="width: 95px; font-size: 10px;">Pcs / Carton</th>
                                                         <th class="text-uppercase text-muted p-1 text-center piece-wt-only-col" style="width: 90px; font-size: 10px;">Piece Wt (g)</th>
-                                                        <th class="text-uppercase text-muted p-1" style="width: 90px; font-size: 10px;">Sale Price</th>
-                                                        <th class="text-uppercase text-muted p-1" style="width: 90px; font-size: 10px;">Wholesale</th>
-                                                        <th class="text-uppercase text-muted p-1" style="width: 90px; font-size: 10px;">Purch Price</th>
+                                                        <th class="text-uppercase text-muted p-1" style="width: 90px; font-size: 10px;">Sky Price</th>
+                                                        <th class="text-uppercase text-muted p-1" style="width: 85px; font-size: 10px;">Sky P-Code</th>
+                                                        <th class="text-uppercase text-muted p-1" style="width: 90px; font-size: 10px;">Cost (Purch)</th>
+                                                        <th class="text-uppercase text-muted p-1" style="width: 90px; font-size: 10px;">Rot Price.</th>
+                                                        <th class="text-uppercase text-muted p-1" style="width: 85px; font-size: 10px;">Rot P-Code</th>
                                                         <th class="text-uppercase text-muted p-1" style="width: 55px; font-size: 10px;">Alert</th>
                                                         <th class="text-uppercase text-muted p-1" style="width: 100px; font-size: 10px;">Barcode</th>
                                                         <th class="text-uppercase text-muted p-1 text-center" style="width: 50px; font-size: 10px;">Action</th>
@@ -412,15 +470,21 @@
                                     <h6 class="form-label-pro text-primary mb-2">Unit Price Settings (Rs.)</h6>
                                     <div class="row g-3">
                                          <div class="col-md-2">
-                                             <label class="form-label-pro text-success">Sale Price <span class="unit-label text-muted fw-normal">(pc)</span></label>
+                                             <div class="d-flex justify-content-between align-items-center mb-1">
+                                                 <label class="form-label-pro text-success mb-0">Sky Price <span class="unit-label text-muted fw-normal">(pc)</span></label>
+                                                 <span class="badge bg-light text-dark border font-monospace" id="product_sky_pcode_badge" title="Sky P-Code">{{ $product->p_code ?: \App\Services\PCodeService::encode($product->sale_price_per_piece) }}</span>
+                                             </div>
                                              <input type="number" class="form-control-pro fw-bold text-success" name="sale_price_per_box" id="sale_price_per_box" step="0.01" value="{{ $product->sale_price_per_piece }}" placeholder="0.00">
                                          </div>
                                          <div class="col-md-2">
-                                             <label class="form-label-pro text-info">Wholesale Price <span class="unit-label text-muted fw-normal">(pc)</span></label>
+                                             <div class="d-flex justify-content-between align-items-center mb-1">
+                                                 <label class="form-label-pro text-info mb-0">Rot Price. <span class="unit-label text-muted fw-normal">(pc)</span></label>
+                                                 <span class="badge bg-light text-dark border font-monospace" id="product_rot_pcode_badge" title="Rot P-Code">{{ $product->rot_p_code ?: \App\Services\PCodeService::encode($product->wholesale_price ?? 0) }}</span>
+                                             </div>
                                              <input type="number" class="form-control-pro fw-bold text-info" name="wholesale_price" id="wholesale_price" step="0.01" value="{{ $product->wholesale_price ?? 0 }}" placeholder="0.00">
                                          </div>
                                          <div class="col-md-2">
-                                             <label class="form-label-pro text-secondary">Purchase Price <span class="unit-label text-muted fw-normal">(pc)</span></label>
+                                             <label class="form-label-pro text-secondary mb-1">Purchase Price <span class="unit-label text-muted fw-normal">(pc)</span></label>
                                              <input type="number" class="form-control-pro text-muted" name="purchase_price_per_piece" id="purchase_price_per_piece" step="0.01" value="{{ $product->purchase_price_per_piece }}" placeholder="0.00">
                                          </div>
                                          <div class="col-md-2 factor-col-main d-none">
@@ -461,6 +525,9 @@
                 <input type="number" name="weight_per_piece" id="weight_per_piece_hidden" step="0.0001" value="0">
                 <input type="number" name="price_per_m2" id="price_per_m2" step="0.01" value="{{ $product->price_per_m2 }}">
                 <input type="number" name="purchase_price_per_m2" id="purchase_price_per_m2" step="0.01" value="{{ $product->purchase_price_per_m2 }}">
+                <input type="hidden" name="p_code" id="p_code" value="{{ $product->p_code }}">
+                <input type="hidden" name="sky_p_code" id="sky_p_code" value="{{ $product->p_code }}">
+                <input type="hidden" name="rot_p_code" id="rot_p_code" value="{{ $product->rot_p_code }}">
             </div>
 
         </form>
@@ -535,6 +602,55 @@
                                 <input type="text" name="name" class="form-control-pro" required placeholder="e.g. Johnson">
                             </div>
                             <button type="submit" class="btn btn-primary w-100 rounded-pill">Create Brand</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        {{-- Unit Modal --}}
+        <div id="unitModal" class="modal fade" tabindex="-1" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered modal-sm">
+                <div class="modal-content border-0 shadow-lg" style="border-radius: var(--radius-md);">
+                    <form id="quickAddUnitForm" action="{{ route('store.Unit') }}" method="POST">
+                        @csrf
+                        <div class="modal-header border-0 pb-0">
+                            <h6 class="modal-title fw-bold">New Unit of Measure</h6>
+                            <button type="button" class="btn-close" data-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <input type="hidden" name="page" value="product_page">
+                            <div class="mb-3">
+                                <label class="form-label-pro">Unit Name</label>
+                                <input type="text" name="name" class="form-control-pro" required placeholder="e.g. Set, Bundle, Carton">
+                            </div>
+                            <button type="submit" class="btn btn-primary w-100 rounded-pill">Create Unit</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        {{-- Standard Packaging Modal --}}
+        <div id="packageTypeModal" class="modal fade" tabindex="-1" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered modal-sm">
+                <div class="modal-content border-0 shadow-lg" style="border-radius: var(--radius-md);">
+                    <form id="quickAddPackageTypeForm" action="{{ route('store.package_type') }}" method="POST">
+                        @csrf
+                        <div class="modal-header border-0 pb-0">
+                            <h6 class="modal-title fw-bold">New Standard Packaging</h6>
+                            <button type="button" class="btn-close" data-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="mb-2">
+                                <label class="form-label-pro">Packaging Name</label>
+                                <input type="text" name="name" class="form-control-pro" required placeholder="e.g. Carton of 100">
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label-pro">Pieces Per Pack / Box</label>
+                                <input type="number" name="pieces_per_box" class="form-control-pro" required min="1" value="1" placeholder="e.g. 100">
+                            </div>
+                            <button type="submit" class="btn btn-primary w-100 rounded-pill">Save Standard Packing</button>
                         </div>
                     </form>
                 </div>
@@ -654,14 +770,15 @@
                 const productName = productNameInput ? productNameInput.value || '' : '';
                 const baseUnitName = unitDropdown && unitDropdown.selectedIndex >= 0 ? unitDropdown.options[unitDropdown.selectedIndex].text : 'Kg';
                 const isCartonMode = unitDropdown && unitDropdown.value === 'by_cartons';
+                const masterUnitName = window.getMasterUnitName ? window.getMasterUnitName() : (isCartonMode ? 'Carton' : baseUnitName);
+                const activePacking = window.getActivePackingInfo ? window.getActivePackingInfo() : { pieces: 1 };
                 const vid = 'base_' + Date.now() + '_' + Math.floor(Math.random() * 1000);
                 
                 const nameVal = v ? (v.name !== undefined && v.name !== null && v.name !== '' ? v.name : productName) : productName;
                 const sizeVal = v ? (v.size || '') : '';
                 const colorVal = v ? (v.color || '') : '';
-                const unitVal = v ? (v.unit || (isCartonMode ? 'Carton' : baseUnitName)) : (isCartonMode ? 'Carton' : baseUnitName);
                 const stockVal = (v && v.stock !== undefined && v.stock !== null && v.stock !== '') ? v.stock : '0';
-                const convVal = (v && v.conv_factor !== undefined && v.conv_factor !== null && v.conv_factor !== '' && v.conv_factor != 0) ? v.conv_factor : (isCartonMode ? '{{ $product->pieces_per_box > 0 ? $product->pieces_per_box : "" }}' : '1');
+                const convVal = (v && v.conv_factor !== undefined && v.conv_factor !== null && v.conv_factor !== '' && v.conv_factor != 0) ? v.conv_factor : (activePacking.pieces > 1 ? activePacking.pieces : (isCartonMode ? '{{ $product->pieces_per_box > 0 ? $product->pieces_per_box : "" }}' : '1'));
                 const weightVal = (v && v.weight_per_piece !== undefined && v.weight_per_piece !== null && v.weight_per_piece !== '') ? v.weight_per_piece : 1000;
                 const saleVal = (v && v.sale_price !== undefined && v.sale_price !== null) ? v.sale_price : '';
                 const wholesaleVal = (v && v.wholesale_price !== undefined && v.wholesale_price !== null) ? v.wholesale_price : '0';
@@ -670,26 +787,17 @@
                 const barcodeVal = (v && v.barcode !== undefined && v.barcode !== null && v.barcode !== '') ? v.barcode : generateRandomBarcode();
                 
                 const locationVal = (v && v.location !== undefined && v.location !== null) ? v.location : '';
+                const skyPCodeVal = (v && (v.sky_p_code || v.p_code)) ? (v.sky_p_code || v.p_code) : (window.encodeToPCode ? window.encodeToPCode(saleVal || 0) : '');
+                const rotPCodeVal = (v && v.rot_p_code) ? v.rot_p_code : (window.encodeToPCode ? window.encodeToPCode(wholesaleVal || 0) : '');
 
                 tr.innerHTML = `
                     <td class="p-1 align-middle">
                         <input type="text" class="form-control-pro form-control-sm base-name-input fw-bold" name="variant_name[]" value="${escapeHtml(nameVal)}" placeholder="Name" data-vid="${vid}">
                         <input type="hidden" name="variant_is_base[]" value="1">
+                        <input type="hidden" name="variant_unit[]" class="variant-unit-hidden" value="${masterUnitName}">
                     </td>
                     <td class="p-1"><input type="text" class="form-control-pro form-control-sm" name="variant_size[]" value="${escapeHtml(sizeVal)}" placeholder="Size"></td>
                     <td class="p-1"><input type="text" class="form-control-pro form-control-sm" name="variant_color[]" value="${escapeHtml(colorVal)}" placeholder="Color"></td>
-                    <td class="p-1">
-                        <select class="form-select form-select-sm fw-bold text-primary px-1" name="variant_unit[]" style="font-size:11px;">
-                            <option value="Carton" ${uNorm==='carton'||(isCartonMode && !v)?'selected':''}>Carton</option>
-                            <option value="Pcs" ${(!isCartonMode && (uNorm==='pcs'||uNorm==='piece'||uNorm==='pieces'||uNorm==='pc'))?'selected':''}>Pcs</option>
-                            <option value="Kg" ${uNorm==='kg'?'selected':''}>Kg</option>
-                            <option value="Gm" ${uNorm==='gm'||uNorm==='g'?'selected':''}>Gm</option>
-                            <option value="Ft" ${uNorm==='ft'||uNorm==='feet'?'selected':''}>Ft</option>
-                            <option value="Meter" ${uNorm==='meter'||uNorm==='mtr'||uNorm==='m'?'selected':''}>Mtr</option>
-                            <option value="Box" ${uNorm==='box'?'selected':''}>Box</option>
-                            <option value="Dozen" ${uNorm==='dozen'||uNorm==='dzn'?'selected':''}>Dzn</option>
-                        </select>
-                    </td>
                     <td class="p-1">
                         <input type="text" class="form-control-pro form-control-sm variant-location-input" name="variant_location[]" value="${escapeHtml(locationVal)}" list="storageLocationsDatalist" placeholder="Rack / Shelf">
                     </td>
@@ -706,8 +814,10 @@
                         </div>
                     </td>
                     <td class="p-1"><input type="number" class="form-control-pro form-control-sm base-sale-input" name="variant_sale_price[]" step="any" value="${escapeHtml(saleVal)}" placeholder="0.00" required></td>
-                    <td class="p-1"><input type="number" class="form-control-pro form-control-sm" name="variant_wholesale_price[]" step="any" value="${escapeHtml(wholesaleVal)}" placeholder="0.00"></td>
+                    <td class="p-1"><input type="text" class="form-control-pro form-control-sm variant-sky-pcode-input font-monospace text-uppercase fw-bold bg-light" name="variant_sky_pcode[]" value="${skyPCodeVal}" readonly style="font-size:11px;" title="Sky P-Code"></td>
                     <td class="p-1"><input type="number" class="form-control-pro form-control-sm base-purch-input" name="variant_purchase_price[]" step="any" value="${escapeHtml(purchVal)}" placeholder="0.00" required></td>
+                    <td class="p-1"><input type="number" class="form-control-pro form-control-sm base-wholesale-input" name="variant_wholesale_price[]" step="any" value="${escapeHtml(wholesaleVal)}" placeholder="0.00"></td>
+                    <td class="p-1"><input type="text" class="form-control-pro form-control-sm variant-rot-pcode-input font-monospace text-uppercase fw-bold bg-light" name="variant_rot_pcode[]" value="${rotPCodeVal}" readonly style="font-size:11px;" title="Rot P-Code"></td>
                     <td class="p-1"><input type="number" class="form-control-pro form-control-sm" name="variant_alert_qty[]" value="${escapeHtml(alertVal)}" placeholder="0"></td>
                     <td class="p-1"><input type="text" class="form-control-pro form-control-sm" name="variant_barcode[]" value="${escapeHtml(barcodeVal)}"></td>
                     <td class="p-1 text-center">
@@ -788,12 +898,16 @@
                     if (variantMode === 'weight' && factor > 0) {
                         if (saleInp && (!vid || !manualPrices[vid + '_sale'])) {
                             saleInp.value = (baseSale * factor).toFixed(2);
+                            const skyPCode = row.querySelector('.variant-sky-pcode-input');
+                            if (skyPCode && window.encodeToPCode) skyPCode.value = window.encodeToPCode(saleInp.value);
                         }
                         if (purchInp && (!vid || !manualPrices[vid + '_purch'])) {
                             purchInp.value = (basePurch * factor).toFixed(2);
                         }
                         if (wholesaleInp && (!vid || !manualPrices[vid + '_wholesale'])) {
                             wholesaleInp.value = (baseWholesale * factor).toFixed(2);
+                            const rotPCode = row.querySelector('.variant-rot-pcode-input');
+                            if (rotPCode && window.encodeToPCode) rotPCode.value = window.encodeToPCode(wholesaleInp.value);
                         }
                         if (pieceWtInp) {
                             pieceWtInp.value = parseFloat((factor * 1000).toFixed(4)).toString();
@@ -844,7 +958,7 @@
 
                 const sizeVal = v ? (v.size || '') : '';
                 const colorVal = v ? (v.color || '') : '';
-                const unitVal = v ? (v.unit || (isCartonMode ? 'Carton' : 'Pcs')) : (isCartonMode ? 'Carton' : 'Pcs');
+                const masterUnitName = window.getMasterUnitName ? window.getMasterUnitName() : (isCartonMode ? 'Carton' : 'Pcs');
                 const stockVal = (v && v.stock !== undefined && v.stock !== null && v.stock !== '') ? v.stock : '0';
                 const convVal = (v && v.conv_factor !== undefined && v.conv_factor !== null && v.conv_factor !== '') ? v.conv_factor : (isCartonMode ? '0' : '');
                 const weightVal = (v && v.weight_per_piece !== undefined && v.weight_per_piece !== null && v.weight_per_piece !== '') ? v.weight_per_piece : (weightGrams || (factor < 10 ? (factor * 1000).toFixed(1).replace(/\.0$/, '') : factor));
@@ -852,27 +966,17 @@
                 const barcodeVal = (v && v.barcode !== undefined && v.barcode !== null && v.barcode !== '') ? v.barcode : generateRandomBarcode();
                 
                 const locationVal = (v && v.location !== undefined && v.location !== null) ? v.location : '';
-                const uNorm = (unitVal || '').toLowerCase();
+                const skyPCodeVal = (v && (v.sky_p_code || v.p_code)) ? (v.sky_p_code || v.p_code) : (window.encodeToPCode ? window.encodeToPCode(suggSale || 0) : '');
+                const rotPCodeVal = (v && v.rot_p_code) ? v.rot_p_code : (window.encodeToPCode ? window.encodeToPCode(suggWholesale || 0) : '');
 
                 tr.innerHTML = `
                     <td class="p-1">
                         <input type="text" class="form-control-pro form-control-sm var-name-input" name="variant_name[]" value="${escapeHtml(suggestedName)}" placeholder="Name">
                         <input type="hidden" name="variant_is_base[]" value="0">
+                        <input type="hidden" name="variant_unit[]" class="variant-unit-hidden" value="${masterUnitName}">
                     </td>
                     <td class="p-1"><input type="text" class="form-control-pro form-control-sm" name="variant_size[]" value="${escapeHtml(sizeVal)}" placeholder="Size (e.g. Small, 30cm)"></td>
                     <td class="p-1"><input type="text" class="form-control-pro form-control-sm" name="variant_color[]" value="${escapeHtml(colorVal)}" placeholder="Color"></td>
-                    <td class="p-1">
-                        <select class="form-select form-select-sm px-1 fw-bold text-dark" name="variant_unit[]" style="font-size:11px;">
-                            <option value="Carton" ${uNorm==='carton'||(isCartonMode && !v)?'selected':''}>Carton</option>
-                            <option value="Pcs" ${(!isCartonMode && (uNorm==='pcs'||uNorm==='piece'||uNorm==='pieces'||uNorm==='pc'))?'selected':''}>Pcs</option>
-                            <option value="Kg" ${uNorm==='kg'?'selected':''}>Kg</option>
-                            <option value="Gm" ${uNorm==='gm'||uNorm==='g'?'selected':''}>Gm</option>
-                            <option value="Ft" ${uNorm==='ft'||uNorm==='feet'?'selected':''}>Ft</option>
-                            <option value="Meter" ${uNorm==='meter'||uNorm==='mtr'||uNorm==='m'?'selected':''}>Mtr</option>
-                            <option value="Box" ${uNorm==='box'?'selected':''}>Box</option>
-                            <option value="Dozen" ${uNorm==='dozen'||uNorm==='dzn'?'selected':''}>Dzn</option>
-                        </select>
-                    </td>
                     <td class="p-1">
                         <input type="text" class="form-control-pro form-control-sm variant-location-input" name="variant_location[]" value="${escapeHtml(locationVal)}" list="storageLocationsDatalist" placeholder="Rack / Shelf">
                     </td>
@@ -889,8 +993,10 @@
                         </div>
                     </td>
                     <td class="p-1"><input type="number" class="form-control-pro form-control-sm sale-price-input" name="variant_sale_price[]" step="any" value="${escapeHtml(suggSale)}" placeholder="0.00" required></td>
-                    <td class="p-1"><input type="number" class="form-control-pro form-control-sm" name="variant_wholesale_price[]" step="any" value="${escapeHtml(suggWholesale)}" placeholder="0.00"></td>
+                    <td class="p-1"><input type="text" class="form-control-pro form-control-sm variant-sky-pcode-input font-monospace text-uppercase fw-bold bg-light" name="variant_sky_pcode[]" value="${skyPCodeVal}" readonly style="font-size:11px;" title="Sky P-Code"></td>
                     <td class="p-1"><input type="number" class="form-control-pro form-control-sm purch-price-input" name="variant_purchase_price[]" step="any" value="${escapeHtml(suggPurch)}" placeholder="0.00" required></td>
+                    <td class="p-1"><input type="number" class="form-control-pro form-control-sm wholesale-price-input" name="variant_wholesale_price[]" step="any" value="${escapeHtml(suggWholesale)}" placeholder="0.00"></td>
+                    <td class="p-1"><input type="text" class="form-control-pro form-control-sm variant-rot-pcode-input font-monospace text-uppercase fw-bold bg-light" name="variant_rot_pcode[]" value="${rotPCodeVal}" readonly style="font-size:11px;" title="Rot P-Code"></td>
                     <td class="p-1"><input type="number" class="form-control-pro form-control-sm" name="variant_alert_qty[]" value="${escapeHtml(alertVal)}" placeholder="0"></td>
                     <td class="p-1"><input type="text" class="form-control-pro form-control-sm" name="variant_barcode[]" value="${escapeHtml(barcodeVal)}"></td>
                     <td class="p-1 text-center">
@@ -968,9 +1074,8 @@
                                 baseConv.placeholder = 'e.g. 6';
                                 baseConv.title = 'Pieces per Carton';
                             }
-                            const baseUnit = baseRow.querySelector('select[name="variant_unit[]"]');
-                            if (baseUnit) {
-                                baseUnit.value = 'Carton';
+                            if (typeof window.syncMasterUnitToVariants === 'function') {
+                                window.syncMasterUnitToVariants();
                             }
                         }
                     }
@@ -1052,15 +1157,31 @@
                         data: modalForm.serialize(),
                         headers: { 'X-Requested-With': 'XMLHttpRequest' },
                         success: function(res) {
-                            if (res.success) {
-                                $(selectSelector).append(new Option(res.name, res.id, true, true)).trigger('change');
+                            if (res.success || res.status === 'success') {
+                                const itemId = res.id || res.unit?.id || res.package_type?.id;
+                                const itemName = res.name || res.unit?.name || res.package_type?.name;
+                                const pieces = res.pieces_per_box || res.package_type?.pieces_per_box || null;
+
+                                const opt = new Option(itemName, itemId, true, true);
+                                if (pieces) {
+                                    opt.setAttribute('data-pieces', pieces);
+                                }
+                                opt.setAttribute('data-name', itemName);
+                                $(selectSelector).append(opt).trigger('change');
+
                                 $('#' + modalId).modal('hide');
                                 modalForm[0].reset();
                                 Swal.fire({icon: 'success', title: 'Added successfully', toast: true, position: 'top-end', showConfirmButton: false, timer: 1500});
                             }
                         },
-                        error: function() {
-                            Swal.fire({icon: 'error', title: 'Error', text: 'Something went wrong!'});
+                        error: function(err) {
+                            let msg = 'Something went wrong!';
+                            if (err.responseJSON && err.responseJSON.errors) {
+                                msg = Object.values(err.responseJSON.errors).flat().join('<br>');
+                            } else if (err.responseJSON && err.responseJSON.message) {
+                                msg = err.responseJSON.message;
+                            }
+                            Swal.fire({icon: 'error', title: 'Error', html: msg});
                         },
                         complete: function() {
                             btn.text(originalText).prop('disabled', false);
@@ -1072,6 +1193,118 @@
             handleQuickAdd('categoryModal', '#category-dropdown, #subcategoryModal select[name="category_id"]');
             handleQuickAdd('subcategoryModal', '#subcategory-dropdown');
             handleQuickAdd('brandModal', 'select[name="brand_id"]');
+            handleQuickAdd('unitModal', '#general_unit_id');
+            handleQuickAdd('packageTypeModal', '#package_type_id');
+
+            // Master Unit & Packaging Synchronization in Edit Page
+            window.getMasterUnitName = function() {
+                const generalUnitSelect = document.getElementById('general_unit_id');
+                if (generalUnitSelect && generalUnitSelect.selectedIndex >= 0) {
+                    const selectedOpt = generalUnitSelect.options[generalUnitSelect.selectedIndex];
+                    if (selectedOpt && selectedOpt.value) {
+                        return selectedOpt.getAttribute('data-name') || selectedOpt.textContent.trim();
+                    }
+                }
+                const unitDropdown = document.getElementById('unit-dropdown');
+                if (unitDropdown) {
+                    const val = unitDropdown.value;
+                    if (val === 'by_cartons') return 'Carton';
+                    if (val === 'by_kg') return 'Kg';
+                    if (val === 'by_meter') return 'Meter';
+                    if (val === 'by_feet') return 'Ft';
+                    if (val === 'by_gm') return 'Gm';
+                }
+                return 'Pcs';
+            };
+
+            window.syncMasterUnitToVariants = function() {
+                const unitName = window.getMasterUnitName();
+                document.querySelectorAll('.variant-unit-hidden').forEach(function(el) {
+                    el.value = unitName;
+                });
+                const customBadge = document.getElementById('customPiecesBadge');
+                if (customBadge) customBadge.textContent = unitName + '/Pk';
+            };
+
+            window.getActivePackingInfo = function() {
+                const isCustom = document.getElementById('packing_type_custom')?.checked;
+                if (isCustom) {
+                    const name = document.getElementById('custom_packing_name')?.value.trim() || 'Custom';
+                    const pieces = parseInt(document.getElementById('custom_pieces_per_box')?.value, 10) || 1;
+                    return { type: 'custom', name: name, pieces: Math.max(1, pieces) };
+                } else {
+                    const pkgSelect = document.getElementById('package_type_id');
+                    let pieces = 1;
+                    let name = 'Standard';
+                    if (pkgSelect && pkgSelect.selectedIndex > 0) {
+                        const opt = pkgSelect.options[pkgSelect.selectedIndex];
+                        pieces = parseInt(opt.getAttribute('data-pieces'), 10) || 1;
+                        name = opt.getAttribute('data-name') || opt.textContent.trim();
+                    }
+                    return { type: 'standard', name: name, pieces: Math.max(1, pieces) };
+                }
+            };
+
+            window.syncPackingToVariants = function(autoUpdateValues) {
+                const packing = window.getActivePackingInfo();
+                const hiddenPpb = document.getElementById('pieces_per_box');
+                if (hiddenPpb) hiddenPpb.value = packing.pieces;
+
+                // Update matrix header
+                const convHeader = document.getElementById('convFactorHeader');
+                if (convHeader) {
+                    convHeader.textContent = packing.pieces > 1 ? `Pcs / Pack (${packing.pieces})` : 'Pcs / Carton';
+                }
+
+                if (autoUpdateValues || packing.pieces > 1) {
+                    document.querySelectorAll('.conv-factor-input').forEach(function(inp) {
+                        inp.value = packing.pieces;
+                    });
+                }
+            };
+
+            const generalUnitElem = document.getElementById('general_unit_id');
+            if (generalUnitElem) {
+                generalUnitElem.addEventListener('change', function() {
+                    window.syncMasterUnitToVariants();
+                });
+            }
+
+            const radioStandard = document.getElementById('packing_type_standard');
+            const radioCustom = document.getElementById('packing_type_custom');
+            const standardSection = document.getElementById('standardPackingContainer');
+            const customSection = document.getElementById('customPackingContainer');
+            const packageTypeSelect = document.getElementById('package_type_id');
+            const customPiecesInput = document.getElementById('custom_pieces_per_box');
+
+            if (radioStandard && radioCustom) {
+                radioStandard.addEventListener('change', function() {
+                    if (this.checked) {
+                        if (standardSection) standardSection.style.display = 'block';
+                        if (customSection) customSection.style.display = 'none';
+                        window.syncPackingToVariants(true);
+                    }
+                });
+                radioCustom.addEventListener('change', function() {
+                    if (this.checked) {
+                        if (standardSection) standardSection.style.display = 'none';
+                        if (customSection) customSection.style.display = 'block';
+                        window.syncPackingToVariants(true);
+                    }
+                });
+            }
+
+            if (packageTypeSelect) {
+                packageTypeSelect.addEventListener('change', function() {
+                    window.syncPackingToVariants(true);
+                });
+            }
+
+            if (customPiecesInput) {
+                customPiecesInput.addEventListener('input', function() {
+                    window.syncPackingToVariants(true);
+                });
+            }
 
             // Category change -> get subcategories
             $('#category-dropdown').on('change', function() {
@@ -1271,6 +1504,17 @@
                         if (elWeight) elWeight.value = firstWeight;
                         if (elPurch) elPurch.value = firstPurch;
                         if (elAlert) elAlert.value = firstAlert;
+
+                        const elPcode = document.getElementById('p_code');
+                        const elSkyPcode = document.getElementById('sky_p_code');
+                        const elRotPcode = document.getElementById('rot_p_code');
+                        if (window.encodeToPCode) {
+                            const skyEnc = window.encodeToPCode(firstSale);
+                            const rotEnc = window.encodeToPCode(firstWholesale);
+                            if (elPcode) elPcode.value = skyEnc;
+                            if (elSkyPcode) elSkyPcode.value = skyEnc;
+                            if (elRotPcode) elRotPcode.value = rotEnc;
+                        }
                     }
 
                     const btn = form.querySelector('button[type="submit"]');
@@ -1387,19 +1631,6 @@
                             <input type="text" class="mob-input mob-sync" data-field="variant_color[]" value="${escapeHtml(colorVal)}" placeholder="Red, Blue...">
                         </div>
                     </div>
-                    <div class="mob-field-group">
-                        <div class="mob-label">Unit</div>
-                        <select class="mob-select mob-sync" data-field="variant_unit[]">
-                            <option value="Carton" ${uNorm==='carton'?'selected':''}>Carton</option>
-                            <option value="Pcs" ${uNorm==='pcs'||uNorm==='piece'||uNorm==='pieces'||uNorm==='pc'?'selected':''}>Pcs</option>
-                            <option value="Kg" ${uNorm==='kg'?'selected':''}>Kg</option>
-                            <option value="Gm" ${uNorm==='gm'||uNorm==='g'?'selected':''}>Gm</option>
-                            <option value="Ft" ${uNorm==='ft'||uNorm==='feet'?'selected':''}>Ft</option>
-                            <option value="Meter" ${uNorm==='meter'||uNorm==='mtr'||uNorm==='m'?'selected':''}>Mtr</option>
-                            <option value="Box" ${uNorm==='box'?'selected':''}>Box</option>
-                            <option value="Dozen" ${uNorm==='dozen'||uNorm==='dzn'?'selected':''}>Dzn</option>
-                        </select>
-                    </div>
 
                     <div class="mob-section-divider"></div>
                     <div class="mob-section-label"><i class="fas fa-boxes me-1"></i>Stock & Pricing</div>
@@ -1448,11 +1679,11 @@
 
                     <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
                         <div class="mob-field-group">
-                            <div class="mob-label">Sale Price <span class="req">*</span></div>
+                            <div class="mob-label">Sky Price <span class="req">*</span></div>
                             <input type="number" class="mob-input mob-sync" data-field="variant_sale_price[]" value="${escapeHtml(saleVal)}" placeholder="0.00" step="any" required>
                         </div>
                         <div class="mob-field-group">
-                            <div class="mob-label">Wholesale Price</div>
+                            <div class="mob-label">Rot Price.</div>
                             <input type="number" class="mob-input mob-sync" data-field="variant_wholesale_price[]" value="${escapeHtml(wsaleVal)}" placeholder="0.00" step="any">
                         </div>
                     </div>
@@ -1621,5 +1852,50 @@
         window.mobileAddVariant = mobileAddVariant;
         window.mobToggleCard = mobToggleCard;
         window.mobDeleteCard = mobDeleteCard;
+
+        // Live P-Code listener for edit product
+        document.addEventListener('input', function(e) {
+            if (!e.target) return;
+            // Base product Sky Price
+            if (e.target.id === 'sale_price_per_box') {
+                const val = e.target.value;
+                const pcode = window.encodeToPCode ? window.encodeToPCode(val) : '';
+                const badge = document.getElementById('product_sky_pcode_badge');
+                if (badge) badge.textContent = pcode || '---';
+                const hiddenP = document.getElementById('p_code');
+                const hiddenSky = document.getElementById('sky_p_code');
+                if (hiddenP) hiddenP.value = pcode;
+                if (hiddenSky) hiddenSky.value = pcode;
+            }
+            // Base product Rot Price
+            else if (e.target.id === 'wholesale_price') {
+                const val = e.target.value;
+                const pcode = window.encodeToPCode ? window.encodeToPCode(val) : '';
+                const badge = document.getElementById('product_rot_pcode_badge');
+                if (badge) badge.textContent = pcode || '---';
+                const hiddenRot = document.getElementById('rot_p_code');
+                if (hiddenRot) hiddenRot.value = pcode;
+            }
+            // Variant row Sky Price
+            else if (e.target.classList.contains('sale-price-input') || e.target.classList.contains('base-sale-input') || e.target.name === 'variant_sale_price[]') {
+                const tr = e.target.closest('tr');
+                if (tr) {
+                    const skyInput = tr.querySelector('.variant-sky-pcode-input');
+                    if (skyInput && window.encodeToPCode) {
+                        skyInput.value = window.encodeToPCode(e.target.value);
+                    }
+                }
+            }
+            // Variant row Rot Price
+            else if (e.target.classList.contains('wholesale-price-input') || e.target.classList.contains('base-wholesale-input') || e.target.name === 'variant_wholesale_price[]') {
+                const tr = e.target.closest('tr');
+                if (tr) {
+                    const rotInput = tr.querySelector('.variant-rot-pcode-input');
+                    if (rotInput && window.encodeToPCode) {
+                        rotInput.value = window.encodeToPCode(e.target.value);
+                    }
+                }
+            }
+        });
     </script>
 @endsection

@@ -2023,6 +2023,88 @@
                                             </div>
                                         </div>
 
+                                        {{-- Unit of Measurement (Master for all variants) --}}
+                                        <div class="form-row-item">
+                                            <label class="field-label">
+                                                Unit of Measure <span class="text-danger ms-1">*</span>
+                                                <span class="tooltip-icon" title="Master unit of measurement applicable to this product and all its variants (e.g. Pcs, Carton, Box, Kg, Meter)"><i class="fas fa-question-circle"></i></span>
+                                            </label>
+                                            <div class="field-value">
+                                                <div class="d-flex gap-1">
+                                                    <select class="odoo-select fw-semibold" id="general_unit_id" name="unit_id" required>
+                                                        <option value="">Select Unit...</option>
+                                                        @if(isset($units))
+                                                            @foreach ($units as $u)
+                                                                <option value="{{ $u->id }}" data-name="{{ $u->name }}" {{ (strtolower($u->name) === 'pcs' || strtolower($u->name) === 'pieces') ? 'selected' : '' }}>{{ $u->name }}</option>
+                                                            @endforeach
+                                                        @endif
+                                                    </select>
+                                                    <button type="button" class="btn-quick-add" data-bs-toggle="modal" data-bs-target="#unitModal" data-toggle="modal" data-target="#unitModal" title="Add Unit">+</button>
+                                                </div>
+                                                <small class="text-muted" style="font-size:11px;">
+                                                    <i class="fas fa-link text-primary me-1"></i> Inherited automatically by all variants
+                                                </small>
+                                            </div>
+                                        </div>
+
+                                        {{-- Packing (Standard vs Custom) --}}
+                                        <div class="form-row-item">
+                                            <label class="field-label">
+                                                Packing
+                                                <span class="tooltip-icon" title="Configure standard predefined packaging or enter custom pack size for this product"><i class="fas fa-question-circle"></i></span>
+                                            </label>
+                                            <div class="field-value">
+                                                <div class="radio-group-odoo mb-2">
+                                                    <label class="odoo-radio">
+                                                        <input type="radio" name="packing_type" value="standard" id="packing_type_standard" checked>
+                                                        <span>Standard</span>
+                                                    </label>
+                                                    <label class="odoo-radio">
+                                                        <input type="radio" name="packing_type" value="custom" id="packing_type_custom">
+                                                        <span>Custom</span>
+                                                    </label>
+                                                </div>
+
+                                                {{-- Standard Packing Selector --}}
+                                                <div id="standardPackingContainer">
+                                                    <div class="d-flex gap-1">
+                                                        <select class="odoo-select" id="package_type_id" name="package_type_id">
+                                                            <option value="" data-pieces="1">Select Standard Packing...</option>
+                                                            @if(isset($packageTypes))
+                                                                @foreach ($packageTypes as $pkg)
+                                                                    <option value="{{ $pkg->id }}" data-pieces="{{ $pkg->pieces_per_box }}" data-name="{{ $pkg->name }}">{{ $pkg->name }}</option>
+                                                                @endforeach
+                                                            @endif
+                                                        </select>
+                                                        <button type="button" class="btn-quick-add" data-bs-toggle="modal" data-bs-target="#packageTypeModal" data-toggle="modal" data-target="#packageTypeModal" title="Add Standard Packing">+</button>
+                                                    </div>
+                                                    <div class="d-flex justify-content-between align-items-center mt-1">
+                                                        <small class="text-muted" id="standardPackingHint" style="font-size:11px;">
+                                                            <i class="fas fa-box-open text-primary me-1"></i> <span id="standardPackingHintText">Choose predefined box/carton packing</span>
+                                                        </small>
+                                                    </div>
+                                                </div>
+
+                                                {{-- Custom Packing Inputs --}}
+                                                <div id="customPackingContainer" style="display: none;">
+                                                    <div class="row g-1">
+                                                        <div class="col-7">
+                                                            <input type="text" class="odoo-input" name="custom_packing_name" id="custom_packing_name" placeholder="Packing Name (e.g. Bundle of 8)">
+                                                        </div>
+                                                        <div class="col-5">
+                                                            <div class="input-group input-group-sm">
+                                                                <input type="number" class="odoo-input text-center fw-bold" name="custom_pieces_per_box" id="custom_pieces_per_box" min="1" value="1" placeholder="Pcs">
+                                                                <span class="input-group-text py-0 px-2 bg-light text-muted" style="font-size:11px;" id="customPiecesBadge">Pcs/Pk</span>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <small class="text-muted" style="font-size:11px;">
+                                                        <i class="fas fa-edit text-info me-1"></i> Specify custom pieces per pack/box for this product
+                                                    </small>
+                                                </div>
+                                            </div>
+                                        </div>
+
                                     </div>
                                 </div>
                             </div>
@@ -2233,14 +2315,15 @@
                                                     <th style="width: 130px;" class="col-ref">Internal Ref</th>
                                                     <th style="min-width: 120px;" class="col-name">Product Name</th>
                                                     <th style="min-width: 180px;" class="col-attrs">Attributes</th>
-                                                    <th style="width: 80px;" class="col-unit">Unit</th>
                                                     <th style="width: 120px;" class="col-location">Rack / Shelf</th>
                                                     <th style="width: 90px;" class="text-center col-stock">On Hand (Stock)</th>
                                                     <th style="width: 95px;" class="text-center conv-col col-conv" id="convFactorHeader">Pcs / Carton</th>
                                                     <th style="width: 90px;" class="text-center piece-wt-only-col col-weight">Piece Wt (g)</th>
-                                                    <th style="width: 95px;" class="col-sale">Sales Price</th>
+                                                    <th style="width: 95px;" class="col-sale">Sky Price</th>
+                                                    <th style="width: 85px;" class="col-sky-pcode">Sky P-Code</th>
                                                     <th style="width: 95px;" class="col-cost">Cost (Purch)</th>
-                                                    <th style="width: 85px;" class="col-wholesale">Wholesale</th>
+                                                    <th style="width: 85px;" class="col-wholesale">Rot Price.</th>
+                                                    <th style="width: 85px;" class="col-rot-pcode">Rot P-Code</th>
                                                     <th style="width: 110px;" class="col-barcode">Barcode</th>
                                                     <th style="width: 55px;" class="text-center col-action" title="Customize Columns (or right-click any row)">Action <i class="fas fa-sliders-h text-primary ms-1" style="font-size: 11px; cursor: pointer;" onclick="showCustomizeVariantsModal()" title="Customize Columns"></i></th>
                                                 </tr>
@@ -2592,6 +2675,9 @@
                 <input type="number" name="sale_price_per_box" id="sale_price_per_box" step="0.01" value="1">
                 <input type="number" name="weight_per_piece" id="weight_per_piece" step="0.0001" value="0">
                 <input type="number" name="purchase_price_per_piece" id="purchase_price_per_piece" step="0.01" value="0">
+                <input type="hidden" name="p_code" id="p_code">
+                <input type="hidden" name="sky_p_code" id="sky_p_code">
+                <input type="hidden" name="rot_p_code" id="rot_p_code">
             </div>
 
         </form>
@@ -2673,6 +2759,55 @@
             </div>
         </div>
 
+        {{-- Unit Quick Add Modal --}}
+        <div id="unitModal" class="modal fade" tabindex="-1" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered modal-sm">
+                <div class="modal-content border-0 shadow-lg" style="border-radius: var(--radius-md);">
+                    <form id="quickAddUnitForm" action="{{ route('store.Unit') }}" method="POST">
+                        @csrf
+                        <div class="modal-header border-0 pb-0">
+                            <h6 class="modal-title fw-bold" style="font-size:13px;">New Unit of Measure</h6>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" data-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <input type="hidden" name="page" value="product_page">
+                            <div class="mb-2">
+                                <label class="form-label fw-bold" style="font-size:12px;">Unit Name</label>
+                                <input type="text" name="name" id="modalUnitNameInput" class="form-control form-control-sm" required placeholder="e.g. Set, Bundle, Carton">
+                            </div>
+                            <button type="submit" id="btnSubmitQuickUnit" class="btn btn-primary btn-sm w-100 rounded-pill">Create Unit</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        {{-- Standard Packaging Quick Add Modal --}}
+        <div id="packageTypeModal" class="modal fade" tabindex="-1" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered modal-sm">
+                <div class="modal-content border-0 shadow-lg" style="border-radius: var(--radius-md);">
+                    <form id="quickAddPackageTypeForm" action="{{ route('store.package_type') }}" method="POST">
+                        @csrf
+                        <div class="modal-header border-0 pb-0">
+                            <h6 class="modal-title fw-bold" style="font-size:13px;">New Standard Packaging</h6>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" data-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="mb-2">
+                                <label class="form-label fw-bold" style="font-size:12px;">Packaging Name</label>
+                                <input type="text" name="name" id="modalPkgNameInput" class="form-control form-control-sm" required placeholder="e.g. Carton of 100">
+                            </div>
+                            <div class="mb-2">
+                                <label class="form-label fw-bold" style="font-size:12px;">Pieces Per Pack / Box</label>
+                                <input type="number" name="pieces_per_box" id="modalPkgPiecesInput" class="form-control form-control-sm" required min="1" value="1" placeholder="e.g. 100">
+                            </div>
+                            <button type="submit" id="btnSubmitQuickPkg" class="btn btn-primary btn-sm w-100 rounded-pill">Save Standard Packing</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
         {{-- QuickBooks POS Style: Customize Variant Columns Modal --}}
         <div id="customizeVariantsModal" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true" style="z-index: 1055;">
             <div class="modal-dialog modal-dialog-centered" style="max-width: 520px;" role="document">
@@ -2704,14 +2839,15 @@
                                     ['key' => 'col-ref',        'label' => 'Internal Ref'],
                                     ['key' => 'col-name',       'label' => 'Product Name'],
                                     ['key' => 'col-attrs',      'label' => 'Attributes'],
-                                    ['key' => 'col-unit',       'label' => 'Unit'],
                                     ['key' => 'col-location',   'label' => 'Rack / Shelf'],
                                     ['key' => 'col-stock',      'label' => 'On Hand (Stock)'],
                                     ['key' => 'col-conv',       'label' => 'Pcs / Carton'],
                                     ['key' => 'col-weight',     'label' => 'Piece Wt (g)'],
-                                    ['key' => 'col-sale',       'label' => 'Sales Price'],
+                                    ['key' => 'col-sale',       'label' => 'Sky Price'],
+                                    ['key' => 'col-sky-pcode',  'label' => 'Sky P-Code'],
                                     ['key' => 'col-cost',       'label' => 'Cost (Purch)'],
-                                    ['key' => 'col-wholesale',  'label' => 'Wholesale'],
+                                    ['key' => 'col-wholesale',  'label' => 'Rot Price.'],
+                                    ['key' => 'col-rot-pcode',  'label' => 'Rot P-Code'],
                                     ['key' => 'col-barcode',    'label' => 'Barcode'],
                                     ['key' => 'col-action',     'label' => 'Action'],
                                 ];
@@ -3230,19 +3366,20 @@
             { key: 'col-ref',        label: 'Internal Ref',       default: true },
             { key: 'col-name',       label: 'Product Name',       default: true },
             { key: 'col-attrs',      label: 'Attributes',         default: true },
-            { key: 'col-unit',       label: 'Unit',               default: true },
             { key: 'col-location',   label: 'Rack / Shelf',       default: true },
             { key: 'col-stock',      label: 'On Hand (Stock)',    default: true },
             { key: 'col-conv',       label: 'Pcs / Carton',       default: true },
             { key: 'col-weight',     label: 'Piece Wt (g)',       default: true },
-            { key: 'col-sale',       label: 'Sales Price',        default: true },
+            { key: 'col-sale',       label: 'Sky Price',          default: true },
+            { key: 'col-sky-pcode',  label: 'Sky P-Code',         default: true },
             { key: 'col-cost',       label: 'Cost (Purch)',       default: true },
-            { key: 'col-wholesale',  label: 'Wholesale',          default: true },
+            { key: 'col-wholesale',  label: 'Rot Price.',         default: true },
+            { key: 'col-rot-pcode',  label: 'Rot P-Code',         default: true },
             { key: 'col-barcode',    label: 'Barcode',            default: true },
             { key: 'col-action',     label: 'Action',             default: true },
         ];
         var VARIANT_COLUMNS = window.VARIANT_COLUMNS;
-        var VAR_STORAGE_KEY = 'kent_variants_col_prefs_v2';
+        var VAR_STORAGE_KEY = 'kent_variants_col_prefs_v3';
         window.VAR_STORAGE_KEY = VAR_STORAGE_KEY;
 
         window.getVariantColPrefs = function() {
@@ -3582,8 +3719,18 @@
                         data: modalForm.serialize(),
                         headers: { 'X-Requested-With': 'XMLHttpRequest' },
                         success: function(res) {
-                            if (res.success) {
-                                $(selectSelector).append(new Option(res.name, res.id, true, true)).trigger('change');
+                            if (res.success || res.status === 'success') {
+                                const itemId = res.id || res.unit?.id || res.package_type?.id;
+                                const itemName = res.name || res.unit?.name || res.package_type?.name;
+                                const pieces = res.pieces_per_box || res.package_type?.pieces_per_box || null;
+
+                                const opt = new Option(itemName, itemId, true, true);
+                                if (pieces) {
+                                    opt.setAttribute('data-pieces', pieces);
+                                }
+                                opt.setAttribute('data-name', itemName);
+                                $(selectSelector).append(opt).trigger('change');
+
                                 $('#' + modalId).modal('hide');
                                 modalForm[0].reset();
                                 Swal.fire({
@@ -3596,8 +3743,14 @@
                                 });
                             }
                         },
-                        error: function() {
-                            Swal.fire({icon: 'error', title: 'Error', text: 'Failed to create item!'});
+                        error: function(err) {
+                            let msg = 'Failed to create item!';
+                            if (err.responseJSON && err.responseJSON.errors) {
+                                msg = Object.values(err.responseJSON.errors).flat().join('<br>');
+                            } else if (err.responseJSON && err.responseJSON.message) {
+                                msg = err.responseJSON.message;
+                            }
+                            Swal.fire({icon: 'error', title: 'Error', html: msg});
                         },
                         complete: function() {
                             btn.text(originalText).prop('disabled', false);
@@ -3609,6 +3762,137 @@
             handleQuickAdd('categoryModal', '#category-dropdown, #subcategoryModal select[name="category_id"]');
             handleQuickAdd('subcategoryModal', '#subcategory-dropdown');
             handleQuickAdd('brandModal', '#brand_id');
+            handleQuickAdd('unitModal', '#general_unit_id');
+            handleQuickAdd('packageTypeModal', '#package_type_id');
+
+            // =========================================================
+            // MASTER UNIT & PACKAGING ENGINE
+            // =========================================================
+            window.getMasterUnitName = function() {
+                const generalUnitSelect = document.getElementById('general_unit_id');
+                if (generalUnitSelect && generalUnitSelect.selectedIndex >= 0) {
+                    const selectedOpt = generalUnitSelect.options[generalUnitSelect.selectedIndex];
+                    if (selectedOpt && selectedOpt.value) {
+                        return selectedOpt.getAttribute('data-name') || selectedOpt.textContent.trim();
+                    }
+                }
+                const unitDropdown = document.getElementById('unit-dropdown');
+                if (unitDropdown) {
+                    const val = unitDropdown.value;
+                    if (val === 'by_cartons') return 'Carton';
+                    if (val === 'by_kg') return 'Kg';
+                    if (val === 'by_meter') return 'Meter';
+                    if (val === 'by_feet') return 'Ft';
+                    if (val === 'by_gm') return 'Gm';
+                }
+                return 'Pcs';
+            };
+
+            window.syncMasterUnitToVariants = function() {
+                const unitName = window.getMasterUnitName();
+                document.querySelectorAll('.variant-unit-hidden').forEach(function(el) {
+                    el.value = unitName;
+                });
+                const saleBadge = document.getElementById('unitSuffixSale');
+                if (saleBadge) saleBadge.textContent = 'per ' + unitName;
+                const costBadge = document.getElementById('unitSuffixCost');
+                if (costBadge) costBadge.textContent = 'per ' + unitName;
+                const customBadge = document.getElementById('customPiecesBadge');
+                if (customBadge) customBadge.textContent = unitName + '/Pk';
+            };
+
+            window.getActivePackingInfo = function() {
+                const isCustom = document.getElementById('packing_type_custom')?.checked;
+                if (isCustom) {
+                    const name = document.getElementById('custom_packing_name')?.value.trim() || 'Custom';
+                    const pieces = parseInt(document.getElementById('custom_pieces_per_box')?.value, 10) || 1;
+                    return { type: 'custom', name: name, pieces: Math.max(1, pieces) };
+                } else {
+                    const pkgSelect = document.getElementById('package_type_id');
+                    let pieces = 1;
+                    let name = 'Standard';
+                    if (pkgSelect && pkgSelect.selectedIndex > 0) {
+                        const opt = pkgSelect.options[pkgSelect.selectedIndex];
+                        pieces = parseInt(opt.getAttribute('data-pieces'), 10) || 1;
+                        name = opt.getAttribute('data-name') || opt.textContent.trim();
+                    }
+                    return { type: 'standard', name: name, pieces: Math.max(1, pieces) };
+                }
+            };
+
+            window.syncPackingToVariants = function(autoUpdateValues) {
+                const packing = window.getActivePackingInfo();
+                const hiddenPpb = document.getElementById('pieces_per_box');
+                if (hiddenPpb) hiddenPpb.value = packing.pieces;
+
+                // Update hint text for standard packing
+                const standardHint = document.getElementById('standardPackingHintText');
+                if (standardHint) {
+                    if (packing.type === 'standard' && packing.pieces > 1) {
+                        standardHint.innerHTML = `Contains <b>${packing.pieces}</b> pieces per pack`;
+                    } else {
+                        standardHint.textContent = 'Choose predefined box/carton packing';
+                    }
+                }
+
+                // Update matrix header
+                const convHeader = document.getElementById('convFactorHeader');
+                if (convHeader) {
+                    convHeader.textContent = packing.pieces > 1 ? `Pcs / Pack (${packing.pieces})` : 'Pcs / Carton';
+                }
+
+                // Sync to all conv-factor-inputs in the matrix
+                if (autoUpdateValues || packing.pieces > 1) {
+                    document.querySelectorAll('.conv-factor-input').forEach(function(inp) {
+                        inp.value = packing.pieces;
+                    });
+                }
+            };
+
+            // Event listeners for Master Unit
+            const generalUnitElem = document.getElementById('general_unit_id');
+            if (generalUnitElem) {
+                generalUnitElem.addEventListener('change', function() {
+                    window.syncMasterUnitToVariants();
+                });
+            }
+
+            // Event listeners for Packing
+            const radioStandard = document.getElementById('packing_type_standard');
+            const radioCustom = document.getElementById('packing_type_custom');
+            const standardSection = document.getElementById('standardPackingContainer');
+            const customSection = document.getElementById('customPackingContainer');
+            const packageTypeSelect = document.getElementById('package_type_id');
+            const customPiecesInput = document.getElementById('custom_pieces_per_box');
+
+            if (radioStandard && radioCustom) {
+                radioStandard.addEventListener('change', function() {
+                    if (this.checked) {
+                        if (standardSection) standardSection.style.display = 'block';
+                        if (customSection) customSection.style.display = 'none';
+                        window.syncPackingToVariants(true);
+                    }
+                });
+                radioCustom.addEventListener('change', function() {
+                    if (this.checked) {
+                        if (standardSection) standardSection.style.display = 'none';
+                        if (customSection) customSection.style.display = 'block';
+                        window.syncPackingToVariants(true);
+                    }
+                });
+            }
+
+            if (packageTypeSelect) {
+                packageTypeSelect.addEventListener('change', function() {
+                    window.syncPackingToVariants(true);
+                });
+            }
+
+            if (customPiecesInput) {
+                customPiecesInput.addEventListener('input', function() {
+                    window.syncPackingToVariants(true);
+                });
+            }
 
             // =========================================================
             // 10. ATTRIBUTES & VALUES CONFIGURATION ENGINE (MATCHING ODOO SCREENSHOTS)
@@ -5439,8 +5723,9 @@
                     const vPurch = prev.purch !== undefined ? prev.purch : baseCost.toFixed(2);
                     const vWholesale = prev.wholesale !== undefined ? prev.wholesale : '0.00';
                     const vBarcode = prev.barcode || generateRandomBarcode();
-                    const vConv = prev.conv !== undefined ? prev.conv : (isCartonMode ? '' : '1');
-                    const vUnit = prev.unit || (isCartonMode ? 'Carton' : baseUnitName);
+                    const activePacking = window.getActivePackingInfo ? window.getActivePackingInfo() : { pieces: 1 };
+                    const vConv = prev.conv !== undefined ? prev.conv : (activePacking.pieces > 1 ? activePacking.pieces : (isCartonMode ? '' : '1'));
+                    const masterUnitName = window.getMasterUnitName ? window.getMasterUnitName() : (isCartonMode ? 'Carton' : baseUnitName);
                     const defaultLoc = document.getElementById('remarks')?.value.trim() || '';
                     const vLocation = prev.location !== undefined ? prev.location : defaultLoc;
 
@@ -5454,6 +5739,7 @@
                             <input type="hidden" name="variant_name[]" value="${comboName}">
                             <input type="hidden" name="variant_size[]" value="${sizeVal}">
                             <input type="hidden" name="variant_color[]" value="${colorVal}">
+                            <input type="hidden" name="variant_unit[]" class="variant-unit-hidden" value="${masterUnitName}">
                             <input type="hidden" name="variant_alert_qty[]" value="0">
                         </td>
                         <td class="p-1 col-serial text-center">
@@ -5467,18 +5753,6 @@
                         </td>
                         <td class="p-1 col-attrs">
                             ${comboPillsHtml}
-                        </td>
-                        <td class="p-1 col-unit">
-                            <select class="form-select form-select-sm px-1 fw-bold text-dark" name="variant_unit[]" style="font-size:11px;">
-                                <option value="Carton" ${vUnit==='Carton'?'selected':''}>Carton</option>
-                                <option value="Pcs" ${vUnit==='Pcs'?'selected':''}>Pcs</option>
-                                <option value="Kg" ${vUnit==='Kg'?'selected':''}>Kg</option>
-                                <option value="Gm" ${vUnit==='Gm'?'selected':''}>Gm</option>
-                                <option value="Ft" ${vUnit==='Ft'?'selected':''}>Ft</option>
-                                <option value="Meter" ${vUnit==='Meter'?'selected':''}>Mtr</option>
-                                <option value="Box" ${vUnit==='Box'?'selected':''}>Box</option>
-                                <option value="Dozen" ${vUnit==='Dozen'?'selected':''}>Dzn</option>
-                            </select>
                         </td>
                         <td class="p-1 col-location">
                             <input type="text" class="form-control form-control-sm variant-location-input" name="variant_location[]" value="${escapeHtml(vLocation)}" list="storageLocationsDatalist" placeholder="Rack / Shelf" style="font-size:11px;">
@@ -5496,8 +5770,10 @@
                             </div>
                         </td>
                         <td class="p-1 col-sale"><input type="number" class="form-control form-control-sm sale-price-input" name="variant_sale_price[]" step="any" value="${vSale}" required></td>
+                        <td class="p-1 col-sky-pcode"><input type="text" class="form-control form-control-sm variant-sky-pcode-input font-monospace text-uppercase fw-bold bg-light" name="variant_sky_pcode[]" value="${window.encodeToPCode ? window.encodeToPCode(vSale || 0) : ''}" readonly style="font-size:11px;" title="Sky P-Code"></td>
                         <td class="p-1 col-cost"><input type="number" class="form-control form-control-sm purch-price-input" name="variant_purchase_price[]" step="any" value="${vPurch}" required></td>
-                        <td class="p-1 col-wholesale"><input type="number" class="form-control form-control-sm" name="variant_wholesale_price[]" step="any" value="${vWholesale}"></td>
+                        <td class="p-1 col-wholesale"><input type="number" class="form-control form-control-sm wholesale-price-input" name="variant_wholesale_price[]" step="any" value="${vWholesale}"></td>
+                        <td class="p-1 col-rot-pcode"><input type="text" class="form-control form-control-sm variant-rot-pcode-input font-monospace text-uppercase fw-bold bg-light" name="variant_rot_pcode[]" value="${window.encodeToPCode ? window.encodeToPCode(vWholesale || 0) : ''}" readonly style="font-size:11px;" title="Rot P-Code"></td>
                         <td class="p-1 col-barcode"><input type="text" class="form-control form-control-sm font-monospace" name="variant_barcode[]" value="${vBarcode}" placeholder="Barcode"></td>
                         <td class="p-1 text-center col-action">
                             ${isBase ? '<span class="badge bg-primary px-1" style="font-size:9px;">Base</span>' : '<button type="button" class="btn btn-sm btn-outline-danger remove-var-btn p-0 px-1" style="height:24px;width:24px;"><i class="fas fa-times" style="font-size:11px;"></i></button>'}
@@ -5547,6 +5823,9 @@
                 const productName = productNameInput ? (productNameInput.value || '') : '';
                 const baseUnitName = unitDropdown ? unitDropdown.options[unitDropdown.selectedIndex].text.split(' ')[0] : 'Pcs';
                 const isCartonMode = unitDropdown && unitDropdown.value === 'by_cartons';
+                const masterUnitName = window.getMasterUnitName ? window.getMasterUnitName() : (isCartonMode ? 'Carton' : baseUnitName);
+                const activePacking = window.getActivePackingInfo ? window.getActivePackingInfo() : { pieces: 1 };
+                const defaultConv = activePacking.pieces > 1 ? activePacking.pieces : (isCartonMode ? '' : '1');
                 const initSale = genSaleInput ? (genSaleInput.value || '1.00') : '1.00';
                 const initCost = genCostInput ? (genCostInput.value || '0.00') : '0.00';
                 const baseSerial = `${getProductPrefix(productName)}-0001`;
@@ -5557,6 +5836,7 @@
                         <input type="hidden" name="variant_is_base[]" value="1">
                         <input type="hidden" name="variant_size[]" value="-">
                         <input type="hidden" name="variant_color[]" value="-">
+                        <input type="hidden" name="variant_unit[]" class="variant-unit-hidden" value="${masterUnitName}">
                         <input type="hidden" name="variant_alert_qty[]" value="0">
                     </td>
                     <td class="p-1 col-serial text-center">
@@ -5571,18 +5851,6 @@
                     <td class="p-1 text-muted fst-italic col-attrs" style="font-size:11px;">
                         Standard (No Attributes)
                     </td>
-                    <td class="p-1 col-unit">
-                        <select class="form-select form-select-sm fw-bold text-primary px-1" name="variant_unit[]" style="font-size:11px;">
-                            <option value="Carton" ${isCartonMode||baseUnitName.includes('Carton')?'selected':''}>Carton</option>
-                            <option value="Pcs" ${(!isCartonMode && (baseUnitName.includes('Pcs')||baseUnitName.includes('Pieces')))?'selected':''}>Pcs</option>
-                            <option value="Kg" ${baseUnitName.includes('Kg')?'selected':''}>Kg</option>
-                            <option value="Gm" ${baseUnitName.includes('Gm')?'selected':''}>Gm</option>
-                            <option value="Ft" ${baseUnitName.includes('Ft')?'selected':''}>Ft</option>
-                            <option value="Meter" ${baseUnitName.includes('Meter')?'selected':''}>Mtr</option>
-                            <option value="Box">Box</option>
-                            <option value="Dozen">Dzn</option>
-                        </select>
-                    </td>
                     <td class="p-1 col-location">
                         <input type="text" class="form-control form-control-sm variant-location-input" name="variant_location[]" value="${escapeHtml(document.getElementById('remarks')?.value.trim() || '')}" list="storageLocationsDatalist" placeholder="Rack / Shelf" style="font-size:11px;">
                     </td>
@@ -5590,7 +5858,7 @@
                         <input type="number" class="form-control form-control-sm text-center fw-bold text-primary stock-input" name="variant_stock[]" step="any" value="0" placeholder="0">
                     </td>
                     <td class="p-0 conv-col col-conv">
-                        <input type="number" class="form-control form-control-sm conv-factor-input text-center fw-bold ${isCartonMode ? 'text-primary' : ''}" name="variant_conv_factor[]" step="any" value="${isCartonMode ? '' : '1'}" ${isCartonMode ? '' : 'readonly'} placeholder="${isCartonMode ? 'e.g. 6' : '1'}" style="border-radius:0; border:1px solid #dee2e6; height:28px; ${isCartonMode ? 'background:#fff;' : 'background:#f8f8f8;'}">
+                        <input type="number" class="form-control form-control-sm conv-factor-input text-center fw-bold ${isCartonMode || activePacking.pieces > 1 ? 'text-primary' : ''}" name="variant_conv_factor[]" step="any" value="${defaultConv}" placeholder="1" style="border-radius:0; border:1px solid #dee2e6; height:28px; background:#fff;">
                     </td>
                     <td class="p-0 piece-wt-only-col col-weight">
                         <div style="position:relative;">
@@ -5599,8 +5867,10 @@
                         </div>
                     </td>
                     <td class="p-1 col-sale"><input type="number" class="form-control form-control-sm base-sale-input" name="variant_sale_price[]" step="any" value="${initSale}" placeholder="0.00" required></td>
+                    <td class="p-1 col-sky-pcode"><input type="text" class="form-control form-control-sm variant-sky-pcode-input font-monospace text-uppercase fw-bold bg-light" name="variant_sky_pcode[]" value="${window.encodeToPCode ? window.encodeToPCode(initSale || 0) : ''}" readonly style="font-size:11px;" title="Sky P-Code"></td>
                     <td class="p-1 col-cost"><input type="number" class="form-control form-control-sm base-purch-input" name="variant_purchase_price[]" step="any" value="${initCost}" placeholder="0.00" required></td>
-                    <td class="p-1 col-wholesale"><input type="number" class="form-control form-control-sm" name="variant_wholesale_price[]" step="any" placeholder="0.00" value="0"></td>
+                    <td class="p-1 col-wholesale"><input type="number" class="form-control form-control-sm base-wholesale-input" name="variant_wholesale_price[]" step="any" placeholder="0.00" value="0"></td>
+                    <td class="p-1 col-rot-pcode"><input type="text" class="form-control form-control-sm variant-rot-pcode-input font-monospace text-uppercase fw-bold bg-light" name="variant_rot_pcode[]" value="${window.encodeToPCode ? window.encodeToPCode(0) : ''}" readonly style="font-size:11px;" title="Rot P-Code"></td>
                     <td class="p-1 col-barcode"><input type="text" class="form-control form-control-sm font-monospace" name="variant_barcode[]" value="${generateRandomBarcode()}" placeholder="Barcode"></td>
                     <td class="p-1 text-center col-action">
                         <span class="badge bg-primary px-2 py-1" style="font-size:10px;">Base</span>
@@ -5677,10 +5947,14 @@
                     const tr = document.createElement('tr');
                     const pName = productNameInput ? (productNameInput.value.trim() || 'Product') : 'Product';
                     const isCarton = unitDropdown && unitDropdown.value === 'by_cartons';
+                    const masterUnitName = window.getMasterUnitName ? window.getMasterUnitName() : (isCarton ? 'Carton' : 'Pcs');
+                    const activePacking = window.getActivePackingInfo ? window.getActivePackingInfo() : { pieces: 1 };
+                    const defaultConv = activePacking.pieces > 1 ? activePacking.pieces : (isCarton ? '6' : '1');
                     tr.innerHTML = `
                         <td class="text-center p-1 col-select">
                             <input type="checkbox" class="form-check-input variant-row-check">
                             <input type="hidden" name="variant_is_base[]" value="0">
+                            <input type="hidden" name="variant_unit[]" class="variant-unit-hidden" value="${masterUnitName}">
                             <input type="hidden" name="variant_alert_qty[]" value="0">
                         </td>
                         <td class="p-1 col-serial text-center">
@@ -5698,24 +5972,17 @@
                                 <input type="text" class="form-control form-control-sm" name="variant_color[]" placeholder="Color" style="width:50%;font-size:11px;">
                             </div>
                         </td>
-                        <td class="p-1 col-unit">
-                            <select class="form-select form-select-sm px-1 fw-bold text-dark" name="variant_unit[]" style="font-size:11px;">
-                                <option value="Carton" ${isCarton?'selected':''}>Carton</option>
-                                <option value="Pcs" ${!isCarton?'selected':''}>Pcs</option>
-                                <option value="Kg">Kg</option>
-                                <option value="Gm">Gm</option>
-                                <option value="Ft">Ft</option>
-                                <option value="Meter">Mtr</option>
-                                <option value="Box">Box</option>
-                                <option value="Dozen">Dzn</option>
-                            </select>
+                        <td class="p-1 col-location">
+                            <input type="text" class="form-control form-control-sm variant-location-input" name="variant_location[]" value="${escapeHtml(document.getElementById('remarks')?.value.trim() || '')}" list="storageLocationsDatalist" placeholder="Rack / Shelf" style="font-size:11px;">
                         </td>
                         <td class="p-1 col-stock"><input type="number" class="form-control form-control-sm text-center fw-bold text-primary stock-input" name="variant_stock[]" value="0"></td>
-                        <td class="p-0 conv-col col-conv"><input type="text" class="form-control form-control-sm text-center fw-bold text-success" name="variant_conv_factor[]" value="${isCarton?'6':'1'}" style="border-radius:0; border:1px solid #198754; height:28px;"></td>
+                        <td class="p-0 conv-col col-conv"><input type="text" class="form-control form-control-sm text-center fw-bold text-success" name="variant_conv_factor[]" value="${defaultConv}" style="border-radius:0; border:1px solid #198754; height:28px;"></td>
                         <td class="p-0 piece-wt-only-col col-weight"><input type="number" class="form-control form-control-sm" name="variant_weight_per_piece[]" value="1000" readonly style="border-radius:0; border:1px solid #dee2e6; height:28px;"></td>
                         <td class="p-1 col-sale"><input type="number" class="form-control form-control-sm sale-price-input" name="variant_sale_price[]" value="${genSaleInput?.value || '1.00'}" required></td>
+                        <td class="p-1 col-sky-pcode"><input type="text" class="form-control form-control-sm variant-sky-pcode-input font-monospace text-uppercase fw-bold bg-light" name="variant_sky_pcode[]" value="${window.encodeToPCode ? window.encodeToPCode(genSaleInput?.value || 1.00) : ''}" readonly style="font-size:11px;" title="Sky P-Code"></td>
                         <td class="p-1 col-cost"><input type="number" class="form-control form-control-sm purch-price-input" name="variant_purchase_price[]" value="${genCostInput?.value || '0.00'}" required></td>
-                        <td class="p-1 col-wholesale"><input type="number" class="form-control form-control-sm" name="variant_wholesale_price[]" value="0.00"></td>
+                        <td class="p-1 col-wholesale"><input type="number" class="form-control form-control-sm wholesale-price-input" name="variant_wholesale_price[]" value="0.00"></td>
+                        <td class="p-1 col-rot-pcode"><input type="text" class="form-control form-control-sm variant-rot-pcode-input font-monospace text-uppercase fw-bold bg-light" name="variant_rot_pcode[]" value="${window.encodeToPCode ? window.encodeToPCode(0) : ''}" readonly style="font-size:11px;" title="Rot P-Code"></td>
                         <td class="p-1 col-barcode"><input type="text" class="form-control form-control-sm font-monospace" name="variant_barcode[]" value="${generateRandomBarcode()}" placeholder="Barcode"></td>
                         <td class="p-1 text-center col-action"><button type="button" class="btn btn-sm btn-outline-danger remove-var-btn p-0 px-1" style="height:24px;width:24px;"><i class="fas fa-times" style="font-size:11px;"></i></button></td>
                     `;
@@ -5848,6 +6115,17 @@
                 if (pppp) pppp.value = firstPurch;
                 if (acq) acq.value = firstAlert;
 
+                const pCodeEl = document.getElementById('p_code');
+                const skyPCodeEl = document.getElementById('sky_p_code');
+                const rotPCodeEl = document.getElementById('rot_p_code');
+                if (window.encodeToPCode) {
+                    const skyEnc = window.encodeToPCode(firstSale);
+                    const rotEnc = window.encodeToPCode(firstWholesale);
+                    if (pCodeEl) pCodeEl.value = skyEnc;
+                    if (skyPCodeEl) skyPCodeEl.value = skyEnc;
+                    if (rotPCodeEl) rotPCodeEl.value = rotEnc;
+                }
+
                 // Submit Button Spinner on ALL save buttons
                 const allSaveBtns = document.querySelectorAll('#topSaveProductBtn, #desktopSubmitBtn, #mobileSubmitBtn, button[type="submit"]');
                 allSaveBtns.forEach(btn => {
@@ -5933,6 +6211,35 @@
             if (mobileSubmitBtn) {
                 mobileSubmitBtn.addEventListener('click', submitProductForm);
             }
+
+            // Live P-Code conversion:
+            // Sky Price -> Sky P-Code
+            // Rot Price (Wholesale) -> Rot P-Code
+            document.addEventListener('input', function(e) {
+                if (!e.target) return;
+
+                // Sky Price typing -> updates Sky P-Code
+                if (e.target.classList.contains('sale-price-input') || e.target.classList.contains('base-sale-input') || e.target.name === 'variant_sale_price[]') {
+                    const tr = e.target.closest('tr');
+                    if (tr) {
+                        const skyPcodeInput = tr.querySelector('.variant-sky-pcode-input');
+                        if (skyPcodeInput && window.encodeToPCode) {
+                            skyPcodeInput.value = window.encodeToPCode(e.target.value);
+                        }
+                    }
+                }
+
+                // Rot Price typing -> updates Rot P-Code
+                if (e.target.classList.contains('wholesale-price-input') || e.target.classList.contains('base-wholesale-input') || e.target.name === 'variant_wholesale_price[]') {
+                    const tr = e.target.closest('tr');
+                    if (tr) {
+                        const rotPcodeInput = tr.querySelector('.variant-rot-pcode-input');
+                        if (rotPcodeInput && window.encodeToPCode) {
+                            rotPcodeInput.value = window.encodeToPCode(e.target.value);
+                        }
+                    }
+                }
+            });
 
             // =========================================================
             // 13. QUICKBOOKS POS DESKTOP STYLE: CUSTOMIZE MATRIX COLUMNS EVENT LISTENERS

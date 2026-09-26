@@ -13,6 +13,7 @@ use App\Models\SaleReturn;
 use App\Models\Stock;
 use App\Models\Warehouse;
 use App\Models\WarehouseStock;
+use App\Services\PCodeService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -171,6 +172,14 @@ class SaleController extends Controller
             ->limit(50)
             ->get()
             ->map(function ($product) {
+                if (empty($product->p_code)) {
+                    $skyPrice = $product->sale_price_per_piece > 0 ? $product->sale_price_per_piece : ($product->sale_price_per_box ?? 0);
+                    $product->p_code = PCodeService::encode($skyPrice);
+                }
+                if (empty($product->rot_p_code)) {
+                    $rotPrice = $product->wholesale_price ?? 0;
+                    $product->rot_p_code = PCodeService::encode($rotPrice);
+                }
                 return $product;
             });
 
@@ -1413,6 +1422,20 @@ class SaleController extends Controller
                 $saleItem->discount_percent = $calcDiscountPercent;
                 $saleItem->discount_amount = $calcDiscountAmount;
                 $saleItem->total = $lineTotal;
+
+                // P-Code assignment (Sky P-Code & Rot P-Code)
+                $itemPCode = $request->p_code[$index] ?? null;
+                $itemRotPCode = $request->rot_p_code[$index] ?? null;
+                if (empty($itemPCode)) {
+                    if (!$isManual && isset($product) && $product) {
+                        $itemPCode = $product->p_code ?: PCodeService::encode($product->sale_price_per_piece ?: $inputPrice);
+                        $itemRotPCode = $product->rot_p_code ?: PCodeService::encode($product->wholesale_price ?: 0);
+                    } elseif ($isManual) {
+                        $itemPCode = PCodeService::encode($inputPrice);
+                    }
+                }
+                $saleItem->p_code = $itemPCode;
+                $saleItem->rot_p_code = $itemRotPCode;
 
                 // Meta
                 $saleItem->brand_id = $brandId;

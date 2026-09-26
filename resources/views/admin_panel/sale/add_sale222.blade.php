@@ -740,9 +740,11 @@
                                                         <i class="fas fa-cubes"></i>
                                                     </button>
                                                 </div>
-                                                <div class="variant-serial-badge-wrapper mt-1 d-none">
-                                                    <span class="badge bg-primary-subtle text-primary border border-primary-subtle font-monospace py-0 px-1 variant-serial-badge" style="font-size: 0.68rem;"></span>
+                                                <div class="variant-serial-badge-wrapper mt-1 d-flex flex-wrap gap-1 align-items-center">
+                                                    <span class="badge bg-primary-subtle text-primary border border-primary-subtle font-monospace py-0 px-1 variant-serial-badge d-none" style="font-size: 0.68rem;"></span>
+                                                    <span class="badge bg-warning-subtle text-dark border border-warning-subtle font-monospace py-0 px-1 item-pcode-badge d-none" style="font-size: 0.68rem;" title="Secret Cost Code (P-Code)"></span>
                                                 </div>
+                                                <input type="hidden" class="item-pcode-hidden" name="p_code[]">
                                                 <input type="hidden" class="product-id-hidden" name="product_id[]">
                                                 <input type="hidden" class="variant-data-hidden" name="color[]">
                                                 <input type="hidden" class="item-code-display">
@@ -988,6 +990,16 @@
                                 <div class="pos-product-name" title="{{ $prod->item_name }}">{{ $prod->item_name }}</div>
                                 <div class="pos-product-sub">
                                     <span class="badge-stock-green">{{ $prod->total_pieces ?? 0 }} Pcs</span> Stock
+                                    @php
+                                        $qPCode = $prod->p_code;
+                                        if (empty($qPCode)) {
+                                            $cost = $prod->purchase_price_per_piece > 0 ? $prod->purchase_price_per_piece : ($prod->purchase_price_per_box > 0 ? $prod->purchase_price_per_box : ($prod->sale_price_per_piece ?? 0));
+                                            $qPCode = \App\Services\PCodeService::encode($cost);
+                                        }
+                                    @endphp
+                                    @if(!empty($qPCode))
+                                        <span class="badge bg-warning-subtle text-dark border border-warning-subtle font-monospace py-0 px-1 ms-1" style="font-size:0.65rem;" title="Secret Cost Code (P-Code)">P: {{ $qPCode }}</span>
+                                    @endif
                                 </div>
                             </div>
                             <div class="d-flex align-items-center gap-2">
@@ -1621,6 +1633,7 @@
                                     <th class="text-center" style="width: 75px;">Size</th>
                                     <th class="text-center" style="width: 75px;">Color</th>
                                     <th class="text-center" style="width: 85px;">Stock</th>
+                                    <th class="text-center" style="width: 75px;">P-Code</th>
                                     <th class="text-end" style="width: 90px;">Retail</th>
                                     <th class="text-end" style="width: 90px;">Wholesale</th>
                                     <th class="text-center" style="width: 90px;">Action</th>
@@ -1628,7 +1641,7 @@
                             </thead>
                             <tbody id="variantPickerTableBody">
                                 <tr>
-                                    <td colspan="8" class="text-center py-4 text-muted">
+                                    <td colspan="9" class="text-center py-4 text-muted">
                                         <div class="spinner-border spinner-border-sm text-primary me-1" role="status"></div> Loading variants...
                                     </td>
                                 </tr>

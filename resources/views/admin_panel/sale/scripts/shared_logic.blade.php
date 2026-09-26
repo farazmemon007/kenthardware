@@ -94,11 +94,12 @@
         let sku = repo.sku || 'N/A';
         let stockVal = parseFloat(repo.stock_pieces !== undefined ? repo.stock_pieces : repo.stock) || 0;
         let badgeClass = stockVal > 0 ? 'bg-success' : 'bg-danger';
+        let pCodeBadge = repo.p_code ? `<span class="badge bg-warning-subtle text-dark border border-warning-subtle font-monospace ms-1" style="font-size:10px;" title="P-Code: ${repo.p_code}">P: ${repo.p_code}</span>` : '';
 
         return $(`
         <div class="clearfix">
             <div class="float-start">
-                <div class="fw-bold">${repo.name || repo.text}</div>
+                <div class="fw-bold">${repo.name || repo.text} ${pCodeBadge}</div>
                 <small class="text-muted">SKU: ${sku}</small>
             </div>
             <div class="float-end">
@@ -146,9 +147,11 @@
           <i class="fas fa-cubes"></i>
         </button>
       </div>
-      <div class="variant-serial-badge-wrapper mt-1 d-none">
-        <span class="badge bg-primary-subtle text-primary border border-primary-subtle font-monospace py-0 px-1 variant-serial-badge" style="font-size: 0.68rem;"></span>
+      <div class="variant-serial-badge-wrapper mt-1 d-flex flex-wrap gap-1 align-items-center">
+        <span class="badge bg-primary-subtle text-primary border border-primary-subtle font-monospace py-0 px-1 variant-serial-badge d-none" style="font-size: 0.68rem;"></span>
+        <span class="badge bg-warning-subtle text-dark border border-warning-subtle font-monospace py-0 px-1 item-pcode-badge d-none" style="font-size: 0.68rem;" title="Secret Cost Code (P-Code)"></span>
       </div>
+      <input type="hidden" class="item-pcode-hidden" name="p_code[]">
       <input type="hidden" class="product-id-hidden" name="product_id[]">
       <input type="hidden" class="variant-data-hidden" name="color[]">
       <input type="hidden" class="item-code-display">
@@ -1010,10 +1013,29 @@
 
             // Display Unique Variant Serial No Badge
             if (variantSerial) {
-                $row.find('.variant-serial-badge').text('SN: ' + variantSerial);
-                $row.find('.variant-serial-badge-wrapper').removeClass('d-none');
+                $row.find('.variant-serial-badge').text('SN: ' + variantSerial).removeClass('d-none');
             } else {
-                $row.find('.variant-serial-badge-wrapper').addClass('d-none');
+                $row.find('.variant-serial-badge').text('').addClass('d-none');
+            }
+
+            // Determine and Display P-Code Badge
+            let variantPCode = data.p_code || '';
+            if (data.variant_data) {
+                try {
+                    const vd = JSON.parse(atob(data.variant_data));
+                    if (!variantPCode && vd.p_code) variantPCode = vd.p_code;
+                } catch(ex) {}
+            }
+            if (!variantPCode && typeof window.encodeToPCode === 'function') {
+                let costVal = data.trade_price || data.purchase_price_per_piece || data.retail_price || 0;
+                variantPCode = window.encodeToPCode(costVal);
+            }
+
+            $row.find('.item-pcode-hidden').val(variantPCode);
+            if (variantPCode) {
+                $row.find('.item-pcode-badge').text('P: ' + variantPCode).attr('title', 'P-Code: ' + variantPCode).removeClass('d-none');
+            } else {
+                $row.find('.item-pcode-badge').text('').addClass('d-none');
             }
             
             // Store variant stock for later use (after warehouse loads)
@@ -1076,8 +1098,9 @@
         // Product clear
         $('#salesTableBody').on('select2:clear', '.product', function(e) {
             const $row = $(this).closest('tr');
-            $row.find('.variant-serial-badge-wrapper').addClass('d-none');
-            $row.find('.variant-serial-badge').text('');
+            $row.find('.variant-serial-badge').text('').addClass('d-none');
+            $row.find('.item-pcode-badge').text('').addClass('d-none');
+            $row.find('.item-pcode-hidden').val('');
             $row.find('.product-id-hidden').val('');
             $row.find('.variant-data-hidden').val('');
             $row.find('.stock').val('');
@@ -1109,7 +1132,7 @@
             $('#variantPickerSearchInput').val('');
             $('#variantPickerTableBody').html(`
                 <tr>
-                    <td colspan="8" class="text-center py-4 text-muted">
+                    <td colspan="9" class="text-center py-4 text-muted">
                         <div class="spinner-border spinner-border-sm text-primary me-2" role="status"></div> Loading product variants...
                     </td>
                 </tr>
@@ -1132,7 +1155,7 @@
                 .fail(function() {
                     $('#variantPickerTableBody').html(`
                         <tr>
-                            <td colspan="8" class="text-center py-4 text-danger">
+                            <td colspan="9" class="text-center py-4 text-danger">
                                 <i class="fas fa-exclamation-circle me-1"></i> Failed to load variants. Please try again.
                             </td>
                         </tr>
@@ -1147,7 +1170,7 @@
             if (!variants || variants.length === 0) {
                 $tbody.html(`
                     <tr>
-                        <td colspan="8" class="text-center py-4 text-muted">
+                        <td colspan="9" class="text-center py-4 text-muted">
                             <i class="fas fa-info-circle me-1"></i> No variants found.
                         </td>
                     </tr>
@@ -1168,6 +1191,12 @@
                 const retailPrice = parseFloat(v.retail_price || 0).toFixed(2);
                 const wholesalePrice = parseFloat(v.wholesale_price || 0).toFixed(2);
 
+                let vPCode = v.p_code || '';
+                if (!vPCode && typeof window.encodeToPCode === 'function') {
+                    let cost = v.trade_price || v.purchase_price_per_piece || v.purch_price || v.retail_price || 0;
+                    vPCode = window.encodeToPCode(cost);
+                }
+
                 const vJson = encodeURIComponent(JSON.stringify(v));
 
                 const tr = `
@@ -1187,6 +1216,9 @@
                             <span class="badge ${stockBadgeClass} rounded-pill" style="font-size: 10px;">
                                 ${v.stock}
                             </span>
+                        </td>
+                        <td class="text-center font-monospace" style="font-size: 11px;">
+                            ${vPCode ? `<span class="badge bg-warning-subtle text-dark border border-warning-subtle font-monospace">${vPCode}</span>` : '-'}
                         </td>
                         <td class="text-end fw-semibold text-dark font-monospace" style="font-size: 12px;">Rs. ${retailPrice}</td>
                         <td class="text-end text-muted font-monospace" style="font-size: 11px;">Rs. ${wholesalePrice}</td>
@@ -1918,6 +1950,7 @@
                     res.forEach(p => {
                         const stockText = p.wh_stock ? `${p.wh_stock} Pcs` : '0 Pcs';
                         const priceText = p.retail_price ? parseFloat(p.retail_price).toFixed(2) : '0.00';
+                        const pCodeBadge = p.p_code ? `<span class="badge bg-warning-subtle text-dark border border-warning-subtle font-monospace py-0 px-1 ms-1" style="font-size:0.65rem;" title="Secret Cost Code (P-Code)">P: ${p.p_code}</span>` : '';
                         html += `
                             <div class="pos-product-card">
                                 <div class="pos-product-img">
@@ -1926,7 +1959,7 @@
                                 <div class="pos-product-info">
                                     <div class="pos-product-name" title="${p.item_name}">${p.item_name}</div>
                                     <div class="pos-product-sub">
-                                        <span class="badge-stock-green">${stockText}</span> SKU: ${p.item_code || '-'}
+                                        <span class="badge-stock-green">${stockText}</span> SKU: ${p.item_code || '-'} ${pCodeBadge}
                                     </div>
                                 </div>
                                 <div class="d-flex align-items-center gap-2">

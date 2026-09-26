@@ -73,8 +73,14 @@
             </div>
         </td>
         <td class="font-monospace text-dark">{{ $sale->reference ?? '-' }}</td>
+        @php
+            $itemPCodes = $sale->items ? $sale->items->pluck('p_code')->filter()->unique()->implode(', ') : '';
+        @endphp
         <td title="{{ $pNames }}" class="text-muted small">
-            {{ \Illuminate\Support\Str::limit($pNames, 40) }}
+            <div>{{ \Illuminate\Support\Str::limit($pNames, 40) }}</div>
+            @if(!empty($itemPCodes))
+                <span class="badge bg-warning-subtle text-dark border border-warning-subtle font-monospace py-0 px-1 mt-1" style="font-size: 10px;" title="P-Code: {{ $itemPCodes }}">P: {{ \Illuminate\Support\Str::limit($itemPCodes, 20) }}</span>
+            @endif
         </td>
         <td class="text-center font-monospace">
             {{ $sale->total_items > 0 ? $sale->total_items : $sale->qty }}

@@ -742,7 +742,10 @@
                             <th>Item Details</th>
                             <th>Stock</th>
                             <th>Purchase Price</th>
-                            <th>Sale Price</th>
+                            <th>Sky Price</th>
+                            <th style="width:85px;">Sky P-Code</th>
+                            <th>Rot Price.</th>
+                            <th style="width:85px;">Rot P-Code</th>
                             <th style="width:75px;">Status</th>
                             <th class="text-center" style="width:220px;">
                                 <div class="d-flex align-items-center justify-content-center gap-2">
@@ -812,6 +815,17 @@
                                 </td>
                                 <td class="price-purchase">Rs. {{ number_format($tradePrice, 2) }}</td>
                                 <td class="price-sale">Rs. {{ number_format($retailPrice, 2) }}</td>
+                                <td class="text-center">
+                                    <span class="badge bg-light text-dark border px-2 py-1 font-monospace fw-bold" style="font-size: 0.82rem; letter-spacing: 0.5px;" title="Sky P-Code">
+                                        {{ $product->p_code ?: \App\Services\PCodeService::encode($retailPrice) }}
+                                    </span>
+                                </td>
+                                <td class="price-wholesale">Rs. {{ number_format((float)($product->wholesale_price ?? 0), 2) }}</td>
+                                <td class="text-center">
+                                    <span class="badge bg-light text-dark border px-2 py-1 font-monospace fw-bold" style="font-size: 0.82rem; letter-spacing: 0.5px;" title="Rot P-Code">
+                                        {{ $product->rot_p_code ?: \App\Services\PCodeService::encode($product->wholesale_price ?? 0) }}
+                                    </span>
+                                </td>
                                 <td>
                                     @if($product->is_active)
                                         <span class="status-active" id="status-badge-{{ $product->id }}">Active</span>
@@ -1139,19 +1153,55 @@
                 <div id="modalMatrixContainer" class="p-3 px-4" style="background: #ffffff; min-height: 260px;">
                     <!-- Top Product Quick Info Bar -->
                     <div class="d-flex justify-content-between align-items-center p-2.5 px-3 rounded-3 mb-3" style="background: #f8fafc; border: 1px solid #e2e8f0;">
-                        <div class="d-flex align-items-center gap-4">
-                            <div>
-                                <span class="text-muted fw-semibold" style="font-size: 10.5px; text-transform: uppercase; letter-spacing: 0.5px;">Unit Price</span>
+                        <div class="d-flex align-items-center gap-3 flex-wrap">
+                            <!-- Numeric Sky Price (Hidden by default, toggleable) -->
+                            <div class="matrix-numeric-price d-none">
+                                <span class="text-muted fw-semibold" style="font-size: 10.5px; text-transform: uppercase; letter-spacing: 0.5px;">Sky Price</span>
                                 <div class="fw-bold font-monospace" id="matrix_item_price" style="font-size: 1.15rem; color: #059669;">Rs. 0.00</div>
                             </div>
+                            <div class="matrix-numeric-divider d-none" style="width: 1px; height: 26px; background: #cbd5e1;"></div>
+
+                            <!-- Secret Sky P-Code -->
+                            <div>
+                                <span class="text-muted fw-semibold" style="font-size: 10.5px; text-transform: uppercase; letter-spacing: 0.5px;">Sky P-Code</span>
+                                <div class="fw-bold font-monospace" id="matrix_item_pcode" style="font-size: 1.15rem; color: #714B67;">---</div>
+                            </div>
                             <div style="width: 1px; height: 26px; background: #cbd5e1;"></div>
+
+                            <!-- Numeric Rot Price (Hidden by default, toggleable) -->
+                            <div class="matrix-numeric-price d-none">
+                                <span class="text-muted fw-semibold" style="font-size: 10.5px; text-transform: uppercase; letter-spacing: 0.5px;">Rot Price.</span>
+                                <div class="fw-bold font-monospace" id="matrix_item_rot_price" style="font-size: 1.15rem; color: #0284c7;">Rs. 0.00</div>
+                            </div>
+                            <div class="matrix-numeric-divider d-none" style="width: 1px; height: 26px; background: #cbd5e1;"></div>
+
+                            <!-- Secret Rot P-Code -->
+                            <div>
+                                <span class="text-muted fw-semibold" style="font-size: 10.5px; text-transform: uppercase; letter-spacing: 0.5px;">Rot P-Code</span>
+                                <div class="fw-bold font-monospace" id="matrix_item_rot_pcode" style="font-size: 1.15rem; color: #714B67;">---</div>
+                            </div>
+                            <div style="width: 1px; height: 26px; background: #cbd5e1;"></div>
+
+                            <!-- Free To Use -->
                             <div>
                                 <span class="text-muted fw-semibold" style="font-size: 10.5px; text-transform: uppercase; letter-spacing: 0.5px;">Free To Use</span>
                                 <div class="fw-bold text-dark font-monospace" id="matrix_stock_display" style="font-size: 1.1rem;">0 Units</div>
                             </div>
+
+                            <!-- Toggle Eye Button to reveal/hide numeric prices -->
+                            <button type="button" class="btn btn-sm btn-outline-secondary py-1 px-2.5 border rounded-pill ms-1 d-inline-flex align-items-center gap-1 shadow-sm" id="btnToggleMatrixPriceDigits" title="Show/Hide Numeric Prices (Sky Price & Rot Price)" style="background: #ffffff; color: #64748b; font-size: 11px; font-weight: 600; cursor: pointer;">
+                                <i class="fas fa-eye-slash" id="iconMatrixPriceEye"></i>
+                                <span id="textMatrixPriceToggle">Show Prices</span>
+                            </button>
                         </div>
-                        <div id="matrix_serial_badge_container" class="d-none">
-                            <span class="badge bg-primary-subtle text-primary border border-primary-subtle font-monospace px-2.5 py-1.5" style="font-size: 12px;" id="matrix_serial_badge"></span>
+                        <div id="matrix_serial_badge_container" class="d-none text-end d-flex flex-column align-items-end justify-content-center">
+                            <span class="badge bg-primary-subtle text-primary border border-primary-subtle font-monospace px-2.5 py-1" style="font-size: 12px;" id="matrix_serial_badge"></span>
+                            <div id="matrix_location_badge_wrap" class="mt-1 d-none">
+                                <span class="badge bg-light text-dark border font-monospace px-2 py-0.5 shadow-sm d-inline-flex align-items-center gap-1" id="matrix_location_badge" style="font-size: 11px;" title="Variant Location">
+                                    <i class="fas fa-map-marker-alt text-danger" style="font-size: 10px;"></i>
+                                    <span id="matrix_location_text">---</span>
+                                </span>
+                            </div>
                         </div>
                     </div>
 
@@ -1170,8 +1220,11 @@
                                 <th style="font-size:.68rem; font-weight:700; text-transform:uppercase; letter-spacing:.5px; color:#475569;">Size</th>
                                 <th style="font-size:.68rem; font-weight:700; text-transform:uppercase; letter-spacing:.5px; color:#475569;">Color</th>
                                 <th style="font-size:.68rem; font-weight:700; text-transform:uppercase; letter-spacing:.5px; color:#475569;">Stock</th>
-                                <th style="font-size:.68rem; font-weight:700; text-transform:uppercase; letter-spacing:.5px; color:#475569;">Sale Price</th>
-                                <th style="font-size:.68rem; font-weight:700; text-transform:uppercase; letter-spacing:.5px; color:#475569;">Purch Price</th>
+                                <th style="font-size:.68rem; font-weight:700; text-transform:uppercase; letter-spacing:.5px; color:#475569;">Sky Price</th>
+                                <th style="font-size:.68rem; font-weight:700; text-transform:uppercase; letter-spacing:.5px; color:#475569;">Sky P-Code</th>
+                                <th style="font-size:.68rem; font-weight:700; text-transform:uppercase; letter-spacing:.5px; color:#475569;">Cost (Purch)</th>
+                                <th style="font-size:.68rem; font-weight:700; text-transform:uppercase; letter-spacing:.5px; color:#475569;">Rot Price.</th>
+                                <th style="font-size:.68rem; font-weight:700; text-transform:uppercase; letter-spacing:.5px; color:#475569;">Rot P-Code</th>
                                 <th class="text-end pe-3" style="font-size:.68rem; font-weight:700; text-transform:uppercase; letter-spacing:.5px; color:#475569;">Barcode</th>
                             </tr>
                         </thead>
@@ -1486,6 +1539,27 @@ $(document).ready(function () {
     let currentLoadedVariants = [];
     let currentSelectedAttrs = {};
     let currentMatchedVariant = null;
+    let matrixShowPriceDigits = false;
+
+    $(document).on('click', '#btnToggleMatrixPriceDigits', function(e) {
+        e.preventDefault();
+        matrixShowPriceDigits = !matrixShowPriceDigits;
+        updateMatrixPriceVisibility();
+    });
+
+    function updateMatrixPriceVisibility() {
+        if (matrixShowPriceDigits) {
+            $('.matrix-numeric-price, .matrix-numeric-divider').removeClass('d-none');
+            $('#iconMatrixPriceEye').removeClass('fa-eye-slash').addClass('fa-eye');
+            $('#textMatrixPriceToggle').text('Hide Prices');
+            $('#btnToggleMatrixPriceDigits').attr('title', 'Hide Numeric Prices');
+        } else {
+            $('.matrix-numeric-price, .matrix-numeric-divider').addClass('d-none');
+            $('#iconMatrixPriceEye').removeClass('fa-eye').addClass('fa-eye-slash');
+            $('#textMatrixPriceToggle').text('Show Prices');
+            $('#btnToggleMatrixPriceDigits').attr('title', 'Show Numeric Prices');
+        }
+    }
 
     // View mode switch buttons inside modal
     $('#btnModeMatrix').on('click', function() {
@@ -1625,13 +1699,22 @@ $(document).ready(function () {
         // Base Info
         $('#matrix_item_name').text(product.item_name || 'Product');
         let basePrice = product.size_mode === 'by_size' ? product.price_per_m2 : (product.sale_price_per_piece || product.sale_price_per_box || 0);
+        let baseRotPrice = product.wholesale_price || 0;
         $('#matrix_item_price').text('Rs. ' + parseFloat(basePrice).toFixed(2));
+        let defaultSkyPCode = product.p_code || (window.encodeToPCode ? window.encodeToPCode(basePrice) : '');
+        $('#matrix_item_pcode').text(defaultSkyPCode || '---');
+        $('#matrix_item_rot_price').text('Rs. ' + parseFloat(baseRotPrice).toFixed(2));
+        let defaultRotPCode = product.rot_p_code || (window.encodeToPCode ? window.encodeToPCode(baseRotPrice) : '');
+        $('#matrix_item_rot_pcode').text(defaultRotPCode || '---');
         
         let totalStock = product.calculated_total_stock_qty ?? 0;
         let baseUnit = product.unit ? product.unit.name : 'Units';
         $('#matrix_stock_display').text(totalStock + ' ' + baseUnit);
 
         $('#matrix_serial_badge_container').addClass('d-none');
+        $('#matrix_location_badge_wrap').addClass('d-none');
+        $('#matrix_location_text').text('---');
+        updateMatrixPriceVisibility();
         $('#btnMatrixAdd').prop('disabled', true);
         $('#matrixSelectedVariantInfo').html('<span class="text-muted"><i class="fas fa-info-circle me-1"></i> Select attributes above to view stock and pricing</span>');
 
@@ -1874,19 +1957,44 @@ $(document).ready(function () {
                 
                 // Update Price
                 const salePrice = matched.sale_price !== undefined ? matched.sale_price : (product.sale_price_per_piece || 0);
+                const rotPrice = matched.wholesale_price !== undefined ? matched.wholesale_price : (product.wholesale_price || 0);
                 $('#matrix_item_price').text('Rs. ' + parseFloat(salePrice).toFixed(2));
+                $('#matrix_item_rot_price').text('Rs. ' + parseFloat(rotPrice).toFixed(2));
+
+                // Update P-Codes
+                const vSkyPCode = matched.sky_p_code || matched.p_code || (window.encodeToPCode ? window.encodeToPCode(salePrice) : '');
+                const vRotPCode = matched.rot_p_code || (window.encodeToPCode ? window.encodeToPCode(rotPrice) : '');
+                $('#matrix_item_pcode').text(vSkyPCode || '---');
+                $('#matrix_item_rot_pcode').text(vRotPCode || '---');
 
                 // Update Free to use stock
                 const stockQty = matched.stock !== undefined ? matched.stock : 0;
                 const unit = matched.unit || product.unit?.name || 'Units';
                 $('#matrix_stock_display').text(`${stockQty} ${unit}`);
 
-                // Serial No
-                if (matched.serial_no) {
-                    $('#matrix_serial_badge').text(matched.serial_no);
+                // Serial No & Location
+                const vSerial = matched.serial_no ? matched.serial_no.trim() : '';
+                const vLocation = matched.location ? matched.location.trim() : (matched.rack_shelf ? matched.rack_shelf.trim() : (product.remarks ? product.remarks.trim() : ''));
+
+                if (vSerial || vLocation) {
+                    if (vSerial) {
+                        $('#matrix_serial_badge').text(vSerial).removeClass('d-none');
+                    } else {
+                        $('#matrix_serial_badge').addClass('d-none');
+                    }
+
+                    if (vLocation) {
+                        $('#matrix_location_text').text(vLocation);
+                        $('#matrix_location_badge_wrap').removeClass('d-none');
+                    } else {
+                        $('#matrix_location_badge_wrap').addClass('d-none');
+                        $('#matrix_location_text').text('---');
+                    }
                     $('#matrix_serial_badge_container').removeClass('d-none');
                 } else {
                     $('#matrix_serial_badge_container').addClass('d-none');
+                    $('#matrix_location_badge_wrap').addClass('d-none');
+                    $('#matrix_location_text').text('---');
                 }
 
                 $('#matrixSelectedVariantInfo').html(`
@@ -1894,20 +2002,43 @@ $(document).ready(function () {
                         <i class="fas fa-check-circle me-1"></i> Ready
                     </span>
                     <span class="fw-bold text-dark font-monospace">${matched.name || matched.variant_name || product.item_name}</span>
-                    ${matched.serial_no ? `<span class="badge bg-primary-subtle text-primary border border-primary-subtle font-monospace ms-2">[${matched.serial_no}]</span>` : ''}
+                    ${vSerial ? `<span class="badge bg-primary-subtle text-primary border border-primary-subtle font-monospace ms-2">[${vSerial}]</span>` : ''}
+                    ${vLocation ? `<span class="badge bg-light text-dark border font-monospace ms-1"><i class="fas fa-map-marker-alt text-danger me-1"></i>${vLocation}</span>` : ''}
+                    <span class="badge bg-secondary-subtle text-secondary border font-monospace ms-2">Sky P-Code: ${vSkyPCode}</span>
+                    <span class="badge bg-secondary-subtle text-secondary border font-monospace ms-1">Rot P-Code: ${vRotPCode}</span>
                     <span class="text-muted ms-2">(Stock: ${stockQty} ${unit})</span>
                 `);
 
                 $('#btnMatrixAdd').prop('disabled', false).html('<i class="fas fa-check me-1"></i> Add Variant');
             } else {
                 currentMatchedVariant = null;
+                let basePrice = product.size_mode === 'by_size' ? product.price_per_m2 : (product.sale_price_per_piece || product.sale_price_per_box || 0);
+                let baseRotPrice = product.wholesale_price || 0;
+                let defaultSkyPCode = product.p_code || (window.encodeToPCode ? window.encodeToPCode(basePrice) : '');
+                let defaultRotPCode = product.rot_p_code || (window.encodeToPCode ? window.encodeToPCode(baseRotPrice) : '');
+                $('#matrix_item_price').text('Rs. ' + parseFloat(basePrice).toFixed(2));
+                $('#matrix_item_rot_price').text('Rs. ' + parseFloat(baseRotPrice).toFixed(2));
+                $('#matrix_item_pcode').text(defaultSkyPCode || '---');
+                $('#matrix_item_rot_pcode').text(defaultRotPCode || '---');
                 $('#matrix_serial_badge_container').addClass('d-none');
+                $('#matrix_location_badge_wrap').addClass('d-none');
+                $('#matrix_location_text').text('---');
                 $('#matrixSelectedVariantInfo').html('<span class="text-warning"><i class="fas fa-exclamation-triangle me-1"></i> Combination not available in stock</span>');
                 $('#btnMatrixAdd').prop('disabled', true).text('Add');
             }
         } else {
             currentMatchedVariant = null;
+            let basePrice = product.size_mode === 'by_size' ? product.price_per_m2 : (product.sale_price_per_piece || product.sale_price_per_box || 0);
+            let baseRotPrice = product.wholesale_price || 0;
+            let defaultSkyPCode = product.p_code || (window.encodeToPCode ? window.encodeToPCode(basePrice) : '');
+            let defaultRotPCode = product.rot_p_code || (window.encodeToPCode ? window.encodeToPCode(baseRotPrice) : '');
+            $('#matrix_item_price').text('Rs. ' + parseFloat(basePrice).toFixed(2));
+            $('#matrix_item_rot_price').text('Rs. ' + parseFloat(baseRotPrice).toFixed(2));
+            $('#matrix_item_pcode').text(defaultSkyPCode || '---');
+            $('#matrix_item_rot_pcode').text(defaultRotPCode || '---');
             $('#matrix_serial_badge_container').addClass('d-none');
+            $('#matrix_location_badge_wrap').addClass('d-none');
+            $('#matrix_location_text').text('---');
             const remainingCount = attrKeys.filter(k => !currentSelectedAttrs[k]).length;
             $('#matrixSelectedVariantInfo').html(`<span class="text-muted"><i class="fas fa-info-circle me-1"></i> Select remaining ${remainingCount} attribute(s) to view exact variant</span>`);
             $('#btnMatrixAdd').prop('disabled', true).text('Add');
@@ -1984,14 +2115,20 @@ $(document).ready(function () {
                 if (product.size_mode === 'by_kg' && v.conv_factor != 1 && !v.unit) vUnit = 'Pcs';
                 let vPriceLabel = product.size_mode === 'by_size' ? '/m²' : '/' + vUnit;
 
+                let vWholesale = (v.wholesale_price !== undefined && v.wholesale_price !== null && v.wholesale_price !== '') ? v.wholesale_price : 0;
+                let vSkyPCode = v.sky_p_code || v.p_code || (window.encodeToPCode ? window.encodeToPCode(vSale) : '—');
+                let vRotPCode = v.rot_p_code || (window.encodeToPCode ? window.encodeToPCode(vWholesale) : '—');
+
                 tbody.append(`<tr>
                     <td class="text-start ps-4 fw-semibold">${vName}</td>
                     <td>${vSize}</td>
                     <td>${colorBadge}</td>
                     <td>${stockBadgeHtml(vStock, vAlert)}</td>
                     <td class="fw-bold" style="color:#059669;">Rs. ${parseFloat(vSale||0).toFixed(2)} <small class="fw-normal text-muted">${vPriceLabel}</small></td>
+                    <td class="text-center"><span class="badge bg-light text-dark border font-monospace px-2 py-0.5 fw-bold" style="font-size:.78rem;">${vSkyPCode || '—'}</span></td>
                     <td class="text-muted">Rs. ${parseFloat(vPurch||0).toFixed(2)} <small>${vPriceLabel}</small></td>
-                    <td><span style="background:#fef2f2;color:#dc2626;border:1px solid #fecaca;border-radius:4px;padding:2px 6px;font-size:.72rem;">${alertQty}</span></td>
+                    <td class="fw-bold" style="color:#0284c7;">Rs. ${parseFloat(vWholesale||0).toFixed(2)} <small class="fw-normal text-muted">${vPriceLabel}</small></td>
+                    <td class="text-center"><span class="badge bg-light text-dark border font-monospace px-2 py-0.5 fw-bold" style="font-size:.78rem;">${vRotPCode || '—'}</span></td>
                     <td class="text-end pe-4"><code style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:4px;padding:2px 6px;font-size:.75rem;">${vBarcode}</code></td>
                 </tr>`);
             });
@@ -1999,14 +2136,19 @@ $(document).ready(function () {
             colorList.forEach((color, index) => {
                 let barcode   = (product.barcode_path ?? product.item_code ?? '') + (index > 0 ? '-' + String(index+1).padStart(2,'0') : '');
                 let colorBadge = (color && color !== '-') ? `<span style="background:#e2e8f0;border-radius:4px;padding:2px 6px;font-size:.72rem;">${color}</span>` : '<span style="color:#94a3b8;">—</span>';
+                let prodSkyPCode = product.p_code || (window.encodeToPCode ? window.encodeToPCode(salePrice) : '—');
+                let prodRotPrice = product.wholesale_price || 0;
+                let prodRotPCode = product.rot_p_code || (window.encodeToPCode ? window.encodeToPCode(prodRotPrice) : '—');
                 tbody.append(`<tr>
                     <td class="text-start ps-4 fw-semibold">${product.item_name}</td>
                     <td>${sizeStr}</td>
                     <td>${colorBadge}</td>
                     <td>${stockBadgeHtml(stock, product.alert_carton_quantity)}</td>
                     <td class="fw-bold" style="color:#059669;">Rs. ${parseFloat(salePrice||0).toFixed(2)} <small class="fw-normal text-muted">${priceLabel}</small></td>
+                    <td class="text-center"><span class="badge bg-light text-dark border font-monospace px-2 py-0.5 fw-bold" style="font-size:.78rem;">${prodSkyPCode || '—'}</span></td>
                     <td class="text-muted">Rs. ${parseFloat(purchPrice||0).toFixed(2)} <small>${priceLabel}</small></td>
-                    <td><span style="background:#fef2f2;color:#dc2626;border:1px solid #fecaca;border-radius:4px;padding:2px 6px;font-size:.72rem;">${alertDef}</span></td>
+                    <td class="fw-bold" style="color:#0284c7;">Rs. ${parseFloat(prodRotPrice||0).toFixed(2)} <small class="fw-normal text-muted">${priceLabel}</small></td>
+                    <td class="text-center"><span class="badge bg-light text-dark border font-monospace px-2 py-0.5 fw-bold" style="font-size:.78rem;">${prodRotPCode || '—'}</span></td>
                     <td class="text-end pe-4"><code style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:4px;padding:2px 6px;font-size:.75rem;">${barcode}</code></td>
                 </tr>`);
             });
