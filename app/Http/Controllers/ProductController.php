@@ -12,6 +12,7 @@ use App\Models\Unit;
 use App\Models\StorageLocation;
 use App\Models\Warehouse;
 use App\Models\WarehouseStock;
+use App\Models\Branch;
 use App\Models\PackageType;
 use App\Services\PCodeService;
 use Illuminate\Http\Request;
@@ -639,10 +640,11 @@ class ProductController extends Controller
         $units = Unit::select('id', 'name')->get();
         $brands = Brand::select('id', 'name')->get();
         $warehouses = Warehouse::select('id', 'warehouse_name')->get();
+        $branches = Branch::select('id', 'name')->get();
         $storageLocations = StorageLocation::with(['warehouse:id,warehouse_name', 'branch:id,name'])->orderBy('name')->get();
         $packageTypes = PackageType::orderBy('pieces_per_box', 'asc')->get();
 
-        return view('admin_panel.product.create', compact('categories', 'units', 'brands', 'warehouses', 'storageLocations', 'packageTypes'));
+        return view('admin_panel.product.create', compact('categories', 'units', 'brands', 'warehouses', 'branches', 'storageLocations', 'packageTypes'));
     }
 
     public function storePackageType(Request $request)
@@ -1894,12 +1896,329 @@ class ProductController extends Controller
         return view('admin_panel.product.edit', compact('product', 'categories', 'subcategories', 'brands', 'variants', 'storageLocations', 'units', 'packageTypes'));
     }
 
-    // ===== Barcode view =====
-    public function barcode($id)
+    // ===== 38mm x 26mm Label Printing for Product & Variants =====
+    public function barcode(Request $request, $id)
     {
-        $product = Product::findOrFail($id);
+        return $this->printLabels($request, $id);
+    }
 
-        return view('admin_panel.product.barcode', compact('product'));
+    public function printLabels(Request $request, $id)
+    {
+        $product = Product::with(['category_relation', 'sub_category_relation', 'brand', 'unit'])->findOrFail($id);
+
+        $categoryName = $product->category_relation ? trim($product->category_relation->name) : '';
+        $subCategoryName = $product->sub_category_relation ? trim($product->sub_category_relation->name) : '';
+
+        $variants = [];
+        if ($product->color) {
+            $parsed = is_string($product->color) ? json_decode($product->color, true) : $product->color;
+            if (is_string($parsed)) {
+                $parsed = json_decode($parsed, true);
+            }
+            if (is_array($parsed) && count($parsed) > 0 && is_array($parsed[0])) {
+                $variants = $parsed;
+            }
+        }
+
+        $layout = $request->input('layout', 'thermal');
+        if (!in_array($layout, ['thermal', 'a4'])) {
+            $layout = 'thermal';
+        }
+
+        $selectedVariantIndex = $request->input('variant_index');
+        $copiesParam = (int) $request->input('copies', 1);
+        $copiesParam = max(1, min($copiesParam, 100));
+
+        $variantsCopies = $request->input('variant_copies', []);
+        if (is_string($variantsCopies)) {
+            $decoded = json_decode($variantsCopies, true);
+            if (is_array($decoded)) {
+                $variantsCopies = $decoded;
+            }
+        }
+
+        $groupBy = $request->input('group_by', 'individual'); // 'individual' or 'location'
+
+        $labelsToPrint = [];
+
+        if (!empty($variants)) {
+            if ($groupBy === 'location') {
+                // Group selected variants by Rack / Location
+                $locationGroups = [];
+                foreach ($variants as $idx => $v) {
+                    if ($selectedVariantIndex !== null && $selectedVariantIndex !== '' && (int)$selectedVariantIndex !== (int)$idx) {
+                        continue;
+                    }
+                    $copies = isset($variantsCopies[$idx]) ? max(0, (int)$variantsCopies[$idx]) : $copiesParam;
+                    if ($copies <= 0 && ($selectedVariantIndex === null || $selectedVariantIndex === '')) {
+                        continue;
+                    }
+                    if ($copies <= 0) $copies = 1;
+
+                    $vLoc = !empty($v['location']) ? trim($v['location']) : (!empty($v['rack_shelf']) ? trim($v['rack_shelf']) : (!empty($product->remarks) ? trim($product->remarks) : 'Unassigned'));
+
+                    if (!isset($locationGroups[$vLoc])) {
+                        $locationGroups[$vLoc] = [
+                            'location' => $vLoc,
+                            'items'    => [],
+                            'copies'   => $copies,
+                        ];
+                    }
+                    $locationGroups[$vLoc]['items'][] = [
+                        'variant' => $v,
+                        'idx'     => $idx,
+                        'copies'  => $copies,
+                    ];
+                    $locationGroups[$vLoc]['copies'] = max($locationGroups[$vLoc]['copies'], $copies);
+                }
+
+                foreach ($locationGroups as $locKey => $group) {
+                    $groupCopies = $group['copies'];
+                    $locDisplayName = ($locKey === 'Unassigned' || empty($locKey)) ? '—' : $locKey;
+
+                    $varTitles = [];
+                    $skyCodes = [];
+                    $rotCodes = [];
+
+                    foreach ($group['items'] as $gItem) {
+                        $gv = $gItem['variant'];
+                        $gvName = $gv['name'] ?? $gv['variant_name'] ?? '';
+                        $cleanV = '';
+                        if (!empty($gvName)) {
+                            if (preg_match('/\((.*?)\)/', $gvName, $m)) {
+                                $cleanV = $m[1];
+                            } else {
+                                $cleanV = trim(str_ireplace($product->item_name, '', $gvName));
+                                $cleanV = trim($cleanV, " -/()");
+                            }
+                        }
+                        if (empty($cleanV)) {
+                            $parts = [];
+                            if (!empty($gv['size']) && $gv['size'] !== '-') $parts[] = $gv['size'];
+                            if (!empty($gv['color']) && $gv['color'] !== '-') $parts[] = $gv['color'];
+                            $cleanV = implode('/', $parts);
+                        }
+                        if (!empty($cleanV)) {
+                            $cleanV = preg_replace('/\bstandard\b\s*[\/\-]?\s*/i', '', $cleanV);
+                            $cleanV = trim($cleanV, " -/()");
+                        }
+                        if (!empty($cleanV) && !in_array($cleanV, $varTitles)) {
+                            $varTitles[] = $cleanV;
+                        }
+
+                        $sPrice = isset($gv['sale_price']) && $gv['sale_price'] !== '' ? (float)$gv['sale_price'] : ($product->sale_price_per_piece ?: 0);
+                        $rPrice = isset($gv['wholesale_price']) && $gv['wholesale_price'] !== '' ? (float)$gv['wholesale_price'] : ($product->wholesale_price ?: 0);
+                        $sCode = !empty($gv['sky_p_code']) ? $gv['sky_p_code'] : (!empty($gv['p_code']) ? $gv['p_code'] : PCodeService::encode($sPrice));
+                        $rCode = !empty($gv['rot_p_code']) ? $gv['rot_p_code'] : PCodeService::encode($rPrice);
+                        if (!empty($sCode) && !in_array($sCode, $skyCodes)) $skyCodes[] = $sCode;
+                        if (!empty($rCode) && !in_array($rCode, $rotCodes)) $rotCodes[] = $rCode;
+                    }
+
+                    $combinedSky = implode('/', $skyCodes);
+                    $combinedRot = implode('/', $rotCodes);
+                    $line2 = (!empty($combinedSky) && !empty($combinedRot)) ? "{$combinedSky} - {$combinedRot}" : ($combinedSky ?: $combinedRot);
+
+                    $varListStr = implode(', ', $varTitles);
+                    $line1 = !empty($varListStr) ? "{$product->item_name} - {$varListStr}" : $product->item_name;
+
+                    $labelData = [
+                        'line_1'          => $line1,
+                        'line_2'          => $line2,
+                        'line_3'          => $locDisplayName,
+                        'category'        => $categoryName,
+                        'subcategory'     => $subCategoryName,
+                        'code_serial'     => $product->model ?: $product->item_code,
+                        'product_name'    => $product->item_name,
+                        'short_name'      => $product->item_name,
+                        'item_code'       => $product->model ?: $product->item_code,
+                        'variant_name'    => $varListStr,
+                        'full_title'      => $line1,
+                        'sky_pcode'       => $combinedSky,
+                        'rot_pcode'       => $combinedRot,
+                        'pcodes_combined' => $line2,
+                        'location'        => $locDisplayName,
+                        'serial_no'       => '',
+                        'barcode'         => $product->barcode_path ?: $product->item_code,
+                        'barcode_svg'     => '',
+                    ];
+
+                    for ($c = 0; $c < $groupCopies; $c++) {
+                        $labelsToPrint[] = $labelData;
+                    }
+                }
+            } else {
+                // Individual label per variant
+                foreach ($variants as $idx => $v) {
+                    // If a specific variant is requested, skip others
+                    if ($selectedVariantIndex !== null && $selectedVariantIndex !== '' && (int)$selectedVariantIndex !== (int)$idx) {
+                        continue;
+                    }
+
+                    $copies = isset($variantsCopies[$idx]) ? max(0, (int)$variantsCopies[$idx]) : $copiesParam;
+                    if ($copies <= 0 && ($selectedVariantIndex === null || $selectedVariantIndex === '')) {
+                        continue;
+                    }
+                    if ($copies <= 0) $copies = 1;
+
+                    $salePrice = isset($v['sale_price']) && $v['sale_price'] !== '' ? (float)$v['sale_price'] : ($product->sale_price_per_piece ?: 0);
+                    $rotPrice = isset($v['wholesale_price']) && $v['wholesale_price'] !== '' ? (float)$v['wholesale_price'] : ($product->wholesale_price ?: 0);
+
+                    $skyPCode = !empty($v['sky_p_code']) ? $v['sky_p_code'] : (!empty($v['p_code']) ? $v['p_code'] : PCodeService::encode($salePrice));
+                    $rotPCode = !empty($v['rot_p_code']) ? $v['rot_p_code'] : PCodeService::encode($rotPrice);
+
+                    $vLocation = !empty($v['location']) ? trim($v['location']) : (!empty($v['rack_shelf']) ? trim($v['rack_shelf']) : (!empty($product->remarks) ? trim($product->remarks) : ''));
+
+                    $vSerial = !empty($v['serial_no']) ? trim($v['serial_no']) : '';
+                    $vBarcode = !empty($v['barcode']) ? trim($v['barcode']) : (!empty($vSerial) ? $vSerial : ($product->barcode_path ?: $product->item_code));
+
+                    // Clean variant title
+                    $vName = $v['name'] ?? $v['variant_name'] ?? '';
+                    $cleanVariantPart = '';
+                    if (!empty($vName)) {
+                        if (preg_match('/\((.*?)\)/', $vName, $m)) {
+                            $cleanVariantPart = $m[1];
+                        } else {
+                            $cleanVariantPart = trim(str_ireplace($product->item_name, '', $vName));
+                            $cleanVariantPart = trim($cleanVariantPart, " -/()");
+                        }
+                    }
+                    if (empty($cleanVariantPart)) {
+                        $attrParts = [];
+                        if (!empty($v['size']) && $v['size'] !== '-') $attrParts[] = $v['size'];
+                        if (!empty($v['color']) && $v['color'] !== '-') $attrParts[] = $v['color'];
+                        $cleanVariantPart = implode(' / ', $attrParts);
+                    }
+
+                    // Remove "Standard" from variant name
+                    if (!empty($cleanVariantPart)) {
+                        $cleanVariantPart = preg_replace('/\bstandard\b\s*[\/\-]?\s*/i', '', $cleanVariantPart);
+                        $cleanVariantPart = trim($cleanVariantPart, " -/()");
+                    }
+
+                    $barcodeSvg = $this->generateSafeBarcodeSvg($vBarcode);
+
+                    $codeOrSerial = !empty($vSerial) ? $vSerial : ($product->model ?: $product->item_code);
+
+                    // Build Line 1: Product Name & Clean Variant Name
+                    $line1 = !empty($cleanVariantPart) ? "{$product->item_name} - {$cleanVariantPart}" : $product->item_name;
+
+                    // Build Line 2: PCODE - ROOT
+                    $line2 = (!empty($skyPCode) && !empty($rotPCode)) ? "{$skyPCode} - {$rotPCode}" : ($skyPCode ?: $rotPCode);
+
+                    // Build Line 3: LOCATION
+                    $line3 = $vLocation;
+
+                    $labelData = [
+                        'line_1'          => $line1,
+                        'line_2'          => $line2,
+                        'line_3'          => $line3,
+                        'category'        => $categoryName,
+                        'subcategory'     => $subCategoryName,
+                        'code_serial'     => $codeOrSerial,
+                        'product_name'    => $product->item_name,
+                        'short_name'      => $product->item_name,
+                        'item_code'       => $product->model ?: $product->item_code,
+                        'variant_name'    => $cleanVariantPart,
+                        'full_title'      => $vName ?: $product->item_name . ($cleanVariantPart ? " ({$cleanVariantPart})" : ''),
+                        'sky_pcode'       => $skyPCode,
+                        'rot_pcode'       => $rotPCode,
+                        'pcodes_combined' => $line2,
+                        'location'        => $vLocation,
+                        'serial_no'       => $codeOrSerial,
+                        'barcode'         => $vBarcode,
+                        'barcode_svg'     => $barcodeSvg,
+                    ];
+
+                    for ($c = 0; $c < $copies; $c++) {
+                        $labelsToPrint[] = $labelData;
+                    }
+                }
+            }
+        }
+
+        // Master product label if no variants or none matched
+        if (empty($labelsToPrint)) {
+            $basePrice = $product->size_mode === 'by_size' ? $product->price_per_m2 : ($product->sale_price_per_piece ?: ($product->sale_price_per_box ?: 0));
+            $baseRotPrice = $product->wholesale_price ?: 0;
+
+            $skyPCode = !empty($product->p_code) ? $product->p_code : PCodeService::encode($basePrice);
+            $rotPCode = !empty($product->rot_p_code) ? $product->rot_p_code : PCodeService::encode($baseRotPrice);
+
+            $loc = !empty($product->remarks) ? trim($product->remarks) : '';
+            $barcode = $product->barcode_path ?: $product->item_code;
+            $barcodeSvg = $this->generateSafeBarcodeSvg($barcode);
+
+            $codeOrSerial = $product->model ?: $product->item_code;
+
+            // Build Line 1: Product Name
+            $line1 = $product->item_name;
+
+            $line2 = (!empty($skyPCode) && !empty($rotPCode)) ? "{$skyPCode} - {$rotPCode}" : ($skyPCode ?: $rotPCode);
+            $line3 = $loc;
+
+            $labelData = [
+                'line_1'          => $line1,
+                'line_2'          => $line2,
+                'line_3'          => $line3,
+                'category'        => $categoryName,
+                'subcategory'     => $subCategoryName,
+                'code_serial'     => $codeOrSerial,
+                'product_name'    => $product->item_name,
+                'short_name'      => $product->item_name,
+                'item_code'       => $product->model ?: $product->item_code,
+                'variant_name'    => '',
+                'full_title'      => $product->item_name,
+                'sky_pcode'       => $skyPCode,
+                'rot_pcode'       => $rotPCode,
+                'pcodes_combined' => $line2,
+                'location'        => $loc,
+                'serial_no'       => $codeOrSerial,
+                'barcode'         => $barcode,
+                'barcode_svg'     => $barcodeSvg,
+            ];
+
+            for ($c = 0; $c < $copiesParam; $c++) {
+                $labelsToPrint[] = $labelData;
+            }
+        }
+
+        $companyName = \App\Models\Setting::where('key', 'company_name')->value('value') ?: 'Kent Hardware';
+
+        return view('admin_panel.product.labels_print', compact('product', 'labelsToPrint', 'variants', 'layout', 'companyName'));
+    }
+
+    /**
+     * Generate safe barcode SVG with fallback to prevent printing errors
+     */
+    private function generateSafeBarcodeSvg($code): string
+    {
+        if (empty($code)) {
+            return '';
+        }
+        $cleanCode = preg_replace('/[^\x20-\x7E]/', '', trim((string)$code));
+        if (empty($cleanCode)) {
+            return '';
+        }
+
+        try {
+            $svg = \DNS1D::getBarcodeSVG($cleanCode, 'C128', 1.0, 20);
+            $svg = preg_replace('/<\?xml.*?\?>/is', '', $svg);
+            $svg = preg_replace('/<!DOCTYPE.*?>/is', '', $svg);
+            return trim($svg);
+        } catch (\Throwable $e) {
+            try {
+                $alphanumeric = preg_replace('/[^A-Z0-9\-\.\ \$\/\+\%]/i', '', strtoupper($cleanCode));
+                if (!empty($alphanumeric)) {
+                    $svg = \DNS1D::getBarcodeSVG($alphanumeric, 'C39', 1.0, 20);
+                    $svg = preg_replace('/<\?xml.*?\?>/is', '', $svg);
+                    $svg = preg_replace('/<!DOCTYPE.*?>/is', '', $svg);
+                    return trim($svg);
+                }
+            } catch (\Throwable $e2) {
+                return '';
+            }
+            return '';
+        }
     }
 
     // Shared validation rules

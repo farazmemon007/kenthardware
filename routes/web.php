@@ -35,6 +35,7 @@ use App\Http\Controllers\WarehouseStockController;
 use App\Http\Controllers\StorageLocationController;
 use App\Http\Controllers\ZoneController;
 use App\Http\Controllers\PCodeController;
+use App\Http\Controllers\OpeningStockController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -155,6 +156,7 @@ Route::middleware('auth')->group(function () {
 
     // ////////
     Route::get('/create_prodcut', [ProductController::class, 'view_store'])->middleware('permission:products.create')->name('store');
+    Route::get('/products/create', [ProductController::class, 'view_store'])->middleware('permission:products.create')->name('product.create');
     Route::post('/store-product', [ProductController::class, 'store_product'])->middleware('permission:products.create|products.edit')->name('store-product');
     Route::put('/product/update/{id}', [ProductController::class, 'update'])->middleware('permission:products.edit')->name('product.update');
     Route::post('/products/bulk-update', [ProductController::class, 'bulkUpdate'])->middleware('permission:products.edit')->name('products.bulk-update');
@@ -162,6 +164,7 @@ Route::middleware('auth')->group(function () {
 
     Route::post('/product/validate-form', [ProductController::class, 'validateForm'])->name('product.validate');
     Route::get('/products/{id}/edit', [ProductController::class, 'edit'])->middleware('permission:products.edit')->name('products.edit');
+    Route::get('/product/{id}/edit', [ProductController::class, 'edit'])->middleware('permission:products.edit')->name('product.edit');
     Route::get('/generate-barcode-image', [ProductController::class, 'generateBarcode'])->name('generate-barcode-image');
 
     // ── Product Import / Export ──
@@ -178,7 +181,10 @@ Route::middleware('auth')->group(function () {
     Route::post('/products/import/confirm',  [App\Http\Controllers\ProductImportExportController::class, 'importConfirm'])
         ->middleware('permission:products.create')->name('products.import.confirm');
 
-    // Route::get('/barcode/{id}', [ProductController::class, 'barcode'])->name('product.barcode');
+    // 38mm x 26mm Labels & Barcode Printing
+    Route::get('/products/{id}/labels', [ProductController::class, 'printLabels'])->name('products.labels');
+    Route::post('/products/{id}/labels', [ProductController::class, 'printLabels'])->name('products.labels.post');
+    Route::get('/barcode/{id}', [ProductController::class, 'barcode'])->name('product.barcode');
     // Searches
     Route::get('/generate-barcode-image', [ProductController::class, 'generateBarcode'])->name('generate-barcode-image');
     Route::get('/get-subcategories/{category_id}', [ProductController::class, 'getSubcategories'])->name('fetch-subcategories');
@@ -417,6 +423,13 @@ Route::middleware('auth')->group(function () {
     Route::post('/stock-adjustments', [StockAdjustmentController::class, 'store'])->name('stock_adjustments.store');
     Route::post('/stock-adjustments/store-batch', [StockAdjustmentController::class, 'storeBatch'])->name('stock_adjustments.store_batch');
     Route::get('/stock-adjustments/product-variants/{productId}', [StockAdjustmentController::class, 'getProductVariants'])->name('stock_adjustments.product_variants');
+
+    // Opening Stock & Pricing Management
+    Route::get('/opening-stock', [OpeningStockController::class, 'index'])->name('opening_stock.index');
+    Route::get('/opening-stock/search-products', [OpeningStockController::class, 'searchProducts'])->name('opening_stock.search_products');
+    Route::get('/opening-stock/fetch-product', [OpeningStockController::class, 'fetchProduct'])->name('opening_stock.fetch_product');
+    Route::post('/opening-stock/save-row', [OpeningStockController::class, 'saveRow'])->name('opening_stock.save_row');
+    Route::post('/opening-stock/save-batch', [OpeningStockController::class, 'saveBatch'])->name('opening_stock.save_batch');
     // //////////
     Route::get('/get-stock/{product}', [StocksController::class, 'getStock'])
         ->name('get.stock');

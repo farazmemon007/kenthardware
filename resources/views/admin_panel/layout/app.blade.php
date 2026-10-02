@@ -914,6 +914,8 @@
                                                     @can('products.view')
                                                         <li><a href="{{ route('product') }}"><i class="fas fa-box"></i>
                                                                 Products</a></li>
+                                                        <li><a href="{{ route('opening_stock.index') }}"><i class="fas fa-cubes-stacked"></i>
+                                                                Opening Stock & Pricing</a></li>
                                                     @endcan
 
                                                     @can('discount.products.view')
@@ -994,6 +996,8 @@
                                                         <li><a href="{{ route('stock_adjustments.index') }}"><i
                                                                     class="fas fa-sliders-h"></i> Stock Adjustment</a></li>
                                                     @endcanany
+                                                    <li><a href="{{ route('opening_stock.index') }}"><i
+                                                                class="fas fa-cubes-stacked text-primary"></i> Opening Stock</a></li>
                                                 </ul>
                                             </div>
                                         @endcanany

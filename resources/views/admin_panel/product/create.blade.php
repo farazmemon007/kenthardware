@@ -631,6 +631,61 @@
             cursor: pointer;
         }
 
+        /* Sleek Inline Matrix Location Selector Cell */
+        .matrix-loc-cell {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            white-space: nowrap;
+        }
+        .matrix-loc-cell .loc-pill-group {
+            display: inline-flex;
+            border-radius: 4px;
+            overflow: hidden;
+            border: 1px solid #cbd5e1;
+            background: #f8fafc;
+        }
+        .matrix-loc-cell .loc-pill-group .btn {
+            border: none !important;
+            color: #64748b !important;
+            background: transparent !important;
+            padding: 0 7px !important;
+            font-size: 10px !important;
+            font-weight: 700 !important;
+            line-height: 22px !important;
+            height: 22px !important;
+            border-radius: 0 !important;
+            box-shadow: none !important;
+            transition: all 0.12s ease;
+        }
+        .matrix-loc-cell .loc-pill-group .btn-check:checked + .btn {
+            background-color: #2563eb !important;
+            color: #ffffff !important;
+        }
+        .matrix-loc-cell .row-wh-select {
+            height: 24px !important;
+            font-size: 10.5px !important;
+            font-weight: 600 !important;
+            padding: 1px 18px 1px 6px !important;
+            border-radius: 4px !important;
+            border: 1px solid #cbd5e1 !important;
+            background-color: #ffffff !important;
+            color: #1e293b !important;
+            max-width: 95px !important;
+        }
+        .matrix-loc-cell .row-shop-badge {
+            font-size: 10px !important;
+            height: 22px !important;
+            padding: 0 8px !important;
+            background: #f1f5f9 !important;
+            border: 1px solid #cbd5e1 !important;
+            color: #475569 !important;
+            font-weight: 600 !important;
+            border-radius: 4px !important;
+            display: inline-flex;
+            align-items: center;
+        }
+
         /* Compact Switch Toggle */
         .odoo-switch {
             position: relative;
@@ -2299,11 +2354,15 @@
                                     <button type="button" class="btn btn-sm btn-outline-dark py-1 px-2" id="customizeVariantColumnsBtn" data-toggle="modal" data-target="#customizeVariantsModal" data-bs-toggle="modal" data-bs-target="#customizeVariantsModal" onclick="showCustomizeVariantsModal()" style="font-size: 11px;" title="Customize Columns (or right-click table header)">
                                         <i class="fas fa-columns me-1 text-primary"></i> Customize Columns
                                     </button>
+                                    <a href="{{ route('opening_stock.index') }}" target="_blank" class="btn btn-sm btn-outline-primary py-1 px-2" style="font-size: 11px;" title="Open Opening Stock & Pricing Page">
+                                        <i class="fas fa-cubes-stacked me-1"></i> Opening Stock
+                                    </a>
                                     <button type="button" class="btn btn-sm btn-primary py-1 px-2" id="enableVariantsBtn" style="font-size: 11px;">
                                         <i class="fas fa-plus me-1"></i> Add Custom Row
                                     </button>
                                 </div>
                             </div>
+
                             <div class="erp-section-body" id="matrixBodyContainer">
                                 <div id="variantsContainer">
                                     <div class="table-responsive">
@@ -2315,7 +2374,22 @@
                                                     <th style="width: 130px;" class="col-ref">Internal Ref</th>
                                                     <th style="min-width: 120px;" class="col-name">Product Name</th>
                                                     <th style="min-width: 180px;" class="col-attrs">Attributes</th>
-                                                    <th style="width: 120px;" class="col-location">Rack / Shelf</th>
+                                                    <th style="min-width: 165px; width: 165px;" class="col-storage-type">
+                                                        <div class="d-flex align-items-center justify-content-between">
+                                                            <span>Location Type</span>
+                                                            <button type="button" class="btn btn-xs btn-link p-0 text-decoration-none text-primary fw-bold" onclick="window.applyFirstRowStorageTypeToAll()" title="Copy Row 1 Location Type to all rows" style="font-size: 10px;">
+                                                                <i class="fas fa-copy me-0.5"></i> All
+                                                            </button>
+                                                        </div>
+                                                    </th>
+                                                    <th style="min-width: 125px; width: 125px;" class="col-location">
+                                                        <div class="d-flex align-items-center justify-content-between">
+                                                            <span>Rack / Shelf</span>
+                                                            <button type="button" class="btn btn-xs btn-link p-0 text-decoration-none text-primary fw-bold" onclick="window.applyFirstRowLocationToAll()" title="Copy Row 1 Rack/Shelf to all rows" style="font-size: 10px;">
+                                                                <i class="fas fa-copy me-0.5"></i> All
+                                                            </button>
+                                                        </div>
+                                                    </th>
                                                     <th style="width: 90px;" class="text-center col-stock">On Hand (Stock)</th>
                                                     <th style="width: 95px;" class="text-center conv-col col-conv" id="convFactorHeader">Pcs / Carton</th>
                                                     <th style="width: 90px;" class="text-center piece-wt-only-col col-weight">Piece Wt (g)</th>
@@ -2808,6 +2882,92 @@
             </div>
         </div>
 
+        {{-- Quick Add Rack / Shelf Modal --}}
+        <div id="quickAddStorageLocationModal" class="modal fade" tabindex="-1" aria-hidden="true" style="z-index: 1060;">
+            <div class="modal-dialog modal-dialog-centered modal-sm" style="max-width: 400px;">
+                <div class="modal-content border-0 shadow-lg" style="border-radius: var(--radius-md);">
+                    <form id="quickAddStorageLocationForm" action="{{ route('storage_locations.store') }}" method="POST">
+                        @csrf
+                        <div class="modal-header border-0 pb-0">
+                            <h6 class="modal-title fw-bold" id="quickLocModalTitle" style="font-size:13.5px;">
+                                <i class="fas fa-cubes text-primary me-1"></i> <span id="quickLocModalTitleText">Create Storage Location</span>
+                            </h6>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" data-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body pt-2">
+                            {{-- Type Switcher Pills --}}
+                            <div class="mb-2.5">
+                                <label class="form-label fw-bold text-muted small mb-1" style="font-size: 11px;">LOCATION TYPE</label>
+                                <div class="btn-group btn-group-sm w-100" role="group">
+                                    <input type="radio" class="btn-check" name="type" id="quickLocTypeRack" value="warehouse_rack" checked autocomplete="off">
+                                    <label class="btn btn-outline-primary py-1.5 fw-bold" for="quickLocTypeRack" style="font-size: 11px; cursor: pointer;">
+                                        <i class="fas fa-warehouse me-1"></i> Warehouse Rack
+                                    </label>
+
+                                    <input type="radio" class="btn-check" name="type" id="quickLocTypeShelf" value="shop_shelf" autocomplete="off">
+                                    <label class="btn btn-outline-primary py-1.5 fw-bold" for="quickLocTypeShelf" style="font-size: 11px; cursor: pointer;">
+                                        <i class="fas fa-store me-1"></i> Shop Shelf
+                                    </label>
+                                </div>
+                            </div>
+
+                            {{-- Warehouse Selector (Visible when warehouse_rack) --}}
+                            <div class="mb-2" id="quickLocWarehouseGroup">
+                                <label class="form-label fw-bold" style="font-size:11.5px;">Warehouse <span class="text-danger">*</span></label>
+                                <select name="warehouse_id" id="quickLocWarehouseSelect" class="form-select form-select-sm" style="font-size: 12px;">
+                                    @if(isset($warehouses))
+                                        @foreach($warehouses as $wh)
+                                            <option value="{{ $wh->id }}">{{ $wh->warehouse_name }}</option>
+                                        @endforeach
+                                    @endif
+                                </select>
+                            </div>
+
+                            {{-- Branch / Shop Selector (Visible when shop_shelf) --}}
+                            <div class="mb-2" id="quickLocBranchGroup" style="display: none;">
+                                <label class="form-label fw-bold" style="font-size:11.5px;">Shop / Branch <span class="text-danger">*</span></label>
+                                <select name="branch_id" id="quickLocBranchSelect" class="form-select form-select-sm" style="font-size: 12px;">
+                                    @if(isset($branches))
+                                        @foreach($branches as $br)
+                                            <option value="{{ $br->id }}">{{ $br->name }}</option>
+                                        @endforeach
+                                    @else
+                                        @php $brList = \App\Models\Branch::all(); @endphp
+                                        @foreach($brList as $br)
+                                            <option value="{{ $br->id }}">{{ $br->name }}</option>
+                                        @endforeach
+                                    @endif
+                                </select>
+                            </div>
+
+                            {{-- Location Name --}}
+                            <div class="mb-2">
+                                <label class="form-label fw-bold" id="quickLocNameLabel" style="font-size:11.5px;">Rack Name <span class="text-danger">*</span></label>
+                                <input type="text" name="name" id="quickLocNameInput" class="form-control form-control-sm" required placeholder="e.g. Rack A-1">
+                                <div class="invalid-feedback" id="quickLocNameError" style="font-size: 11px;"></div>
+                            </div>
+
+                            {{-- Location Code (Optional) --}}
+                            <div class="mb-2">
+                                <label class="form-label text-muted fw-semibold" style="font-size:11px;">Code / Reference (Optional)</label>
+                                <input type="text" name="code" id="quickLocCodeInput" class="form-control form-control-sm" placeholder="e.g. RA-01">
+                            </div>
+
+                            {{-- Zone or Aisle (Optional) --}}
+                            <div class="mb-3">
+                                <label class="form-label text-muted fw-semibold" style="font-size:11px;">Zone / Aisle (Optional)</label>
+                                <input type="text" name="zone_or_aisle" id="quickLocZoneInput" class="form-control form-control-sm" placeholder="e.g. Aisle 3, Row B">
+                            </div>
+
+                            <button type="submit" id="btnSubmitQuickStorageLoc" class="btn btn-primary btn-sm w-100 rounded-pill fw-bold">
+                                <i class="fas fa-check me-1"></i> Save & Select
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
         {{-- QuickBooks POS Style: Customize Variant Columns Modal --}}
         <div id="customizeVariantsModal" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true" style="z-index: 1055;">
             <div class="modal-dialog modal-dialog-centered" style="max-width: 520px;" role="document">
@@ -2839,6 +2999,7 @@
                                     ['key' => 'col-ref',        'label' => 'Internal Ref'],
                                     ['key' => 'col-name',       'label' => 'Product Name'],
                                     ['key' => 'col-attrs',      'label' => 'Attributes'],
+                                    ['key' => 'col-storage-type', 'label' => 'Location Type'],
                                     ['key' => 'col-location',   'label' => 'Rack / Shelf'],
                                     ['key' => 'col-stock',      'label' => 'On Hand (Stock)'],
                                     ['key' => 'col-conv',       'label' => 'Pcs / Carton'],
@@ -3358,6 +3519,212 @@
         var openVariantLocationsModal = window.openVariantLocationsModal;
 
         // =========================================================
+        // DYNAMIC STORAGE LOCATIONS & WAREHOUSE FILTER LOGIC
+        // =========================================================
+        window.allStorageLocations = @json($storageLocations ?? []);
+        window.allWarehouses = @json($warehouses ?? []);
+        window.allBranches = @json($branches ?? []);
+
+        window.getFilteredStorageLocationsFor = function(type, whId) {
+            if (!window.allStorageLocations || !Array.isArray(window.allStorageLocations)) return [];
+            if (type === 'shop') {
+                return window.allStorageLocations.filter(function(loc) {
+                    return loc.type === 'shop_shelf';
+                });
+            } else {
+                var targetWh = whId || (window.allWarehouses && window.allWarehouses[0] ? window.allWarehouses[0].id : null);
+                return window.allStorageLocations.filter(function(loc) {
+                    if (loc.type !== 'warehouse_rack') return false;
+                    if (targetWh) {
+                        return String(loc.warehouse_id) === String(targetWh);
+                    }
+                    return true;
+                });
+            }
+        };
+
+        window.renderStorageTypeCellHtml = function(rowUid, defaultType, defaultWhId) {
+            defaultType = defaultType || 'warehouse';
+            var isWh = (defaultType === 'warehouse');
+            var whs = window.allWarehouses || [];
+            var firstWhId = whs.length > 0 ? whs[0].id : '';
+            defaultWhId = defaultWhId || firstWhId;
+
+            var whOptions = '';
+            whs.forEach(function(wh) {
+                var isSel = String(wh.id) === String(defaultWhId);
+                whOptions += '<option value="' + escapeHtml(wh.id) + '" ' + (isSel ? 'selected' : '') + '>' + escapeHtml(wh.warehouse_name) + '</option>';
+            });
+
+            var html = '<div class="matrix-loc-cell d-flex align-items-center gap-1" data-row-uid="' + rowUid + '" style="min-width: 155px;">' +
+                '<div class="btn-group btn-group-sm flex-shrink-0 loc-pill-group" role="group">' +
+                    '<input type="radio" class="btn-check row-loc-type-radio row-loc-wh" name="loc_type_' + rowUid + '" id="loc_wh_' + rowUid + '" value="warehouse" ' + (isWh ? 'checked' : '') + ' autocomplete="off">' +
+                    '<label class="btn btn-outline-primary py-0 px-1.5 fw-bold" for="loc_wh_' + rowUid + '" title="Warehouse" style="cursor: pointer;">WH</label>' +
+
+                    '<input type="radio" class="btn-check row-loc-type-radio row-loc-shop" name="loc_type_' + rowUid + '" id="loc_shop_' + rowUid + '" value="shop" ' + (!isWh ? 'checked' : '') + ' autocomplete="off">' +
+                    '<label class="btn btn-outline-primary py-0 px-1.5 fw-bold" for="loc_shop_' + rowUid + '" title="Shop" style="cursor: pointer;">Shop</label>' +
+                '</div>' +
+                '<select class="form-select form-select-sm row-wh-select" style="' + (!isWh ? 'display: none !important;' : '') + '">' +
+                    whOptions +
+                '</select>' +
+                '<span class="badge row-shop-badge" style="' + (isWh ? 'display: none !important;' : '') + '"><i class="fas fa-store me-1"></i>Shop</span>' +
+            '</div>';
+
+            return html;
+        };
+
+        window.renderLocationSelectHtml = function(currentVal, type, whId) {
+            type = type || 'warehouse';
+            var locs = window.getFilteredStorageLocationsFor(type, whId);
+            var placeholder = (type === 'shop') ? 'Select Shelf' : 'Select Rack';
+
+            var optionsHtml = '<option value="">-- ' + placeholder + ' --</option>';
+            var hasCurrent = false;
+
+            locs.forEach(function(loc) {
+                var val = loc.name;
+                var isSelected = (currentVal && String(currentVal).trim().toLowerCase() === String(val).trim().toLowerCase());
+                if (isSelected) hasCurrent = true;
+                var label = loc.name + (loc.code ? ' (' + loc.code + ')' : '');
+                optionsHtml += '<option value="' + escapeHtml(val) + '" ' + (isSelected ? 'selected' : '') + '>' + escapeHtml(label) + '</option>';
+            });
+
+            if (currentVal && !hasCurrent && String(currentVal).trim() !== '' && currentVal !== '__custom__' && currentVal !== '__create_new__') {
+                optionsHtml += '<option value="' + escapeHtml(currentVal) + '" selected>' + escapeHtml(currentVal) + ' (Custom)</option>';
+            }
+
+            var createLabel = (type === 'shop') ? '+ Create New Shelf...' : '+ Create New Rack...';
+            optionsHtml += '<option value="__create_new__" style="color: #2563eb; font-weight: bold;">' + createLabel + '</option>';
+
+            return '<select class="form-select form-select-sm variant-location-input" name="variant_location[]" style="font-size:11px; padding: 2px 6px; height: 28px; min-width: 120px;">' +
+                optionsHtml +
+            '</select>';
+        };
+
+        window.openQuickAddStorageLocationModal = function(triggerSelect) {
+            window.activeLocSelectForQuickAdd = triggerSelect;
+            var $row = triggerSelect ? $(triggerSelect).closest('tr') : null;
+            var isWh = true;
+            var whId = null;
+
+            if ($row && $row.length) {
+                isWh = $row.find('.row-loc-wh').is(':checked');
+                whId = $row.find('.row-wh-select').val();
+            }
+
+            var modalEl = document.getElementById('quickAddStorageLocationModal');
+            if (!modalEl) return;
+
+            var form = document.getElementById('quickAddStorageLocationForm');
+            if (form) form.reset();
+            $('#quickLocNameError').text('').hide();
+            $('#quickLocNameInput').removeClass('is-invalid');
+
+            if (isWh) {
+                $('#quickLocTypeRack').prop('checked', true);
+                $('#quickLocModalTitleText').text('Create New Warehouse Rack');
+                $('#quickLocNameLabel').html('Rack Name <span class="text-danger">*</span>');
+                $('#quickLocNameInput').attr('placeholder', 'e.g. Rack A-1, Rack 05');
+                $('#quickLocCodeInput').attr('placeholder', 'e.g. RA-01');
+                $('#quickLocWarehouseGroup').show();
+                $('#quickLocBranchGroup').hide();
+                if (whId) $('#quickLocWarehouseSelect').val(whId);
+            } else {
+                $('#quickLocTypeShelf').prop('checked', true);
+                $('#quickLocModalTitleText').text('Create New Shop Shelf');
+                $('#quickLocNameLabel').html('Shelf Name <span class="text-danger">*</span>');
+                $('#quickLocNameInput').attr('placeholder', 'e.g. Shelf 01, Shelf 02');
+                $('#quickLocCodeInput').attr('placeholder', 'e.g. SH-01');
+                $('#quickLocWarehouseGroup').hide();
+                $('#quickLocBranchGroup').show();
+            }
+
+            try {
+                if (window.bootstrap && typeof bootstrap.Modal === 'function') {
+                    var inst = bootstrap.Modal.getInstance(modalEl) || new bootstrap.Modal(modalEl);
+                    inst.show();
+                } else if (typeof jQuery !== 'undefined') {
+                    $(modalEl).modal('show');
+                }
+            } catch(e) {
+                $(modalEl).modal('show');
+            }
+
+            setTimeout(function() {
+                $('#quickLocNameInput').focus();
+            }, 300);
+        };
+
+        window.applyFirstRowStorageTypeToAll = function() {
+            var $firstRow = $('#variantsBody tr').first();
+            if (!$firstRow.length) return;
+
+            var isWh = $firstRow.find('.row-loc-wh').is(':checked');
+            var whId = $firstRow.find('.row-wh-select').val();
+
+            $('#variantsBody tr').each(function(idx) {
+                if (idx === 0) return;
+                var $cell = $(this).find('.matrix-loc-cell');
+                if (isWh) {
+                    $cell.find('.row-loc-wh').prop('checked', true);
+                    $cell.find('.row-wh-select').val(whId).css('display', '');
+                    $cell.find('.row-shop-badge').css('display', 'none');
+                } else {
+                    $cell.find('.row-loc-shop').prop('checked', true);
+                    $cell.find('.row-wh-select').css('display', 'none');
+                    $cell.find('.row-shop-badge').css('display', 'inline-flex');
+                }
+                $cell.find('.row-loc-type-radio:checked').trigger('change');
+            });
+
+            if (typeof Swal !== 'undefined') {
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Applied to All',
+                    text: 'Row 1 location type (' + (isWh ? 'Warehouse' : 'Shop') + ') applied to all rows!',
+                    timer: 1300,
+                    showConfirmButton: false
+                });
+            }
+        };
+
+        window.applyFirstRowLocationToAll = function() {
+            var $firstRow = $('#variantsBody tr').first();
+            if (!$firstRow.length) return;
+
+            var firstLocVal = $firstRow.find('.variant-location-input').val();
+            if (!firstLocVal) {
+                if (typeof Swal !== 'undefined') {
+                    Swal.fire('Please Select', 'Select a rack or shelf in Row 1 first.', 'info');
+                } else {
+                    alert('Select a rack or shelf in Row 1 first.');
+                }
+                return;
+            }
+
+            $('#variantsBody tr').each(function(idx) {
+                if (idx === 0) return;
+                var $locSelect = $(this).find('.variant-location-input');
+                if ($locSelect.find('option[value="' + escapeHtml(firstLocVal) + '"]').length > 0) {
+                    $locSelect.val(firstLocVal);
+                } else {
+                    $locSelect.prepend('<option value="' + escapeHtml(firstLocVal) + '" selected>' + escapeHtml(firstLocVal) + ' (Custom)</option>');
+                    $locSelect.val(firstLocVal);
+                }
+            });
+
+            if (typeof Swal !== 'undefined') {
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Applied to All',
+                    text: 'Location "' + firstLocVal + '" applied to all rows!',
+                    timer: 1300,
+                    showConfirmButton: false
+                });
+            }
+        };
+
+        // =========================================================
         // QUICKBOOKS POS DESKTOP STYLE: MATRIX COLUMN DEFINITIONS
         // (Must be declared at top of script to avoid TDZ ReferenceError)
         // =========================================================
@@ -3366,6 +3733,7 @@
             { key: 'col-ref',        label: 'Internal Ref',       default: true },
             { key: 'col-name',       label: 'Product Name',       default: true },
             { key: 'col-attrs',      label: 'Attributes',         default: true },
+            { key: 'col-storage-type', label: 'Location Type',    default: true },
             { key: 'col-location',   label: 'Rack / Shelf',       default: true },
             { key: 'col-stock',      label: 'On Hand (Stock)',    default: true },
             { key: 'col-conv',       label: 'Pcs / Carton',       default: true },
@@ -3554,6 +3922,200 @@
         document.addEventListener('DOMContentLoaded', function() {
             const form = document.getElementById('productForm');
             const unitDropdown = document.getElementById('unit-dropdown');
+
+            // ── Dynamic Row-Level Location Type & Warehouse Handlers ──
+            $(document).on('change', '.row-loc-type-radio', function() {
+                var $cell = $(this).closest('.matrix-loc-cell');
+                var $row = $(this).closest('tr');
+                var isWh = ($(this).val() === 'warehouse');
+
+                if (isWh) {
+                    $cell.find('.row-wh-select').show();
+                    $cell.find('.row-shop-badge').hide();
+                } else {
+                    $cell.find('.row-wh-select').hide();
+                    $cell.find('.row-shop-badge').css('display', 'inline-flex');
+                }
+
+                var type = isWh ? 'warehouse' : 'shop';
+                var whId = $cell.find('.row-wh-select').val();
+                var $locSelect = $row.find('.variant-location-input');
+                var currentVal = $locSelect.val();
+
+                var locs = window.getFilteredStorageLocationsFor ? window.getFilteredStorageLocationsFor(type, whId) : [];
+                var placeholder = isWh ? 'Select Rack' : 'Select Shelf';
+                var optionsHtml = '<option value="">-- ' + placeholder + ' --</option>';
+                var hasCurrent = false;
+
+                locs.forEach(function(loc) {
+                    var val = loc.name;
+                    var isSelected = (currentVal && String(currentVal).trim().toLowerCase() === String(val).trim().toLowerCase());
+                    if (isSelected) hasCurrent = true;
+                    var label = loc.name + (loc.code ? ' (' + loc.code + ')' : '');
+                    optionsHtml += '<option value="' + escapeHtml(val) + '" ' + (isSelected ? 'selected' : '') + '>' + escapeHtml(label) + '</option>';
+                });
+
+                if (currentVal && !hasCurrent && String(currentVal).trim() !== '' && currentVal !== '__custom__' && currentVal !== '__create_new__') {
+                    optionsHtml += '<option value="' + escapeHtml(currentVal) + '" selected>' + escapeHtml(currentVal) + ' (Custom)</option>';
+                }
+                var createLabel = isWh ? '+ Create New Rack...' : '+ Create New Shelf...';
+                optionsHtml += '<option value="__create_new__" style="color: #2563eb; font-weight: bold;">' + createLabel + '</option>';
+                $locSelect.html(optionsHtml);
+            });
+
+            $(document).on('change', '.row-wh-select', function() {
+                var $cell = $(this).closest('.matrix-loc-cell');
+                var $row = $(this).closest('tr');
+                var whId = $(this).val();
+                var $locSelect = $row.find('.variant-location-input');
+                var currentVal = $locSelect.val();
+
+                var locs = window.getFilteredStorageLocationsFor ? window.getFilteredStorageLocationsFor('warehouse', whId) : [];
+                var optionsHtml = '<option value="">-- Select Rack --</option>';
+                var hasCurrent = false;
+
+                locs.forEach(function(loc) {
+                    var val = loc.name;
+                    var isSelected = (currentVal && String(currentVal).trim().toLowerCase() === String(val).trim().toLowerCase());
+                    if (isSelected) hasCurrent = true;
+                    var label = loc.name + (loc.code ? ' (' + loc.code + ')' : '');
+                    optionsHtml += '<option value="' + escapeHtml(val) + '" ' + (isSelected ? 'selected' : '') + '>' + escapeHtml(label) + '</option>';
+                });
+
+                if (currentVal && !hasCurrent && String(currentVal).trim() !== '' && currentVal !== '__custom__' && currentVal !== '__create_new__') {
+                    optionsHtml += '<option value="' + escapeHtml(currentVal) + '" selected>' + escapeHtml(currentVal) + ' (Custom)</option>';
+                }
+                optionsHtml += '<option value="__create_new__" style="color: #2563eb; font-weight: bold;">+ Create New Rack...</option>';
+                $locSelect.html(optionsHtml);
+            });
+
+            // Handle "+ Create New Rack / Shelf..." inside table selects (opens popup modal)
+            $(document).on('change', '.variant-location-input', function() {
+                var val = $(this).val();
+                if (val === '__create_new__' || val === '__custom__') {
+                    $(this).val('');
+                    if (window.openQuickAddStorageLocationModal) {
+                        window.openQuickAddStorageLocationModal(this);
+                    }
+                }
+            });
+
+            // Toggle Location Type in Quick Add Modal
+            $(document).on('change', 'input[name="type"]', function() {
+                if ($(this).closest('#quickAddStorageLocationModal').length) {
+                    var isWh = ($(this).val() === 'warehouse_rack');
+                    if (isWh) {
+                        $('#quickLocModalTitleText').text('Create New Warehouse Rack');
+                        $('#quickLocNameLabel').html('Rack Name <span class="text-danger">*</span>');
+                        $('#quickLocNameInput').attr('placeholder', 'e.g. Rack A-1, Rack 05');
+                        $('#quickLocCodeInput').attr('placeholder', 'e.g. RA-01');
+                        $('#quickLocWarehouseGroup').show();
+                        $('#quickLocBranchGroup').hide();
+                    } else {
+                        $('#quickLocModalTitleText').text('Create New Shop Shelf');
+                        $('#quickLocNameLabel').html('Shelf Name <span class="text-danger">*</span>');
+                        $('#quickLocNameInput').attr('placeholder', 'e.g. Shelf 01, Shelf 02');
+                        $('#quickLocCodeInput').attr('placeholder', 'e.g. SH-01');
+                        $('#quickLocWarehouseGroup').hide();
+                        $('#quickLocBranchGroup').show();
+                    }
+                }
+            });
+
+            // AJAX Form Submit for Quick Add Storage Location
+            $(document).on('submit', '#quickAddStorageLocationForm', function(e) {
+                e.preventDefault();
+                var $form = $(this);
+                var $btn = $('#btnSubmitQuickStorageLoc');
+                var origBtnText = $btn.html();
+
+                $btn.prop('disabled', true).html('<i class="fas fa-spinner fa-spin me-1"></i> Saving...');
+                $('#quickLocNameError').text('').hide();
+                $('#quickLocNameInput').removeClass('is-invalid');
+
+                $.ajax({
+                    url: $form.attr('action'),
+                    method: 'POST',
+                    data: $form.serialize(),
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest'
+                    },
+                    success: function(res) {
+                        $btn.prop('disabled', false).html(origBtnText);
+                        var loc = res.location || {};
+                        var locName = loc.name || $('#quickLocNameInput').val().trim();
+                        var locCode = loc.code || $('#quickLocCodeInput').val().trim();
+                        var locType = loc.type || $('input[name="type"]:checked', $form).val();
+                        var whId = loc.warehouse_id || $('#quickLocWarehouseSelect').val();
+                        var branchId = loc.branch_id || $('#quickLocBranchSelect').val();
+
+                        // Add to in-memory list
+                        if (!window.allStorageLocations) window.allStorageLocations = [];
+                        window.allStorageLocations.push({
+                            id: loc.id || Date.now(),
+                            name: locName,
+                            code: locCode,
+                            type: locType,
+                            warehouse_id: whId,
+                            branch_id: branchId
+                        });
+
+                        // Auto-select in the triggering row
+                        if (window.activeLocSelectForQuickAdd) {
+                            var $sel = $(window.activeLocSelectForQuickAdd);
+                            var optText = locName + (locCode ? ' (' + locCode + ')' : '');
+                            var $newOpt = $('<option>', {
+                                value: locName,
+                                text: optText,
+                                selected: true
+                            });
+
+                            var $createOpt = $sel.find('option[value="__create_new__"], option[value="__custom__"]');
+                            if ($createOpt.length) {
+                                $newOpt.insertBefore($createOpt);
+                            } else {
+                                $sel.append($newOpt);
+                            }
+                            $sel.val(locName).trigger('change');
+                        }
+
+                        // Close modal
+                        var modalEl = document.getElementById('quickAddStorageLocationModal');
+                        if (modalEl) {
+                            try {
+                                if (window.bootstrap && typeof bootstrap.Modal === 'function') {
+                                    var inst = bootstrap.Modal.getInstance(modalEl);
+                                    if (inst) inst.hide();
+                                }
+                            } catch(err) {}
+                            $(modalEl).modal('hide');
+                        }
+
+                        if (typeof Swal !== 'undefined') {
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Created!',
+                                text: res.success || 'Storage location created and selected!',
+                                timer: 1500,
+                                showConfirmButton: false
+                            });
+                        }
+                    },
+                    error: function(xhr) {
+                        $btn.prop('disabled', false).html(origBtnText);
+                        var errors = xhr.responseJSON && xhr.responseJSON.errors ? xhr.responseJSON.errors : null;
+                        if (errors && errors.name) {
+                            $('#quickLocNameInput').addClass('is-invalid');
+                            $('#quickLocNameError').text(errors.name[0]).show();
+                        } else if (errors) {
+                            var firstKey = Object.keys(errors)[0];
+                            alert(errors[firstKey][0]);
+                        } else {
+                            alert('Error creating location. Please check your input.');
+                        }
+                    }
+                });
+            });
 
             // 1. Tab Switching System
             const tabLinks = document.querySelectorAll('.odoo-tab-link');
@@ -5626,6 +6188,8 @@
                             conv: tr.querySelector('[name="variant_conv_factor[]"]')?.value,
                             unit: tr.querySelector('[name="variant_unit[]"]')?.value,
                             location: tr.querySelector('[name="variant_location[]"]')?.value,
+                            locType: tr.querySelector('.row-loc-type-radio:checked')?.value || 'warehouse',
+                            whId: tr.querySelector('.row-wh-select')?.value || '',
                         };
                     }
                 });
@@ -5728,6 +6292,9 @@
                     const masterUnitName = window.getMasterUnitName ? window.getMasterUnitName() : (isCartonMode ? 'Carton' : baseUnitName);
                     const defaultLoc = document.getElementById('remarks')?.value.trim() || '';
                     const vLocation = prev.location !== undefined ? prev.location : defaultLoc;
+                    const vLocType = prev.locType || 'warehouse';
+                    const vWhId = prev.whId || null;
+                    const rowUid = 'combo_' + idx + '_' + Date.now();
 
                     const comboPillsHtml = combo.map(c => `<span class="variant-combo-pill" title="${c.attr}">${c.val}</span>`).join(' ');
 
@@ -5754,8 +6321,11 @@
                         <td class="p-1 col-attrs">
                             ${comboPillsHtml}
                         </td>
+                        <td class="p-1 col-storage-type">
+                            ${window.renderStorageTypeCellHtml ? window.renderStorageTypeCellHtml(rowUid, vLocType, vWhId) : ''}
+                        </td>
                         <td class="p-1 col-location">
-                            <input type="text" class="form-control form-control-sm variant-location-input" name="variant_location[]" value="${escapeHtml(vLocation)}" list="storageLocationsDatalist" placeholder="Rack / Shelf" style="font-size:11px;">
+                            ${window.renderLocationSelectHtml ? window.renderLocationSelectHtml(vLocation, vLocType, vWhId) : `<input type="text" class="form-control form-control-sm variant-location-input" name="variant_location[]" value="${escapeHtml(vLocation)}" placeholder="Rack / Shelf">`}
                         </td>
                         <td class="p-1 col-stock">
                             <input type="number" class="form-control form-control-sm text-center fw-bold text-primary stock-input" name="variant_stock[]" step="any" value="${vStock}">
@@ -5851,8 +6421,11 @@
                     <td class="p-1 text-muted fst-italic col-attrs" style="font-size:11px;">
                         Standard (No Attributes)
                     </td>
+                    <td class="p-1 col-storage-type">
+                        ${window.renderStorageTypeCellHtml ? window.renderStorageTypeCellHtml('base_' + Date.now(), 'warehouse', null) : ''}
+                    </td>
                     <td class="p-1 col-location">
-                        <input type="text" class="form-control form-control-sm variant-location-input" name="variant_location[]" value="${escapeHtml(document.getElementById('remarks')?.value.trim() || '')}" list="storageLocationsDatalist" placeholder="Rack / Shelf" style="font-size:11px;">
+                        ${window.renderLocationSelectHtml ? window.renderLocationSelectHtml(document.getElementById('remarks')?.value.trim() || '', 'warehouse', null) : `<input type="text" class="form-control form-control-sm variant-location-input" name="variant_location[]" placeholder="Rack / Shelf">`}
                     </td>
                     <td class="p-1 col-stock">
                         <input type="number" class="form-control form-control-sm text-center fw-bold text-primary stock-input" name="variant_stock[]" step="any" value="0" placeholder="0">
@@ -5972,8 +6545,11 @@
                                 <input type="text" class="form-control form-control-sm" name="variant_color[]" placeholder="Color" style="width:50%;font-size:11px;">
                             </div>
                         </td>
+                        <td class="p-1 col-storage-type">
+                            ${window.renderStorageTypeCellHtml ? window.renderStorageTypeCellHtml('custom_' + Date.now() + '_' + Math.floor(Math.random() * 1000), 'warehouse', null) : ''}
+                        </td>
                         <td class="p-1 col-location">
-                            <input type="text" class="form-control form-control-sm variant-location-input" name="variant_location[]" value="${escapeHtml(document.getElementById('remarks')?.value.trim() || '')}" list="storageLocationsDatalist" placeholder="Rack / Shelf" style="font-size:11px;">
+                            ${window.renderLocationSelectHtml ? window.renderLocationSelectHtml(document.getElementById('remarks')?.value.trim() || '', 'warehouse', null) : `<input type="text" class="form-control form-control-sm variant-location-input" name="variant_location[]" placeholder="Rack / Shelf">`}
                         </td>
                         <td class="p-1 col-stock"><input type="number" class="form-control form-control-sm text-center fw-bold text-primary stock-input" name="variant_stock[]" value="0"></td>
                         <td class="p-0 conv-col col-conv"><input type="text" class="form-control form-control-sm text-center fw-bold text-success" name="variant_conv_factor[]" value="${defaultConv}" style="border-radius:0; border:1px solid #198754; height:28px;"></td>

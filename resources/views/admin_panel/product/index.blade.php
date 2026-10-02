@@ -2,6 +2,7 @@
 @section('content')
 
 <style>
+    @import url('https://fonts.googleapis.com/css2?family=Caveat:wght@600;700&display=swap');
     /* ── LAYOUT RESET: make sure page uses full width cleanly ── */
     .erp-page { background: #f8fafc; min-height: calc(100vh - 80px); padding: 20px 0; font-family: 'Inter', system-ui, -apple-system, sans-serif; }
     .erp-page .container-fluid { max-width: 100%; box-sizing: border-box; }
@@ -321,13 +322,13 @@
     .dataTables_wrapper .dataTables_paginate { display: none !important; }
     .dataTables_wrapper { overflow-x: visible !important; }
 
-    /* ── Odoo Video Matrix View: Attribute Pills & Radios ── */
+    /* ── Odoo Enterprise Matrix View: Attribute Pills & Radios (Kent Theme) ── */
     .matrix-radio-pill {
         display: inline-flex !important;
         align-items: center !important;
-        padding: 7px 16px !important;
+        padding: 6px 14px !important;
         border: 1.5px solid #cbd5e1 !important;
-        border-radius: 8px !important;
+        border-radius: 6px !important;
         background: #ffffff !important;
         cursor: pointer !important;
         margin: 0 !important;
@@ -336,16 +337,16 @@
         user-select: none !important;
     }
     .matrix-radio-pill:hover {
-        border-color: #00A09D !important;
-        background: #f0fdfa !important;
+        border-color: #2563eb !important;
+        background: #f8fafc !important;
     }
     .matrix-radio-pill.selected-pill {
-        border-color: #00A09D !important;
-        background: #e6fffa !important;
-        box-shadow: 0 0 0 2px rgba(0, 160, 157, 0.25) !important;
+        border-color: #2563eb !important;
+        background: #eff6ff !important;
+        box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.2) !important;
     }
     .matrix-radio-pill.selected-pill .matrix-attr-val {
-        color: #00A09D !important;
+        color: #1e40af !important;
         font-weight: 700 !important;
     }
     .matrix-radio-pill.disabled-pill {
@@ -357,6 +358,57 @@
     }
     .matrix-radio-pill.disabled-pill .matrix-attr-val {
         color: #94a3b8 !important;
+    }
+
+    /* Odoo Matrix Top KPI Ribbon */
+    .matrix-kpi-bar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        padding: 9px 14px;
+        background: #f8fafc;
+        border: 1px solid #e2e8f0;
+        border-radius: 8px;
+        margin-bottom: 14px;
+        gap: 12px;
+    }
+    .matrix-kpi-group {
+        display: flex;
+        align-items: center;
+        flex-wrap: wrap;
+    }
+    .matrix-kpi-item {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        padding: 0 12px;
+    }
+    .matrix-kpi-item:first-child {
+        padding-left: 0;
+    }
+    .matrix-kpi-divider {
+        width: 1px;
+        height: 28px;
+        background: #cbd5e1;
+        margin: 0 4px;
+        flex-shrink: 0;
+    }
+    .matrix-kpi-label {
+        font-size: 10px;
+        font-weight: 700;
+        color: #64748b;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        line-height: 1.2;
+        margin-bottom: 2px;
+        white-space: nowrap;
+    }
+    .matrix-kpi-value {
+        font-size: 17px;
+        font-weight: 800;
+        line-height: 1.2;
+        font-family: SFMono-Regular, Menlo, Monaco, Consolas, monospace;
     }
 
     /* ════════════════════════════════════════════════════
@@ -552,6 +604,106 @@
     #productTable thead th {
         cursor: context-menu;
     }
+
+    /* ══════════════════════════════════════════════════════════
+       38mm x 26mm Label Live Preview inside Modal (Photo Match)
+       ══════════════════════════════════════════════════════════ */
+    .label-sticker-preview {
+        width: 195px;
+        height: 133px;
+        background: #ffffff;
+        border: 1px solid #000000;
+        border-radius: 6px;
+        padding: 9px 12px 6px 12px;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        align-items: center;
+        text-align: center;
+        overflow: hidden;
+        box-sizing: border-box;
+        user-select: none;
+        font-family: Arial, "Helvetica Neue", Helvetica, sans-serif;
+    }
+
+    /* Line 1: Product & Variant */
+    .label-sticker-preview .sticker-line-1 {
+        font-size: 11.5px;
+        font-weight: 700;
+        color: #000000;
+        width: 100%;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        text-align: center;
+        line-height: 1.2;
+        letter-spacing: -0.2px;
+    }
+
+    /* Serial No: directly below Product Name in larger bold font */
+    .label-sticker-preview .sticker-line-serial {
+        font-size: 14.5px;
+        font-weight: 900;
+        color: #000000;
+        width: 100%;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        text-align: center;
+        line-height: 1.2;
+        letter-spacing: 0.3px;
+    }
+
+    /* Line 2: PCODE - ROOT */
+    .label-sticker-preview .sticker-line-2 {
+        font-size: 13px;
+        font-weight: 800;
+        color: #000000;
+        width: 100%;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        text-align: center;
+        line-height: 1.2;
+        letter-spacing: 0.3px;
+    }
+
+    /* Line 3: LOCATION */
+    .label-sticker-preview .sticker-line-3 {
+        font-size: 11.5px;
+        font-weight: 700;
+        color: #000000;
+        width: 100%;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        text-align: center;
+        line-height: 1.2;
+    }
+
+    /* Line 4: Store Name in script font (Kent Hardware) */
+    .label-sticker-preview .sticker-line-4 {
+        text-align: center;
+        width: 100%;
+        font-family: 'Caveat', 'Segoe Script', 'Brush Script MT', cursive;
+        font-size: 16px;
+        font-weight: 700;
+        color: #000000;
+        line-height: 1;
+        letter-spacing: 0.2px;
+    }
+
+    .lbl-var-row {
+        cursor: pointer;
+        transition: all 0.15s ease;
+    }
+    .lbl-var-row:hover {
+        background-color: #f8fafc !important;
+    }
+    .lbl-var-row.table-active {
+        background-color: #eff6ff !important;
+        border-left: 3px solid #2563eb !important;
+    }
 </style>
 
 <div class="main-content">
@@ -619,6 +771,9 @@
                 <button type="button" class="btn-hdr btn-hdr-outline" id="customizeIndexColumnsBtn" data-toggle="modal" data-target="#customizeIndexColumnsModal" data-bs-toggle="modal" data-bs-target="#customizeIndexColumnsModal" title="Customize Columns (or right-click table header)">
                     <i class="fas fa-columns text-primary"></i> Customize Columns
                 </button>
+                <a href="{{ route('opening_stock.index') }}" class="btn-hdr btn-hdr-outline text-primary fw-bold" title="Manage Opening Stock, Locations & Pricing Matrix">
+                    <i class="fas fa-cubes-stacked text-primary"></i> Opening Stock
+                </a>
                 @if (auth()->user()->can('products.create') || auth()->user()->email === 'admin@admin.com')
                     <button type="button" class="btn-hdr btn-hdr-warning" id="openImportModalBtn">
                         <i class="fas fa-file-upload"></i> Import CSV
@@ -750,9 +905,9 @@
                             <th class="text-center" style="width:220px;">
                                 <div class="d-flex align-items-center justify-content-center gap-2">
                                     <span>Actions</span>
-                                    <label class="d-inline-flex align-items-center gap-1 m-0 px-2 py-0 rounded border" style="background:#fdf4ff; border-color:#f5d0fe; cursor:pointer;" title="Check to open all products in Matrix View on View click">
-                                        <input type="checkbox" id="globalMatrixRadio" style="cursor:pointer; width:12px; height:12px; accent-color:#714B67; margin:0;">
-                                        <span style="font-size:9.5px; font-weight:700; color:#714B67;">Matrix</span>
+                                    <label class="d-inline-flex align-items-center gap-1 m-0 px-2 py-0 rounded border" style="background:#eff6ff; border-color:#bfdbfe; cursor:pointer;" title="Check to open all products in Matrix View on View click">
+                                        <input type="checkbox" id="globalMatrixRadio" style="cursor:pointer; width:12px; height:12px; accent-color:#2563eb; margin:0;">
+                                        <span style="font-size:9.5px; font-weight:700; color:#1e40af;">Matrix</span>
                                     </label>
                                 </div>
                             </th>
@@ -837,8 +992,8 @@
                                     <div class="action-group align-items-center">
                                         <div class="d-flex flex-column align-items-center me-1" style="min-width: 58px;">
                                             <div class="d-flex align-items-center justify-content-center gap-1 mb-1" style="cursor: pointer; line-height: 1;" title="Radio Matrix View (from Video)">
-                                                <input type="radio" class="form-check-input row-matrix-radio" name="row_matrix_radio" id="rowMatrixRadio_{{ $product->id }}" data-id="{{ $product->id }}" style="cursor: pointer; width: 13px; height: 13px; accent-color: #714B67; margin: 0;">
-                                                <label for="rowMatrixRadio_{{ $product->id }}" class="form-check-label m-0 fw-bold" style="font-size: 10px; color: #714B67; cursor: pointer; white-space: nowrap;">Matrix</label>
+                                                <input type="radio" class="form-check-input row-matrix-radio" name="row_matrix_radio" id="rowMatrixRadio_{{ $product->id }}" data-id="{{ $product->id }}" style="cursor: pointer; width: 13px; height: 13px; accent-color: #2563eb; margin: 0;">
+                                                <label for="rowMatrixRadio_{{ $product->id }}" class="form-check-label m-0 fw-bold" style="font-size: 10px; color: #2563eb; cursor: pointer; white-space: nowrap;">Matrix</label>
                                             </div>
                                             <button type="button" class="btn-act btn-act-view viewProductBtn w-100 justify-content-center"
                                                 data-id="{{ $product->id }}" title="View Details">
@@ -851,10 +1006,12 @@
                                                 <i class="fas fa-pencil-alt"></i> Edit
                                             </a>
                                         @endif
-                                        <a href="{{ route('generate-barcode-image', $product->id) }}"
-                                            class="btn-act btn-act-barcode" title="Generate Barcode">
+                                        <button type="button"
+                                            class="btn-act btn-act-barcode openLabelPrintModalBtn"
+                                            data-id="{{ $product->id }}"
+                                            title="Print 38x26mm Labels (Product & Variants)">
                                             <i class="fas fa-barcode"></i>
-                                        </a>
+                                        </button>
                                         @if (auth()->user()->can('products.edit') || auth()->user()->email === 'admin@admin.com')
                                             <button type="button"
                                                 class="btn-act {{ $product->is_active ? 'btn-act-deact' : 'btn-act-act' }} toggle-active-btn"
@@ -943,8 +1100,8 @@
                     <div class="prod-mcard-actions">
                         <div class="d-flex flex-column align-items-center w-100">
                             <div class="d-flex align-items-center gap-1 mb-1">
-                                <input type="radio" class="form-check-input row-matrix-radio" name="row_matrix_radio" id="mRowMatrixRadio_{{ $product->id }}" data-id="{{ $product->id }}" style="cursor: pointer; width: 13px; height: 13px; accent-color: #714B67; margin: 0;">
-                                <label for="mRowMatrixRadio_{{ $product->id }}" class="form-check-label m-0 fw-bold" style="font-size: 9px; color: #714B67; cursor: pointer;">Matrix View</label>
+                                <input type="radio" class="form-check-input row-matrix-radio" name="row_matrix_radio" id="mRowMatrixRadio_{{ $product->id }}" data-id="{{ $product->id }}" style="cursor: pointer; width: 13px; height: 13px; accent-color: #2563eb; margin: 0;">
+                                <label for="mRowMatrixRadio_{{ $product->id }}" class="form-check-label m-0 fw-bold" style="font-size: 9px; color: #2563eb; cursor: pointer;">Matrix View</label>
                             </div>
                             <button type="button" class="btn-act btn-act-view viewProductBtn w-100" data-id="{{ $product->id }}">
                                 <i class="fas fa-eye"></i> View
@@ -955,9 +1112,9 @@
                                 <i class="fas fa-pencil-alt"></i> Edit
                             </a>
                         @endif
-                        <a href="{{ route('generate-barcode-image', $product->id) }}" class="btn-act btn-act-barcode">
-                            <i class="fas fa-barcode"></i> Barcode
-                        </a>
+                        <button type="button" class="btn-act btn-act-barcode openLabelPrintModalBtn" data-id="{{ $product->id }}" title="Print 38x26mm Labels">
+                            <i class="fas fa-barcode"></i> Label
+                        </button>
                         @if (auth()->user()->can('products.edit') || auth()->user()->email === 'admin@admin.com')
                             <button type="button"
                                 class="btn-act {{ $product->is_active ? 'btn-act-deact' : 'btn-act-act' }} toggle-active-btn"
@@ -1110,31 +1267,33 @@
     <div class="modal-dialog modal-lg modal-dialog-centered" style="max-width: 740px;">
         <div class="modal-content border-0 shadow-lg" style="border-radius: 14px; overflow: hidden;">
             {{-- Header --}}
-            <div class="modal-header border-bottom bg-light px-4 py-2.5 d-flex justify-content-between align-items-center">
-                <div class="d-flex align-items-center gap-2.5">
-                    <div style="width: 36px; height: 36px; border-radius: 9px; background: #f3e8ff; color: #714B67; display: flex; align-items: center; justify-content: center; font-size: 16px; flex-shrink: 0;">
+            <div class="modal-header border-bottom bg-white px-4 py-2.5 d-flex justify-content-between align-items-center" style="border-color: #e2e8f0;">
+                <div class="d-flex align-items-center" style="gap: 10px;">
+                    <div style="width: 38px; height: 38px; border-radius: 8px; background: #eff6ff; color: #2563eb; display: flex; align-items: center; justify-content: center; font-size: 16px; flex-shrink: 0; border: 1px solid #bfdbfe;">
                         <i class="fas fa-boxes-stacked"></i>
                     </div>
                     <div>
-                        <h5 class="modal-title fw-bold text-dark mb-0" id="productViewModalLabel" style="font-size: 1.08rem; letter-spacing: -0.2px;">
+                        <h5 class="modal-title fw-bold text-dark text-capitalize mb-0" id="productViewModalLabel" style="font-size: 1.15rem; font-weight: 800; color: #0f172a; letter-spacing: -0.2px;">
                             <span id="view_item_name">Product</span>
                         </h5>
-                        <small class="text-muted font-monospace" id="view_item_subtext" style="font-size: 11px;">CODE</small>
+                        <div class="d-flex align-items-center flex-wrap" style="gap: 6px; margin-top: 3px;" id="view_item_subtext">
+                            <span class="badge" style="background: #0f172a; color: #ffffff; font-size: 10.5px;">CODE</span>
+                        </div>
                     </div>
                 </div>
                 
-                <div class="d-flex align-items-center gap-2">
+                <div class="d-flex align-items-center" style="gap: 8px;">
                     <!-- View Mode Switcher: Table List vs Video Matrix -->
-                    <div class="btn-group btn-group-sm p-0.5 bg-white rounded-pill border shadow-sm" role="group" aria-label="View Mode">
-                        <button type="button" class="btn btn-sm px-3 fw-bold active rounded-pill" id="btnModeMatrix" style="font-size: 11px; transition: all 0.2s; background: #714B67; color: #ffffff; padding: 4px 12px;">
+                    <div class="btn-group btn-group-sm p-0.5 bg-light rounded-pill border" role="group" aria-label="View Mode" style="border-color: #cbd5e1 !important;">
+                        <button type="button" class="btn btn-sm px-3 fw-bold active rounded-pill" id="btnModeMatrix" style="font-size: 11px; transition: all 0.2s; background: #2563eb; color: #ffffff; padding: 4px 14px; border: none;">
                             <i class="fas fa-th-large me-1"></i> Matrix
                         </button>
-                        <button type="button" class="btn btn-sm px-3 fw-bold rounded-pill btn-light text-muted" id="btnModeTable" style="font-size: 11px; transition: all 0.2s; padding: 4px 12px;">
+                        <button type="button" class="btn btn-sm px-3 fw-bold rounded-pill btn-light text-muted" id="btnModeTable" style="font-size: 11px; transition: all 0.2s; padding: 4px 14px; border: none;">
                             <i class="fas fa-table me-1"></i> Table
                         </button>
                     </div>
 
-                    <button type="button" class="close text-secondary ms-1" data-dismiss="modal" data-bs-dismiss="modal" aria-label="Close" style="font-size: 22px; border: none; background: transparent; line-height: 1; cursor: pointer; padding: 0 4px; outline: none;">
+                    <button type="button" class="close text-secondary ms-1" data-dismiss="modal" data-bs-dismiss="modal" aria-label="Close" style="font-size: 20px; border: none; background: transparent; line-height: 1; cursor: pointer; padding: 0 4px; outline: none; opacity: 0.6;">
                         <span aria-hidden="true">&times;</span>
                     </button>
                 </div>
@@ -1151,54 +1310,54 @@
 
                 <!-- Video / Odoo POS Style Matrix View -->
                 <div id="modalMatrixContainer" class="p-3 px-4" style="background: #ffffff; min-height: 260px;">
-                    <!-- Top Product Quick Info Bar -->
-                    <div class="d-flex justify-content-between align-items-center p-2.5 px-3 rounded-3 mb-3" style="background: #f8fafc; border: 1px solid #e2e8f0;">
-                        <div class="d-flex align-items-center gap-3 flex-wrap">
+                    <!-- Top Product Quick Info Bar (Odoo Ribbon Style) -->
+                    <div class="matrix-kpi-bar" id="matrixKpiBar">
+                        <div class="matrix-kpi-group">
                             <!-- Numeric Sky Price (Hidden by default, toggleable) -->
-                            <div class="matrix-numeric-price d-none">
-                                <span class="text-muted fw-semibold" style="font-size: 10.5px; text-transform: uppercase; letter-spacing: 0.5px;">Sky Price</span>
-                                <div class="fw-bold font-monospace" id="matrix_item_price" style="font-size: 1.15rem; color: #059669;">Rs. 0.00</div>
+                            <div class="matrix-kpi-item matrix-numeric-price d-none">
+                                <span class="matrix-kpi-label">Sky Price</span>
+                                <div class="matrix-kpi-value text-success" id="matrix_item_price" style="color: #059669 !important;">Rs. 0.00</div>
                             </div>
-                            <div class="matrix-numeric-divider d-none" style="width: 1px; height: 26px; background: #cbd5e1;"></div>
+                            <div class="matrix-kpi-divider matrix-numeric-divider d-none"></div>
 
                             <!-- Secret Sky P-Code -->
-                            <div>
-                                <span class="text-muted fw-semibold" style="font-size: 10.5px; text-transform: uppercase; letter-spacing: 0.5px;">Sky P-Code</span>
-                                <div class="fw-bold font-monospace" id="matrix_item_pcode" style="font-size: 1.15rem; color: #714B67;">---</div>
+                            <div class="matrix-kpi-item">
+                                <span class="matrix-kpi-label">Sky P-Code</span>
+                                <div class="matrix-kpi-value text-primary" id="matrix_item_pcode" style="color: #2563eb !important;">---</div>
                             </div>
-                            <div style="width: 1px; height: 26px; background: #cbd5e1;"></div>
+                            <div class="matrix-kpi-divider"></div>
 
                             <!-- Numeric Rot Price (Hidden by default, toggleable) -->
-                            <div class="matrix-numeric-price d-none">
-                                <span class="text-muted fw-semibold" style="font-size: 10.5px; text-transform: uppercase; letter-spacing: 0.5px;">Rot Price.</span>
-                                <div class="fw-bold font-monospace" id="matrix_item_rot_price" style="font-size: 1.15rem; color: #0284c7;">Rs. 0.00</div>
+                            <div class="matrix-kpi-item matrix-numeric-price d-none">
+                                <span class="matrix-kpi-label">Rot Price</span>
+                                <div class="matrix-kpi-value text-info" id="matrix_item_rot_price" style="color: #0284c7 !important;">Rs. 0.00</div>
                             </div>
-                            <div class="matrix-numeric-divider d-none" style="width: 1px; height: 26px; background: #cbd5e1;"></div>
+                            <div class="matrix-kpi-divider matrix-numeric-divider d-none"></div>
 
                             <!-- Secret Rot P-Code -->
-                            <div>
-                                <span class="text-muted fw-semibold" style="font-size: 10.5px; text-transform: uppercase; letter-spacing: 0.5px;">Rot P-Code</span>
-                                <div class="fw-bold font-monospace" id="matrix_item_rot_pcode" style="font-size: 1.15rem; color: #714B67;">---</div>
+                            <div class="matrix-kpi-item">
+                                <span class="matrix-kpi-label">Rot P-Code</span>
+                                <div class="matrix-kpi-value text-primary" id="matrix_item_rot_pcode" style="color: #2563eb !important;">---</div>
                             </div>
-                            <div style="width: 1px; height: 26px; background: #cbd5e1;"></div>
+                            <div class="matrix-kpi-divider"></div>
 
                             <!-- Free To Use -->
-                            <div>
-                                <span class="text-muted fw-semibold" style="font-size: 10.5px; text-transform: uppercase; letter-spacing: 0.5px;">Free To Use</span>
-                                <div class="fw-bold text-dark font-monospace" id="matrix_stock_display" style="font-size: 1.1rem;">0 Units</div>
+                            <div class="matrix-kpi-item">
+                                <span class="matrix-kpi-label">Free To Use</span>
+                                <div class="matrix-kpi-value text-dark" id="matrix_stock_display">0 Units</div>
                             </div>
 
                             <!-- Toggle Eye Button to reveal/hide numeric prices -->
-                            <button type="button" class="btn btn-sm btn-outline-secondary py-1 px-2.5 border rounded-pill ms-1 d-inline-flex align-items-center gap-1 shadow-sm" id="btnToggleMatrixPriceDigits" title="Show/Hide Numeric Prices (Sky Price & Rot Price)" style="background: #ffffff; color: #64748b; font-size: 11px; font-weight: 600; cursor: pointer;">
-                                <i class="fas fa-eye-slash" id="iconMatrixPriceEye"></i>
+                            <button type="button" class="btn btn-sm btn-outline-secondary py-1 px-3 border rounded-pill ms-2 d-inline-flex align-items-center shadow-sm" id="btnToggleMatrixPriceDigits" title="Show/Hide Numeric Prices (Sky Price & Rot Price)" style="background: #ffffff; color: #475569; font-size: 11.5px; font-weight: 600; cursor: pointer; height: 32px; border-color: #cbd5e1;">
+                                <i class="fas fa-eye-slash" id="iconMatrixPriceEye" style="margin-right: 6px;"></i>
                                 <span id="textMatrixPriceToggle">Show Prices</span>
                             </button>
                         </div>
                         <div id="matrix_serial_badge_container" class="d-none text-end d-flex flex-column align-items-end justify-content-center">
-                            <span class="badge bg-primary-subtle text-primary border border-primary-subtle font-monospace px-2.5 py-1" style="font-size: 12px;" id="matrix_serial_badge"></span>
+                            <span class="badge font-monospace px-2.5 py-1" style="background: #eff6ff; color: #1e40af; border: 1px solid #bfdbfe; font-size: 12px; font-weight: 700; border-radius: 6px;" id="matrix_serial_badge"></span>
                             <div id="matrix_location_badge_wrap" class="mt-1 d-none">
-                                <span class="badge bg-light text-dark border font-monospace px-2 py-0.5 shadow-sm d-inline-flex align-items-center gap-1" id="matrix_location_badge" style="font-size: 11px;" title="Variant Location">
-                                    <i class="fas fa-map-marker-alt text-danger" style="font-size: 10px;"></i>
+                                <span class="badge font-monospace px-2 py-0.5 shadow-sm d-inline-flex align-items-center" id="matrix_location_badge" style="background: #f8fafc; color: #334155; border: 1px solid #cbd5e1; font-size: 11px; border-radius: 4px;" title="Variant Location">
+                                    <i class="fas fa-map-marker-alt text-danger" style="font-size: 10px; margin-right: 4px;"></i>
                                     <span id="matrix_location_text">---</span>
                                 </span>
                             </div>
@@ -1234,14 +1393,198 @@
             </div>
 
             {{-- Single Unified Footer --}}
-            <div class="modal-footer bg-light border-top py-2 px-4 d-flex justify-content-between align-items-center">
-                <div id="matrixSelectedVariantInfo" class="text-muted small font-monospace d-flex align-items-center flex-wrap gap-1">
-                    <span class="text-muted"><i class="fas fa-info-circle me-1 text-primary"></i> Select options above to view availability</span>
+            <div class="modal-footer bg-light border-top py-2.5 px-4 d-flex justify-content-between align-items-center" style="border-color: #e2e8f0;">
+                <div id="matrixSelectedVariantInfo" class="d-flex align-items-center flex-wrap" style="gap: 6px;">
+                    <span class="text-muted small"><i class="fas fa-info-circle me-1 text-primary"></i> Select options above to view availability</span>
                 </div>
-                <div class="d-flex align-items-center gap-2">
-                    <button type="button" class="btn btn-sm btn-outline-secondary px-3 rounded-pill" data-dismiss="modal" data-bs-dismiss="modal" id="btnMatrixDiscard" style="font-size: 12px;">Close</button>
-                    <button type="button" class="btn btn-sm px-4 fw-bold rounded-pill shadow-sm" id="btnMatrixAdd" style="background: #714B67; color: #ffffff; border: none; font-size: 12.5px; min-width: 120px;" disabled>
-                        <i class="fas fa-check me-1"></i> Add Variant
+                <div class="d-flex align-items-center" style="gap: 8px;">
+                    <button type="button" class="btn btn-sm btn-outline-primary px-3 rounded-pill fw-semibold shadow-sm d-inline-flex align-items-center" id="btnMatrixPrintLabel" title="Print 38x26mm Label for Selected Variant" style="font-size: 12px; height: 34px;">
+                        <i class="fas fa-barcode" style="margin-right: 6px;"></i> Print Label
+                    </button>
+                    <button type="button" class="btn btn-sm btn-outline-secondary px-3 rounded-pill fw-semibold" data-dismiss="modal" data-bs-dismiss="modal" id="btnMatrixDiscard" style="font-size: 12px; height: 34px; background: #fff; border-color: #cbd5e1;">Close</button>
+                    <button type="button" class="btn btn-sm px-4 fw-bold rounded-pill shadow-sm d-inline-flex align-items-center" id="btnMatrixAdd" style="background: #2563eb; color: #ffffff; border: none; font-size: 12.5px; min-width: 120px; height: 34px;" disabled>
+                        <i class="fas fa-check" style="margin-right: 6px;"></i> Add Variant
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{{-- ══════════════════════════════════════════════════════════════
+     PRODUCT & VARIANT LABEL PRINT MODAL (38mm x 26mm)
+══════════════════════════════════════════════════════════════ --}}
+<div class="modal fade" id="productLabelModal" tabindex="-1" aria-labelledby="productLabelModalLabel" aria-hidden="true" style="z-index: 1060;">
+    <div class="modal-dialog modal-lg modal-dialog-centered" style="max-width: 840px;">
+        <div class="modal-content border-0 shadow-lg" style="border-radius: 12px; overflow: hidden; border: 1px solid #cbd5e1 !important;">
+            {{-- Header --}}
+            <div class="modal-header border-bottom bg-white px-4 py-2.5 d-flex justify-content-between align-items-center" style="border-color: #e2e8f0;">
+                <div class="d-flex align-items-center" style="gap: 12px;">
+                    <div style="width: 38px; height: 38px; border-radius: 8px; background: #eff6ff; color: #2563eb; display: flex; align-items: center; justify-content: center; font-size: 17px; flex-shrink: 0; border: 1px solid #bfdbfe; margin-right: 12px;">
+                        <i class="fas fa-barcode"></i>
+                    </div>
+                    <div>
+                        <h5 class="modal-title fw-bold text-dark mb-0" id="productLabelModalLabel" style="font-size: 1.15rem; font-weight: 800; color: #0f172a; letter-spacing: -0.2px;">
+                            Print Labels (38mm &times; 26mm)
+                        </h5>
+                        <div class="d-flex align-items-center flex-wrap" style="gap: 6px; margin-top: 3px;" id="lbl_modal_product_subtitle">
+                            <span class="badge" style="background: #0f172a; color: #ffffff; font-size: 10.5px;">CODE</span>
+                        </div>
+                    </div>
+                </div>
+                <button type="button" class="close text-secondary" data-dismiss="modal" data-bs-dismiss="modal" aria-label="Close" style="font-size: 20px; border: none; background: transparent; line-height: 1; cursor: pointer; padding: 0 4px; outline: none; opacity: 0.6;">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+
+            {{-- Body --}}
+            <div class="modal-body p-3.5" style="background: #f8fafc;">
+                <div id="lblModalLoading" class="text-center py-5 d-none">
+                    <div class="spinner-border text-primary spinner-border-sm" role="status">
+                        <span class="sr-only">Loading...</span>
+                    </div>
+                    <p class="text-muted small mt-2 mb-0">Loading variants &amp; codes...</p>
+                </div>
+
+                <div id="lblModalContent" class="row g-3">
+                    {{-- Left column: Variant selection list & copies --}}
+                    <div class="col-md-7">
+                        <div class="card shadow-none h-100" style="border: 1px solid #e2e8f0; border-radius: 8px; background: #ffffff; overflow: hidden;">
+                            <div class="card-header bg-white py-2 px-3 border-bottom d-flex justify-content-between align-items-center" style="border-color: #e2e8f0;">
+                                <span class="fw-bold text-dark small d-inline-flex align-items-center" style="font-size: 12px; font-weight: 700;">
+                                    <i class="fas fa-list text-primary" style="margin-right: 6px;"></i> Select Items to Print
+                                </span>
+                                <div class="d-flex align-items-center" style="gap: 6px;">
+                                    <button type="button" class="btn btn-xs btn-outline-primary py-0 px-2 fw-semibold" id="lblSelectAllBtn" style="font-size: 11px; height: 24px; border-radius: 4px;">Select All</button>
+                                    <button type="button" class="btn btn-xs btn-outline-secondary py-0 px-2 fw-semibold" id="lblDeselectAllBtn" style="font-size: 11px; height: 24px; border-radius: 4px;">Clear</button>
+                                </div>
+                            </div>
+                            <div class="card-body p-0" style="max-height: 310px; overflow-y: auto;">
+                                <table class="table table-hover table-sm align-middle mb-0" style="font-size: 12px;">
+                                    <thead class="sticky-top" style="background: #f8fafc; font-size: 10.5px; font-weight: 700; color: #475569; letter-spacing: 0.5px; text-transform: uppercase; border-bottom: 2px solid #e2e8f0;">
+                                        <tr>
+                                            <th style="width: 34px; padding: 7px;" class="text-center">
+                                                <input type="checkbox" id="lblMasterCheck" checked style="accent-color: #2563eb; cursor: pointer;">
+                                            </th>
+                                            <th style="padding: 7px 8px;">Item / Variant</th>
+                                            <th class="text-center" style="padding: 7px 8px;">P-Codes</th>
+                                            <th class="text-center" style="padding: 7px 8px;">Loc</th>
+                                            <th class="text-center" style="width: 75px; padding: 7px 8px;">Qty</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="lblVariantsTableBody">
+                                        <!-- Injected via JS -->
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div class="card-footer bg-light py-2 px-3 border-top d-flex justify-content-between align-items-center" style="font-size: 11.5px; border-color: #e2e8f0;">
+                                <span class="text-muted">Selected: <strong id="lblSelectedCountText" class="text-primary font-monospace" style="font-size: 12.5px;">0</strong> item(s)</span>
+                                <div class="d-flex align-items-center" style="gap: 6px;">
+                                    <span class="text-muted small">Default Qty:</span>
+                                    <input type="number" id="lblDefaultCopiesInput" value="1" min="1" max="100" class="form-control form-control-sm text-center py-0 fw-bold" style="width: 48px; height: 26px; font-size: 12px; border-radius: 5px; border-color: #cbd5e1; color: #2563eb;">
+                                    <button type="button" class="btn btn-sm btn-outline-secondary py-0 px-2 fw-semibold" id="lblApplyAllCopiesBtn" title="Apply to all items" style="height: 26px; font-size: 11.5px; border-radius: 5px;">Apply</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    {{-- Right column: Live 38mm x 26mm Preview Card --}}
+                    <div class="col-md-5">
+                        <div class="card shadow-none h-100 d-flex flex-column justify-content-between" style="border: 1px solid #e2e8f0; border-radius: 8px; background: #ffffff; overflow: hidden;">
+                            <div class="card-header bg-white py-2 px-3 border-bottom d-flex justify-content-between align-items-center" style="border-color: #e2e8f0;">
+                                <span class="fw-bold text-dark small d-inline-flex align-items-center" style="font-size: 12px; font-weight: 700;">
+                                    <i class="fas fa-eye text-primary" style="margin-right: 6px;"></i> 38mm &times; 26mm Live Preview
+                                </span>
+                                <span class="badge font-monospace" style="background: #f1f5f9; color: #475569; border: 1px solid #e2e8f0; font-size: 10px; font-weight: 700; padding: 2.5px 7px; border-radius: 4px;">1:1 Scale</span>
+                            </div>
+                            <div class="card-body p-3 d-flex flex-column align-items-center justify-content-center" style="min-height: 200px; background: #f8fafc;">
+                                <!-- Realistic Sticker Card with subtle drop shadow -->
+                                <div id="lblLivePreviewBox" class="label-sticker-preview shadow-sm">
+                                    <!-- Line 1: Product & Variant -->
+                                    <div class="sticker-line-1" id="lblPrevLine1">
+                                        CAT - SCAT - 001
+                                    </div>
+
+                                    <!-- Serial No: Directly below Line 1 in larger bold font -->
+                                    <div class="sticker-line-serial" id="lblPrevSerial">
+                                        T1-0003
+                                    </div>
+
+                                    <!-- Line 2: PCODE - ROOT -->
+                                    <div class="sticker-line-2" id="lblPrevLine2">
+                                        PCODE - ROOT
+                                    </div>
+
+                                    <!-- Line 3: LOCATION -->
+                                    <div class="sticker-line-3" id="lblPrevLine3">
+                                        LOCATION
+                                    </div>
+
+                                    <!-- Line 4: Store Name in script font (Kent Hardware) -->
+                                    <div class="sticker-line-4" id="lblPrevStoreName">
+                                        Kent Hardware
+                                    </div>
+                                </div>
+                                <small class="text-muted mt-2 text-center" style="font-size: 10.5px;">Click any row on the left to preview its sticker</small>
+                            </div>
+                            <div class="card-footer bg-white p-2.5 border-top text-center" style="border-color: #e2e8f0;">
+                                <span class="badge" style="background: #ecfdf5; color: #047857; border: 1px solid #a7f3d0; font-size: 11px; padding: 4px 10px; border-radius: 5px;">
+                                    <i class="fas fa-check-circle" style="margin-right: 4px;"></i> Formatted specifically for standard 38mm &times; 26mm thermal label rolls.
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            {{-- Footer --}}
+            <div class="modal-footer bg-light border-top py-2.5 px-4 d-flex justify-content-between align-items-center flex-wrap" style="border-color: #e2e8f0; gap: 10px;">
+                <!-- Controls: Print Mode & Grouping Style -->
+                <div class="d-flex align-items-center flex-wrap" style="gap: 12px;">
+                    <!-- Print Mode -->
+                    <div class="d-flex align-items-center" style="gap: 6px;">
+                        <span class="small fw-bold text-muted text-uppercase d-inline-flex align-items-center" style="font-size: 10.5px; letter-spacing: 0.5px; margin-right: 2px;">
+                            <i class="fas fa-sliders-h text-primary" style="margin-right: 4px;"></i>Mode:
+                        </span>
+                        <div class="loc-segment-switch" style="height: 30px; padding: 2px 3px;">
+                            <input type="radio" name="lblPrintLayout" id="layoutThermal" value="thermal" checked autocomplete="off">
+                            <label for="layoutThermal" title="Thermal Roll (38x26mm)" style="padding: 3px 9px !important; font-size: 11px !important;">
+                                <i class="fas fa-receipt me-1"></i> Thermal (38&times;26)
+                            </label>
+
+                            <input type="radio" name="lblPrintLayout" id="layoutA4" value="a4" autocomplete="off">
+                            <label for="layoutA4" title="A4 Sheet Grid" style="padding: 3px 9px !important; font-size: 11px !important;">
+                                <i class="fas fa-file-alt me-1"></i> A4 Grid Sheet
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Label Grouping Option -->
+                    <div class="d-flex align-items-center" style="gap: 6px;">
+                        <span class="small fw-bold text-muted text-uppercase d-inline-flex align-items-center" style="font-size: 10.5px; letter-spacing: 0.5px; margin-right: 2px;">
+                            <i class="fas fa-boxes text-primary" style="margin-right: 4px;"></i>Style:
+                        </span>
+                        <div class="loc-segment-switch" style="height: 30px; padding: 2px 3px;">
+                            <input type="radio" name="lblPrintGrouping" id="groupIndividual" value="individual" checked autocomplete="off">
+                            <label for="groupIndividual" title="Each variant prints its own label" style="padding: 3px 9px !important; font-size: 11px !important;">
+                                <i class="fas fa-tag me-1"></i> Individual
+                            </label>
+
+                            <input type="radio" name="lblPrintGrouping" id="groupLocation" value="location" autocomplete="off">
+                            <label for="groupLocation" title="Combine variants on the same rack onto 1 label" style="padding: 3px 9px !important; font-size: 11px !important;">
+                                <i class="fas fa-warehouse me-1"></i> By Rack/Shelf
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="d-flex align-items-center" style="gap: 8px;">
+                    <button type="button" class="btn btn-sm btn-outline-secondary px-3 rounded-pill fw-semibold" data-dismiss="modal" data-bs-dismiss="modal" style="font-size: 12px; height: 34px; background: #fff; border-color: #cbd5e1;">Close</button>
+                    <a href="#" target="_blank" class="btn btn-sm btn-outline-primary px-3 rounded-pill fw-semibold shadow-sm d-inline-flex align-items-center" id="lblBtnOpenPrintPage" style="font-size: 12px; height: 34px;">
+                        <i class="fas fa-external-link-alt" style="margin-right: 6px;"></i> Open Print Sheet
+                    </a>
+                    <button type="button" class="btn btn-sm px-4 fw-bold rounded-pill shadow-sm d-inline-flex align-items-center" id="lblBtnPrintNow" style="background: #2563eb; color: #ffffff; border: none; font-size: 12.5px; height: 34px;">
+                        <i class="fas fa-print" style="margin-right: 6px;"></i> Print Selected Labels
                     </button>
                 </div>
             </div>
@@ -1254,7 +1597,19 @@
 @endsection
 
 @section('js')
+<script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.5/dist/JsBarcode.all.min.js"></script>
 <script>
+function escapeHtml(text) {
+    if (text === null || text === undefined) return '';
+    return String(text)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+}
+window.escapeHtml = escapeHtml;
+
 $(document).ready(function () {
 
     // ── Open Import Modal ──
@@ -1565,14 +1920,14 @@ $(document).ready(function () {
     $('#btnModeMatrix').on('click', function() {
         $('#modalMatrixContainer').removeClass('d-none');
         $('#modalContentRow').addClass('d-none');
-        $('#btnModeMatrix').addClass('active').css({'background': '#714B67', 'color': '#ffffff'}).removeClass('btn-light text-muted');
+        $('#btnModeMatrix').addClass('active').css({'background': '#2563eb', 'color': '#ffffff'}).removeClass('btn-light text-muted');
         $('#btnModeTable').removeClass('active btn-primary').css({'background': '', 'color': ''}).addClass('btn-light text-muted');
     });
 
     $('#btnModeTable').on('click', function() {
         $('#modalMatrixContainer').addClass('d-none');
         $('#modalContentRow').removeClass('d-none');
-        $('#btnModeTable').addClass('active btn-primary').removeClass('btn-light text-muted');
+        $('#btnModeTable').addClass('active btn-primary').css({'background': '#2563eb', 'color': '#ffffff'}).removeClass('btn-light text-muted');
         $('#btnModeMatrix').removeClass('active').css({'background': '', 'color': ''}).addClass('btn-light text-muted');
     });
 
@@ -1607,12 +1962,12 @@ $(document).ready(function () {
 
         // Set mode buttons in modal
         if (mode === 'matrix') {
-            $('#btnModeMatrix').addClass('active').css({'background': '#714B67', 'color': '#ffffff'}).removeClass('btn-light text-muted');
+            $('#btnModeMatrix').addClass('active').css({'background': '#2563eb', 'color': '#ffffff'}).removeClass('btn-light text-muted');
             $('#btnModeTable').removeClass('active btn-primary').css({'background': '', 'color': ''}).addClass('btn-light text-muted');
             $('#modalMatrixContainer').removeClass('d-none');
             $('#modalContentRow').addClass('d-none');
         } else {
-            $('#btnModeTable').addClass('active btn-primary').removeClass('btn-light text-muted');
+            $('#btnModeTable').addClass('active btn-primary').css({'background': '#2563eb', 'color': '#ffffff'}).removeClass('btn-light text-muted');
             $('#btnModeMatrix').removeClass('active').css({'background': '', 'color': ''}).addClass('btn-light text-muted');
             $('#modalContentRow').removeClass('d-none');
             $('#modalMatrixContainer').addClass('d-none');
@@ -1643,11 +1998,11 @@ $(document).ready(function () {
 
                 // 1. Setup Header
                 $('#view_item_name').text(product.item_name ?? 'Unknown');
-                $('#view_item_subtext').text(
-                    (product.item_code ?? '') + ' | ' +
-                    (product.category_relation?.name ?? '') + ' | ' +
-                    (product.brand?.name ?? '')
-                );
+                let codeHtml = product.item_code ? `<span class="badge font-monospace" style="background: #0f172a; color: #ffffff; font-size: 10.5px; border-radius: 4px; padding: 2.5px 7px;">${escapeHtml(product.item_code)}</span>` : '';
+                let catHtml = product.category_relation?.name ? `<span class="badge text-capitalize" style="background: #f1f5f9; color: #334155; border: 1px solid #e2e8f0; font-size: 10.5px; padding: 2.5px 7px; border-radius: 4px;"><i class="fas fa-folder text-primary" style="margin-right: 4px;"></i>${escapeHtml(product.category_relation.name)}</span>` : '';
+                let brandName = (product.brand?.name ?? '').trim();
+                let brandHtml = (brandName && brandName !== '-' && brandName.toLowerCase() !== 'no brand') ? `<span class="badge text-capitalize" style="background: #f1f5f9; color: #334155; border: 1px solid #e2e8f0; font-size: 10.5px; padding: 2.5px 7px; border-radius: 4px;"><i class="fas fa-tag text-secondary" style="margin-right: 4px;"></i>${escapeHtml(brandName)}</span>` : '';
+                $('#view_item_subtext').html(`${codeHtml} ${catHtml} ${brandHtml}`);
 
                 // 2. Parse Variants
                 let variants = [];
@@ -1763,7 +2118,7 @@ $(document).ready(function () {
                                value="${val}" 
                                data-attr="${attrKey}" 
                                class="matrix-attr-input" 
-                               style="position: static !important; width: 16px; height: 16px; accent-color: #00A09D; cursor: pointer; margin: 0; vertical-align: middle;">
+                               style="position: static !important; width: 16px; height: 16px; accent-color: #2563eb; cursor: pointer; margin: 0; vertical-align: middle;">
                         <span class="matrix-attr-val" style="font-size: 13.5px; color: #1e293b; font-weight: 600; margin-left: 7px; user-select: none;">
                             ${val}
                         </span>
@@ -1998,15 +2353,15 @@ $(document).ready(function () {
                 }
 
                 $('#matrixSelectedVariantInfo').html(`
-                    <span class="badge bg-success-subtle text-success border border-success-subtle px-2 py-1 me-2 font-monospace">
-                        <i class="fas fa-check-circle me-1"></i> Ready
+                    <span class="badge font-monospace" style="background: #ecfdf5; color: #047857; border: 1px solid #a7f3d0; font-size: 11px; padding: 3px 8px; border-radius: 4px; display: inline-flex; align-items: center;">
+                        <i class="fas fa-check-circle" style="margin-right: 4px;"></i> Ready
                     </span>
-                    <span class="fw-bold text-dark font-monospace">${matched.name || matched.variant_name || product.item_name}</span>
-                    ${vSerial ? `<span class="badge bg-primary-subtle text-primary border border-primary-subtle font-monospace ms-2">[${vSerial}]</span>` : ''}
-                    ${vLocation ? `<span class="badge bg-light text-dark border font-monospace ms-1"><i class="fas fa-map-marker-alt text-danger me-1"></i>${vLocation}</span>` : ''}
-                    <span class="badge bg-secondary-subtle text-secondary border font-monospace ms-2">Sky P-Code: ${vSkyPCode}</span>
-                    <span class="badge bg-secondary-subtle text-secondary border font-monospace ms-1">Rot P-Code: ${vRotPCode}</span>
-                    <span class="text-muted ms-2">(Stock: ${stockQty} ${unit})</span>
+                    <strong class="text-dark text-capitalize font-monospace" style="font-size: 12px; margin-left: 4px;">${escapeHtml(matched.name || matched.variant_name || product.item_name)}</strong>
+                    ${vSerial ? `<span class="badge font-monospace" style="background: #eff6ff; color: #1e40af; border: 1px solid #bfdbfe; font-size: 11px; padding: 3px 7px; border-radius: 4px; margin-left: 4px;">[${escapeHtml(vSerial)}]</span>` : ''}
+                    ${vLocation ? `<span class="badge font-monospace" style="background: #f8fafc; color: #334155; border: 1px solid #e2e8f0; font-size: 11px; padding: 3px 7px; border-radius: 4px; margin-left: 4px;"><i class="fas fa-map-marker-alt text-danger" style="margin-right: 4px;"></i>${escapeHtml(vLocation)}</span>` : ''}
+                    <span class="badge font-monospace" style="background: #eff6ff; color: #1e40af; border: 1px solid #bfdbfe; font-size: 11px; padding: 3px 7px; border-radius: 4px; margin-left: 4px;">Sky: ${escapeHtml(vSkyPCode)}</span>
+                    <span class="badge font-monospace" style="background: #f0fdf4; color: #065f46; border: 1px solid #bbf7d0; font-size: 11px; padding: 3px 7px; border-radius: 4px; margin-left: 4px;">Rot: ${escapeHtml(vRotPCode)}</span>
+                    <span class="text-muted small" style="margin-left: 6px;">(Stock: <strong>${stockQty}</strong> ${unit})</span>
                 `);
 
                 $('#btnMatrixAdd').prop('disabled', false).html('<i class="fas fa-check me-1"></i> Add Variant');
@@ -2023,8 +2378,8 @@ $(document).ready(function () {
                 $('#matrix_serial_badge_container').addClass('d-none');
                 $('#matrix_location_badge_wrap').addClass('d-none');
                 $('#matrix_location_text').text('---');
-                $('#matrixSelectedVariantInfo').html('<span class="text-warning"><i class="fas fa-exclamation-triangle me-1"></i> Combination not available in stock</span>');
-                $('#btnMatrixAdd').prop('disabled', true).text('Add');
+                $('#matrixSelectedVariantInfo').html('<span class="text-warning small"><i class="fas fa-exclamation-triangle me-1"></i> Combination not available in stock</span>');
+                $('#btnMatrixAdd').prop('disabled', true).text('Add Variant');
             }
         } else {
             currentMatchedVariant = null;
@@ -2040,8 +2395,8 @@ $(document).ready(function () {
             $('#matrix_location_badge_wrap').addClass('d-none');
             $('#matrix_location_text').text('---');
             const remainingCount = attrKeys.filter(k => !currentSelectedAttrs[k]).length;
-            $('#matrixSelectedVariantInfo').html(`<span class="text-muted"><i class="fas fa-info-circle me-1"></i> Select remaining ${remainingCount} attribute(s) to view exact variant</span>`);
-            $('#btnMatrixAdd').prop('disabled', true).text('Add');
+            $('#matrixSelectedVariantInfo').html(`<span class="text-muted small"><i class="fas fa-info-circle me-1 text-primary"></i> Select remaining ${remainingCount} attribute(s) to view exact variant</span>`);
+            $('#btnMatrixAdd').prop('disabled', true).text('Add Variant');
         }
     }
 
@@ -2067,7 +2422,7 @@ $(document).ready(function () {
             icon: 'success',
             showCancelButton: true,
             confirmButtonText: '<i class="fas fa-cash-register me-1"></i> Open in Sales Invoice',
-            confirmButtonColor: '#714B67',
+            confirmButtonColor: '#2563eb',
             cancelButtonText: 'Stay on Page'
         }).then((result) => {
             if (result.isConfirmed) {
@@ -2218,9 +2573,520 @@ $(document).ready(function () {
                     $('#subCategorySelect').append('<option value="' + sub.id + '">' + sub.name + '</option>');
                 });
             }).fail(() => alert('Error fetching subcategories.'));
-        } else {
-            $('#subCategorySelect').html('<option value="">Select Sub-Category</option>');
         }
+    });
+
+    // ══════════════════════════════════════════════════════════════
+    // 38mm x 26mm PRODUCT & VARIANT LABEL PRINTING SYSTEM
+    // ══════════════════════════════════════════════════════════════
+    let currentLabelProduct = null;
+    let currentLabelVariants = [];
+
+    // Click handler on table rows / mobile cards
+    $(document).on('click', '.openLabelPrintModalBtn', function(e) {
+        e.preventDefault();
+        const productId = $(this).data('id');
+        openProductLabelModal(productId);
+    });
+
+    // Click handler from Matrix View modal
+    $(document).on('click', '#btnMatrixPrintLabel', function(e) {
+        e.preventDefault();
+        if (!currentLoadedProduct) return;
+        
+        let targetVariantIdx = null;
+        if (currentMatchedVariant && currentLoadedVariants && currentLoadedVariants.length > 0) {
+            targetVariantIdx = currentLoadedVariants.findIndex(v => v === currentMatchedVariant || (v.serial_no && v.serial_no === currentMatchedVariant.serial_no));
+            if (targetVariantIdx < 0) targetVariantIdx = 0;
+        }
+
+        openProductLabelModal(currentLoadedProduct.id, targetVariantIdx);
+    });
+
+    function openProductLabelModal(productId, preselectedVariantIndex = null) {
+        const modalEl = document.getElementById('productLabelModal');
+        if (modalEl) {
+            try {
+                if (typeof jQuery !== 'undefined' && typeof jQuery(modalEl).modal === 'function') {
+                    jQuery(modalEl).modal('show');
+                } else if (window.bootstrap && typeof bootstrap.Modal === 'function') {
+                    const inst = bootstrap.Modal.getInstance ? bootstrap.Modal.getInstance(modalEl) : null;
+                    (inst || new bootstrap.Modal(modalEl)).show();
+                } else {
+                    $('#productLabelModal').modal('show');
+                }
+            } catch(e) {
+                try { $('#productLabelModal').modal('show'); } catch(err) {}
+            }
+        }
+
+        $('#lblModalLoading').removeClass('d-none');
+        $('#lblModalContent').addClass('d-none');
+
+        $.ajax({
+            url: "/productview/" + productId,
+            type: "GET",
+            success: function(product) {
+                $('#lblModalLoading').addClass('d-none');
+                $('#lblModalContent').removeClass('d-none');
+
+                currentLabelProduct = product;
+
+                // Setup Title & Subtitle
+                const pCode = product.item_code || '';
+                const pName = product.item_name || '';
+                const catName = product.category_relation?.name || '';
+
+                let subtitleHtml = '';
+                if (pCode) {
+                    subtitleHtml += `<span class="badge font-monospace" style="background: #0f172a; color: #ffffff; font-size: 11px; padding: 2px 7px; border-radius: 4px; font-weight: 700; margin-right: 6px;">${escapeHtml(pCode)}</span>`;
+                }
+                if (pName) {
+                    subtitleHtml += `<span class="fw-bold" style="font-size: 12.5px; color: #334155; margin-right: 6px;">${escapeHtml(pName)}</span>`;
+                }
+                if (catName) {
+                    subtitleHtml += `<span class="badge" style="background: #eff6ff; color: #2563eb; border: 1px solid #bfdbfe; font-size: 10.5px; padding: 2px 6px; border-radius: 4px; font-weight: 600;"><i class="fas fa-tag" style="font-size: 9px; margin-right: 4px;"></i>${escapeHtml(catName)}</span>`;
+                }
+                $('#lbl_modal_product_subtitle').html(subtitleHtml || '<span class="text-muted small">No details</span>');
+
+                // Parse variants
+                let variants = [];
+                if (product.color) {
+                    let parsed = product.color;
+                    if (typeof parsed === 'string') {
+                        try { parsed = JSON.parse(parsed); } catch (e) {}
+                    }
+                    if (typeof parsed === 'string') {
+                        try { parsed = JSON.parse(parsed); } catch (e) {}
+                    }
+                    if (Array.isArray(parsed) && parsed.length > 0) {
+                        if (typeof parsed[0] === 'object' && parsed[0] !== null) {
+                            variants = parsed;
+                        }
+                    }
+                }
+                currentLabelVariants = variants;
+
+                renderLabelModalVariants(product, variants, preselectedVariantIndex);
+            },
+            error: function() {
+                $('#lblModalLoading').addClass('d-none');
+                Swal.fire('Error', 'Could not load product details for label printing.', 'error');
+            }
+        });
+    }
+
+    function renderLabelModalVariants(product, variants, preselectedVariantIndex = null) {
+        const $tbody = $('#lblVariantsTableBody');
+        $tbody.empty();
+
+        if (variants && variants.length > 0) {
+            variants.forEach((v, idx) => {
+                const isSelected = (preselectedVariantIndex === null || preselectedVariantIndex === undefined) ? true : (idx === preselectedVariantIndex);
+                const copies = isSelected ? 1 : 0;
+
+                const salePrice = v.sale_price !== undefined ? v.sale_price : (product.sale_price_per_piece || 0);
+                const rotPrice = v.wholesale_price !== undefined ? v.wholesale_price : (product.wholesale_price || 0);
+
+                const skyPCode = v.sky_p_code || v.p_code || (window.encodeToPCode ? window.encodeToPCode(salePrice) : '---');
+                const rotPCode = v.rot_p_code || (window.encodeToPCode ? window.encodeToPCode(rotPrice) : '---');
+
+                const location = v.location ? v.location.trim() : (v.rack_shelf ? v.rack_shelf.trim() : (product.remarks ? product.remarks.trim() : ''));
+                const serial = v.serial_no ? v.serial_no.trim() : '';
+
+                let vName = v.name || v.variant_name || '';
+                let cleanPart = '';
+                if (vName) {
+                    let m = vName.match(/\((.*?)\)/);
+                    if (m && m[1]) cleanPart = m[1];
+                    else cleanPart = vName.replace(product.item_name, '').replace(/^[\s\-\/\(\)]+|[\s\-\/\(\)]+$/g, '');
+                }
+                if (!cleanPart) {
+                    let parts = [];
+                    if (v.size && v.size !== '-') parts.push(v.size);
+                    if (v.color && v.color !== '-') parts.push(v.color);
+                    cleanPart = parts.join(' / ');
+                }
+                const displayVarTitle = cleanPart || `Variant #${idx + 1}`;
+
+                const rowHtml = `
+                    <tr class="lbl-var-row ${idx === (preselectedVariantIndex || 0) ? 'table-active' : ''}" data-idx="${idx}" style="cursor: pointer;">
+                        <td class="text-center align-middle" style="width: 34px;">
+                            <input type="checkbox" class="lbl-var-check" data-idx="${idx}" ${isSelected ? 'checked' : ''} style="accent-color: #2563eb; cursor: pointer; width: 14px; height: 14px;">
+                        </td>
+                        <td class="align-middle">
+                            <div class="d-flex align-items-center flex-wrap" style="line-height: 1.25;">
+                                <span class="fw-bold text-dark" style="font-size: 12.5px;">${escapeHtml(displayVarTitle)}</span>
+                                ${serial ? `<span class="badge" style="background: #eff6ff; color: #2563eb; border: 1px solid #bfdbfe; font-family: monospace; font-size: 10px; margin-left: 6px; padding: 1.5px 5px; border-radius: 4px; font-weight: 700;">#${escapeHtml(serial)}</span>` : ''}
+                            </div>
+                        </td>
+                        <td class="text-center align-middle font-monospace" style="font-size: 11px; white-space: nowrap;">
+                            <span class="badge" style="background: #eff6ff; color: #1e40af; border: 1px solid #bfdbfe; padding: 2px 6px; font-size: 11px; font-weight: 700;">${escapeHtml(skyPCode)}</span>
+                            <span class="text-muted" style="font-size: 10px; margin: 0 2px;">/</span>
+                            <span class="badge" style="background: #f0fdf4; color: #166534; border: 1px solid #bbf7d0; padding: 2px 6px; font-size: 11px; font-weight: 700;">${escapeHtml(rotPCode)}</span>
+                        </td>
+                        <td class="text-center align-middle">
+                            ${location ? `<span class="badge" style="background: #f1f5f9; color: #334155; border: 1px solid #cbd5e1; font-family: monospace; font-size: 10.5px; padding: 2px 6px; border-radius: 4px; font-weight: 600;"><i class="fas fa-map-marker-alt text-muted" style="margin-right: 3px; font-size: 9.5px;"></i>${escapeHtml(location)}</span>` : '<span class="text-muted" style="font-size: 11px;">—</span>'}
+                        </td>
+                        <td class="text-center align-middle">
+                            <input type="number" class="form-control form-control-sm text-center py-0 lbl-var-copies fw-bold" data-idx="${idx}" min="0" max="100" value="${copies}" style="height: 26px; font-size: 12px; width: 60px; margin: 0 auto; border-radius: 5px; border-color: #cbd5e1; color: #2563eb;">
+                        </td>
+                    </tr>
+                `;
+                $tbody.append(rowHtml);
+            });
+        } else {
+            // Master Product single item
+            const basePrice = product.size_mode === 'by_size' ? product.price_per_m2 : (product.sale_price_per_piece || product.sale_price_per_box || 0);
+            const baseRotPrice = product.wholesale_price || 0;
+            const skyPCode = product.p_code || (window.encodeToPCode ? window.encodeToPCode(basePrice) : '---');
+            const rotPCode = product.rot_p_code || (window.encodeToPCode ? window.encodeToPCode(baseRotPrice) : '---');
+            const location = product.remarks ? product.remarks.trim() : '';
+
+            const rowHtml = `
+                <tr class="lbl-var-row table-active" data-idx="master" style="cursor: pointer;">
+                    <td class="text-center align-middle" style="width: 34px;">
+                        <input type="checkbox" class="lbl-var-check" data-idx="master" checked style="accent-color: #2563eb; cursor: pointer; width: 14px; height: 14px;">
+                    </td>
+                    <td class="align-middle">
+                        <div class="fw-bold text-dark" style="font-size: 12.5px;">${escapeHtml(product.item_name)}</div>
+                        <small class="badge font-monospace mt-0.5" style="background: #0f172a; color: #fff; font-size: 10px; padding: 1.5px 5px; border-radius: 3px;">${escapeHtml(product.item_code || '')}</small>
+                    </td>
+                    <td class="text-center align-middle font-monospace" style="font-size: 11px; white-space: nowrap;">
+                        <span class="badge" style="background: #eff6ff; color: #1e40af; border: 1px solid #bfdbfe; padding: 2px 6px; font-size: 11px; font-weight: 700;">${escapeHtml(skyPCode)}</span>
+                        <span class="text-muted" style="font-size: 10px; margin: 0 2px;">/</span>
+                        <span class="badge" style="background: #f0fdf4; color: #166534; border: 1px solid #bbf7d0; padding: 2px 6px; font-size: 11px; font-weight: 700;">${escapeHtml(rotPCode)}</span>
+                    </td>
+                    <td class="text-center align-middle">
+                        ${location ? `<span class="badge" style="background: #f1f5f9; color: #334155; border: 1px solid #cbd5e1; font-family: monospace; font-size: 10.5px; padding: 2px 6px; border-radius: 4px; font-weight: 600;"><i class="fas fa-map-marker-alt text-muted" style="margin-right: 3px; font-size: 9.5px;"></i>${escapeHtml(location)}</span>` : '<span class="text-muted" style="font-size: 11px;">—</span>'}
+                    </td>
+                    <td class="text-center align-middle">
+                        <input type="number" class="form-control form-control-sm text-center py-0 lbl-var-copies fw-bold" data-idx="master" min="1" max="100" value="1" style="height: 26px; font-size: 12px; width: 60px; margin: 0 auto; border-radius: 5px; border-color: #cbd5e1; color: #2563eb;">
+                    </td>
+                </tr>
+            `;
+            $tbody.append(rowHtml);
+        }
+
+        updateLabelSelectionCount();
+        const initialIdx = (preselectedVariantIndex !== null && preselectedVariantIndex !== undefined) ? preselectedVariantIndex : (variants.length > 0 ? 0 : 'master');
+        updateLiveLabelPreview(initialIdx);
+    }
+
+    function updateLabelSelectionCount() {
+        const checkedCount = $('.lbl-var-check:checked').length;
+        $('#lblSelectedCountText').text(checkedCount);
+        $('#lblMasterCheck').prop('checked', checkedCount > 0 && checkedCount === $('.lbl-var-check').length);
+        $('#lblBtnPrintNow').prop('disabled', checkedCount === 0);
+    }
+
+    function updateLiveLabelPreview(variantIdx) {
+        if (!currentLabelProduct) return;
+
+        let pName = currentLabelProduct.item_name || 'PRODUCT';
+        let vName = '';
+        let skyCode = '---';
+        let rotCode = '---';
+        let location = '';
+        let serial = '';
+        let barcodeVal = currentLabelProduct.barcode_path || currentLabelProduct.item_code || '';
+
+        if (variantIdx !== 'master' && currentLabelVariants && currentLabelVariants[variantIdx]) {
+            const v = currentLabelVariants[variantIdx];
+            const salePrice = v.sale_price !== undefined ? v.sale_price : (currentLabelProduct.sale_price_per_piece || 0);
+            const rotPrice = v.wholesale_price !== undefined ? v.wholesale_price : (currentLabelProduct.wholesale_price || 0);
+
+            skyCode = v.sky_p_code || v.p_code || (window.encodeToPCode ? window.encodeToPCode(salePrice) : '---');
+            rotCode = v.rot_p_code || (window.encodeToPCode ? window.encodeToPCode(rotPrice) : '---');
+            location = v.location ? v.location.trim() : (v.rack_shelf ? v.rack_shelf.trim() : (currentLabelProduct.remarks ? currentLabelProduct.remarks.trim() : ''));
+            serial = v.serial_no ? v.serial_no.trim() : '';
+            barcodeVal = v.barcode || serial || currentLabelProduct.barcode_path || currentLabelProduct.item_code;
+
+            let origName = v.name || v.variant_name || '';
+            let cleanPart = '';
+            if (origName) {
+                let m = origName.match(/\((.*?)\)/);
+                if (m && m[1]) cleanPart = m[1];
+                else cleanPart = origName.replace(pName, '').replace(/^[\s\-\/\(\)]+|[\s\-\/\(\)]+$/g, '');
+            }
+            if (!cleanPart) {
+                let parts = [];
+                if (v.size && v.size !== '-') parts.push(v.size);
+                if (v.color && v.color !== '-') parts.push(v.color);
+                cleanPart = parts.join(' / ');
+            }
+            if (cleanPart) {
+                cleanPart = cleanPart.replace(/\bstandard\b\s*[\/\-]?\s*/gi, '').replace(/^[\s\-\/\(\)]+|[\s\-\/\(\)]+$/g, '');
+            }
+            vName = cleanPart;
+        } else {
+            const basePrice = currentLabelProduct.size_mode === 'by_size' ? currentLabelProduct.price_per_m2 : (currentLabelProduct.sale_price_per_piece || currentLabelProduct.sale_price_per_box || 0);
+            const baseRotPrice = currentLabelProduct.wholesale_price || 0;
+            skyCode = currentLabelProduct.p_code || (window.encodeToPCode ? window.encodeToPCode(basePrice) : '---');
+            rotCode = currentLabelProduct.rot_p_code || (window.encodeToPCode ? window.encodeToPCode(baseRotPrice) : '---');
+            location = currentLabelProduct.remarks ? currentLabelProduct.remarks.trim() : '';
+            vName = '';
+        }
+
+        // Extract clean variant specification
+        let cleanPart = '';
+        if (vName) {
+            let m = vName.match(/\((.*?)\)/);
+            if (m && m[1]) cleanPart = m[1];
+            else cleanPart = vName.replace(pName, '').replace(/^[\s\-\/\(\)]+|[\s\-\/\(\)]+$/g, '');
+            cleanPart = cleanPart.replace(/\bstandard\b\s*[\/\-]?\s*/gi, '').replace(/^[\s\-\/\(\)]+|[\s\-\/\(\)]+$/g, '');
+        }
+
+        // Serial / Code
+        const codeOrSerial = serial || currentLabelProduct.model || currentLabelProduct.item_code || '';
+
+        // Line 1: Product Name & Variant Name
+        let line1 = pName;
+        if (cleanPart) {
+            line1 = `${pName} - ${cleanPart}`;
+        } else if (vName && vName !== pName) {
+            let cleanV = vName.replace(/\bstandard\b\s*[\/\-]?\s*/gi, '').replace(/^[\s\-\/\(\)]+|[\s\-\/\(\)]+$/g, '');
+            line1 = cleanV ? `${pName} - ${cleanV}` : pName;
+        }
+
+        // Line 2: PCODE - ROOT
+        let line2 = '---';
+        const hasSky = skyCode && skyCode !== '---';
+        const hasRot = rotCode && rotCode !== '---';
+        if (hasSky && hasRot) {
+            line2 = `${skyCode} - ${rotCode}`;
+        } else if (hasSky) {
+            line2 = skyCode;
+        } else if (hasRot) {
+            line2 = rotCode;
+        }
+
+        // Line 3: LOCATION
+        const line3 = location || '—';
+
+        $('#lblPrevLine1').text(line1);
+        if (codeOrSerial) {
+            $('#lblPrevSerial').text(codeOrSerial).show();
+        } else {
+            $('#lblPrevSerial').hide();
+        }
+        $('#lblPrevLine2').text(line2);
+        $('#lblPrevLine3').text(line3);
+        $('#lblPrevStoreName').text('Kent Hardware');
+
+        // Update Open Print Sheet href
+        const printUrl = buildPrintUrl(currentLabelProduct.id, false);
+        $('#lblBtnOpenPrintPage').attr('href', printUrl);
+    }
+
+    // Helper to build print URL with copies, layout, grouping and selected variants
+    function buildPrintUrl(productId, autoPrint = false, groupBy = null) {
+        let params = new URLSearchParams();
+        if (autoPrint) params.set('autoprint', '1');
+
+        const layout = $('input[name="lblPrintLayout"]:checked').val() || 'thermal';
+        params.set('layout', layout);
+
+        const groupChoice = groupBy || $('input[name="lblPrintGrouping"]:checked').val() || 'individual';
+        params.set('group_by', groupChoice);
+
+        let variantCopiesObj = {};
+
+        $('.lbl-var-check:checked').each(function() {
+            const idx = $(this).data('idx');
+            const copies = parseInt($(`.lbl-var-copies[data-idx="${idx}"]`).val()) || 1;
+            if (copies > 0) {
+                variantCopiesObj[idx] = copies;
+            }
+        });
+
+        if (Object.keys(variantCopiesObj).length > 0) {
+            params.set('variant_copies', JSON.stringify(variantCopiesObj));
+        }
+
+        return `/products/${productId}/labels?` + params.toString();
+    }
+
+    // Check if multiple selected variants share the same rack/shelf and prompt user
+    function checkSharedLocationsAndConfirm(callback) {
+        if (!currentLabelProduct) return;
+
+        const currentChoice = $('input[name="lblPrintGrouping"]:checked').val();
+        if (currentChoice === 'location') {
+            callback('location');
+            return;
+        }
+
+        let locMap = {};
+        $('.lbl-var-check:checked').each(function() {
+            const idx = $(this).data('idx');
+            const copies = parseInt($(`.lbl-var-copies[data-idx="${idx}"]`).val()) || 1;
+            if (copies <= 0) return;
+
+            let loc = '';
+            let vTitle = '';
+            if (idx !== 'master' && currentLabelVariants && currentLabelVariants[idx]) {
+                const v = currentLabelVariants[idx];
+                loc = (v.location || v.rack_shelf || currentLabelProduct.remarks || '').trim();
+                let vName = v.name || v.variant_name || '';
+                let cleanPart = '';
+                if (vName) {
+                    let m = vName.match(/\((.*?)\)/);
+                    if (m && m[1]) cleanPart = m[1];
+                    else cleanPart = vName.replace(currentLabelProduct.item_name, '').replace(/^[\s\-\/\(\)]+|[\s\-\/\(\)]+$/g, '');
+                }
+                if (!cleanPart) {
+                    let parts = [];
+                    if (v.size && v.size !== '-') parts.push(v.size);
+                    if (v.color && v.color !== '-') parts.push(v.color);
+                    cleanPart = parts.join('/');
+                }
+                vTitle = cleanPart || `Var #${idx + 1}`;
+            } else {
+                loc = (currentLabelProduct.remarks || '').trim();
+                vTitle = currentLabelProduct.item_name;
+            }
+
+            if (loc && loc !== '—') {
+                if (!locMap[loc]) locMap[loc] = [];
+                locMap[loc].push(vTitle);
+            }
+        });
+
+        let sharedList = [];
+        for (let l in locMap) {
+            if (locMap[l].length > 1) {
+                sharedList.push({ loc: l, items: locMap[l] });
+            }
+        }
+
+        if (sharedList.length > 0) {
+            let sharedHtml = sharedList.map(s => `
+                <div style="margin-bottom: 5px; padding: 6px 10px; background: #ffffff; border: 1px solid #cbd5e1; border-radius: 6px;">
+                    <strong style="color: #2563eb;"><i class="fas fa-map-marker-alt"></i> ${escapeHtml(s.loc)}:</strong>
+                    <span style="color: #475569; font-size: 11.5px; margin-left: 4px;">${escapeHtml(s.items.join(', '))}</span>
+                </div>
+            `).join('');
+
+            Swal.fire({
+                title: '<span style="font-size: 16.5px; font-weight: 800; color: #0f172a;">Multiple Variants in Same Rack / Shelf</span>',
+                html: `
+                    <div style="font-size: 12.5px; text-align: left; background: #f8fafc; padding: 10px 12px; border-radius: 8px; border: 1px solid #e2e8f0; margin-bottom: 12px;">
+                        ${sharedHtml}
+                    </div>
+                    <p style="font-size: 13px; color: #334155; line-height: 1.4; margin-bottom: 0;">
+                        Ek se zyada variants ek hi rack/shelf par maujood hain.<br>
+                        <strong>Do you want to print other variant/product names on a single rack label, or print separate labels for each variant?</strong>
+                    </p>
+                `,
+                icon: 'question',
+                showCancelButton: true,
+                showDenyButton: true,
+                confirmButtonText: '<i class="fas fa-layer-group me-1" style="margin-right: 4px;"></i> Combine on Shelf Label',
+                denyButtonText: '<i class="fas fa-tags me-1" style="margin-right: 4px;"></i> Separate Variant Labels',
+                cancelButtonText: 'Cancel',
+                confirmButtonColor: '#059669',
+                denyButtonColor: '#2563eb',
+            }).then((res) => {
+                if (res.isConfirmed) {
+                    $('#groupLocation').prop('checked', true);
+                    callback('location');
+                } else if (res.isDenied) {
+                    $('#groupIndividual').prop('checked', true);
+                    callback('individual');
+                }
+            });
+        } else {
+            callback(currentChoice || 'individual');
+        }
+    }
+
+    $(document).on('change', 'input[name="lblPrintLayout"], input[name="lblPrintGrouping"]', function() {
+        if (!currentLabelProduct) return;
+        $('#lblBtnOpenPrintPage').attr('href', buildPrintUrl(currentLabelProduct.id, false));
+    });
+
+    // Row selection and table interactions
+    $(document).on('click', '.lbl-var-row', function(e) {
+        if ($(e.target).is('input')) return;
+        $('.lbl-var-row').removeClass('table-active');
+        $(this).addClass('table-active');
+        const idx = $(this).data('idx');
+        updateLiveLabelPreview(idx);
+    });
+
+    $(document).on('change', '.lbl-var-check', function() {
+        const idx = $(this).data('idx');
+        const isChecked = $(this).is(':checked');
+        const $copiesInput = $(`.lbl-var-copies[data-idx="${idx}"]`);
+        if (isChecked && parseInt($copiesInput.val()) <= 0) {
+            $copiesInput.val(1);
+        } else if (!isChecked) {
+            $copiesInput.val(0);
+        }
+        updateLabelSelectionCount();
+        updateLiveLabelPreview(idx);
+    });
+
+    $(document).on('input change', '.lbl-var-copies', function() {
+        const idx = $(this).data('idx');
+        const val = parseInt($(this).val()) || 0;
+        $(`.lbl-var-check[data-idx="${idx}"]`).prop('checked', val > 0);
+        updateLabelSelectionCount();
+    });
+
+    $('#lblMasterCheck').on('change', function() {
+        const isChecked = $(this).is(':checked');
+        $('.lbl-var-check').prop('checked', isChecked);
+        $('.lbl-var-copies').each(function() {
+            $(this).val(isChecked ? (parseInt($('#lblDefaultCopiesInput').val()) || 1) : 0);
+        });
+        updateLabelSelectionCount();
+    });
+
+    $('#lblSelectAllBtn').on('click', function() {
+        $('.lbl-var-check').prop('checked', true);
+        const defCopies = parseInt($('#lblDefaultCopiesInput').val()) || 1;
+        $('.lbl-var-copies').val(defCopies);
+        updateLabelSelectionCount();
+    });
+
+    $('#lblDeselectAllBtn').on('click', function() {
+        $('.lbl-var-check').prop('checked', false);
+        $('.lbl-var-copies').val(0);
+        updateLabelSelectionCount();
+    });
+
+    $('#lblApplyAllCopiesBtn').on('click', function() {
+        const count = Math.max(1, parseInt($('#lblDefaultCopiesInput').val()) || 1);
+        $('.lbl-var-check:checked').each(function() {
+            const idx = $(this).data('idx');
+            $(`.lbl-var-copies[data-idx="${idx}"]`).val(count);
+        });
+    });
+
+    // Open Print Page (links to print sheet in new tab)
+    $(document).on('click', '#lblBtnOpenPrintPage', function(e) {
+        e.preventDefault();
+        if (!currentLabelProduct) return;
+
+        checkSharedLocationsAndConfirm(function(chosenGrouping) {
+            const printUrl = buildPrintUrl(currentLabelProduct.id, false, chosenGrouping);
+            window.open(printUrl, '_blank');
+        });
+    });
+
+    // Print Now button triggers popup window printing (eliminates iframe A4 scaling bugs)
+    $(document).on('click', '#lblBtnPrintNow', function() {
+        if (!currentLabelProduct) return;
+
+        checkSharedLocationsAndConfirm(function(chosenGrouping) {
+            const printUrl = buildPrintUrl(currentLabelProduct.id, true, chosenGrouping);
+            const printWin = window.open(printUrl, 'LabelPrintPopup', 'width=460,height=600,menubar=no,toolbar=no,location=no,status=no,scrollbars=yes');
+            if (printWin) {
+                printWin.focus();
+            }
+        });
     });
 
 });  // ── end $(document).ready ──
