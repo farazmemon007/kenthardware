@@ -49,8 +49,18 @@ class PCodeService
                 return $default;
             }
 
-            // Ensure all digits 1..9, 0 are present
-            return array_merge($default, $saved);
+            // Ensure all digits 1..9, 0 are present with proper string keys (avoid array_merge re-indexing numeric keys)
+            $merged = [];
+            foreach ($default as $digit => $letter) {
+                $digitStr = (string)$digit;
+                if (isset($saved[$digitStr]) && $saved[$digitStr] !== '') {
+                    $merged[$digitStr] = strtoupper(substr(trim((string)$saved[$digitStr]), 0, 1));
+                } else {
+                    $merged[$digitStr] = $letter;
+                }
+            }
+
+            return $merged;
         });
     }
 
@@ -85,6 +95,75 @@ class PCodeService
         Cache::forget('setting_pcode_mapping');
 
         return $cleaned;
+    }
+
+    /**
+     * Re-calculate and synchronize P-Codes for all existing products and variants
+     * according to the active P-Code cipher mapping.
+     */
+    public static function syncAllProductsPCodes(): int
+    {
+        $updatedCount = 0;
+
+        foreach (\App\Models\Product::cursor() as $product) {
+            // Master retail price
+            if ($product->size_mode === 'by_size') {
+                $m2 = (($product->height * $product->width) / 10000);
+                $retailPrice = $m2 * (float)$product->price_per_m2;
+            } else {
+                $retailPrice = (float)$product->sale_price_per_piece ?: (float)$product->sale_price_per_box;
+            }
+            $wholesalePrice = (float)($product->wholesale_price ?? 0);
+
+            $colorData = $product->color;
+            if (!empty($colorData)) {
+                $parsed = is_string($colorData) ? json_decode($colorData, true) : $colorData;
+                if (is_string($parsed)) {
+                    $parsed = json_decode($parsed, true);
+                }
+
+                if (is_array($parsed) && count($parsed) > 0 && is_array($parsed[0])) {
+                    $baseV = collect($parsed)->firstWhere('is_base_variant', 1) ?? $parsed[0];
+                    if ($retailPrice <= 0 && !empty($baseV['sale_price'])) {
+                        $retailPrice = (float)$baseV['sale_price'];
+                    }
+                    if ($wholesalePrice <= 0 && !empty($baseV['wholesale_price'])) {
+                        $wholesalePrice = (float)$baseV['wholesale_price'];
+                    }
+
+                    foreach ($parsed as &$v) {
+                        $vSale = isset($v['sale_price']) && $v['sale_price'] !== '' ? (float)$v['sale_price'] : $retailPrice;
+                        $vWholesale = isset($v['wholesale_price']) && $v['wholesale_price'] !== '' ? (float)$v['wholesale_price'] : $wholesalePrice;
+
+                        $vSkyPCode = self::encode($vSale);
+                        $vRotPCode = self::encode($vWholesale);
+
+                        $v['p_code'] = $vSkyPCode;
+                        $v['sky_p_code'] = $vSkyPCode;
+                        $v['rot_p_code'] = $vRotPCode;
+                    }
+                    unset($v);
+                    $colorData = json_encode($parsed);
+                }
+            }
+
+            $skyPCode = self::encode($retailPrice);
+            $rotPCode = self::encode($wholesalePrice);
+
+            // Directly update the database row
+            \Illuminate\Support\Facades\DB::table('products')
+                ->where('id', $product->id)
+                ->update([
+                    'p_code'     => $skyPCode,
+                    'rot_p_code' => $rotPCode,
+                    'color'      => $colorData,
+                    'updated_at' => now(),
+                ]);
+
+            $updatedCount++;
+        }
+
+        return $updatedCount;
     }
 
     /**

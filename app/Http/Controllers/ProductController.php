@@ -972,8 +972,8 @@ class ProductController extends Controller
 
                         $vSerial = !empty($serial_nos[$i]) ? $serial_nos[$i] : sprintf('%s-%04d', $prefix, count($variants) + 1);
 
-                        $vSkyPCode = !empty($variant_sky_pcodes[$i]) ? $variant_sky_pcodes[$i] : (!empty($variant_pcodes[$i]) ? $variant_pcodes[$i] : PCodeService::encode($vSalePrice));
-                        $vRotPCode = !empty($variant_rot_pcodes[$i]) ? $variant_rot_pcodes[$i] : PCodeService::encode($vWholesalePrice);
+                        $vSkyPCode = PCodeService::encode($vSalePrice);
+                        $vRotPCode = PCodeService::encode($vWholesalePrice);
 
                         $variants[] = [
                             'name' => $names[$i],
@@ -1018,8 +1018,8 @@ class ProductController extends Controller
 
                 $skyPrice = $salePricePerPiece > 0 ? $salePricePerPiece : (float)($request->retail_price ?? ($request->sale_price_per_piece ?? 0));
                 $rotPrice = (float)($request->wholesale_price ?? 0);
-                $productSkyPCode = !empty($request->sky_p_code) ? $request->sky_p_code : (!empty($request->p_code) ? $request->p_code : PCodeService::encode($skyPrice));
-                $productRotPCode = !empty($request->rot_p_code) ? $request->rot_p_code : PCodeService::encode($rotPrice);
+                $productSkyPCode = PCodeService::encode($skyPrice);
+                $productRotPCode = PCodeService::encode($rotPrice);
 
                 // Create product
                 $product = Product::create([
@@ -1437,8 +1437,8 @@ class ProductController extends Controller
 
                         $vSerial = !empty($serial_nos[$i]) ? $serial_nos[$i] : sprintf('%s-%04d', $prefix, count($variants) + 1);
 
-                        $vSkyPCode = !empty($variant_sky_pcodes[$i]) ? $variant_sky_pcodes[$i] : (!empty($variant_pcodes[$i]) ? $variant_pcodes[$i] : PCodeService::encode($vSalePrice));
-                        $vRotPCode = !empty($variant_rot_pcodes[$i]) ? $variant_rot_pcodes[$i] : PCodeService::encode($vWholesalePrice);
+                        $vSkyPCode = PCodeService::encode($vSalePrice);
+                        $vRotPCode = PCodeService::encode($vWholesalePrice);
 
                         $variants[] = [
                             'name' => $names[$i],
@@ -1494,8 +1494,8 @@ class ProductController extends Controller
 
                 $skyPrice = $salePricePerPiece > 0 ? $salePricePerPiece : (float)($request->retail_price ?? ($request->sale_price_per_piece ?? 0));
                 $rotPrice = (float)($request->wholesale_price ?? 0);
-                $productSkyPCode = !empty($request->sky_p_code) ? $request->sky_p_code : (!empty($request->p_code) ? $request->p_code : PCodeService::encode($skyPrice));
-                $productRotPCode = !empty($request->rot_p_code) ? $request->rot_p_code : PCodeService::encode($rotPrice);
+                $productSkyPCode = PCodeService::encode($skyPrice);
+                $productRotPCode = PCodeService::encode($rotPrice);
 
                 Product::where('id', $id)->update([
                     'creater_id' => $userId,
@@ -1892,8 +1892,10 @@ class ProductController extends Controller
         $storageLocations = StorageLocation::with(['warehouse:id,warehouse_name', 'branch:id,name'])->orderBy('name')->get();
         $units = Unit::all();
         $packageTypes = PackageType::orderBy('pieces_per_box', 'asc')->get();
+        $warehouses = Warehouse::select('id', 'warehouse_name')->get();
+        $branches = Branch::select('id', 'name')->get();
 
-        return view('admin_panel.product.edit', compact('product', 'categories', 'subcategories', 'brands', 'variants', 'storageLocations', 'units', 'packageTypes'));
+        return view('admin_panel.product.edit', compact('product', 'categories', 'subcategories', 'brands', 'variants', 'storageLocations', 'units', 'packageTypes', 'warehouses', 'branches'));
     }
 
     // ===== 38mm x 26mm Label Printing for Product & Variants =====
@@ -2008,8 +2010,8 @@ class ProductController extends Controller
 
                         $sPrice = isset($gv['sale_price']) && $gv['sale_price'] !== '' ? (float)$gv['sale_price'] : ($product->sale_price_per_piece ?: 0);
                         $rPrice = isset($gv['wholesale_price']) && $gv['wholesale_price'] !== '' ? (float)$gv['wholesale_price'] : ($product->wholesale_price ?: 0);
-                        $sCode = !empty($gv['sky_p_code']) ? $gv['sky_p_code'] : (!empty($gv['p_code']) ? $gv['p_code'] : PCodeService::encode($sPrice));
-                        $rCode = !empty($gv['rot_p_code']) ? $gv['rot_p_code'] : PCodeService::encode($rPrice);
+                        $sCode = PCodeService::encode($sPrice);
+                        $rCode = PCodeService::encode($rPrice);
                         if (!empty($sCode) && !in_array($sCode, $skyCodes)) $skyCodes[] = $sCode;
                         if (!empty($rCode) && !in_array($rCode, $rotCodes)) $rotCodes[] = $rCode;
                     }
@@ -2063,8 +2065,8 @@ class ProductController extends Controller
                     $salePrice = isset($v['sale_price']) && $v['sale_price'] !== '' ? (float)$v['sale_price'] : ($product->sale_price_per_piece ?: 0);
                     $rotPrice = isset($v['wholesale_price']) && $v['wholesale_price'] !== '' ? (float)$v['wholesale_price'] : ($product->wholesale_price ?: 0);
 
-                    $skyPCode = !empty($v['sky_p_code']) ? $v['sky_p_code'] : (!empty($v['p_code']) ? $v['p_code'] : PCodeService::encode($salePrice));
-                    $rotPCode = !empty($v['rot_p_code']) ? $v['rot_p_code'] : PCodeService::encode($rotPrice);
+                    $skyPCode = PCodeService::encode($salePrice);
+                    $rotPCode = PCodeService::encode($rotPrice);
 
                     $vLocation = !empty($v['location']) ? trim($v['location']) : (!empty($v['rack_shelf']) ? trim($v['rack_shelf']) : (!empty($product->remarks) ? trim($product->remarks) : ''));
 
@@ -2141,8 +2143,8 @@ class ProductController extends Controller
             $basePrice = $product->size_mode === 'by_size' ? $product->price_per_m2 : ($product->sale_price_per_piece ?: ($product->sale_price_per_box ?: 0));
             $baseRotPrice = $product->wholesale_price ?: 0;
 
-            $skyPCode = !empty($product->p_code) ? $product->p_code : PCodeService::encode($basePrice);
-            $rotPCode = !empty($product->rot_p_code) ? $product->rot_p_code : PCodeService::encode($baseRotPrice);
+            $skyPCode = PCodeService::encode($basePrice);
+            $rotPCode = PCodeService::encode($baseRotPrice);
 
             $loc = !empty($product->remarks) ? trim($product->remarks) : '';
             $barcode = $product->barcode_path ?: $product->item_code;
@@ -2293,6 +2295,38 @@ class ProductController extends Controller
             'is_active' => $product->is_active,
             'message'   => $product->is_active ? 'Product activated successfully.' : 'Product deactivated successfully.',
         ]);
+    }
+
+    // ===== Delete / Destroy Product =====
+    public function destroy($id)
+    {
+        try {
+            $product = Product::findOrFail($id);
+            $productName = $product->item_name;
+
+            // Safe soft delete
+            $product->delete();
+
+            if (request()->ajax() || request()->wantsJson()) {
+                return response()->json([
+                    'status'  => 'success',
+                    'success' => true,
+                    'message' => "Product '{$productName}' deleted successfully.",
+                ]);
+            }
+
+            return redirect()->route('product')->with('success', "Product '{$productName}' deleted successfully.");
+        } catch (\Exception $e) {
+            if (request()->ajax() || request()->wantsJson()) {
+                return response()->json([
+                    'status'  => 'error',
+                    'success' => false,
+                    'message' => 'Failed to delete product: ' . $e->getMessage(),
+                ], 500);
+            }
+
+            return redirect()->route('product')->with('error', 'Failed to delete product: ' . $e->getMessage());
+        }
     }
 
     /**

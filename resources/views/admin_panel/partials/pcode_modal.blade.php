@@ -124,11 +124,14 @@
                     <i class="fas fa-lock text-secondary me-1"></i> Saved securely in system settings
                 </span>
                 <div class="d-flex align-items-center gap-2">
+                    <button type="button" class="btn btn-sm btn-outline-primary px-3 rounded-pill fw-semibold" id="btnSyncAllProductsPCode" title="Synchronize all existing products with the active mapping">
+                        <i class="fas fa-sync-alt me-1"></i> Sync All Products
+                    </button>
                     <button type="button" class="btn btn-sm btn-outline-secondary px-3 rounded-pill" data-bs-dismiss="modal" data-dismiss="modal" onclick="window.closePCodeModal();">
                         Cancel
                     </button>
                     <button type="button" class="btn btn-sm px-4 fw-bold rounded-pill text-white shadow-sm" id="btnSavePCodeMapping" style="background: #2563eb; min-width: 140px;">
-                        <i class="fas fa-save me-1"></i> Save Changes
+                        <i class="fas fa-save me-1"></i> Save &amp; Sync All
                     </button>
                 </div>
             </div>
@@ -292,34 +295,80 @@
             $('#pcodeAlertBox').addClass('d-none');
 
             $.ajax({
-                url: '{{ route("pcode.mapping.update") }}',
+                url: '/pcode/mapping',
                 method: 'POST',
+                headers: {
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') || '{{ csrf_token() }}'
+                },
                 data: {
-                    _token: '{{ csrf_token() }}',
+                    _token: $('meta[name="csrf-token"]').attr('content') || '{{ csrf_token() }}',
                     mapping: mapping
                 },
                 success: function(res) {
-                    $btn.prop('disabled', false).html('<i class="fas fa-save me-1"></i> Save Changes');
+                    $btn.prop('disabled', false).html('<i class="fas fa-save me-1"></i> Save &amp; Sync All');
                     if (res.status === 'success') {
                         window.pcodeMapping = res.mapping;
                         $('#pcodeAlertBox')
                             .removeClass('d-none alert-danger')
                             .addClass('alert-success')
-                            .html('<i class="fas fa-check-circle me-1"></i> ' + (res.message || 'P-Code mapping saved successfully!'));
+                            .html('<i class="fas fa-check-circle me-1"></i> ' + (res.message || 'P-Code mapping saved & all products synced!'));
 
                         // Trigger global event so views can update live
                         $(document).trigger('pcode-mapping-updated', [window.pcodeMapping]);
 
                         setTimeout(function() {
-                            window.closePCodeModal();
-                            $('#pcodeAlertBox').addClass('d-none');
-                        }, 1200);
+                            window.location.reload();
+                        }, 1000);
                     }
                 },
                 error: function(xhr) {
-                    $btn.prop('disabled', false).html('<i class="fas fa-save me-1"></i> Save Changes');
+                    $btn.prop('disabled', false).html('<i class="fas fa-save me-1"></i> Save &amp; Sync All');
                     let errMsg = 'Failed to save P-Code mapping. Please try again.';
-                    if (xhr.responseJSON && xhr.responseJSON.message) {
+                    if (xhr.status === 401 || xhr.status === 419) {
+                        errMsg = 'Your session has expired. Please refresh the page and log in again.';
+                    } else if (xhr.responseJSON && xhr.responseJSON.message) {
+                        errMsg = xhr.responseJSON.message;
+                    }
+                    $('#pcodeAlertBox')
+                        .removeClass('d-none alert-success')
+                        .addClass('alert-danger')
+                        .html('<i class="fas fa-exclamation-circle me-1"></i> ' + errMsg);
+                }
+            });
+        });
+
+        // Dedicated "Sync All Products" button
+        $('#btnSyncAllProductsPCode').on('click', function() {
+            let $btn = $(this);
+            $btn.prop('disabled', true).html('<span class="spinner-border spinner-border-sm me-1"></span> Syncing...');
+            $('#pcodeAlertBox').addClass('d-none');
+
+            $.ajax({
+                url: '/pcode/sync-all',
+                method: 'POST',
+                headers: {
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') || '{{ csrf_token() }}'
+                },
+                data: {
+                    _token: $('meta[name="csrf-token"]').attr('content') || '{{ csrf_token() }}'
+                },
+                success: function(res) {
+                    $btn.prop('disabled', false).html('<i class="fas fa-sync-alt me-1"></i> Sync All Products');
+                    $('#pcodeAlertBox')
+                        .removeClass('d-none alert-danger')
+                        .addClass('alert-success')
+                        .html('<i class="fas fa-check-circle me-1"></i> ' + (res.message || 'All products successfully synced!'));
+
+                    setTimeout(function() {
+                        window.location.reload();
+                    }, 1000);
+                },
+                error: function(xhr) {
+                    $btn.prop('disabled', false).html('<i class="fas fa-sync-alt me-1"></i> Sync All Products');
+                    let errMsg = 'Failed to sync products. Please try again.';
+                    if (xhr.status === 401 || xhr.status === 419) {
+                        errMsg = 'Your session has expired. Please refresh the page and log in again.';
+                    } else if (xhr.responseJSON && xhr.responseJSON.message) {
                         errMsg = xhr.responseJSON.message;
                     }
                     $('#pcodeAlertBox')

@@ -302,6 +302,8 @@
     .btn-act-deact:hover   { background: var(--erp-danger); color: #fff; }
     .btn-act-act     { background: var(--erp-success-lt); color: var(--erp-success); border-color: #a7f3d0; }
     .btn-act-act:hover     { background: var(--erp-success); color: #fff; }
+    .btn-act-delete  { background: #fee2e2; color: #dc2626; border-color: #fca5a5; }
+    .btn-act-delete:hover  { background: #dc2626; color: #fff; }
 
     /* ── Pagination ── */
     .erp-pagination { padding: 14px 20px; border-top: 1px solid var(--erp-border); display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px; }
@@ -972,13 +974,13 @@
                                 <td class="price-sale">Rs. {{ number_format($retailPrice, 2) }}</td>
                                 <td class="text-center">
                                     <span class="badge bg-light text-dark border px-2 py-1 font-monospace fw-bold" style="font-size: 0.82rem; letter-spacing: 0.5px;" title="Sky P-Code">
-                                        {{ $product->p_code ?: \App\Services\PCodeService::encode($retailPrice) }}
+                                        {{ \App\Services\PCodeService::encode($retailPrice) }}
                                     </span>
                                 </td>
                                 <td class="price-wholesale">Rs. {{ number_format((float)($product->wholesale_price ?? 0), 2) }}</td>
                                 <td class="text-center">
                                     <span class="badge bg-light text-dark border px-2 py-1 font-monospace fw-bold" style="font-size: 0.82rem; letter-spacing: 0.5px;" title="Rot P-Code">
-                                        {{ $product->rot_p_code ?: \App\Services\PCodeService::encode($product->wholesale_price ?? 0) }}
+                                        {{ \App\Services\PCodeService::encode((float)($product->wholesale_price ?? 0)) }}
                                     </span>
                                 </td>
                                 <td>
@@ -1020,6 +1022,15 @@
                                                 data-name="{{ $product->item_name }}"
                                                 title="{{ $product->is_active ? 'Deactivate' : 'Activate' }}">
                                                 <i class="fas {{ $product->is_active ? 'fa-ban' : 'fa-check' }}"></i>
+                                            </button>
+                                        @endif
+                                        @if (auth()->user()->can('products.delete') || auth()->user()->can('products.edit') || auth()->user()->email === 'admin@admin.com')
+                                            <button type="button"
+                                                class="btn-act btn-act-delete delete-product-btn"
+                                                data-id="{{ $product->id }}"
+                                                data-name="{{ $product->item_name }}"
+                                                title="Delete Product">
+                                                <i class="fas fa-trash-alt"></i>
                                             </button>
                                         @endif
                                     </div>
@@ -1122,6 +1133,15 @@
                                 data-active="{{ $product->is_active ? '1' : '0' }}"
                                 data-name="{{ $product->item_name }}">
                                 <i class="fas {{ $product->is_active ? 'fa-ban' : 'fa-check' }}"></i>
+                            </button>
+                        @endif
+                        @if (auth()->user()->can('products.delete') || auth()->user()->can('products.edit') || auth()->user()->email === 'admin@admin.com')
+                            <button type="button"
+                                class="btn-act btn-act-delete delete-product-btn"
+                                data-id="{{ $product->id }}"
+                                data-name="{{ $product->item_name }}"
+                                title="Delete Product">
+                                <i class="fas fa-trash-alt"></i>
                             </button>
                         @endif
                     </div>
@@ -2056,10 +2076,10 @@ $(document).ready(function () {
         let basePrice = product.size_mode === 'by_size' ? product.price_per_m2 : (product.sale_price_per_piece || product.sale_price_per_box || 0);
         let baseRotPrice = product.wholesale_price || 0;
         $('#matrix_item_price').text('Rs. ' + parseFloat(basePrice).toFixed(2));
-        let defaultSkyPCode = product.p_code || (window.encodeToPCode ? window.encodeToPCode(basePrice) : '');
+        let defaultSkyPCode = (window.encodeToPCode ? window.encodeToPCode(basePrice) : '') || product.p_code;
         $('#matrix_item_pcode').text(defaultSkyPCode || '---');
         $('#matrix_item_rot_price').text('Rs. ' + parseFloat(baseRotPrice).toFixed(2));
-        let defaultRotPCode = product.rot_p_code || (window.encodeToPCode ? window.encodeToPCode(baseRotPrice) : '');
+        let defaultRotPCode = (window.encodeToPCode ? window.encodeToPCode(baseRotPrice) : '') || product.rot_p_code;
         $('#matrix_item_rot_pcode').text(defaultRotPCode || '---');
         
         let totalStock = product.calculated_total_stock_qty ?? 0;
@@ -2369,8 +2389,8 @@ $(document).ready(function () {
                 currentMatchedVariant = null;
                 let basePrice = product.size_mode === 'by_size' ? product.price_per_m2 : (product.sale_price_per_piece || product.sale_price_per_box || 0);
                 let baseRotPrice = product.wholesale_price || 0;
-                let defaultSkyPCode = product.p_code || (window.encodeToPCode ? window.encodeToPCode(basePrice) : '');
-                let defaultRotPCode = product.rot_p_code || (window.encodeToPCode ? window.encodeToPCode(baseRotPrice) : '');
+                let defaultSkyPCode = (window.encodeToPCode ? window.encodeToPCode(basePrice) : '') || product.p_code;
+                let defaultRotPCode = (window.encodeToPCode ? window.encodeToPCode(baseRotPrice) : '') || product.rot_p_code;
                 $('#matrix_item_price').text('Rs. ' + parseFloat(basePrice).toFixed(2));
                 $('#matrix_item_rot_price').text('Rs. ' + parseFloat(baseRotPrice).toFixed(2));
                 $('#matrix_item_pcode').text(defaultSkyPCode || '---');
@@ -2385,8 +2405,8 @@ $(document).ready(function () {
             currentMatchedVariant = null;
             let basePrice = product.size_mode === 'by_size' ? product.price_per_m2 : (product.sale_price_per_piece || product.sale_price_per_box || 0);
             let baseRotPrice = product.wholesale_price || 0;
-            let defaultSkyPCode = product.p_code || (window.encodeToPCode ? window.encodeToPCode(basePrice) : '');
-            let defaultRotPCode = product.rot_p_code || (window.encodeToPCode ? window.encodeToPCode(baseRotPrice) : '');
+            let defaultSkyPCode = (window.encodeToPCode ? window.encodeToPCode(basePrice) : '') || product.p_code;
+            let defaultRotPCode = (window.encodeToPCode ? window.encodeToPCode(baseRotPrice) : '') || product.rot_p_code;
             $('#matrix_item_price').text('Rs. ' + parseFloat(basePrice).toFixed(2));
             $('#matrix_item_rot_price').text('Rs. ' + parseFloat(baseRotPrice).toFixed(2));
             $('#matrix_item_pcode').text(defaultSkyPCode || '---');
@@ -2471,8 +2491,8 @@ $(document).ready(function () {
                 let vPriceLabel = product.size_mode === 'by_size' ? '/m²' : '/' + vUnit;
 
                 let vWholesale = (v.wholesale_price !== undefined && v.wholesale_price !== null && v.wholesale_price !== '') ? v.wholesale_price : 0;
-                let vSkyPCode = v.sky_p_code || v.p_code || (window.encodeToPCode ? window.encodeToPCode(vSale) : '—');
-                let vRotPCode = v.rot_p_code || (window.encodeToPCode ? window.encodeToPCode(vWholesale) : '—');
+                let vSkyPCode = window.encodeToPCode ? window.encodeToPCode(vSale) : (v.sky_p_code || v.p_code || '—');
+                let vRotPCode = window.encodeToPCode ? window.encodeToPCode(vWholesale) : (v.rot_p_code || '—');
 
                 tbody.append(`<tr>
                     <td class="text-start ps-4 fw-semibold">${vName}</td>
@@ -2491,9 +2511,9 @@ $(document).ready(function () {
             colorList.forEach((color, index) => {
                 let barcode   = (product.barcode_path ?? product.item_code ?? '') + (index > 0 ? '-' + String(index+1).padStart(2,'0') : '');
                 let colorBadge = (color && color !== '-') ? `<span style="background:#e2e8f0;border-radius:4px;padding:2px 6px;font-size:.72rem;">${color}</span>` : '<span style="color:#94a3b8;">—</span>';
-                let prodSkyPCode = product.p_code || (window.encodeToPCode ? window.encodeToPCode(salePrice) : '—');
+                let prodSkyPCode = window.encodeToPCode ? window.encodeToPCode(salePrice) : (product.p_code || '—');
                 let prodRotPrice = product.wholesale_price || 0;
-                let prodRotPCode = product.rot_p_code || (window.encodeToPCode ? window.encodeToPCode(prodRotPrice) : '—');
+                let prodRotPCode = window.encodeToPCode ? window.encodeToPCode(prodRotPrice) : (product.rot_p_code || '—');
                 tbody.append(`<tr>
                     <td class="text-start ps-4 fw-semibold">${product.item_name}</td>
                     <td>${sizeStr}</td>
@@ -2557,7 +2577,58 @@ $(document).ready(function () {
                     }
                     Swal.fire({ toast:true, position:'top-end', icon:'success', title:res.message, showConfirmButton:false, timer:2500, timerProgressBar:true });
                 },
-                error: () => Swal.fire('Error', 'Could not update product status.', 'error')
+        });
+    });
+
+    // ── Delete Product Handler ──
+    $(document).on('click', '.delete-product-btn', function (e) {
+        e.preventDefault();
+        const btn = $(this);
+        const productId = btn.data('id');
+        const productName = btn.data('name') || 'this product';
+
+        Swal.fire({
+            title: 'Delete Product?',
+            html: `Are you sure you want to delete <b>"${productName}"</b>?<br><small class="text-muted">This product and its variants will be removed.</small>`,
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#ef4444',
+            cancelButtonColor: '#64748b',
+            confirmButtonText: '<i class="fas fa-trash-alt me-1"></i> Yes, Delete',
+            cancelButtonText: 'Cancel'
+        }).then((result) => {
+            if (!result.isConfirmed) return;
+            $.ajax({
+                url: `/product/delete/${productId}`,
+                type: 'POST',
+                data: {
+                    _token: $('meta[name="csrf-token"]').attr('content') || '{{ csrf_token() }}',
+                    _method: 'DELETE'
+                },
+                success: function (res) {
+                    if (res.status === 'success' || res.success) {
+                        $(`#product-row-${productId}`).fadeOut(300, function() { $(this).remove(); });
+                        $(`#pmcard-${productId}`).fadeOut(300, function() { $(this).remove(); });
+                        Swal.fire({
+                            toast: true,
+                            position: 'top-end',
+                            icon: 'success',
+                            title: res.message || 'Product deleted successfully.',
+                            showConfirmButton: false,
+                            timer: 2500,
+                            timerProgressBar: true
+                        });
+                    } else {
+                        Swal.fire('Error', res.message || 'Could not delete product.', 'error');
+                    }
+                },
+                error: function (xhr) {
+                    let msg = 'Could not delete product.';
+                    if (xhr.responseJSON && xhr.responseJSON.message) {
+                        msg = xhr.responseJSON.message;
+                    }
+                    Swal.fire('Error', msg, 'error');
+                }
             });
         });
     });
@@ -2688,8 +2759,8 @@ $(document).ready(function () {
                 const salePrice = v.sale_price !== undefined ? v.sale_price : (product.sale_price_per_piece || 0);
                 const rotPrice = v.wholesale_price !== undefined ? v.wholesale_price : (product.wholesale_price || 0);
 
-                const skyPCode = v.sky_p_code || v.p_code || (window.encodeToPCode ? window.encodeToPCode(salePrice) : '---');
-                const rotPCode = v.rot_p_code || (window.encodeToPCode ? window.encodeToPCode(rotPrice) : '---');
+                const skyPCode = (window.encodeToPCode && salePrice) ? window.encodeToPCode(salePrice) : (v.sky_p_code || v.p_code || '---');
+                const rotPCode = (window.encodeToPCode && rotPrice !== undefined) ? window.encodeToPCode(rotPrice) : (v.rot_p_code || '---');
 
                 const location = v.location ? v.location.trim() : (v.rack_shelf ? v.rack_shelf.trim() : (product.remarks ? product.remarks.trim() : ''));
                 const serial = v.serial_no ? v.serial_no.trim() : '';
@@ -2739,8 +2810,8 @@ $(document).ready(function () {
             // Master Product single item
             const basePrice = product.size_mode === 'by_size' ? product.price_per_m2 : (product.sale_price_per_piece || product.sale_price_per_box || 0);
             const baseRotPrice = product.wholesale_price || 0;
-            const skyPCode = product.p_code || (window.encodeToPCode ? window.encodeToPCode(basePrice) : '---');
-            const rotPCode = product.rot_p_code || (window.encodeToPCode ? window.encodeToPCode(baseRotPrice) : '---');
+            const skyPCode = (window.encodeToPCode && basePrice) ? window.encodeToPCode(basePrice) : (product.p_code || '---');
+            const rotPCode = (window.encodeToPCode && baseRotPrice !== undefined) ? window.encodeToPCode(baseRotPrice) : (product.rot_p_code || '---');
             const location = product.remarks ? product.remarks.trim() : '';
 
             const rowHtml = `
@@ -2796,8 +2867,8 @@ $(document).ready(function () {
             const salePrice = v.sale_price !== undefined ? v.sale_price : (currentLabelProduct.sale_price_per_piece || 0);
             const rotPrice = v.wholesale_price !== undefined ? v.wholesale_price : (currentLabelProduct.wholesale_price || 0);
 
-            skyCode = v.sky_p_code || v.p_code || (window.encodeToPCode ? window.encodeToPCode(salePrice) : '---');
-            rotCode = v.rot_p_code || (window.encodeToPCode ? window.encodeToPCode(rotPrice) : '---');
+            skyCode = (window.encodeToPCode && salePrice) ? window.encodeToPCode(salePrice) : (v.sky_p_code || v.p_code || '---');
+            rotCode = (window.encodeToPCode && rotPrice !== undefined) ? window.encodeToPCode(rotPrice) : (v.rot_p_code || '---');
             location = v.location ? v.location.trim() : (v.rack_shelf ? v.rack_shelf.trim() : (currentLabelProduct.remarks ? currentLabelProduct.remarks.trim() : ''));
             serial = v.serial_no ? v.serial_no.trim() : '';
             barcodeVal = v.barcode || serial || currentLabelProduct.barcode_path || currentLabelProduct.item_code;
@@ -2822,8 +2893,8 @@ $(document).ready(function () {
         } else {
             const basePrice = currentLabelProduct.size_mode === 'by_size' ? currentLabelProduct.price_per_m2 : (currentLabelProduct.sale_price_per_piece || currentLabelProduct.sale_price_per_box || 0);
             const baseRotPrice = currentLabelProduct.wholesale_price || 0;
-            skyCode = currentLabelProduct.p_code || (window.encodeToPCode ? window.encodeToPCode(basePrice) : '---');
-            rotCode = currentLabelProduct.rot_p_code || (window.encodeToPCode ? window.encodeToPCode(baseRotPrice) : '---');
+            skyCode = (window.encodeToPCode && basePrice) ? window.encodeToPCode(basePrice) : (currentLabelProduct.p_code || '---');
+            rotCode = (window.encodeToPCode && baseRotPrice !== undefined) ? window.encodeToPCode(baseRotPrice) : (currentLabelProduct.rot_p_code || '---');
             location = currentLabelProduct.remarks ? currentLabelProduct.remarks.trim() : '';
             vName = '';
         }

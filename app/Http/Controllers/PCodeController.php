@@ -33,11 +33,27 @@ class PCodeController extends Controller
         }
 
         $savedMapping = PCodeService::saveMapping($mapping);
+        $syncedCount = PCodeService::syncAllProductsPCodes();
 
         return response()->json([
-            'status'  => 'success',
-            'message' => 'P-Code mapping successfully updated.',
-            'mapping' => $savedMapping,
+            'status'       => 'success',
+            'message'      => "P-Code mapping saved and {$syncedCount} product(s) synchronized successfully.",
+            'mapping'      => $savedMapping,
+            'synced_count' => $syncedCount,
+        ]);
+    }
+
+    /**
+     * Explicit endpoint to synchronize all products P-Codes with the active mapping.
+     */
+    public function syncAllProducts(Request $request)
+    {
+        $syncedCount = PCodeService::syncAllProductsPCodes();
+
+        return response()->json([
+            'status'       => 'success',
+            'message'      => "Successfully synchronized P-Codes for {$syncedCount} product(s) and their variants.",
+            'synced_count' => $syncedCount,
         ]);
     }
 

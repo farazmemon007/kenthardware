@@ -138,6 +138,7 @@ Route::middleware('auth')->group(function () {
     // P-Code Mapping & Encoding Routes
     Route::get('/pcode/mapping', [PCodeController::class, 'getMapping'])->name('pcode.mapping.get');
     Route::post('/pcode/mapping', [PCodeController::class, 'updateMapping'])->name('pcode.mapping.update');
+    Route::post('/pcode/sync-all', [PCodeController::class, 'syncAllProducts'])->name('pcode.sync_all');
     Route::post('/pcode/encode', [PCodeController::class, 'encodeAjax'])->name('pcode.encode');
 
     route::get('/subcategory', [SubcategoryController::class, 'index'])->middleware('permission:subcategories.view')->name('subcategory.home');
@@ -158,9 +159,11 @@ Route::middleware('auth')->group(function () {
     Route::get('/create_prodcut', [ProductController::class, 'view_store'])->middleware('permission:products.create')->name('store');
     Route::get('/products/create', [ProductController::class, 'view_store'])->middleware('permission:products.create')->name('product.create');
     Route::post('/store-product', [ProductController::class, 'store_product'])->middleware('permission:products.create|products.edit')->name('store-product');
-    Route::put('/product/update/{id}', [ProductController::class, 'update'])->middleware('permission:products.edit')->name('product.update');
+    Route::match(['put', 'post'], '/product/update/{id}', [ProductController::class, 'update'])->middleware('permission:products.edit')->name('product.update');
     Route::post('/products/bulk-update', [ProductController::class, 'bulkUpdate'])->middleware('permission:products.edit')->name('products.bulk-update');
     Route::post('/product/{id}/toggle-active', [ProductController::class, 'toggleActive'])->middleware('permission:products.edit')->name('product.toggle.active');
+    Route::delete('/product/delete/{id}', [ProductController::class, 'destroy'])->middleware('permission:products.delete|products.edit')->name('product.destroy');
+    Route::post('/product/delete/{id}', [ProductController::class, 'destroy'])->middleware('permission:products.delete|products.edit');
 
     Route::post('/product/validate-form', [ProductController::class, 'validateForm'])->name('product.validate');
     Route::get('/products/{id}/edit', [ProductController::class, 'edit'])->middleware('permission:products.edit')->name('products.edit');
