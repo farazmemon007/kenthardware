@@ -14,6 +14,7 @@ use App\Models\Warehouse;
 use App\Models\WarehouseStock;
 use App\Models\Branch;
 use App\Models\PackageType;
+use App\Models\StockAdjustment;
 use App\Services\PCodeService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -2380,5 +2381,224 @@ class ProductController extends Controller
         }
 
         return $colorSizeMatch;
+    }
+
+    /**
+     * QuickBooks POS Style: Update Style Matrix (Sizes x Attributes)
+     */
+    public function updateStyle(Request $request, $id)
+    {
+        $product = Product::findOrFail($id);
+        $variantsInput = $request->input('variants', []);
+        
+        if (is_string($variantsInput)) {
+            $variantsInput = json_decode($variantsInput, true) ?: [];
+        }
+
+        DB::beginTransaction();
+        try {
+            $existingVariants = [];
+            if ($product->color) {
+                $parsed = is_string($product->color) ? json_decode($product->color, true) : $product->color;
+                if (is_array($parsed)) {
+                    $existingVariants = $parsed;
+                }
+            }
+
+            $totalStockPieces = 0;
+            $updatedVariants = [];
+
+            foreach ($variantsInput as $idx => $vIn) {
+                $attr = trim($vIn['color'] ?? ($vIn['attribute'] ?? '-'));
+                $size = trim($vIn['size'] ?? '-');
+                $stock = max(0, (float)($vIn['stock'] ?? ($vIn['current_stock'] ?? 0)));
+                $salePrice = isset($vIn['sale_price']) && $vIn['sale_price'] !== '' ? (float)$vIn['sale_price'] : ($product->sale_price_per_piece ?: ($product->sale_price_per_box ?: 0));
+                $wholesalePrice = isset($vIn['wholesale_price']) && $vIn['wholesale_price'] !== '' ? (float)$vIn['wholesale_price'] : ($product->wholesale_price ?: 0);
+                $location = trim($vIn['location'] ?? ($vIn['rack_shelf'] ?? ($product->remarks ?: '')));
+
+                $orig = $existingVariants[$idx] ?? [];
+                $vName = $vIn['name'] ?? ($orig['name'] ?? ($product->item_name . " ({$size} - {$attr})"));
+                $barcode = $vIn['barcode'] ?? ($orig['barcode'] ?? ($orig['serial_no'] ?? ''));
+
+                $skyPCode = PCodeService::encode($salePrice);
+                $rotPCode = PCodeService::encode($wholesalePrice);
+
+                $updatedVariants[] = array_merge($orig, [
+                    'name'            => $vName,
+                    'color'           => $attr,
+                    'size'            => $size,
+                    'stock'           => $stock,
+                    'current_stock'   => $stock,
+                    'sale_price'      => $salePrice,
+                    'wholesale_price' => $wholesalePrice,
+                    'sky_p_code'      => $skyPCode,
+                    'rot_p_code'      => $rotPCode,
+                    'p_code'          => $skyPCode,
+                    'location'        => $location,
+                    'rack_shelf'      => $location,
+                    'barcode'         => $barcode,
+                ]);
+
+                $ppb = $product->pieces_per_box > 0 ? $product->pieces_per_box : 1;
+                $convFactor = isset($vIn['conv_factor']) && (float)$vIn['conv_factor'] > 0 ? (float)$vIn['conv_factor'] : $ppb;
+                if ($product->size_mode === 'by_cartons') {
+                    $totalStockPieces += ($stock * $convFactor);
+                } else {
+                    $totalStockPieces += $stock;
+                }
+            }
+
+            // Save variants JSON
+            $product->color = $updatedVariants;
+            $product->save();
+
+            // Sync total stock to WarehouseStock
+            $warehouseId = auth()->user()->warehouse_id ?? 1;
+            if (!Warehouse::find($warehouseId)) {
+                $wh = Warehouse::first();
+                $warehouseId = $wh ? $wh->id : 1;
+            }
+
+            $whStock = WarehouseStock::firstOrNew([
+                'warehouse_id' => $warehouseId,
+                'product_id'   => $product->id,
+            ]);
+
+            $whStock->total_pieces = $totalStockPieces;
+            $whStock->quantity = ($product->pieces_per_box > 0) ? ($totalStockPieces / $product->pieces_per_box) : $totalStockPieces;
+            $whStock->save();
+
+            DB::commit();
+
+            return response()->json([
+                'status'       => 'success',
+                'message'      => 'Style matrix and variant stock updated successfully!',
+                'total_pieces' => $totalStockPieces,
+                'variants'     => $updatedVariants,
+            ]);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return response()->json([
+                'status'  => 'error',
+                'message' => 'Failed to update style matrix: ' . $e->getMessage(),
+            ], 500);
+        }
+    }
+
+    /**
+     * QuickBooks POS Style: Apply Physical Inventory Count Differences
+     */
+    public function applyPhysicalInventory(Request $request)
+    {
+        $items = $request->input('items', []);
+        if (is_string($items)) {
+            $items = json_decode($items, true) ?: [];
+        }
+
+        if (empty($items)) {
+            return response()->json(['status' => 'error', 'message' => 'No items provided for physical inventory.'], 400);
+        }
+
+        $userId = auth()->id() ?: 1;
+        $warehouseId = auth()->user()->warehouse_id ?? 1;
+        if (!Warehouse::find($warehouseId)) {
+            $wh = Warehouse::first();
+            $warehouseId = $wh ? $wh->id : 1;
+        }
+
+        DB::beginTransaction();
+        try {
+            $appliedCount = 0;
+            $groupedByProduct = [];
+
+            foreach ($items as $item) {
+                $productId = (int)($item['product_id'] ?? 0);
+                if (!$productId) continue;
+                $groupedByProduct[$productId][] = $item;
+            }
+
+            foreach ($groupedByProduct as $productId => $prodItems) {
+                $product = Product::find($productId);
+                if (!$product) continue;
+
+                $existingVariants = [];
+                if ($product->color) {
+                    $parsed = is_string($product->color) ? json_decode($product->color, true) : $product->color;
+                    if (is_array($parsed)) {
+                        $existingVariants = $parsed;
+                    }
+                }
+
+                $totalStockAdjustmentDelta = 0;
+
+                foreach ($prodItems as $pItem) {
+                    $expected = (float)($pItem['expected_qty'] ?? 0);
+                    $counted  = (float)($pItem['counted_qty'] ?? 0);
+                    $diff     = $counted - $expected;
+
+                    if ($diff == 0 && empty($pItem['force_apply'])) {
+                        continue;
+                    }
+
+                    $varIdx = isset($pItem['variant_index']) && $pItem['variant_index'] !== '' ? (int)$pItem['variant_index'] : null;
+                    $variantLabel = $pItem['variant_name'] ?? ($pItem['attribute'] ?? '');
+
+                    if ($varIdx !== null && isset($existingVariants[$varIdx])) {
+                        $existingVariants[$varIdx]['stock'] = $counted;
+                        $existingVariants[$varIdx]['current_stock'] = $counted;
+                    }
+
+                    $adjType = $diff >= 0 ? 'add' : 'subtract';
+                    $adjQty  = abs($diff);
+
+                    // Create audit log in StockAdjustment
+                    StockAdjustment::create([
+                        'user_id'      => $userId,
+                        'warehouse_id' => $warehouseId,
+                        'product_id'   => $productId,
+                        'variant_key'  => $varIdx !== null ? (string)$varIdx : null,
+                        'variant_name' => $variantLabel ?: 'Physical Count',
+                        'type'         => $adjType,
+                        'qty'          => $adjQty,
+                        'old_stock'    => $expected,
+                        'new_stock'    => $counted,
+                        'reason'       => 'Physical Inventory Reconciliation (' . date('Y-m-d H:i') . ')',
+                    ]);
+
+                    $totalStockAdjustmentDelta += $diff;
+                    $appliedCount++;
+                }
+
+                if (!empty($existingVariants)) {
+                    $product->color = $existingVariants;
+                    $product->save();
+                }
+
+                // Update WarehouseStock
+                $whStock = WarehouseStock::firstOrNew([
+                    'warehouse_id' => $warehouseId,
+                    'product_id'   => $productId,
+                ]);
+
+                $ppb = $product->pieces_per_box > 0 ? $product->pieces_per_box : 1;
+                $newTotalPieces = max(0, (float)($whStock->total_pieces ?? 0) + $totalStockAdjustmentDelta);
+                $whStock->total_pieces = $newTotalPieces;
+                $whStock->quantity = $newTotalPieces / $ppb;
+                $whStock->save();
+            }
+
+            DB::commit();
+
+            return response()->json([
+                'status'  => 'success',
+                'message' => "Physical inventory reconciliation applied successfully! ({$appliedCount} items adjusted)",
+            ]);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return response()->json([
+                'status'  => 'error',
+                'message' => 'Failed to apply physical inventory: ' . $e->getMessage(),
+            ], 500);
+        }
     }
 }

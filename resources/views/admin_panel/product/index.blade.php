@@ -190,133 +190,173 @@
     .btn-hdr-primary { background: linear-gradient(135deg, #6366f1, #4f46e5); color: #fff; border-color: #6366f1; box-shadow: 0 2px 6px rgba(99,102,241,0.25); }
     .btn-hdr-primary:hover { background: #4338ca; border-color: #4338ca; color: #fff; transform: translateY(-1px); }
 
-    /* ── Table ── */
-    .erp-table-wrap { padding: 0; overflow-x: auto; -webkit-overflow-scrolling: touch; }
-    #productTable {
-        width: 100% !important;
-        border-collapse: collapse !important;
-        font-size: .82rem;
+    /* ── QuickBooks POS Desktop Item List (Striped Grid, Zero Scroll) ── */
+    .erp-table-wrap {
+        padding: 0;
+        overflow-x: hidden;
+        width: 100%;
     }
-    #productTable thead th {
-        background: #f8fafc !important;
-        color: #475569 !important;
+    @media (max-width: 1024px) {
+        .erp-table-wrap { overflow-x: auto; }
+    }
+    #productTable, #modalVariantTable {
+        width: 100% !important;
+        border-collapse: separate !important;
+        border-spacing: 0 !important;
+        font-size: 12px;
+        table-layout: auto;
+    }
+    #productTable thead th, #modalVariantTable thead th {
+        background: #f1f5f9 !important;
+        color: #1e293b !important;
         font-weight: 700;
         text-transform: uppercase;
-        font-size: .67rem;
-        letter-spacing: .5px;
-        padding: 12px 14px;
-        border-bottom: 2px solid var(--erp-border) !important;
-        border-top: none !important;
-        border-left: none !important;
-        border-right: none !important;
+        font-size: 11px;
+        letter-spacing: 0.35px;
+        padding: 7px 8px !important;
+        border-top: 1px solid #e2e8f0 !important;
+        border-bottom: 2px solid #cbd5e1 !important;
+        border-right: 1px solid #e2e8f0 !important;
         white-space: nowrap;
         position: sticky; top: 0; z-index: 2;
     }
-    #productTable tbody td {
-        padding: 10px 14px;
+    #productTable thead th:last-child, #modalVariantTable thead th:last-child {
+        border-right: none !important;
+    }
+    #productTable tbody td, #modalVariantTable tbody td {
+        padding: 5px 8px !important;
         border: none !important;
-        border-bottom: 1px solid #f1f5f9 !important;
-        color: var(--erp-text);
+        border-bottom: 1px solid #e2e8f0 !important;
+        border-right: 1px solid #f1f5f9 !important;
+        color: #1e293b;
         vertical-align: middle;
+        font-size: 12px;
+        line-height: 1.25;
         white-space: nowrap;
     }
-    #productTable tbody td.td-item-details { white-space: normal; min-width: 180px; max-width: 260px; }
-    #productTable tbody tr { transition: background .12s ease; }
-    #productTable tbody tr:hover { background: #f8fafc !important; }
-    #productTable tbody tr.row-inactive { opacity: .6; background: #fafafa; }
+    #productTable tbody td:last-child, #modalVariantTable tbody td:last-child {
+        border-right: none !important;
+    }
+    #productTable tbody td.td-item-details {
+        white-space: normal;
+        min-width: 150px;
+        max-width: 250px;
+    }
+    /* Alternating Zebra Striping ("strip wale") */
+    #productTable tbody tr:nth-child(even) td, #modalVariantTable tbody tr:nth-child(even) td {
+        background-color: #f8fafc !important;
+    }
+    #productTable tbody tr:nth-child(odd) td, #modalVariantTable tbody tr:nth-child(odd) td {
+        background-color: #ffffff !important;
+    }
+    #productTable tbody tr:hover td, #modalVariantTable tbody tr:hover td {
+        background-color: #e0f2fe !important;
+    }
+    /* Selected Table Row in QuickBooks Desktop blue */
+    #productTable tbody tr.row-qb-selected td {
+        background-color: #dbeafe !important;
+        color: #1e3a8a !important;
+        font-weight: 600;
+    }
+    #productTable tbody tr.row-qb-selected td:first-child {
+        box-shadow: inset 3px 0 0 #2563eb;
+    }
+    #productTable tbody tr.row-inactive td {
+        opacity: .65;
+    }
 
     /* Image cell */
     .product-img {
-        width: 40px; height: 40px; object-fit: cover;
-        border-radius: 8px; border: 1px solid var(--erp-border);
-        transition: transform .2s ease, box-shadow .2s ease;
-        cursor: pointer; display: block;
+        width: 26px; height: 26px; object-fit: cover;
+        border-radius: 4px; border: 1px solid var(--erp-border);
+        transition: transform .2s ease; cursor: pointer; display: block; margin: 0 auto;
     }
-    .product-img:hover { transform: scale(1.35); z-index: 10; position: relative; box-shadow: var(--erp-shadow-md); }
+    .product-img:hover { transform: scale(1.6); z-index: 10; position: relative; box-shadow: 0 4px 12px rgba(0,0,0,0.15); }
     .no-img-badge {
-        width: 40px; height: 40px; border-radius: 8px;
+        width: 26px; height: 26px; border-radius: 4px;
         background: #f1f5f9; border: 1px dashed #cbd5e1;
         display: flex; align-items: center; justify-content: center;
-        font-size: 16px; color: #94a3b8;
+        font-size: 11px; color: #94a3b8; margin: 0 auto;
     }
 
     /* Item details cell */
-    .item-name { font-weight: 700; color: var(--erp-text); margin-bottom: 3px; font-size: .85rem; line-height: 1.3; }
-    .item-meta { font-size: .7rem; color: var(--erp-muted); display: flex; flex-wrap: wrap; gap: 4px; align-items: center; margin-top: 2px; }
+    .item-name { font-weight: 700; color: #0f172a; margin-bottom: 1px; font-size: 12px; line-height: 1.25; }
+    .item-meta { font-size: 10.5px; color: var(--erp-muted); display: flex; flex-wrap: wrap; gap: 3px; align-items: center; margin-top: 1px; }
     .item-meta .meta-chip {
-        background: #f1f5f9; border-radius: 4px; padding: 2px 6px;
-        font-size: .67rem; font-weight: 600; color: #475569;
-        display: inline-flex; align-items: center; gap: 3px;
+        background: #f1f5f9; border-radius: 3px; padding: 1px 5px;
+        font-size: 10px; font-weight: 600; color: #475569;
+        display: inline-flex; align-items: center; gap: 2px;
     }
-    .item-code { font-family: 'Courier New', monospace; background: #f8fafc; border: 1px solid var(--erp-border); border-radius: 4px; padding: 1px 6px; font-size: .7rem; font-weight: 600; color: #334155; }
+    .item-code { font-family: 'Courier New', monospace; background: #f8fafc; border: 1px solid var(--erp-border); border-radius: 3px; padding: 0 4px; font-size: 10.5px; font-weight: 700; color: #334155; }
 
     /* Stock badge */
     .stock-badge {
-        display: inline-flex; align-items: center; gap: 4px;
+        display: inline-flex; align-items: center; gap: 3px;
         background: var(--erp-success-lt); color: var(--erp-success);
-        border: 1px solid #a7f3d0; border-radius: 6px;
-        padding: 3px 8px; font-size: .75rem; font-weight: 700;
+        border: 1px solid #a7f3d0; border-radius: 4px;
+        padding: 1px 5px; font-size: 11px; font-weight: 700;
         white-space: nowrap;
     }
     .stock-badge.low  { background: var(--erp-danger-lt); color: var(--erp-danger); border-color: #fecaca; }
     .stock-badge.zero { background: #fef3c7; color: #b45309; border-color: #fde68a; }
-    .stock-unit { font-weight: 500; font-size: .67rem; opacity: .85; }
+    .stock-unit { font-weight: 500; font-size: 10px; opacity: .85; }
 
     /* Price cells */
-    .price-purchase { color: var(--erp-muted); font-weight: 600; font-size: .81rem; white-space: nowrap; }
-    .price-sale     { color: var(--erp-success); font-weight: 800; font-size: .84rem; white-space: nowrap; }
+    .price-purchase { color: #64748b; font-weight: 600; font-size: 11.5px; white-space: nowrap; font-variant-numeric: tabular-nums; }
+    .price-sale     { color: #059669; font-weight: 800; font-size: 12px; white-space: nowrap; font-variant-numeric: tabular-nums; }
+    .price-wholesale { color: #0284c7; font-weight: 700; font-size: 11.5px; white-space: nowrap; font-variant-numeric: tabular-nums; }
 
     /* Status badge */
     .status-active {
-        background: var(--erp-success-lt); color: var(--erp-success);
-        border: 1px solid #a7f3d0; border-radius: 20px;
-        padding: 3px 10px; font-size: .7rem; font-weight: 700;
-        letter-spacing: .2px; white-space: nowrap;
+        background: #ecfdf5; color: #059669;
+        border: 1px solid #a7f3d0; border-radius: 4px;
+        padding: 1px 6px; font-size: 10.5px; font-weight: 700;
+        white-space: nowrap;
     }
     .status-inactive {
         background: #f1f5f9; color: #64748b;
-        border: 1px solid #cbd5e1; border-radius: 20px;
-        padding: 3px 10px; font-size: .7rem; font-weight: 700;
+        border: 1px solid #cbd5e1; border-radius: 4px;
+        padding: 1px 6px; font-size: 10.5px; font-weight: 700;
         white-space: nowrap;
     }
 
-    /* Action buttons – single row, compact */
+    /* Action buttons – desktop compact icon row */
     .action-group {
-        display: flex; align-items: center; gap: 4px;
+        display: flex; align-items: center; justify-content: center; gap: 3px;
         flex-wrap: nowrap;
-        justify-content: flex-start;
     }
     .btn-act {
-        border-radius: 6px; padding: 4px 9px; font-size: .72rem;
-        font-weight: 600; display: inline-flex; align-items: center; gap: 4px;
+        width: 24px; height: 24px; padding: 0;
+        border-radius: 4px; font-size: 10.5px;
+        display: inline-flex; align-items: center; justify-content: center;
         border: 1px solid transparent; transition: all .12s; cursor: pointer;
-        line-height: 1.5; white-space: nowrap; flex-shrink: 0;
+        line-height: 1; white-space: nowrap; flex-shrink: 0;
     }
     .btn-act-view    { background: #e0f2fe; color: #0284c7; border-color: #bae6fd; }
     .btn-act-view:hover    { background: #0284c7; color: #fff; }
-    .btn-act-edit    { background: var(--erp-primary-lt); color: var(--erp-primary); border-color: #c7d2fe; }
-    .btn-act-edit:hover    { background: var(--erp-primary); color: #fff; }
-    .btn-act-barcode { background: var(--erp-success-lt); color: var(--erp-success); border-color: #a7f3d0; }
-    .btn-act-barcode:hover { background: var(--erp-success); color: #fff; }
-    .btn-act-deact   { background: var(--erp-danger-lt); color: var(--erp-danger); border-color: #fecaca; }
-    .btn-act-deact:hover   { background: var(--erp-danger); color: #fff; }
-    .btn-act-act     { background: var(--erp-success-lt); color: var(--erp-success); border-color: #a7f3d0; }
-    .btn-act-act:hover     { background: var(--erp-success); color: #fff; }
+    .btn-act-edit    { background: #eef2ff; color: #4f46e5; border-color: #c7d2fe; }
+    .btn-act-edit:hover    { background: #4f46e5; color: #fff; }
+    .btn-act-barcode { background: #ecfdf5; color: #059669; border-color: #a7f3d0; }
+    .btn-act-barcode:hover { background: #059669; color: #fff; }
+    .btn-act-deact   { background: #fef2f2; color: #dc2626; border-color: #fecaca; }
+    .btn-act-deact:hover   { background: #dc2626; color: #fff; }
+    .btn-act-act     { background: #ecfdf5; color: #059669; border-color: #a7f3d0; }
+    .btn-act-act:hover     { background: #059669; color: #fff; }
     .btn-act-delete  { background: #fee2e2; color: #dc2626; border-color: #fca5a5; }
     .btn-act-delete:hover  { background: #dc2626; color: #fff; }
 
     /* ── Pagination ── */
-    .erp-pagination { padding: 14px 20px; border-top: 1px solid var(--erp-border); display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px; }
-    .erp-pagination .showing { font-size: .78rem; color: var(--erp-muted); }
-    .erp-pagination .page-link { border-radius: 6px !important; border-color: var(--erp-border) !important; color: var(--erp-text) !important; font-size: .8rem; padding: 5px 12px; }
-    .erp-pagination .page-item.active .page-link { background: var(--erp-primary) !important; border-color: var(--erp-primary) !important; color: #fff !important; }
+    .erp-pagination { padding: 10px 16px; border-top: 1px solid var(--erp-border); display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px; }
+    .erp-pagination .showing { font-size: .75rem; color: var(--erp-muted); }
+    .erp-pagination .page-link { border-radius: 5px !important; border-color: var(--erp-border) !important; color: var(--erp-text) !important; font-size: .78rem; padding: 4px 10px; }
+    .erp-pagination .page-item.active .page-link { background: #2563eb !important; border-color: #2563eb !important; color: #fff !important; }
 
-    /* ── Actions column – force min-width so buttons never wrap ── */
+    /* ── Actions column – compact width ── */
     #productTable th:last-child,
-    #productTable td:last-child { min-width: 220px; }
+    #productTable td:last-child { width: 130px !important; min-width: 130px !important; max-width: 135px !important; text-align: center; }
 
     /* ── Select checkbox ── */
-    input[type="checkbox"].row-check { width: 16px; height: 16px; accent-color: var(--erp-primary); cursor: pointer; }
+    input[type="checkbox"].row-check { width: 14px; height: 14px; accent-color: #2563eb; cursor: pointer; margin: 0; }
 
     /* ── DataTable override ── */
     div.dataTables_wrapper div.dataTables_length select { width: 75px !important; }
@@ -706,84 +746,515 @@
         background-color: #eff6ff !important;
         border-left: 3px solid #2563eb !important;
     }
+
+    /* ══════════════════════════════════════════════════════════
+       QUICKBOOKS POINT OF SALE DESKTOP 12.0 STYLE SYSTEM
+       ══════════════════════════════════════════════════════════ */
+    .qb-main-toolbar {
+        background: #ffffff;
+        border-bottom: 2px solid #e2e8f0;
+        padding: 10px 16px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        flex-wrap: wrap;
+    }
+
+    .qb-btn-iwantto {
+        background: #16a34a !important;
+        color: #ffffff !important;
+        font-weight: 700;
+        font-size: 13px;
+        border: none !important;
+        border-radius: 6px;
+        padding: 7px 16px;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.12);
+        cursor: pointer;
+        transition: background 0.15s;
+    }
+    .qb-btn-iwantto:hover { background: #15803d !important; color: #ffffff !important; }
+    
+    .qb-iwantto-menu {
+        border-radius: 8px;
+        box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+        border: 1px solid #cbd5e1;
+        padding: 6px 0;
+        min-width: 220px;
+        z-index: 1050;
+    }
+    .qb-iwantto-menu .dropdown-item {
+        font-size: 12.5px;
+        padding: 7px 14px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        color: #1e293b;
+        font-weight: 500;
+    }
+    .qb-iwantto-menu .dropdown-item:hover {
+        background: #f1f5f9;
+        color: #0f172a;
+    }
+    .qb-iwantto-menu .dropdown-item i {
+        width: 16px;
+        text-align: center;
+        color: #475569;
+    }
+    .qb-iwantto-menu .dropdown-divider { margin: 4px 0; }
+
+    .qb-search-group {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        flex: 1 1 320px;
+        max-width: 520px;
+    }
+    .qb-search-input-wrap {
+        position: relative;
+        flex: 1;
+    }
+    .qb-search-input-wrap i {
+        position: absolute;
+        left: 12px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #94a3b8;
+        font-size: 13px;
+    }
+    .qb-search-input {
+        width: 100%;
+        height: 36px;
+        padding: 0 12px 0 34px;
+        border: 1px solid #cbd5e1;
+        border-radius: 6px;
+        font-size: 13px;
+        color: #0f172a;
+        background: #f8fafc;
+        outline: none;
+        transition: all 0.15s;
+    }
+    .qb-search-input:focus {
+        background: #ffffff;
+        border-color: #2563eb;
+        box-shadow: 0 0 0 3px rgba(37,99,235,0.12);
+    }
+    .qb-filter-select {
+        height: 36px;
+        padding: 0 10px;
+        border: 1px solid #cbd5e1;
+        border-radius: 6px;
+        font-size: 12.5px;
+        color: #334155;
+        background: #ffffff;
+        outline: none;
+    }
+
+    .qb-toolbar-btn {
+        background: #ffffff;
+        color: #334155;
+        border: 1px solid #cbd5e1;
+        border-radius: 6px;
+        padding: 6px 13px;
+        font-size: 12.5px;
+        font-weight: 600;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        cursor: pointer;
+        transition: all 0.15s;
+        text-decoration: none !important;
+        white-space: nowrap;
+    }
+    .qb-toolbar-btn:hover {
+        background: #f8fafc;
+        border-color: #94a3b8;
+        color: #0f172a;
+    }
+    .qb-toolbar-btn.active {
+        background: #eff6ff;
+        border-color: #3b82f6;
+        color: #1d4ed8;
+    }
+    .qb-toolbar-btn-primary {
+        background: #2563eb;
+        color: #ffffff !important;
+        border-color: #2563eb;
+    }
+    .qb-toolbar-btn-primary:hover {
+        background: #1d4ed8;
+        color: #ffffff !important;
+    }
+
+    /* ── Split Screen: Item List Table + Show Details Drawer ── */
+    .qb-workspace-wrap {
+        display: flex;
+        align-items: stretch;
+        width: 100%;
+        min-height: 580px;
+        position: relative;
+        overflow: hidden;
+    }
+    .qb-table-pane {
+        flex: 1 1 auto;
+        min-width: 0;
+        transition: all 0.25s ease-in-out;
+        overflow-x: auto;
+    }
+    .qb-details-pane {
+        width: 420px;
+        min-width: 380px;
+        max-width: 440px;
+        background: #ffffff;
+        border-left: 1px solid #cbd5e1;
+        display: none; /* toggled via js */
+        flex-direction: column;
+        transition: all 0.25s ease-in-out;
+        z-index: 20;
+        box-shadow: -4px 0 15px rgba(0,0,0,0.04);
+    }
+    .qb-details-pane.open {
+        display: flex;
+    }
+
+    /* Selected Table Row */
+    #productTable tbody tr.row-qb-selected {
+        background-color: #eff6ff !important;
+        border-left: 4px solid #2563eb !important;
+    }
+    #productTable tbody tr.row-qb-selected td {
+        color: #0f172a !important;
+        font-weight: 500;
+    }
+
+    /* ── Details Drawer Interior ── */
+    .qb-drawer-header {
+        padding: 12px 16px;
+        background: #f8fafc;
+        border-bottom: 1px solid #e2e8f0;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
+    .qb-drawer-tabs {
+        display: flex;
+        background: #f1f5f9;
+        border-bottom: 1px solid #cbd5e1;
+        padding: 4px 8px 0 8px;
+        gap: 4px;
+    }
+    .qb-drawer-tab-btn {
+        padding: 6px 14px;
+        font-size: 12px;
+        font-weight: 700;
+        color: #64748b;
+        background: transparent;
+        border: 1px solid transparent;
+        border-bottom: none;
+        border-radius: 6px 6px 0 0;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        transition: all 0.15s;
+    }
+    .qb-drawer-tab-btn.active {
+        background: #ffffff;
+        color: #1e293b;
+        border-color: #cbd5e1;
+        border-bottom: 2px solid #ffffff;
+        margin-bottom: -1px;
+    }
+    .qb-drawer-body {
+        padding: 14px 16px;
+        overflow-y: auto;
+        flex: 1;
+        max-height: calc(100vh - 240px);
+    }
+
+    /* Section Accordion Cards in Details */
+    .qb-section-card {
+        background: #ffffff;
+        border: 1px solid #e2e8f0;
+        border-radius: 8px;
+        margin-bottom: 12px;
+        overflow: hidden;
+    }
+    .qb-section-head {
+        padding: 8px 12px;
+        background: #f8fafc;
+        border-bottom: 1px solid #e2e8f0;
+        font-size: 11.5px;
+        font-weight: 700;
+        color: #334155;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        cursor: pointer;
+    }
+    .qb-section-head i.chevron {
+        transition: transform 0.2s;
+        font-size: 11px;
+    }
+    .qb-section-card.collapsed .qb-section-body { display: none; }
+    .qb-section-card.collapsed .qb-section-head i.chevron { transform: rotate(-90deg); }
+    .qb-section-body {
+        padding: 10px 12px;
+        font-size: 12px;
+    }
+    .qb-data-row {
+        display: flex;
+        justify-content: space-between;
+        padding: 4px 0;
+        border-bottom: 1px dashed #f1f5f9;
+        font-size: 12px;
+    }
+    .qb-data-row:last-child { border-bottom: none; }
+    .qb-data-label { color: #64748b; font-weight: 500; }
+    .qb-data-val { color: #0f172a; font-weight: 700; text-align: right; }
+
+    /* Matrix Table in Style Detail */
+    .qb-matrix-table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 11.5px;
+        background: #ffffff;
+        border: 1px solid #cbd5e1;
+        margin-top: 6px;
+    }
+    .qb-matrix-table th, .qb-matrix-table td {
+        border: 1px solid #cbd5e1;
+        padding: 6px 8px;
+        text-align: center;
+    }
+    .qb-matrix-table thead th {
+        background: #f1f5f9;
+        font-weight: 700;
+        color: #334155;
+    }
+    .qb-matrix-table th.qb-corner-cell {
+        background: #e2e8f0;
+        font-size: 10.5px;
+        text-align: left;
+    }
+    .qb-matrix-table td.qb-row-label {
+        background: #f8fafc;
+        font-weight: 700;
+        color: #334155;
+        text-align: left;
+    }
+    .qb-matrix-table .qb-total-cell {
+        background: #f8fafc;
+        font-weight: 800;
+        color: #0f172a;
+    }
+    .qb-matrix-table .qb-grand-total {
+        background: #e0f2fe;
+        color: #0369a1;
+        font-weight: 900;
+    }
+    .qb-matrix-table td.qb-qty-cell {
+        font-weight: 700;
+        color: #0f172a;
+    }
+    .qb-matrix-table td.qb-qty-zero {
+        color: #94a3b8;
+    }
+
+    /* Memo notes pad */
+    .qb-notes-memo {
+        background: #fffbeb;
+        border: 1px solid #fef3c7;
+        border-radius: 6px;
+        padding: 10px;
+        font-family: inherit;
+        font-size: 12px;
+        color: #78350f;
+        min-height: 80px;
+        width: 100%;
+        resize: vertical;
+        outline: none;
+    }
+
+    /* Interactive Edit Style Matrix inputs */
+    .qb-edit-matrix-input {
+        width: 60px;
+        height: 28px;
+        text-align: center;
+        border: 1px solid #cbd5e1;
+        border-radius: 4px;
+        font-weight: 700;
+        font-size: 12px;
+        padding: 0 4px;
+        outline: none;
+    }
+    /* ── Fixed Bottom Status Bar (QuickBooks POS Desktop Style) ── */
+    .qb-fixed-bottom-bar {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        width: 100%;
+        min-height: 40px;
+        background: #ffffff;
+        border-top: 1px solid #cbd5e1;
+        box-shadow: 0 -3px 12px rgba(0, 0, 0, 0.08);
+        z-index: 1040;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 6px 20px;
+        font-size: 12.5px;
+        color: #334155;
+        user-select: none;
+    }
+    .qb-status-item {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        font-size: 12px;
+        white-space: nowrap;
+    }
+    .qb-status-icon {
+        width: 22px;
+        height: 22px;
+        border-radius: 6px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 11px;
+        flex-shrink: 0;
+    }
+    .qb-status-title {
+        font-weight: 600;
+        color: #64748b;
+        font-size: 11.5px;
+        text-transform: uppercase;
+        letter-spacing: 0.3px;
+    }
+    .qb-status-num {
+        font-size: 13.5px;
+        font-weight: 800;
+    }
+    .qb-status-sub {
+        font-size: 11px;
+        color: #64748b;
+    }
+    .qb-status-divider {
+        width: 1px;
+        height: 18px;
+        background: #e2e8f0;
+        margin: 0 10px;
+        flex-shrink: 0;
+    }
+    /* Clearance so fixed footer doesn't overlap pagination or content */
+    .main-content {
+        padding-top: 6px !important;
+        margin-top: 0 !important;
+        padding-bottom: 50px !important;
+    }
+    .main-content-inner {
+        padding-top: 0 !important;
+        padding-bottom: 0 !important;
+    }
+    .container-fluid {
+        padding-top: 0 !important;
+    }
+    .erp-card {
+        margin-top: 0 !important;
+    }
+    @media (max-width: 991px) {
+        .qb-fixed-bottom-bar {
+            padding: 6px 12px;
+            overflow-x: auto;
+            white-space: nowrap;
+        }
+        .qb-status-items-wrap {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+    }
 </style>
 
 <div class="main-content">
     <div class="main-content-inner">
-        <div class="container-fluid px-3 py-3">
-
-    {{-- ── Stats Row ── --}}
-    <div class="stat-grid mb-4" style="display:grid; grid-template-columns: repeat(4,1fr); gap:16px;">
-        <div class="stat-card">
-            <div class="stat-icon" style="background:#eef2ff; color:#4f46e5;"><i class="fas fa-box-open"></i></div>
-            <div>
-                <div class="stat-label">Total Products</div>
-                <div class="stat-value">{{ $products->total() }}</div>
-                <div class="stat-sub">in catalog</div>
-            </div>
-        </div>
-        <div class="stat-card">
-            <div class="stat-icon" style="background:#ecfdf5; color:#059669;"><i class="fas fa-check-circle"></i></div>
-            <div>
-                <div class="stat-label">Active</div>
-                <div class="stat-value">{{ $products->getCollection()->where('is_active',1)->count() }}</div>
-                <div class="stat-sub">on this page</div>
-            </div>
-        </div>
-        <div class="stat-card">
-            <div class="stat-icon" style="background:#fef2f2; color:#dc2626;"><i class="fas fa-times-circle"></i></div>
-            <div>
-                <div class="stat-label">Inactive</div>
-                <div class="stat-value">{{ $products->getCollection()->where('is_active',0)->count() }}</div>
-                <div class="stat-sub">on this page</div>
-            </div>
-        </div>
-        <div class="stat-card">
-            <div class="stat-icon" style="background:#fffbeb; color:#d97706;"><i class="fas fa-filter"></i></div>
-            <div>
-                <div class="stat-label">Filtered Results</div>
-                <div class="stat-value">{{ $products->total() }}</div>
-                <div class="stat-sub">
-                    @if(request()->hasAny(['search','category_id','brand_id','status']))
-                        <span style="color:#d97706; font-weight:700;">Filters active</span>
-                    @else
-                        all products
-                    @endif
-                </div>
-            </div>
-        </div>
-    </div>
+        <div class="container-fluid px-3 pt-1 pb-3">
 
     {{-- ── Main Card ── --}}
     <div class="erp-card">
 
-        {{-- Card Header --}}
-        <div class="erp-card-header">
-            <div>
-                <p class="page-title"><i class="fas fa-box me-2" style="color:var(--erp-primary);"></i>Product Catalog</p>
-                <p class="page-sub">Manage, filter and bulk-edit your entire product inventory</p>
-            </div>
-            <div class="erp-hdr-actions">
-                <a href="{{ route('products.template') }}" class="btn-hdr btn-hdr-outline" title="Download blank CSV template">
-                    <i class="fas fa-file-csv"></i> Template
-                </a>
-                <a href="{{ route('products.export') }}" class="btn-hdr btn-hdr-success" title="Export all products to CSV">
-                    <i class="fas fa-file-download"></i> Export CSV
-                </a>
-                <button type="button" class="btn-hdr btn-hdr-outline" id="customizeIndexColumnsBtn" data-toggle="modal" data-target="#customizeIndexColumnsModal" data-bs-toggle="modal" data-bs-target="#customizeIndexColumnsModal" title="Customize Columns (or right-click table header)">
-                    <i class="fas fa-columns text-primary"></i> Customize Columns
-                </button>
-                <a href="{{ route('opening_stock.index') }}" class="btn-hdr btn-hdr-outline text-primary fw-bold" title="Manage Opening Stock, Locations & Pricing Matrix">
-                    <i class="fas fa-cubes-stacked text-primary"></i> Opening Stock
-                </a>
-                @if (auth()->user()->can('products.create') || auth()->user()->email === 'admin@admin.com')
-                    <button type="button" class="btn-hdr btn-hdr-warning" id="openImportModalBtn">
-                        <i class="fas fa-file-upload"></i> Import CSV
+        {{-- ── QuickBooks Point of Sale Desktop 12.0 Main Toolbar ── --}}
+        <div class="qb-main-toolbar">
+            <div class="d-flex align-items-center gap-2 flex-wrap">
+                {{-- Green "I Want to..." Button with dropdown --}}
+                <div class="dropdown">
+                    <button class="qb-btn-iwantto dropdown-toggle" type="button" id="qbIWantToDropdownBtn" data-bs-toggle="dropdown" data-toggle="dropdown" aria-expanded="false">
+                        <i class="fas fa-bars"></i> I Want to...
                     </button>
-                    <a href="create_prodcut" class="btn-hdr btn-hdr-primary">
-                        <i class="fas fa-plus"></i> Add Product
-                    </a>
-                @endif
+                    <ul class="dropdown-menu qb-iwantto-menu" aria-labelledby="qbIWantToDropdownBtn">
+                        <li><a class="dropdown-item" href="javascript:void(0)" id="qbMenuToggleDetails"><i class="fas fa-columns text-primary"></i> <span id="qbMenuDetailsText">Show Details</span> <span class="badge bg-light text-muted border ms-auto font-monospace" style="font-size:10px;">F8</span></a></li>
+                        <li><a class="dropdown-item" href="{{ url('create_prodcut') }}"><i class="fas fa-plus text-success"></i> Add Item</a></li>
+                        <li><a class="dropdown-item" href="javascript:void(0)" id="qbMenuPrintTags"><i class="fas fa-barcode text-info"></i> Print Tags <span class="badge bg-light text-muted border ms-auto font-monospace" style="font-size:10px;">Ctrl+F10</span></a></li>
+                        <li><a class="dropdown-item" href="javascript:void(0)" id="qbMenuEditItem"><i class="fas fa-pencil-alt text-warning"></i> Edit Item</a></li>
+                        <li><a class="dropdown-item" href="javascript:void(0)" id="qbMenuEditStyle"><i class="fas fa-th text-primary"></i> Edit Style Matrix</a></li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li><a class="dropdown-item" href="javascript:void(0)" id="qbMenuPhysicalInventory"><i class="fas fa-clipboard-check" style="color:#7c3aed;"></i> Physical Inventory</a></li>
+                        <li><a class="dropdown-item" href="{{ route('report.item_stock') }}"><i class="fas fa-chart-line text-secondary"></i> Inventory Reports</a></li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li><a class="dropdown-item" href="javascript:void(0)" id="qbMenuCustomizeColumns"><i class="fas fa-table-columns text-dark"></i> Customize Columns...</a></li>
+                        <li><a class="dropdown-item text-danger" href="javascript:void(0)" id="qbMenuDeleteItem"><i class="fas fa-trash-alt text-danger"></i> Delete Item</a></li>
+                    </ul>
+                </div>
+
+                {{-- Search Inventory input + filter dropdown --}}
+                <div class="qb-search-group">
+                    <div class="qb-search-input-wrap">
+                        <i class="fas fa-search"></i>
+                        <input type="text" id="qbSearchInventoryInput" class="qb-search-input" placeholder="Search Inventory (Item #, Name, Code, Attribute...)" value="{{ request('search') }}">
+                    </div>
+                    <select id="qbQuickFilterSelect" class="qb-filter-select">
+                        <option value="all">All Items</option>
+                        <option value="custom" {{ request()->hasAny(['category_id','brand_id']) ? 'selected' : '' }}>&lt;Custom Filter&gt;</option>
+                        <option value="active" {{ request('status') === 'active' ? 'selected' : '' }}>Active Items</option>
+                        <option value="inactive" {{ request('status') === 'inactive' ? 'selected' : '' }}>Inactive Items</option>
+                    </select>
+                </div>
+            </div>
+
+            {{-- Quick action buttons matching QuickBooks POS --}}
+            <div class="d-flex align-items-center gap-2 flex-wrap">
+                <button type="button" class="qb-toolbar-btn" id="qbToggleDetailsBtn" title="Toggle Item Details Panel (F8)">
+                    <i class="fas fa-columns text-primary"></i> <span id="qbToggleDetailsLabel">Show Details</span> <span class="text-muted" style="font-size:10.5px;">(F8)</span>
+                </button>
+                <a href="{{ url('create_prodcut') }}" class="qb-toolbar-btn qb-toolbar-btn-primary" title="Add New Inventory Item">
+                    <i class="fas fa-plus"></i> Add Item
+                </a>
+                <button type="button" class="qb-toolbar-btn" id="qbEditSelectedBtn" title="Edit Currently Selected Item">
+                    <i class="fas fa-pencil-alt text-primary"></i> Edit
+                </button>
+                <button type="button" class="qb-toolbar-btn" id="qbPhysicalInventoryBtn" title="Start Physical Inventory Stock Count">
+                    <i class="fas fa-clipboard-check" style="color:#7c3aed;"></i> Physical Inventory
+                </button>
+                <button type="button" class="qb-toolbar-btn" id="customizeIndexColumnsBtn" data-toggle="modal" data-target="#customizeIndexColumnsModal" data-bs-toggle="modal" data-bs-target="#customizeIndexColumnsModal" title="Customize Columns (or right-click header)">
+                    <i class="fas fa-columns text-secondary"></i> Columns
+                </button>
+                <div class="dropdown">
+                    <button class="qb-toolbar-btn dropdown-toggle" type="button" id="qbMoreActionsDropdown" data-bs-toggle="dropdown" data-toggle="dropdown">
+                        <i class="fas fa-ellipsis-v"></i> More
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-end shadow-sm" style="border-radius:8px; font-size:12.5px;">
+                        <li><a class="dropdown-item" href="{{ route('opening_stock.index') }}"><i class="fas fa-cubes text-primary me-2"></i> Opening Stock</a></li>
+                        <li><a class="dropdown-item" href="{{ route('products.template') }}"><i class="fas fa-file-csv text-secondary me-2"></i> Template CSV</a></li>
+                        <li><a class="dropdown-item" href="{{ route('products.export') }}"><i class="fas fa-file-download text-success me-2"></i> Export to CSV</a></li>
+                        <li><a class="dropdown-item" href="javascript:void(0)" id="openImportModalBtn"><i class="fas fa-file-upload text-warning me-2"></i> Import CSV</a></li>
+                    </ul>
+                </div>
             </div>
         </div>
 
@@ -817,18 +1288,7 @@
                         </select>
                     </div>
 
-                    {{-- Brand --}}
-                    <div class="erp-filter-field">
-                        <label class="erp-flabel">Brand</label>
-                        <select name="brand_id" class="erp-finput">
-                            <option value="">All Brands</option>
-                            @foreach ($brands as $brand)
-                                <option value="{{ $brand->id }}" {{ request('brand_id') == $brand->id ? 'selected' : '' }}>
-                                    {{ $brand->name }}
-                                </option>
-                            @endforeach
-                        </select>
-                    </div>
+
 
                     {{-- Status --}}
                     <div class="erp-filter-field" style="min-width:120px;">
@@ -865,9 +1325,7 @@
                     @if(request('category_id'))
                         <span class="filter-chip"><i class="fas fa-list" style="font-size:.6rem;"></i> {{ $categories->firstWhere('id', request('category_id'))->name ?? 'Category' }}</span>
                     @endif
-                    @if(request('brand_id'))
-                        <span class="filter-chip"><i class="fas fa-trademark" style="font-size:.6rem;"></i> {{ $brands->firstWhere('id', request('brand_id'))->name ?? 'Brand' }}</span>
-                    @endif
+
                     @if(request('status'))
                         <span class="filter-chip"><i class="fas fa-circle" style="font-size:.6rem;"></i> {{ ucfirst(request('status')) }}</span>
                     @endif
@@ -887,32 +1345,26 @@
         @endif
 
 
-        {{-- ── Table ── --}}
-        <div class="erp-table-wrap table-responsive">
+        {{-- ── QuickBooks POS Workspace: Table + Show Details Drawer (F8) ── --}}
+        <div class="qb-workspace-wrap">
+            <div class="qb-table-pane">
+                <div class="erp-table-wrap table-responsive">
 
                 <table id="productTable" class="table table-hover align-middle nowrap" style="width:100%">
                     <thead>
                         <tr>
-                            <th style="width:36px;"><input type="checkbox" id="selectAll" class="row-check"></th>
-                            <th style="width:40px;">#</th>
-                            <th style="width:52px;">Image</th>
+                            <th style="width:30px;" class="text-center"><input type="checkbox" id="selectAll" class="row-check"></th>
+                            <th style="width:35px;" class="text-center">#</th>
+                            <th style="width:36px;" class="text-center">Image</th>
                             <th>Item Details</th>
-                            <th>Stock</th>
-                            <th>Purchase Price</th>
-                            <th>Sky Price</th>
-                            <th style="width:85px;">Sky P-Code</th>
-                            <th>Rot Price.</th>
-                            <th style="width:85px;">Rot P-Code</th>
-                            <th style="width:75px;">Status</th>
-                            <th class="text-center" style="width:220px;">
-                                <div class="d-flex align-items-center justify-content-center gap-2">
-                                    <span>Actions</span>
-                                    <label class="d-inline-flex align-items-center gap-1 m-0 px-2 py-0 rounded border" style="background:#eff6ff; border-color:#bfdbfe; cursor:pointer;" title="Check to open all products in Matrix View on View click">
-                                        <input type="checkbox" id="globalMatrixRadio" style="cursor:pointer; width:12px; height:12px; accent-color:#2563eb; margin:0;">
-                                        <span style="font-size:9.5px; font-weight:700; color:#1e40af;">Matrix</span>
-                                    </label>
-                                </div>
-                            </th>
+                            <th style="width:75px;" class="text-center">Stock</th>
+                            <th style="width:82px;" class="text-end">Cost</th>
+                            <th style="width:82px;" class="text-end">Price</th>
+                            <th style="width:65px;" class="text-center">Sky Code</th>
+                            <th style="width:82px;" class="text-end">Rot Price</th>
+                            <th style="width:65px;" class="text-center">Rot Code</th>
+                            <th style="width:65px;" class="text-center">Status</th>
+                            <th class="text-center" style="width:130px;">Actions</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -941,9 +1393,9 @@
                                 }
                             @endphp
                             <tr id="product-row-{{ $product->id }}" class="{{ $product->is_active ? '' : 'row-inactive' }}">
-                                <td><input type="checkbox" class="selectProduct row-check" value="{{ $product->id }}"></td>
-                                <td style="color:var(--erp-muted); font-size:.72rem;">{{ $products->firstItem() + $key }}</td>
-                                <td>
+                                <td class="text-center"><input type="checkbox" class="selectProduct row-check" value="{{ $product->id }}"></td>
+                                <td class="text-center text-muted" style="font-size:11px;">{{ $products->firstItem() + $key }}</td>
+                                <td class="text-center">
                                     @if ($product->image)
                                         <img src="{{ asset('uploads/products/' . $product->image) }}"
                                             alt="{{ $product->item_name }}" class="product-img">
@@ -963,27 +1415,27 @@
                                         @endif
                                     </div>
                                 </td>
-                                <td>
+                                <td class="text-center">
                                     <span class="stock-badge {{ $stockClass }}">
-                                        <i class="fas fa-cubes" style="font-size:.65rem;"></i>
+                                        <i class="fas fa-cubes"></i>
                                         {{ $stockDisplay }}
                                         <span class="stock-unit">{{ $stockUnit }}</span>
                                     </span>
                                 </td>
-                                <td class="price-purchase">Rs. {{ number_format($tradePrice, 2) }}</td>
-                                <td class="price-sale">Rs. {{ number_format($retailPrice, 2) }}</td>
+                                <td class="price-purchase text-end">Rs. {{ number_format($tradePrice, 2) }}</td>
+                                <td class="price-sale text-end">Rs. {{ number_format($retailPrice, 2) }}</td>
                                 <td class="text-center">
-                                    <span class="badge bg-light text-dark border px-2 py-1 font-monospace fw-bold" style="font-size: 0.82rem; letter-spacing: 0.5px;" title="Sky P-Code">
+                                    <span class="badge bg-light text-dark border px-1.5 py-0.5 font-monospace fw-bold" style="font-size: 11px;" title="Sky P-Code">
                                         {{ \App\Services\PCodeService::encode($retailPrice) }}
                                     </span>
                                 </td>
-                                <td class="price-wholesale">Rs. {{ number_format((float)($product->wholesale_price ?? 0), 2) }}</td>
+                                <td class="price-wholesale text-end">Rs. {{ number_format((float)($product->wholesale_price ?? 0), 2) }}</td>
                                 <td class="text-center">
-                                    <span class="badge bg-light text-dark border px-2 py-1 font-monospace fw-bold" style="font-size: 0.82rem; letter-spacing: 0.5px;" title="Rot P-Code">
+                                    <span class="badge bg-light text-dark border px-1.5 py-0.5 font-monospace fw-bold" style="font-size: 11px;" title="Rot P-Code">
                                         {{ \App\Services\PCodeService::encode((float)($product->wholesale_price ?? 0)) }}
                                     </span>
                                 </td>
-                                <td>
+                                <td class="text-center">
                                     @if($product->is_active)
                                         <span class="status-active" id="status-badge-{{ $product->id }}">Active</span>
                                     @else
@@ -991,27 +1443,22 @@
                                     @endif
                                 </td>
                                 <td>
-                                    <div class="action-group align-items-center">
-                                        <div class="d-flex flex-column align-items-center me-1" style="min-width: 58px;">
-                                            <div class="d-flex align-items-center justify-content-center gap-1 mb-1" style="cursor: pointer; line-height: 1;" title="Radio Matrix View (from Video)">
-                                                <input type="radio" class="form-check-input row-matrix-radio" name="row_matrix_radio" id="rowMatrixRadio_{{ $product->id }}" data-id="{{ $product->id }}" style="cursor: pointer; width: 13px; height: 13px; accent-color: #2563eb; margin: 0;">
-                                                <label for="rowMatrixRadio_{{ $product->id }}" class="form-check-label m-0 fw-bold" style="font-size: 10px; color: #2563eb; cursor: pointer; white-space: nowrap;">Matrix</label>
-                                            </div>
-                                            <button type="button" class="btn-act btn-act-view viewProductBtn w-100 justify-content-center"
-                                                data-id="{{ $product->id }}" title="View Details">
-                                                <i class="fas fa-eye"></i> View
-                                            </button>
-                                        </div>
+                                    <div class="action-group align-items-center justify-content-center">
+                                        <input type="radio" class="form-check-input row-matrix-radio d-none" name="row_matrix_radio" id="rowMatrixRadio_{{ $product->id }}" data-id="{{ $product->id }}">
+                                        <button type="button" class="btn-act btn-act-view viewProductBtn"
+                                            data-id="{{ $product->id }}" title="View Matrix & Details (F8)">
+                                            <i class="fas fa-eye"></i>
+                                        </button>
                                         @if (auth()->user()->can('products.edit') || auth()->user()->email === 'admin@admin.com')
                                             <a href="{{ route('products.edit', $product->id) }}"
                                                 class="btn-act btn-act-edit" title="Edit Product">
-                                                <i class="fas fa-pencil-alt"></i> Edit
+                                                <i class="fas fa-pencil-alt"></i>
                                             </a>
                                         @endif
                                         <button type="button"
                                             class="btn-act btn-act-barcode openLabelPrintModalBtn"
                                             data-id="{{ $product->id }}"
-                                            title="Print 38x26mm Labels (Product & Variants)">
+                                            title="Print 38x26mm Labels (Ctrl+F10)">
                                             <i class="fas fa-barcode"></i>
                                         </button>
                                         @if (auth()->user()->can('products.edit') || auth()->user()->email === 'admin@admin.com')
@@ -1040,6 +1487,148 @@
                     </tbody>
                 </table>
         </div>{{-- /erp-table-wrap --}}
+        </div>{{-- /qb-table-pane --}}
+
+        {{-- ── QuickBooks POS Side Details Drawer ("Show Details - F8") ── --}}
+        <div class="qb-details-pane" id="qbDetailsDrawer">
+            <div class="qb-drawer-header">
+                <div class="d-flex align-items-center gap-2" style="min-width:0;">
+                    <span class="badge bg-primary text-white font-monospace" id="qbDrawerItemNum" style="font-size:11px;">#---</span>
+                    <h6 class="mb-0 fw-bold text-dark text-truncate" id="qbDrawerItemTitle" style="font-size:13px;" title="Select item to view">Select an item</h6>
+                </div>
+                <button type="button" class="btn btn-sm btn-outline-secondary py-0 px-2" id="qbCloseDetailsDrawer" title="Hide Details (F8)" style="font-size:11px; height:24px;">
+                    Hide (F8) <i class="fas fa-times ms-1"></i>
+                </button>
+            </div>
+            <div class="qb-drawer-tabs">
+                <button type="button" class="qb-drawer-tab-btn active" id="qbTabBtnStyle" data-tab="style">
+                    <i class="fas fa-th"></i> Style Detail
+                </button>
+                <button type="button" class="qb-drawer-tab-btn" id="qbTabBtnInventory" data-tab="inventory">
+                    <i class="fas fa-info-circle"></i> Inventory Item Detail
+                </button>
+            </div>
+            <div class="qb-drawer-body">
+                <!-- TAB 1: Style Detail -->
+                <div id="qbTabContentStyle">
+                    <!-- Product Thumbnail & Quick Specs -->
+                    <div class="d-flex align-items-center gap-3 p-2 bg-light rounded border mb-3">
+                        <div id="qbDrawerImgWrap" style="width:58px; height:58px; border-radius:6px; overflow:hidden; background:#fff; border:1px solid #cbd5e1; display:flex; align-items:center; justify-content:center; flex-shrink:0;">
+                            <i class="fas fa-image text-muted fs-4"></i>
+                        </div>
+                        <div style="flex:1; min-width:0;">
+                            <div class="fw-bold text-dark text-truncate" id="qbDrawerStyleName" style="font-size:13px;">No item selected</div>
+                            <div class="text-muted small text-truncate" id="qbDrawerStyleMeta">Click any table row to inspect</div>
+                        </div>
+                    </div>
+
+                    <!-- Item Info Accordion -->
+                    <div class="qb-section-card" id="qbCardItemInfo">
+                        <div class="qb-section-head">
+                            <span><i class="fas fa-info-circle me-1 text-primary"></i> Item Info</span>
+                            <i class="fas fa-chevron-down chevron"></i>
+                        </div>
+                        <div class="qb-section-body">
+                            <div class="qb-data-row"><span class="qb-data-label">Type:</span><span class="qb-data-val" id="qbValType">Inventory Part</span></div>
+                            <div class="qb-data-row"><span class="qb-data-label">Department:</span><span class="qb-data-val" id="qbValDepartment">—</span></div>
+                            <div class="qb-data-row"><span class="qb-data-label">Regular Price:</span><span class="qb-data-val text-success" id="qbValRegularPrice">Rs. 0.00</span></div>
+                            <div class="qb-data-row"><span class="qb-data-label">Sky P-Code:</span><span class="qb-data-val text-primary font-monospace" id="qbValSkyPCode">—</span></div>
+                            <div class="qb-data-row"><span class="qb-data-label">Wholesale Price:</span><span class="qb-data-val text-info" id="qbValWholesalePrice">Rs. 0.00</span></div>
+                            <div class="qb-data-row"><span class="qb-data-label">Rot P-Code:</span><span class="qb-data-val text-primary font-monospace" id="qbValRotPCode">—</span></div>
+                            <div class="qb-data-row"><span class="qb-data-label">Avg Cost:</span><span class="qb-data-val" id="qbValAvgCost">Rs. 0.00</span></div>
+                            <div class="qb-data-row"><span class="qb-data-label">On Hand Qty:</span><span class="qb-data-val text-dark fw-bold" id="qbValOnHand">0</span></div>
+                            <div class="qb-data-row"><span class="qb-data-label">Available Qty:</span><span class="qb-data-val text-primary fw-bold" id="qbValAvailable">0</span></div>
+                        </div>
+                    </div>
+
+                    <!-- More Info Accordion -->
+                    <div class="qb-section-card" id="qbCardMoreInfo">
+                        <div class="qb-section-head">
+                            <span><i class="fas fa-building me-1 text-secondary"></i> More Info</span>
+                            <i class="fas fa-chevron-down chevron"></i>
+                        </div>
+                        <div class="qb-section-body">
+                            <div class="qb-data-row"><span class="qb-data-label">Vendor / Brand:</span><span class="qb-data-val" id="qbValVendor">—</span></div>
+                            <div class="qb-data-row"><span class="qb-data-label">ALU / Barcode:</span><span class="qb-data-val font-monospace" id="qbValAlu">—</span></div>
+                            <div class="qb-data-row"><span class="qb-data-label">Location (Rack/Shelf):</span><span class="qb-data-val" id="qbValLocation">—</span></div>
+                            <div class="qb-data-row"><span class="qb-data-label">Reorder Alert:</span><span class="qb-data-val" id="qbValReorder">—</span></div>
+                        </div>
+                    </div>
+
+                    <!-- Style Matrix Grid (Sizes vs Attributes) -->
+                    <div class="qb-section-card" id="qbCardMatrix">
+                        <div class="qb-section-head">
+                            <span><i class="fas fa-th me-1 text-primary"></i> Style Matrix (Sizes &times; Attributes)</span>
+                            <i class="fas fa-chevron-down chevron"></i>
+                        </div>
+                        <div class="qb-section-body p-2">
+                            <div id="qbDrawerMatrixWrap" class="table-responsive" style="max-height:260px;">
+                                <div class="text-center py-4 text-muted small fst-italic">
+                                    Click any product row to display its Sizes &times; Attributes on-hand stock matrix.
+                                </div>
+                            </div>
+                            <div class="d-flex justify-content-between align-items-center mt-2 pt-2 border-top">
+                                <span class="text-muted" style="font-size:10.5px;"><i class="fas fa-info-circle text-primary"></i> Cells show On Hand Qty</span>
+                                <button type="button" class="btn btn-sm btn-primary py-1 px-3 rounded-pill fw-bold" id="qbBtnEditStyle" style="font-size:11.5px;" disabled>
+                                    <i class="fas fa-pencil-alt me-1"></i> Edit Style
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- TAB 2: Inventory Item Detail -->
+                <div id="qbTabContentInventory" style="display:none;">
+                    <!-- Memo Notes Box -->
+                    <div class="qb-section-card">
+                        <div class="qb-section-head">
+                            <span><i class="fas fa-sticky-note me-1 text-warning"></i> Item Notes &amp; Memo</span>
+                        </div>
+                        <div class="qb-section-body">
+                            <textarea class="qb-notes-memo" id="qbDrawerNotesMemo" placeholder="Item notes, supplier details, or instructions..."></textarea>
+                            <div class="text-end mt-1">
+                                <span class="text-muted small" style="font-size:10.5px;" id="qbMemoSaveHint">Auto-synced with Remarks</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Statistics Box -->
+                    <div class="qb-section-card">
+                        <div class="qb-section-head">
+                            <span><i class="fas fa-chart-pie me-1 text-success"></i> Statistics &amp; Performance</span>
+                        </div>
+                        <div class="qb-section-body">
+                            <div class="d-flex align-items-center justify-content-between mb-2 pb-2 border-bottom">
+                                <span class="text-muted" style="font-size:11px;">Rating:</span>
+                                <div class="text-warning" style="font-size:12px;">
+                                    <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star-half-alt"></i>
+                                </div>
+                            </div>
+                            <div class="qb-data-row"><span class="qb-data-label">Net Sales:</span><span class="qb-data-val text-success" id="qbValNetSales">Rs. 0.00</span></div>
+                            <div class="qb-data-row"><span class="qb-data-label">Cost of Goods:</span><span class="qb-data-val text-muted" id="qbValCostGoods">Rs. 0.00</span></div>
+                            <div class="qb-data-row"><span class="qb-data-label">Gross Profit:</span><span class="qb-data-val text-primary" id="qbValGrossProfit">Rs. 0.00</span></div>
+                            <div class="qb-data-row"><span class="qb-data-label">Profit Margin:</span><span class="qb-data-val text-dark fw-bold" id="qbValProfitMargin">0.0%</span></div>
+                            <div class="qb-data-row"><span class="qb-data-label">Qty Received:</span><span class="qb-data-val" id="qbValQtyReceived">0</span></div>
+                            <div class="qb-data-row"><span class="qb-data-label">Qty Sold:</span><span class="qb-data-val" id="qbValQtySold">0</span></div>
+                            <div class="qb-data-row"><span class="qb-data-label">Adjustments:</span><span class="qb-data-val" id="qbValQtyAdjusted">0</span></div>
+                        </div>
+                    </div>
+
+                    <!-- Misc & Shipping -->
+                    <div class="qb-section-card">
+                        <div class="qb-section-head">
+                            <span><i class="fas fa-truck me-1 text-info"></i> Misc &amp; Packaging</span>
+                        </div>
+                        <div class="qb-section-body">
+                            <div class="qb-data-row"><span class="qb-data-label">Weight per Piece:</span><span class="qb-data-val" id="qbValWeight">0 kg</span></div>
+                            <div class="qb-data-row"><span class="qb-data-label">Pieces per Box:</span><span class="qb-data-val" id="qbValPiecesPerBox">1</span></div>
+                            <div class="qb-data-row"><span class="qb-data-label">Dimensions (H &times; W):</span><span class="qb-data-val" id="qbValDimensions">—</span></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>{{-- /qb-workspace-wrap --}}
 
         {{-- ── Mobile Product Cards (Shown only on mobile < 768px for 100% user-friendly view) ── --}}
         <div class="mobile-product-cards">
@@ -1160,6 +1749,62 @@
         </div>
 
     </div>{{-- /erp-card --}}
+
+    {{-- ── Fixed Bottom Status Bar (QuickBooks POS Desktop Style) ── --}}
+    <div class="qb-fixed-bottom-bar" id="qbFixedBottomBar">
+        <div class="d-flex align-items-center flex-nowrap qb-status-items-wrap">
+            {{-- Total Products --}}
+            <div class="qb-status-item">
+                <span class="qb-status-icon" style="background:#eef2ff; color:#4f46e5;"><i class="fas fa-box-open"></i></span>
+                <span class="qb-status-title">Total Products:</span>
+                <strong class="qb-status-num text-dark">{{ $products->total() }}</strong>
+                <span class="qb-status-sub">(in catalog)</span>
+            </div>
+
+            <div class="qb-status-divider"></div>
+
+            {{-- Active --}}
+            <div class="qb-status-item">
+                <span class="qb-status-icon" style="background:#ecfdf5; color:#059669;"><i class="fas fa-check-circle"></i></span>
+                <span class="qb-status-title">Active:</span>
+                <strong class="qb-status-num text-success">{{ $products->getCollection()->where('is_active',1)->count() }}</strong>
+                <span class="qb-status-sub">(on this page)</span>
+            </div>
+
+            <div class="qb-status-divider"></div>
+
+            {{-- Inactive --}}
+            <div class="qb-status-item">
+                <span class="qb-status-icon" style="background:#fef2f2; color:#dc2626;"><i class="fas fa-times-circle"></i></span>
+                <span class="qb-status-title">Inactive:</span>
+                <strong class="qb-status-num text-danger">{{ $products->getCollection()->where('is_active',0)->count() }}</strong>
+                <span class="qb-status-sub">(on this page)</span>
+            </div>
+
+            <div class="qb-status-divider"></div>
+
+            {{-- Filtered Results --}}
+            <div class="qb-status-item">
+                <span class="qb-status-icon" style="background:#fffbeb; color:#d97706;"><i class="fas fa-filter"></i></span>
+                <span class="qb-status-title">Filtered Results:</span>
+                <strong class="qb-status-num text-dark">{{ $products->total() }}</strong>
+                <span class="qb-status-sub">
+                    @if(request()->hasAny(['search','category_id','brand_id','status']))
+                        <span class="badge" style="background:#fef3c7; color:#b45309; font-weight:700; font-size:10px; border:1px solid #fde68a;">Filters Active</span>
+                    @else
+                        (all products)
+                    @endif
+                </span>
+            </div>
+        </div>
+
+        {{-- Right-hand quick info / shortcuts helper --}}
+        <div class="d-none d-md-flex align-items-center gap-3" style="font-size: 11.5px; color: #64748b;">
+            <span><i class="fas fa-columns text-primary me-1"></i> Press <kbd style="background:#f1f5f9; color:#334155; border:1px solid #cbd5e1; font-weight:600; padding:2px 5px; border-radius:4px; font-size:10.5px;">F8</kbd> to toggle Item Details</span>
+            <span class="text-muted">|</span>
+            <span>Showing <strong>{{ $products->firstItem() ?? 0 }}–{{ $products->lastItem() ?? 0 }}</strong> of <strong>{{ $products->total() }}</strong></span>
+        </div>
+    </div>
         </div>{{-- /container-fluid --}}
     </div>{{-- /main-content-inner --}}
 </div>{{-- /main-content --}}
@@ -1258,6 +1903,127 @@
             <div class="modal-footer py-2 px-3 bg-light border-top d-flex justify-content-between align-items-center">
                 <span class="text-muted fst-italic" style="font-size: 11px;"><i class="fas fa-info-circle me-1 text-primary"></i> Right-click table header anytime to open</span>
                 <button type="button" class="btn btn-primary btn-sm px-4 rounded-pill qb-idx-modal-close" data-dismiss="modal" data-bs-dismiss="modal">Apply &amp; Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+{{-- ══════════════════════════════════════════════════════════════
+     QUICKBOOKS POS STYLE: EDIT STYLE MODAL (Interactive Matrix)
+══════════════════════════════════════════════════════════════ --}}
+<div class="modal fade" id="qbEditStyleModal" tabindex="-1" role="dialog" aria-hidden="true" style="z-index: 1060;">
+    <div class="modal-dialog modal-lg modal-dialog-centered" style="max-width: 840px;" role="document">
+        <div class="modal-content border-0 shadow-lg" style="border-radius: 12px; overflow: hidden;">
+            <div class="modal-header py-2.5 px-3 bg-light border-bottom d-flex align-items-center justify-content-between">
+                <div class="d-flex align-items-center gap-2">
+                    <i class="fas fa-th text-primary fs-6"></i>
+                    <div>
+                        <h6 class="modal-title fw-bold mb-0 text-dark" style="font-size: 14px;">Edit Style: <span id="qbEditStyleModalTitle">—</span></h6>
+                        <span class="text-muted" style="font-size: 11px;">Update variant stock, on-hand counts and attributes</span>
+                    </div>
+                </div>
+                <button type="button" class="close text-secondary" data-dismiss="modal" data-bs-dismiss="modal" aria-label="Close" style="font-size:24px;border:none;background:transparent;cursor:pointer;line-height:1;">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body p-3">
+                <div class="alert alert-info py-2 px-3 mb-2 d-flex align-items-center gap-2" style="font-size:12px; border-radius:6px;">
+                    <i class="fas fa-info-circle"></i>
+                    <span>Edit the on-hand stock quantity in each cell. Totals will update automatically.</span>
+                </div>
+                <div class="table-responsive" id="qbEditStyleMatrixContainer" style="max-height: 440px;">
+                    <!-- Interactive Matrix Table injected here -->
+                </div>
+            </div>
+            <div class="modal-footer py-2 px-3 bg-light border-top d-flex justify-content-between align-items-center">
+                <div id="qbEditStyleStatus" style="font-size:12px;"></div>
+                <div class="d-flex align-items-center gap-2">
+                    <button type="button" class="btn btn-sm btn-outline-secondary px-3" data-dismiss="modal" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-sm btn-primary px-4 fw-bold" id="qbBtnSaveStyleChanges">
+                        <i class="fas fa-save me-1"></i> Save Changes
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{{-- ══════════════════════════════════════════════════════════════
+     QUICKBOOKS POS STYLE: PHYSICAL INVENTORY MODAL (Video 4 Count)
+══════════════════════════════════════════════════════════════ --}}
+<div class="modal fade" id="qbPhysicalInventoryModal" tabindex="-1" role="dialog" aria-hidden="true" style="z-index: 1060;">
+    <div class="modal-dialog modal-xl modal-dialog-centered" style="max-width: 1040px;" role="document">
+        <div class="modal-content border-0 shadow-lg" style="border-radius: 12px; overflow: hidden;">
+            <div class="modal-header py-2.5 px-3 bg-dark text-white d-flex align-items-center justify-content-between">
+                <div class="d-flex align-items-center gap-2">
+                    <i class="fas fa-clipboard-check text-warning fs-5"></i>
+                    <div>
+                        <h6 class="modal-title fw-bold mb-0 text-white" style="font-size: 15px;">Physical Inventory Window (Cycle Count &amp; Reconciliation)</h6>
+                        <span class="text-light opacity-75" style="font-size: 11px;">QuickBooks POS Desktop 12.0 Mode — Reconcile store on-hand stock with physical count</span>
+                    </div>
+                </div>
+                <button type="button" class="close text-white" data-dismiss="modal" data-bs-dismiss="modal" aria-label="Close" style="font-size:24px;border:none;background:transparent;cursor:pointer;line-height:1;">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body p-3 bg-light">
+                <!-- Top Quick Scanning / Barcode Entry Bar (As in Video 4) -->
+                <div class="card border mb-3 shadow-sm" style="border-radius:8px;">
+                    <div class="card-body p-2.5 d-flex align-items-center gap-2 flex-wrap">
+                        <div class="d-flex align-items-center gap-2" style="flex:1 1 280px;">
+                            <label class="form-label mb-0 fw-bold text-dark text-nowrap" style="font-size:12px;">Enter item:</label>
+                            <input type="text" id="qbPiScanItemInput" class="form-control form-control-sm" placeholder="Scan barcode, enter Item #, or title...">
+                        </div>
+                        <div class="d-flex align-items-center gap-2" style="width:160px;">
+                            <label class="form-label mb-0 fw-bold text-dark text-nowrap" style="font-size:12px;">Quantity:</label>
+                            <input type="number" id="qbPiScanQtyInput" class="form-control form-control-sm text-center fw-bold" value="1" min="1" step="1">
+                        </div>
+                        <button type="button" class="btn btn-sm btn-success px-3 fw-bold" id="qbPiAddCountBtn">
+                            <i class="fas fa-plus-circle me-1"></i> Count Item
+                        </button>
+                        <button type="button" class="btn btn-sm btn-outline-warning ms-auto" id="qbPiSetUncountedZeroBtn" title="Set all uncounted items to 0 (Video 4 Feature)">
+                            <i class="fas fa-magic me-1"></i> Set Uncounted to 0
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Counting Table -->
+                <div class="table-responsive bg-white border rounded shadow-sm" style="max-height: 420px;">
+                    <table class="table table-hover table-sm align-middle mb-0" id="qbPiTable" style="font-size:12px;">
+                        <thead class="table-light sticky-top" style="border-bottom: 2px solid #cbd5e1;">
+                            <tr>
+                                <th>Item #</th>
+                                <th>Item Name</th>
+                                <th>Attribute</th>
+                                <th>Size</th>
+                                <th class="text-center" style="width:100px;">Expected Qty</th>
+                                <th class="text-center" style="width:110px;">Counted Qty</th>
+                                <th class="text-center" style="width:100px;">Difference</th>
+                                <th class="text-center" style="width:60px;">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="qbPiTableBody">
+                            <!-- Populated with products or active search -->
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Footer Stats -->
+                <div class="d-flex align-items-center justify-content-between mt-2 px-1" style="font-size:12px;">
+                    <div>
+                        Total Items in Count: <strong id="qbPiTotalCountItems">0</strong> |
+                        Items with Difference: <strong id="qbPiDiffItemsCount" class="text-danger">0</strong>
+                    </div>
+                    <div class="text-muted fst-italic">
+                        * Differences will be posted directly to WarehouseStock and recorded in StockAdjustments.
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer py-2 px-3 bg-light border-top d-flex justify-content-between align-items-center">
+                <button type="button" class="btn btn-sm btn-outline-secondary px-3" data-dismiss="modal" data-bs-dismiss="modal">Cancel / Close</button>
+                <button type="button" class="btn btn-sm btn-primary px-4 fw-bold" id="qbPiApplyChangesBtn">
+                    <i class="fas fa-check-double me-1"></i> Apply Changes &amp; Adjust Stock
+                </button>
             </div>
         </div>
     </div>
@@ -1391,20 +2157,20 @@
                 </div>
 
                 <!-- Standard Table View -->
-                <div id="modalContentRow" class="table-responsive d-none p-3">
-                    <table class="table table-hover table-sm align-middle mb-0 text-center" style="font-size:.84rem;">
-                        <thead style="background:#f8fafc;">
+                <div id="modalContentRow" class="table-responsive d-none p-0" style="max-height: 480px; overflow-y: auto;">
+                    <table id="modalVariantTable" class="table align-middle mb-0" style="width:100%;">
+                        <thead>
                             <tr>
-                                <th class="text-start ps-3" style="font-size:.68rem; font-weight:700; text-transform:uppercase; letter-spacing:.5px; color:#475569;">Variant Name</th>
-                                <th style="font-size:.68rem; font-weight:700; text-transform:uppercase; letter-spacing:.5px; color:#475569;">Size</th>
-                                <th style="font-size:.68rem; font-weight:700; text-transform:uppercase; letter-spacing:.5px; color:#475569;">Color</th>
-                                <th style="font-size:.68rem; font-weight:700; text-transform:uppercase; letter-spacing:.5px; color:#475569;">Stock</th>
-                                <th style="font-size:.68rem; font-weight:700; text-transform:uppercase; letter-spacing:.5px; color:#475569;">Sky Price</th>
-                                <th style="font-size:.68rem; font-weight:700; text-transform:uppercase; letter-spacing:.5px; color:#475569;">Sky P-Code</th>
-                                <th style="font-size:.68rem; font-weight:700; text-transform:uppercase; letter-spacing:.5px; color:#475569;">Cost (Purch)</th>
-                                <th style="font-size:.68rem; font-weight:700; text-transform:uppercase; letter-spacing:.5px; color:#475569;">Rot Price.</th>
-                                <th style="font-size:.68rem; font-weight:700; text-transform:uppercase; letter-spacing:.5px; color:#475569;">Rot P-Code</th>
-                                <th class="text-end pe-3" style="font-size:.68rem; font-weight:700; text-transform:uppercase; letter-spacing:.5px; color:#475569;">Barcode</th>
+                                <th class="text-start ps-3" style="min-width: 160px;">Variant Name</th>
+                                <th class="text-center" style="width: 65px;">Size</th>
+                                <th class="text-center" style="width: 65px;">Color</th>
+                                <th class="text-center" style="width: 75px;">Stock</th>
+                                <th class="text-end" style="width: 85px;">Price</th>
+                                <th class="text-center" style="width: 65px;">Sky Code</th>
+                                <th class="text-end" style="width: 85px;">Cost</th>
+                                <th class="text-end" style="width: 85px;">Rot Price</th>
+                                <th class="text-center" style="width: 65px;">Rot Code</th>
+                                <th class="text-end pe-3" style="width: 110px;">Barcode</th>
                             </tr>
                         </thead>
                         <tbody id="variantTableBody"></tbody>
@@ -1651,21 +2417,24 @@ $(document).ready(function () {
         order:      [[3, 'asc']],
         dom:        'rt',
         scrollX:    false,
-        columnDefs: [{ targets: [0, 8], orderable: false, searchable: false }]
+        columnDefs: [{ targets: [0, 11], orderable: false, searchable: false }]
     });   // DataTable closes here
 
     // ══════════════════════════════════════════════════════════════
     // QUICKBOOKS POS STYLE: CUSTOMIZE PRODUCT TABLE COLUMNS
     // ══════════════════════════════════════════════════════════════
     const INDEX_COLUMNS = [
-        { index: 1, key: 'index_num',     label: '# Number',       default: true },
-        { index: 2, key: 'image',         label: 'Image',          default: true },
-        { index: 3, key: 'item_details',  label: 'Item Details',   default: true },
-        { index: 4, key: 'stock',         label: 'Stock',          default: true },
-        { index: 5, key: 'cost_price',    label: 'Purchase Price', default: true },
-        { index: 6, key: 'sale_price',    label: 'Sale Price',     default: true },
-        { index: 7, key: 'status',        label: 'Status',         default: true },
-        { index: 8, key: 'actions',       label: 'Actions',        default: true },
+        { index: 1,  key: 'index_num',     label: '# Number',       default: true },
+        { index: 2,  key: 'image',         label: 'Image',          default: true },
+        { index: 3,  key: 'item_details',  label: 'Item Details',   default: true },
+        { index: 4,  key: 'stock',         label: 'Stock',          default: true },
+        { index: 5,  key: 'cost_price',    label: 'Purchase Price', default: true },
+        { index: 6,  key: 'sky_price',     label: 'Sky Price',      default: true },
+        { index: 7,  key: 'sky_pcode',     label: 'Sky P-Code',     default: true },
+        { index: 8,  key: 'rot_price',     label: 'Rot Price',      default: true },
+        { index: 9,  key: 'rot_pcode',     label: 'Rot P-Code',     default: true },
+        { index: 10, key: 'status',        label: 'Status',         default: true },
+        { index: 11, key: 'actions',       label: 'Actions',        default: true },
     ];
 
     const IDX_STORAGE_KEY = 'kent_product_table_columns_v1';
@@ -2469,7 +3238,7 @@ $(document).ready(function () {
         function stockBadgeHtml(qty, alert) {
             let isLow = qty > 0 && alert != null && qty <= alert;
             let cls   = qty == 0 ? 'background:#fef3c7;color:#b45309;border:1px solid #fde68a;' : (isLow ? 'background:#fef2f2;color:#dc2626;border:1px solid #fecaca;' : 'background:#ecfdf5;color:#059669;border:1px solid #a7f3d0;');
-            return `<span style="${cls} border-radius:6px; padding:3px 8px; font-size:.78rem; font-weight:600;">${qty}</span>`;
+            return `<span style="${cls} border-radius:4px; padding:1px 6px; font-size:11px; font-weight:700; display:inline-flex; align-items:center; gap:3px;"><i class="fas fa-cubes" style="font-size:9.5px;"></i> ${qty}</span>`;
         }
 
         if (variants.length > 0) {
@@ -2484,7 +3253,8 @@ $(document).ready(function () {
                 let vBarcode  = v.barcode || v.variant_barcode || (product.barcode_path ?? product.item_code);
                 let vUnit     = v.unit || v.variant_unit || (product.unit ? product.unit.name : 'Pcs');
 
-                let colorBadge = (vColorVal && vColorVal !== '-') ? `<span style="background:#e2e8f0;border-radius:4px;padding:2px 6px;font-size:.72rem;">${vColorVal}</span>` : '<span style="color:#94a3b8;">—</span>';
+                let colorBadge = (vColorVal && vColorVal !== '-') ? `<span class="badge font-monospace" style="background:#f1f5f9; color:#334155; border:1px solid #cbd5e1; font-size:10.5px; padding:1px 5px; border-radius:3px;">${escapeHtml(vColorVal)}</span>` : '<span class="text-muted">—</span>';
+                let sizeBadge  = (vSize && vSize !== '-') ? `<span class="badge font-monospace" style="background:#f1f5f9; color:#334155; border:1px solid #cbd5e1; font-size:10.5px; padding:1px 5px; border-radius:3px;">${escapeHtml(vSize)}</span>` : '<span class="text-muted">—</span>';
                 let alertQty  = (vAlert != null && vAlert != 0) ? vAlert : '-';
                 
                 if (product.size_mode === 'by_kg' && v.conv_factor != 1 && !v.unit) vUnit = 'Pcs';
@@ -2495,36 +3265,36 @@ $(document).ready(function () {
                 let vRotPCode = window.encodeToPCode ? window.encodeToPCode(vWholesale) : (v.rot_p_code || '—');
 
                 tbody.append(`<tr>
-                    <td class="text-start ps-4 fw-semibold">${vName}</td>
-                    <td>${vSize}</td>
-                    <td>${colorBadge}</td>
-                    <td>${stockBadgeHtml(vStock, vAlert)}</td>
-                    <td class="fw-bold" style="color:#059669;">Rs. ${parseFloat(vSale||0).toFixed(2)} <small class="fw-normal text-muted">${vPriceLabel}</small></td>
-                    <td class="text-center"><span class="badge bg-light text-dark border font-monospace px-2 py-0.5 fw-bold" style="font-size:.78rem;">${vSkyPCode || '—'}</span></td>
-                    <td class="text-muted">Rs. ${parseFloat(vPurch||0).toFixed(2)} <small>${vPriceLabel}</small></td>
-                    <td class="fw-bold" style="color:#0284c7;">Rs. ${parseFloat(vWholesale||0).toFixed(2)} <small class="fw-normal text-muted">${vPriceLabel}</small></td>
-                    <td class="text-center"><span class="badge bg-light text-dark border font-monospace px-2 py-0.5 fw-bold" style="font-size:.78rem;">${vRotPCode || '—'}</span></td>
-                    <td class="text-end pe-4"><code style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:4px;padding:2px 6px;font-size:.75rem;">${vBarcode}</code></td>
+                    <td class="text-start ps-3 fw-bold text-dark" style="font-size:12px;">${escapeHtml(vName)}</td>
+                    <td class="text-center">${sizeBadge}</td>
+                    <td class="text-center">${colorBadge}</td>
+                    <td class="text-center">${stockBadgeHtml(vStock, vAlert)}</td>
+                    <td class="text-end fw-bold" style="color:#059669; font-size:12px; font-variant-numeric:tabular-nums;">Rs. ${parseFloat(vSale||0).toFixed(2)}</td>
+                    <td class="text-center"><span class="badge bg-light text-dark border px-1.5 py-0.5 font-monospace fw-bold" style="font-size:11px;">${escapeHtml(vSkyPCode || '—')}</span></td>
+                    <td class="text-end text-muted" style="font-size:11.5px; font-variant-numeric:tabular-nums;">Rs. ${parseFloat(vPurch||0).toFixed(2)}</td>
+                    <td class="text-end fw-bold" style="color:#0284c7; font-size:12px; font-variant-numeric:tabular-nums;">Rs. ${parseFloat(vWholesale||0).toFixed(2)}</td>
+                    <td class="text-center"><span class="badge bg-light text-dark border px-1.5 py-0.5 font-monospace fw-bold" style="font-size:11px;">${escapeHtml(vRotPCode || '—')}</span></td>
+                    <td class="text-end pe-3 font-monospace" style="font-size:11px; color:#475569;">${vBarcode ? `<span class="badge font-monospace" style="background:#f8fafc; color:#334155; border:1px solid #cbd5e1; font-size:11px; padding:2px 6px; border-radius:4px;">${escapeHtml(vBarcode)}</span>` : '—'}</td>
                 </tr>`);
             });
         } else {
             colorList.forEach((color, index) => {
                 let barcode   = (product.barcode_path ?? product.item_code ?? '') + (index > 0 ? '-' + String(index+1).padStart(2,'0') : '');
-                let colorBadge = (color && color !== '-') ? `<span style="background:#e2e8f0;border-radius:4px;padding:2px 6px;font-size:.72rem;">${color}</span>` : '<span style="color:#94a3b8;">—</span>';
+                let colorBadge = (color && color !== '-') ? `<span class="badge font-monospace" style="background:#f1f5f9; color:#334155; border:1px solid #cbd5e1; font-size:10.5px; padding:1px 5px; border-radius:3px;">${escapeHtml(color)}</span>` : '<span class="text-muted">—</span>';
                 let prodSkyPCode = window.encodeToPCode ? window.encodeToPCode(salePrice) : (product.p_code || '—');
                 let prodRotPrice = product.wholesale_price || 0;
                 let prodRotPCode = window.encodeToPCode ? window.encodeToPCode(prodRotPrice) : (product.rot_p_code || '—');
                 tbody.append(`<tr>
-                    <td class="text-start ps-4 fw-semibold">${product.item_name}</td>
-                    <td>${sizeStr}</td>
-                    <td>${colorBadge}</td>
-                    <td>${stockBadgeHtml(stock, product.alert_carton_quantity)}</td>
-                    <td class="fw-bold" style="color:#059669;">Rs. ${parseFloat(salePrice||0).toFixed(2)} <small class="fw-normal text-muted">${priceLabel}</small></td>
-                    <td class="text-center"><span class="badge bg-light text-dark border font-monospace px-2 py-0.5 fw-bold" style="font-size:.78rem;">${prodSkyPCode || '—'}</span></td>
-                    <td class="text-muted">Rs. ${parseFloat(purchPrice||0).toFixed(2)} <small>${priceLabel}</small></td>
-                    <td class="fw-bold" style="color:#0284c7;">Rs. ${parseFloat(prodRotPrice||0).toFixed(2)} <small class="fw-normal text-muted">${priceLabel}</small></td>
-                    <td class="text-center"><span class="badge bg-light text-dark border font-monospace px-2 py-0.5 fw-bold" style="font-size:.78rem;">${prodRotPCode || '—'}</span></td>
-                    <td class="text-end pe-4"><code style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:4px;padding:2px 6px;font-size:.75rem;">${barcode}</code></td>
+                    <td class="text-start ps-3 fw-bold text-dark" style="font-size:12px;">${escapeHtml(product.item_name)}</td>
+                    <td class="text-center"><span class="badge font-monospace" style="background:#f1f5f9; color:#334155; border:1px solid #cbd5e1; font-size:10.5px; padding:1px 5px; border-radius:3px;">${escapeHtml(sizeStr)}</span></td>
+                    <td class="text-center">${colorBadge}</td>
+                    <td class="text-center">${stockBadgeHtml(stock, product.alert_carton_quantity)}</td>
+                    <td class="text-end fw-bold" style="color:#059669; font-size:12px; font-variant-numeric:tabular-nums;">Rs. ${parseFloat(salePrice||0).toFixed(2)}</td>
+                    <td class="text-center"><span class="badge bg-light text-dark border px-1.5 py-0.5 font-monospace fw-bold" style="font-size:11px;">${escapeHtml(prodSkyPCode || '—')}</span></td>
+                    <td class="text-end text-muted" style="font-size:11.5px; font-variant-numeric:tabular-nums;">Rs. ${parseFloat(purchPrice||0).toFixed(2)}</td>
+                    <td class="text-end fw-bold" style="color:#0284c7; font-size:12px; font-variant-numeric:tabular-nums;">Rs. ${parseFloat(prodRotPrice||0).toFixed(2)}</td>
+                    <td class="text-center"><span class="badge bg-light text-dark border px-1.5 py-0.5 font-monospace fw-bold" style="font-size:11px;">${escapeHtml(prodRotPCode || '—')}</span></td>
+                    <td class="text-end pe-3 font-monospace" style="font-size:11px; color:#475569;">${barcode ? `<span class="badge font-monospace" style="background:#f8fafc; color:#334155; border:1px solid #cbd5e1; font-size:11px; padding:2px 6px; border-radius:4px;">${escapeHtml(barcode)}</span>` : '—'}</td>
                 </tr>`);
             });
         }
@@ -2576,7 +3346,8 @@ $(document).ready(function () {
                            .data('active','0');
                     }
                     Swal.fire({ toast:true, position:'top-end', icon:'success', title:res.message, showConfirmButton:false, timer:2500, timerProgressBar:true });
-                },
+                }
+            });
         });
     });
 
@@ -3158,6 +3929,730 @@ $(document).ready(function () {
                 printWin.focus();
             }
         });
+    });
+
+    // ══════════════════════════════════════════════════════════════
+    // QUICKBOOKS POINT OF SALE DESKTOP 12.0 WORKFLOW CONTROLLER
+    // ══════════════════════════════════════════════════════════════
+    let qbActiveProductId = null;
+    let qbCurrentProductData = null;
+    let qbDetailsOpen = false;
+
+    // Direct bulletproof toggle for "I Want to..." Green Button
+    $(document).on('click', '#qbIWantToDropdownBtn', function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        const $menu = $(this).closest('.dropdown').find('.qb-iwantto-menu');
+        $('.dropdown-menu').not($menu).removeClass('show');
+        $menu.toggleClass('show');
+    });
+
+    // Direct bulletproof toggle for "More" Dropdown Button
+    $(document).on('click', '#qbMoreActionsDropdown', function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        const $menu = $(this).closest('.dropdown').find('.dropdown-menu');
+        $('.dropdown-menu').not($menu).removeClass('show');
+        $menu.toggleClass('show');
+    });
+
+    // Close dropdowns on outside click or menu item click
+    $(document).on('click', function(e) {
+        if (!$(e.target).closest('.dropdown').length) {
+            $('.qb-iwantto-menu, #qbMoreActionsDropdown ~ .dropdown-menu').removeClass('show');
+        }
+    });
+
+    $(document).on('click', '.qb-iwantto-menu .dropdown-item', function() {
+        $('.qb-iwantto-menu').removeClass('show');
+    });
+
+    // 1. Table Row Selection (Single click highlights and loads into details panel)
+    $('#productTable tbody').on('click', 'tr', function(e) {
+        if ($(e.target).closest('input, button, a, label, .action-group').length) {
+            return;
+        }
+        selectTableRow($(this));
+    });
+
+    // Double-click row opens Edit Product
+    $('#productTable tbody').on('dblclick', 'tr', function(e) {
+        if ($(e.target).closest('input, button, a').length) return;
+        const prodId = $(this).find('.selectProduct').val() || $(this).attr('id')?.replace('product-row-', '');
+        if (prodId) {
+            window.location.href = `/products/${prodId}/edit`;
+        }
+    });
+
+    function selectTableRow($row) {
+        if (!$row || !$row.length) return;
+        $('#productTable tbody tr').removeClass('row-qb-selected');
+        $row.addClass('row-qb-selected');
+
+        const prodId = $row.find('.selectProduct').val() || $row.attr('id')?.replace('product-row-', '');
+        if (prodId) {
+            qbActiveProductId = prodId;
+            $('#qbEditSelectedBtn').prop('disabled', false).css({'opacity': '1', 'cursor': 'pointer'});
+
+            $('.selectProduct').prop('checked', false);
+            $row.find('.selectProduct').prop('checked', true);
+
+            if (qbDetailsOpen) {
+                loadProductIntoDetailsDrawer(prodId);
+            }
+        }
+    }
+
+    // 2. Toggle Show Details (F8)
+    function toggleQbDetailsDrawer(forceOpen = null) {
+        if (forceOpen !== null) {
+            qbDetailsOpen = forceOpen;
+        } else {
+            qbDetailsOpen = !qbDetailsOpen;
+        }
+
+        const $drawer = $('#qbDetailsDrawer');
+        if (qbDetailsOpen) {
+            $drawer.addClass('open');
+            $('#qbToggleDetailsBtn').addClass('active');
+            $('#qbToggleDetailsLabel').text('Hide Details');
+            $('#qbMenuDetailsText').text('Hide Details');
+
+            if (!qbActiveProductId) {
+                const $firstRow = $('#productTable tbody tr:first');
+                if ($firstRow.length) {
+                    selectTableRow($firstRow);
+                }
+            } else {
+                loadProductIntoDetailsDrawer(qbActiveProductId);
+            }
+        } else {
+            $drawer.removeClass('open');
+            $('#qbToggleDetailsBtn').removeClass('active');
+            $('#qbToggleDetailsLabel').text('Show Details');
+            $('#qbMenuDetailsText').text('Show Details');
+        }
+    }
+
+    $('#qbToggleDetailsBtn, #qbMenuToggleDetails, #qbCloseDetailsDrawer').on('click', function(e) {
+        e.preventDefault();
+        toggleQbDetailsDrawer();
+    });
+
+    // 3. Details Drawer Tabs
+    $('.qb-drawer-tab-btn').on('click', function() {
+        $('.qb-drawer-tab-btn').removeClass('active');
+        $(this).addClass('active');
+        const tab = $(this).data('tab');
+        if (tab === 'style') {
+            $('#qbTabContentStyle').show();
+            $('#qbTabContentInventory').hide();
+        } else {
+            $('#qbTabContentStyle').hide();
+            $('#qbTabContentInventory').show();
+        }
+    });
+
+    // Collapsible sections inside drawer
+    $(document).on('click', '.qb-section-head', function() {
+        $(this).closest('.qb-section-card').toggleClass('collapsed');
+    });
+
+    // 4. Load Product Data into Details Drawer
+    function loadProductIntoDetailsDrawer(productId) {
+        if (!productId) return;
+        $('#qbDrawerItemTitle').text('Loading...');
+        $('#qbDrawerMatrixWrap').html('<div class="text-center py-4"><div class="spinner-border spinner-border-sm text-primary"></div><p class="small text-muted mt-2 mb-0">Loading Style Matrix...</p></div>');
+
+        $.ajax({
+            url: '/productview/' + productId,
+            type: 'GET',
+            success: function(product) {
+                qbCurrentProductData = product;
+
+                $('#qbDrawerItemNum').text('#' + (product.item_code || product.id));
+                $('#qbDrawerItemTitle').text(product.item_name || 'Item Details');
+                $('#qbDrawerStyleName').text(product.item_name || '—');
+                $('#qbDrawerStyleMeta').text(`${product.category_relation?.name || 'Uncategorized'} • ${product.brand?.name || 'No Brand'}`);
+
+                if (product.image) {
+                    $('#qbDrawerImgWrap').html(`<img src="/uploads/products/${product.image}" style="width:100%; height:100%; object-fit:cover;">`);
+                } else {
+                    $('#qbDrawerImgWrap').html('<i class="fas fa-image text-muted fs-4"></i>');
+                }
+
+                $('#qbValType').text(product.size_mode === 'by_cartons' ? 'Cartons / Box Inventory' : (product.size_mode === 'by_size' ? 'Dimension Inventory' : 'Standard Inventory Part'));
+                $('#qbValDepartment').text(product.category_relation?.name || '—');
+
+                let regularPrice = (product.size_mode === 'by_size') ? (product.price_per_m2 || 0) : (product.sale_price_per_piece || product.sale_price_per_box || 0);
+                let wholesalePrice = product.wholesale_price || 0;
+                let costPrice = (product.size_mode === 'by_size') ? (product.purchase_price_per_m2 || 0) : (product.purchase_price_per_piece || product.purchase_price_per_box || 0);
+
+                $('#qbValRegularPrice').text('Rs. ' + parseFloat(regularPrice).toFixed(2));
+                $('#qbValSkyPCode').text(product.p_code || '---');
+                $('#qbValWholesalePrice').text('Rs. ' + parseFloat(wholesalePrice).toFixed(2));
+                $('#qbValRotPCode').text(product.rot_p_code || '---');
+                $('#qbValAvgCost').text('Rs. ' + parseFloat(costPrice).toFixed(2));
+
+                let totalPieces = product.calculated_total_stock_qty || 0;
+                $('#qbValOnHand').text(totalPieces + ' Pieces');
+                $('#qbValAvailable').text(totalPieces + ' Pieces');
+
+                $('#qbValVendor').text(product.brand?.name || '—');
+                $('#qbValAlu').text(product.barcode_path || product.item_code || '—');
+                $('#qbValLocation').text(product.remarks || '—');
+                $('#qbValReorder').text((product.alert_carton_quantity || product.alert_quantity || '—') + ' min');
+
+                $('#qbDrawerNotesMemo').val(product.remarks || '');
+
+                $('#qbValWeight').text((product.weight_per_piece || 0) + ' kg');
+                $('#qbValPiecesPerBox').text(product.pieces_per_box || 1);
+                $('#qbValDimensions').text((product.height && product.width) ? `${product.height} x ${product.width} cm` : '—');
+
+                let estProfit = Math.max(0, regularPrice - costPrice);
+                let marginPct = regularPrice > 0 ? ((estProfit / regularPrice) * 100).toFixed(1) : '0.0';
+                $('#qbValNetSales').text('Rs. ' + (totalPieces * regularPrice).toFixed(2));
+                $('#qbValCostGoods').text('Rs. ' + (totalPieces * costPrice).toFixed(2));
+                $('#qbValGrossProfit').text('Rs. ' + (totalPieces * estProfit).toFixed(2));
+                $('#qbValProfitMargin').text(marginPct + '%');
+                $('#qbValQtyReceived').text(totalPieces);
+                $('#qbValQtySold').text('0');
+                $('#qbValQtyAdjusted').text('0');
+
+                renderQbStyleMatrix(product);
+                $('#qbBtnEditStyle').prop('disabled', false);
+            },
+            error: function() {
+                $('#qbDrawerMatrixWrap').html('<div class="text-danger small p-3 text-center">Failed to load product details.</div>');
+            }
+        });
+    }
+
+    // 5. Render 2D Style Matrix (Sizes on Y-axis, Attributes on X-axis)
+    function renderQbStyleMatrix(product) {
+        let variants = [];
+        if (product.color) {
+            let parsed = product.color;
+            if (typeof parsed === 'string') {
+                try { parsed = JSON.parse(parsed); } catch(e) {}
+            }
+            if (typeof parsed === 'string') {
+                try { parsed = JSON.parse(parsed); } catch(e) {}
+            }
+            if (Array.isArray(parsed) && parsed.length > 0 && typeof parsed[0] === 'object') {
+                variants = parsed;
+            }
+        }
+
+        if (!variants || variants.length === 0) {
+            $('#qbDrawerMatrixWrap').html(`
+                <div class="text-center py-3 text-muted small">
+                    <i class="fas fa-cube text-secondary mb-1"></i><br>
+                    Single Standard Item (No variants defined).<br>
+                    <strong>On Hand: ${product.calculated_total_stock_qty || 0} Pieces</strong>
+                </div>
+            `);
+            return;
+        }
+
+        let attributesSet = new Set();
+        let sizesSet = new Set();
+        let matrixMap = {};
+
+        variants.forEach((v, idx) => {
+            let attr = (v.color && v.color !== '-') ? String(v.color).trim() : 'Standard';
+            let size = (v.size && v.size !== '-') ? String(v.size).trim() : 'Regular';
+            attributesSet.add(attr);
+            sizesSet.add(size);
+            matrixMap[`${size}||${attr}`] = { variant: v, index: idx };
+        });
+
+        let attributes = Array.from(attributesSet);
+        let sizes = Array.from(sizesSet);
+
+        let html = '<table class="qb-matrix-table">';
+        html += '<thead><tr>';
+        html += '<th class="qb-corner-cell">Size \\ Attribute</th>';
+        attributes.forEach(attr => {
+            html += `<th>${escapeHtml(attr)}</th>`;
+        });
+        html += '<th class="qb-total-cell">Total</th>';
+        html += '</tr></thead><tbody>';
+
+        let colTotals = new Array(attributes.length).fill(0);
+        let grandTotal = 0;
+
+        sizes.forEach(size => {
+            html += '<tr>';
+            html += `<td class="qb-row-label">${escapeHtml(size)}</td>`;
+            let rowTotal = 0;
+
+            attributes.forEach((attr, colIdx) => {
+                let cellData = matrixMap[`${size}||${attr}`];
+                let qty = cellData ? parseFloat(cellData.variant.stock || cellData.variant.current_stock || 0) : 0;
+                rowTotal += qty;
+                colTotals[colIdx] += qty;
+                grandTotal += qty;
+
+                let cellClass = qty === 0 ? 'qb-qty-zero' : 'qb-qty-cell text-primary';
+                html += `<td class="${cellClass}" title="${escapeHtml(size)} - ${escapeHtml(attr)}">${qty}</td>`;
+            });
+
+            html += `<td class="qb-total-cell">${rowTotal}</td>`;
+            html += '</tr>';
+        });
+
+        html += '<tfoot><tr>';
+        html += '<td class="qb-total-cell">Total</td>';
+        colTotals.forEach(cTot => {
+            html += `<td class="qb-total-cell">${cTot}</td>`;
+        });
+        html += `<td class="qb-grand-total">${grandTotal}</td>`;
+        html += '</tr></tfoot></table>';
+
+        $('#qbDrawerMatrixWrap').html(html);
+    }
+
+    // 6. "Edit Style" Interactive Modal
+    $('#qbBtnEditStyle, #qbMenuEditStyle').on('click', function() {
+        if (!qbCurrentProductData) {
+            alert('Please select a product first.');
+            return;
+        }
+        openQbEditStyleModal(qbCurrentProductData);
+    });
+
+    function openQbEditStyleModal(product) {
+        $('#qbEditStyleModalTitle').text(product.item_name || 'Product');
+        $('#qbEditStyleStatus').html('');
+
+        let variants = [];
+        if (product.color) {
+            let parsed = product.color;
+            if (typeof parsed === 'string') {
+                try { parsed = JSON.parse(parsed); } catch(e) {}
+            }
+            if (typeof parsed === 'string') {
+                try { parsed = JSON.parse(parsed); } catch(e) {}
+            }
+            if (Array.isArray(parsed) && parsed.length > 0 && typeof parsed[0] === 'object') {
+                variants = parsed;
+            }
+        }
+
+        let attributesSet = new Set();
+        let sizesSet = new Set();
+        let matrixMap = {};
+
+        variants.forEach((v, idx) => {
+            let attr = (v.color && v.color !== '-') ? String(v.color).trim() : 'Standard';
+            let size = (v.size && v.size !== '-') ? String(v.size).trim() : 'Regular';
+            attributesSet.add(attr);
+            sizesSet.add(size);
+            matrixMap[`${size}||${attr}`] = { variant: v, index: idx };
+        });
+
+        let attributes = Array.from(attributesSet);
+        let sizes = Array.from(sizesSet);
+
+        if (attributes.length === 0) {
+            attributes = ['Standard'];
+            sizes = ['Regular'];
+            matrixMap['Regular||Standard'] = {
+                variant: {
+                    name: product.item_name,
+                    color: 'Standard',
+                    size: 'Regular',
+                    stock: product.calculated_total_stock_qty || 0,
+                    sale_price: product.sale_price_per_piece || product.price_per_m2 || 0,
+                    wholesale_price: product.wholesale_price || 0
+                },
+                index: 0
+            };
+        }
+
+        let html = '<table class="table table-bordered table-sm align-middle text-center qb-matrix-table mb-0" id="qbEditMatrixTable">';
+        html += '<thead><tr>';
+        html += '<th class="qb-corner-cell text-start">Size \\ Attribute</th>';
+        attributes.forEach(attr => {
+            html += `<th>${escapeHtml(attr)}</th>`;
+        });
+        html += '<th class="qb-total-cell">Total</th>';
+        html += '</tr></thead><tbody>';
+
+        let colTotals = new Array(attributes.length).fill(0);
+        let grandTotal = 0;
+
+        sizes.forEach((size, rIdx) => {
+            html += `<tr data-row-idx="${rIdx}">`;
+            html += `<td class="qb-row-label text-start fw-bold">${escapeHtml(size)}</td>`;
+            let rowTotal = 0;
+
+            attributes.forEach((attr, cIdx) => {
+                let cellData = matrixMap[`${size}||${attr}`];
+                let qty = cellData ? parseFloat(cellData.variant.stock || cellData.variant.current_stock || 0) : 0;
+                let varIdx = cellData ? cellData.index : -1;
+                rowTotal += qty;
+                colTotals[cIdx] += qty;
+                grandTotal += qty;
+
+                html += `
+                    <td>
+                        <input type="number" step="any" min="0" 
+                            class="qb-edit-matrix-input qb-matrix-cell-input" 
+                            data-row="${rIdx}" 
+                            data-col="${cIdx}" 
+                            data-size="${escapeHtml(size)}" 
+                            data-attr="${escapeHtml(attr)}" 
+                            data-var-idx="${varIdx}" 
+                            value="${qty}">
+                    </td>
+                `;
+            });
+
+            html += `<td class="qb-total-cell fw-bold qb-row-total-val" id="qbRowTotal_${rIdx}">${rowTotal}</td>`;
+            html += '</tr>';
+        });
+
+        html += '<tfoot><tr>';
+        html += '<td class="qb-total-cell text-start fw-bold">Total</td>';
+        colTotals.forEach((cTot, cIdx) => {
+            html += `<td class="qb-total-cell fw-bold qb-col-total-val" id="qbColTotal_${cIdx}">${cTot}</td>`;
+        });
+        html += `<td class="qb-grand-total fw-bold text-primary" id="qbGrandTotalVal">${grandTotal}</td>`;
+        html += '</tr></tfoot></table>';
+
+        $('#qbEditStyleMatrixContainer').html(html);
+        $('#qbEditStyleModal').modal('show');
+    }
+
+    $(document).on('input', '.qb-matrix-cell-input', function() {
+        let numCols = $('#qbEditMatrixTable thead th').length - 2;
+        let numRows = $('#qbEditMatrixTable tbody tr').length;
+
+        let colTotals = new Array(numCols).fill(0);
+        let grandTotal = 0;
+
+        for (let r = 0; r < numRows; r++) {
+            let rowTotal = 0;
+            for (let c = 0; c < numCols; c++) {
+                let val = parseFloat($(`.qb-matrix-cell-input[data-row="${r}"][data-col="${c}"]`).val()) || 0;
+                rowTotal += val;
+                colTotals[c] += val;
+                grandTotal += val;
+            }
+            $(`#qbRowTotal_${r}`).text(rowTotal);
+        }
+
+        colTotals.forEach((cTot, c) => {
+            $(`#qbColTotal_${c}`).text(cTot);
+        });
+        $('#qbGrandTotalVal').text(grandTotal);
+    });
+
+    $('#qbBtnSaveStyleChanges').on('click', function() {
+        if (!qbCurrentProductData) return;
+        const btn = $(this);
+        btn.prop('disabled', true).html('<i class="fas fa-spinner fa-spin me-1"></i> Saving...');
+
+        let updatedVariants = [];
+        $('.qb-matrix-cell-input').each(function() {
+            let size = $(this).data('size');
+            let attr = $(this).data('attr');
+            let qty = parseFloat($(this).val()) || 0;
+            let varIdx = parseInt($(this).data('var-idx'));
+
+            let orig = (qbCurrentProductData.color && Array.isArray(qbCurrentProductData.color) && varIdx >= 0) ? qbCurrentProductData.color[varIdx] : {};
+
+            updatedVariants.push({
+                ...orig,
+                name: orig.name || `${qbCurrentProductData.item_name} (${size} - ${attr})`,
+                color: attr,
+                size: size,
+                stock: qty,
+                current_stock: qty,
+                sale_price: orig.sale_price || qbCurrentProductData.sale_price_per_piece || 0,
+                wholesale_price: orig.wholesale_price || qbCurrentProductData.wholesale_price || 0,
+                location: orig.location || qbCurrentProductData.remarks || ''
+            });
+        });
+
+        $.ajax({
+            url: `/products/${qbCurrentProductData.id}/update-style`,
+            type: 'POST',
+            data: {
+                _token: '{{ csrf_token() }}',
+                variants: updatedVariants
+            },
+            success: function(resp) {
+                btn.prop('disabled', false).html('<i class="fas fa-save me-1"></i> Save Changes');
+                $('#qbEditStyleModal').modal('hide');
+
+                const $targetRow = $(`#product-row-${qbCurrentProductData.id}`);
+                if ($targetRow.length) {
+                    $targetRow.find('.stock-badge').html(`<i class="fas fa-cubes" style="font-size:.65rem;"></i> ${resp.total_pieces} <span class="stock-unit">Pcs</span>`);
+                }
+
+                loadProductIntoDetailsDrawer(qbCurrentProductData.id);
+                alert(resp.message || 'Style matrix updated successfully!');
+            },
+            error: function(xhr) {
+                btn.prop('disabled', false).html('<i class="fas fa-save me-1"></i> Save Changes');
+                alert('Error saving style matrix: ' + (xhr.responseJSON?.message || 'Server error.'));
+            }
+        });
+    });
+
+    // 7. "Physical Inventory" Workflow (As in Video 4)
+    let qbPiItems = [];
+
+    $('#qbPhysicalInventoryBtn, #qbMenuPhysicalInventory').on('click', function() {
+        openQbPhysicalInventoryModal();
+    });
+
+    function openQbPhysicalInventoryModal() {
+        qbPiItems = [];
+        $('#qbPiTableBody').html('<tr><td colspan="8" class="text-center py-4 text-muted"><div class="spinner-border spinner-border-sm text-primary me-2"></div>Loading inventory items for counting...</td></tr>');
+        $('#qbPhysicalInventoryModal').modal('show');
+
+        $('#productTable tbody tr').each(function() {
+            const prodId = $(this).find('.selectProduct').val();
+            if (!prodId) return;
+
+            const name = $(this).find('.item-name').text().trim();
+            const code = $(this).find('.item-code').text().trim();
+            const stockText = $(this).find('.stock-badge').text().replace(/[^0-9.]/g, '').trim();
+            const expected = parseFloat(stockText) || 0;
+
+            qbPiItems.push({
+                product_id: prodId,
+                variant_index: null,
+                item_code: code || prodId,
+                item_name: name,
+                attribute: 'Standard',
+                size: 'Regular',
+                expected_qty: expected,
+                counted_qty: expected,
+                difference: 0
+            });
+        });
+
+        renderQbPiTable();
+    }
+
+    function renderQbPiTable() {
+        let html = '';
+        let diffCount = 0;
+
+        qbPiItems.forEach((item, idx) => {
+            let diff = item.counted_qty - item.expected_qty;
+            item.difference = diff;
+            let diffClass = diff === 0 ? 'text-muted' : (diff > 0 ? 'text-success fw-bold' : 'text-danger fw-bold');
+            if (diff !== 0) diffCount++;
+
+            html += `
+                <tr data-pi-idx="${idx}">
+                    <td class="font-monospace fw-bold text-dark">${escapeHtml(item.item_code)}</td>
+                    <td class="fw-semibold text-truncate" style="max-width:220px;" title="${escapeHtml(item.item_name)}">${escapeHtml(item.item_name)}</td>
+                    <td><span class="badge bg-light text-secondary border">${escapeHtml(item.attribute)}</span></td>
+                    <td><span class="badge bg-light text-secondary border">${escapeHtml(item.size)}</span></td>
+                    <td class="text-center fw-bold text-dark">${item.expected_qty}</td>
+                    <td class="text-center">
+                        <input type="number" step="any" min="0" class="form-control form-control-sm text-center fw-bold qb-pi-count-input" data-pi-idx="${idx}" value="${item.counted_qty}" style="height:28px; width:80px; margin:0 auto;">
+                    </td>
+                    <td class="text-center ${diffClass}" id="qbPiDiff_${idx}">
+                        ${diff > 0 ? '+' : ''}${diff}
+                    </td>
+                    <td class="text-center">
+                        <button type="button" class="btn btn-xs btn-outline-danger py-0 px-1.5 qb-pi-remove-btn" data-pi-idx="${idx}" title="Remove item from count">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </td>
+                </tr>
+            `;
+        });
+
+        $('#qbPiTableBody').html(html);
+        $('#qbPiTotalCountItems').text(qbPiItems.length);
+        $('#qbPiDiffItemsCount').text(diffCount);
+    }
+
+    $(document).on('input change', '.qb-pi-count-input', function() {
+        const idx = $(this).data('pi-idx');
+        const val = parseFloat($(this).val()) || 0;
+        if (qbPiItems[idx]) {
+            qbPiItems[idx].counted_qty = val;
+            let diff = val - qbPiItems[idx].expected_qty;
+            qbPiItems[idx].difference = diff;
+            let diffClass = diff === 0 ? 'text-muted' : (diff > 0 ? 'text-success fw-bold' : 'text-danger fw-bold');
+            $(`#qbPiDiff_${idx}`).attr('class', `text-center ${diffClass}`).text((diff > 0 ? '+' : '') + diff);
+
+            let diffTotal = qbPiItems.filter(i => i.difference !== 0).length;
+            $('#qbPiDiffItemsCount').text(diffTotal);
+        }
+    });
+
+    $('#qbPiAddCountBtn').on('click', function() {
+        const query = $('#qbPiScanItemInput').val().trim().toLowerCase();
+        const qty = parseFloat($('#qbPiScanQtyInput').val()) || 1;
+        if (!query) return;
+
+        let matched = qbPiItems.find(i => i.item_code.toLowerCase().includes(query) || i.item_name.toLowerCase().includes(query));
+        if (matched) {
+            matched.counted_qty += qty;
+            renderQbPiTable();
+            $('#qbPiScanItemInput').val('').focus();
+        } else {
+            alert(`No item matched "${query}" in current catalog list.`);
+        }
+    });
+
+    $('#qbPiScanItemInput').on('keypress', function(e) {
+        if (e.which === 13) {
+            e.preventDefault();
+            $('#qbPiAddCountBtn').click();
+        }
+    });
+
+    $('#qbPiSetUncountedZeroBtn').on('click', function() {
+        if (confirm('Set counted quantity to 0 for all items in the count list?')) {
+            qbPiItems.forEach(i => i.counted_qty = 0);
+            renderQbPiTable();
+        }
+    });
+
+    $(document).on('click', '.qb-pi-remove-btn', function() {
+        const idx = $(this).data('pi-idx');
+        qbPiItems.splice(idx, 1);
+        renderQbPiTable();
+    });
+
+    $('#qbPiApplyChangesBtn').on('click', function() {
+        const diffItems = qbPiItems.filter(i => i.difference !== 0);
+        if (diffItems.length === 0) {
+            alert('No stock count differences found to adjust.');
+            return;
+        }
+
+        if (!confirm(`Apply physical inventory reconciliation for ${diffItems.length} items with differences? Stock will be updated accordingly.`)) {
+            return;
+        }
+
+        const btn = $(this);
+        btn.prop('disabled', true).html('<i class="fas fa-spinner fa-spin me-1"></i> Applying...');
+
+        $.ajax({
+            url: '{{ route("products.physical_inventory.apply") }}',
+            type: 'POST',
+            data: {
+                _token: '{{ csrf_token() }}',
+                items: diffItems
+            },
+            success: function(resp) {
+                btn.prop('disabled', false).html('<i class="fas fa-check-double me-1"></i> Apply Changes & Adjust Stock');
+                $('#qbPhysicalInventoryModal').modal('hide');
+                alert(resp.message || 'Physical inventory applied successfully!');
+                window.location.reload();
+            },
+            error: function(xhr) {
+                btn.prop('disabled', false).html('<i class="fas fa-check-double me-1"></i> Apply Changes & Adjust Stock');
+                alert('Error applying physical inventory: ' + (xhr.responseJSON?.message || 'Server error.'));
+            }
+        });
+    });
+
+    // 8. Edit / Print / Delete from Toolbar shortcuts
+    $(document).on('click', '#qbEditSelectedBtn, #qbMenuEditItem', function(e) {
+        e.preventDefault();
+        if (!qbActiveProductId) {
+            const $firstRow = $('#productTable tbody tr:first');
+            if ($firstRow.length) selectTableRow($firstRow);
+        }
+        if (qbActiveProductId) {
+            window.location.href = `/products/${qbActiveProductId}/edit`;
+        } else {
+            alert('Please select a product row in the table first.');
+        }
+    });
+
+    $(document).on('click', '#qbMenuPrintTags', function(e) {
+        e.preventDefault();
+        if (!qbActiveProductId) {
+            const $firstRow = $('#productTable tbody tr:first');
+            if ($firstRow.length) selectTableRow($firstRow);
+        }
+        if (qbActiveProductId) {
+            $(`.openLabelPrintModalBtn[data-id="${qbActiveProductId}"]`).click();
+        } else {
+            alert('Please select a product row in the table first.');
+        }
+    });
+
+    $(document).on('click', '#qbMenuDeleteItem', function(e) {
+        e.preventDefault();
+        if (!qbActiveProductId) {
+            const $firstRow = $('#productTable tbody tr:first');
+            if ($firstRow.length) selectTableRow($firstRow);
+        }
+        if (qbActiveProductId) {
+            $(`.delete-product-btn[data-id="${qbActiveProductId}"]`).click();
+        } else {
+            alert('Please select a product row in the table first.');
+        }
+    });
+
+    $(document).on('click', '#customizeIndexColumnsBtn, #qbMenuCustomizeColumns', function(e) {
+        e.preventDefault();
+        showCustomizeIndexModal();
+    });
+
+    // 9. Search Inventory Bar
+    let qbSearchTimer = null;
+    $('#qbSearchInventoryInput').on('input', function() {
+        clearTimeout(qbSearchTimer);
+        const term = $(this).val();
+        qbSearchTimer = setTimeout(() => {
+            $('input[name="search"]').val(term);
+            $('#filterForm').submit();
+        }, 500);
+    });
+
+    $('#qbQuickFilterSelect').on('change', function() {
+        const val = $(this).val();
+        if (val === 'active' || val === 'inactive') {
+            window.location.href = `{{ route('product') }}?status=${val}`;
+        } else if (val === 'all') {
+            window.location.href = `{{ route('product') }}`;
+        }
+    });
+
+    // 10. Global Keyboard Shortcuts: F8, Ctrl+F10, Esc, ArrowUp, ArrowDown
+    $(document).on('keydown', function(e) {
+        if (e.which === 119 || e.key === 'F8') {
+            e.preventDefault();
+            toggleQbDetailsDrawer();
+            return;
+        }
+
+        if (e.ctrlKey && (e.which === 121 || e.key === 'F10')) {
+            e.preventDefault();
+            if (qbActiveProductId) {
+                $(`.openLabelPrintModalBtn[data-id="${qbActiveProductId}"]`).click();
+            }
+            return;
+        }
+
+        if ((e.key === 'ArrowDown' || e.key === 'ArrowUp') && !$(e.target).is('input, textarea, select')) {
+            const $selected = $('#productTable tbody tr.row-qb-selected');
+            if ($selected.length) {
+                e.preventDefault();
+                const $target = e.key === 'ArrowDown' ? $selected.next('tr') : $selected.prev('tr');
+                if ($target.length) {
+                    selectTableRow($target);
+                    $target[0].scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                }
+            }
+        }
     });
 
 });  // ── end $(document).ready ──

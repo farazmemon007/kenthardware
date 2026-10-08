@@ -188,6 +188,10 @@ Route::middleware('auth')->group(function () {
     Route::get('/products/{id}/labels', [ProductController::class, 'printLabels'])->name('products.labels');
     Route::post('/products/{id}/labels', [ProductController::class, 'printLabels'])->name('products.labels.post');
     Route::get('/barcode/{id}', [ProductController::class, 'barcode'])->name('product.barcode');
+
+    // QuickBooks POS: Style Matrix Update & Physical Inventory Reconciliation
+    Route::post('/products/{id}/update-style', [ProductController::class, 'updateStyle'])->name('products.update_style');
+    Route::post('/products/physical-inventory/apply', [ProductController::class, 'applyPhysicalInventory'])->name('products.physical_inventory.apply');
     // Searches
     Route::get('/generate-barcode-image', [ProductController::class, 'generateBarcode'])->name('generate-barcode-image');
     Route::get('/get-subcategories/{category_id}', [ProductController::class, 'getSubcategories'])->name('fetch-subcategories');
