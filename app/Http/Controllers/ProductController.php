@@ -15,7 +15,9 @@ use App\Models\WarehouseStock;
 use App\Models\Branch;
 use App\Models\PackageType;
 use App\Models\StockAdjustment;
+use App\Models\SystemNotification;
 use App\Services\PCodeService;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -510,10 +512,20 @@ class ProductController extends Controller
         }
 
         $products   = $query->latest()->paginate(20)->withQueryString();
-        $categories = Category::orderBy('name')->get();
-        $brands     = Brand::orderBy('name')->get();
+        $categories           = Category::orderBy('name')->get();
+        $brands               = Brand::orderBy('name')->get();
+        $allProductsList      = Product::where('is_active', true)->select('id', 'item_name', 'item_code')->orderBy('item_name')->get();
+        $warehousesList       = Warehouse::select('id', 'warehouse_name', 'location')->orderBy('warehouse_name')->get();
+        $shopsList            = Branch::select('id', 'name', 'address')->orderBy('name')->get();
+        $storageLocationsList = StorageLocation::select('id', 'warehouse_id', 'branch_id', 'name', 'code', 'type')->orderBy('name')->get();
 
-        return view('admin_panel.product.index', compact('products', 'categories', 'brands'));
+        $dueCycleCount = Product::where('is_active', true)
+            ->where(function ($q) {
+                $q->whereNull('next_count_date')
+                  ->orWhere('next_count_date', '<=', Carbon::today()->toDateString());
+            })->count();
+
+        return view('admin_panel.product.index', compact('products', 'categories', 'brands', 'allProductsList', 'warehousesList', 'shopsList', 'storageLocationsList', 'dueCycleCount'));
     }
 
     public function productview($id)
@@ -626,6 +638,25 @@ class ProductController extends Controller
         if (empty($product->rot_p_code)) {
             $product->rot_p_code = PCodeService::encode($product->wholesale_price ?? 0);
         }
+
+        // Attach physical location breakdown across warehouses
+        $locationBreakdown = [];
+        if ($product->warehouseStocks) {
+            foreach ($product->warehouseStocks as $ws) {
+                $whName = $ws->warehouse ? $ws->warehouse->warehouse_name : ('Warehouse #' . $ws->warehouse_id);
+                $whLoc  = $ws->warehouse ? ($ws->warehouse->location ?? '') : '';
+                $locationBreakdown[] = [
+                    'warehouse_id'       => $ws->warehouse_id,
+                    'warehouse_name'     => $whName,
+                    'warehouse_location' => $whLoc,
+                    'total_pieces'       => (float)$ws->total_pieces,
+                    'quantity'           => (float)$ws->quantity,
+                    'rack_shelf'         => $ws->remarks ?? '',
+                ];
+            }
+        }
+        $product->setAttribute('location_breakdown', $locationBreakdown);
+        $product->setAttribute('cycle_count_metrics', $this->calculateCycleCountMetrics($product));
 
         return response()->json($product);
     }
@@ -2486,7 +2517,7 @@ class ProductController extends Controller
     }
 
     /**
-     * QuickBooks POS Style: Apply Physical Inventory Count Differences
+     * QuickBooks POS Style: Apply Physical Inventory Count Differences & Restart Cycle Count Timer
      */
     public function applyPhysicalInventory(Request $request)
     {
@@ -2500,7 +2531,22 @@ class ProductController extends Controller
         }
 
         $userId = auth()->id() ?: 1;
-        $warehouseId = auth()->user()->warehouse_id ?? 1;
+        $reqWarehouseId = $request->input('warehouse_id');
+        $warehouseId = 1;
+        if ($reqWarehouseId && $reqWarehouseId !== 'all') {
+            $locStr = (string)$reqWarehouseId;
+            if (str_starts_with($locStr, 'wh_')) {
+                $warehouseId = (int) str_replace('wh_', '', $locStr);
+            } elseif (str_starts_with($locStr, 'branch_') || str_starts_with($locStr, 'shop_')) {
+                $bId = (int) str_replace(['branch_', 'shop_'], '', $locStr);
+                $whOfBranch = Warehouse::where('branch_id', $bId)->first();
+                $warehouseId = $whOfBranch ? $whOfBranch->id : (Warehouse::first()?->id ?? 1);
+            } elseif (is_numeric($locStr)) {
+                $warehouseId = (int) $locStr;
+            }
+        } else {
+            $warehouseId = auth()->user()->warehouse_id ?? (Warehouse::first()?->id ?? 1);
+        }
         if (!Warehouse::find($warehouseId)) {
             $wh = Warehouse::first();
             $warehouseId = $wh ? $wh->id : 1;
@@ -2517,9 +2563,13 @@ class ProductController extends Controller
                 $groupedByProduct[$productId][] = $item;
             }
 
+            $countedProductNames = [];
+
             foreach ($groupedByProduct as $productId => $prodItems) {
                 $product = Product::find($productId);
                 if (!$product) continue;
+
+                $countedProductNames[] = $product->item_name;
 
                 $existingVariants = [];
                 if ($product->color) {
@@ -2562,7 +2612,7 @@ class ProductController extends Controller
                         'qty'          => $adjQty,
                         'old_stock'    => $expected,
                         'new_stock'    => $counted,
-                        'reason'       => 'Physical Inventory Reconciliation (' . date('Y-m-d H:i') . ')',
+                        'reason'       => 'Physical Cycle Count Reconciliation (' . date('Y-m-d H:i') . ')',
                     ]);
 
                     $totalStockAdjustmentDelta += $diff;
@@ -2571,10 +2621,9 @@ class ProductController extends Controller
 
                 if (!empty($existingVariants)) {
                     $product->color = $existingVariants;
-                    $product->save();
                 }
 
-                // Update WarehouseStock
+                // Update WarehouseStock for target warehouse
                 $whStock = WarehouseStock::firstOrNew([
                     'warehouse_id' => $warehouseId,
                     'product_id'   => $productId,
@@ -2585,13 +2634,49 @@ class ProductController extends Controller
                 $whStock->total_pieces = $newTotalPieces;
                 $whStock->quantity = $newTotalPieces / $ppb;
                 $whStock->save();
+
+                // Restart Cycle Count Timer for this product
+                $metrics = $this->calculateCycleCountMetrics($product);
+                $cycleDays = (int)($product->cycle_count_days ?: $metrics['suggested_days']);
+                if ($product->cycle_count_frequency_mode === 'auto') {
+                    $cycleDays = $metrics['suggested_days'];
+                    $product->cycle_count_class = $metrics['suggested_class'];
+                }
+
+                $product->last_counted_at = Carbon::now();
+                $product->next_count_date = Carbon::now()->addDays($cycleDays)->toDateString();
+                $product->save();
             }
 
             DB::commit();
 
+            // Create SystemNotification for inventory cycle count completion
+            try {
+                $targetUsers = \App\Models\User::pluck('id')->toArray();
+                if (!empty($targetUsers)) {
+                    $whModel = Warehouse::find($warehouseId);
+                    $whName = $whModel ? $whModel->warehouse_name : ('Warehouse #' . $warehouseId);
+                    $prodSummary = count($countedProductNames) <= 3 
+                        ? implode(', ', $countedProductNames) 
+                        : (count($countedProductNames) . ' products');
+
+                    SystemNotification::createForUsers($targetUsers, [
+                        'title'       => '📋 Cycle Count Reconciled & Timer Restarted',
+                        'message'     => "Physical inventory count reconciled ({$prodSummary}) at {$whName}. {$appliedCount} variance adjustments posted. Next count timer restarted.",
+                        'type'        => 'inventory_audit',
+                        'source_type' => 'App\Models\StockAdjustment',
+                        'action_url'  => '/product',
+                        'is_read'     => false,
+                    ]);
+                }
+            } catch (\Exception $notifEx) {
+                // Log and continue if notification fails
+            }
+
             return response()->json([
-                'status'  => 'success',
-                'message' => "Physical inventory reconciliation applied successfully! ({$appliedCount} items adjusted)",
+                'status'        => 'success',
+                'message'       => "Physical inventory reconciliation applied successfully! ({$appliedCount} items adjusted). Next cycle count timer restarted.",
+                'applied_count' => $appliedCount,
             ]);
         } catch (\Exception $e) {
             DB::rollBack();
@@ -2601,4 +2686,350 @@ class ProductController extends Controller
             ], 500);
         }
     }
+
+    /**
+     * Cycle Count: Calculate 3-Month Sales Velocity & ABC Classification
+     */
+    public function calculateCycleCountMetrics($product)
+    {
+        $threeMonthsAgo = Carbon::now()->subMonths(3);
+        $threeMonthSalesPcs = 0;
+        if (\Illuminate\Support\Facades\Schema::hasTable('sale_items')) {
+            $threeMonthSalesPcs = (float) DB::table('sale_items')
+                ->where('product_id', $product->id)
+                ->where('created_at', '>=', $threeMonthsAgo)
+                ->sum('total_pieces');
+        }
+        $monthlyAvgSales = round($threeMonthSalesPcs / 3, 2);
+
+        // ABC Classification Logic:
+        // Class A: High Velocity (>= 50 pcs/mo) -> 7 Days (or 1 Day)
+        // Class B: Medium Velocity (15 - 49 pcs/mo) -> 30 Days (Monthly)
+        // Class C: Low Velocity (< 15 pcs/mo) -> 90 Days (Quarterly)
+        $suggestedClass = 'C';
+        $suggestedDays = 90;
+        if ($monthlyAvgSales >= 50) {
+            $suggestedClass = 'A';
+            $suggestedDays = 7;
+        } elseif ($monthlyAvgSales >= 15) {
+            $suggestedClass = 'B';
+            $suggestedDays = 30;
+        }
+
+        $currentClass = $product->cycle_count_class ?: $suggestedClass;
+        $currentDays = (int)($product->cycle_count_days ?: $suggestedDays);
+        $frequencyMode = $product->cycle_count_frequency_mode ?: 'auto';
+
+        $nextCountDate = $product->next_count_date ? Carbon::parse($product->next_count_date)->format('Y-m-d') : null;
+        $isDue = empty($product->next_count_date) || Carbon::parse($product->next_count_date)->isPast() || Carbon::parse($product->next_count_date)->isToday();
+
+        return [
+            'three_month_sales' => $threeMonthSalesPcs,
+            'monthly_avg_sales' => $monthlyAvgSales,
+            'suggested_class'   => $suggestedClass,
+            'suggested_days'    => $suggestedDays,
+            'current_class'     => $currentClass,
+            'current_days'      => $currentDays,
+            'frequency_mode'    => $frequencyMode,
+            'next_count_date'   => $nextCountDate,
+            'last_counted_at'   => $product->last_counted_at ? Carbon::parse($product->last_counted_at)->format('Y-m-d H:i') : null,
+            'is_due'            => $isDue,
+        ];
+    }
+
+    /**
+     * Cycle Count: Fetch Products & Stock Breakdown by Location / Shop / Warehouse
+     */
+    public function getCycleCountByLocation($warehouse_id)
+    {
+        $isAll = ($warehouse_id === 'all');
+        $isBranch = false;
+        $branchId = null;
+        $whId = null;
+
+        if (!$isAll) {
+            $locStr = (string)$warehouse_id;
+            if (str_starts_with($locStr, 'branch_') || str_starts_with($locStr, 'shop_')) {
+                $isBranch = true;
+                $branchId = (int) str_replace(['branch_', 'shop_'], '', $locStr);
+            } elseif (str_starts_with($locStr, 'wh_')) {
+                $whId = (int) str_replace('wh_', '', $locStr);
+            } elseif (is_numeric($locStr)) {
+                $whId = (int) $locStr;
+            }
+        }
+
+        $shopShelves = [];
+        $branchWhIds = [];
+        if ($isBranch && $branchId) {
+            $shopShelves = StorageLocation::where('branch_id', $branchId)->get();
+            $branchWhIds = Warehouse::where('branch_id', $branchId)->pluck('id')->toArray();
+        }
+
+        $whRacks = [];
+        if ($whId) {
+            $whRacks = StorageLocation::where('warehouse_id', $whId)->get();
+        }
+
+        $storageLocationId = request('storage_location_id');
+        $targetStorageLoc = null;
+        if ($storageLocationId && $storageLocationId !== 'all') {
+            $targetStorageLoc = StorageLocation::find((int)$storageLocationId);
+        }
+
+        $products = Product::where('is_active', true)
+            ->with(['warehouseStocks.warehouse', 'category_relation', 'brand'])
+            ->orderBy('item_name')
+            ->get();
+
+        $result = [];
+
+        foreach ($products as $prod) {
+            $metrics = $this->calculateCycleCountMetrics($prod);
+
+            $variants = [];
+            if ($prod->color) {
+                $parsed = is_string($prod->color) ? json_decode($prod->color, true) : $prod->color;
+                if (is_array($parsed)) {
+                    $variants = $parsed;
+                }
+            }
+
+            $isMatch = false;
+            $locationSpecificStock = null;
+
+            if ($targetStorageLoc) {
+                // Specific Rack or Shelf Filter requested
+                $tName = strtolower(trim($targetStorageLoc->name));
+                $tCode = $targetStorageLoc->code ? strtolower(trim($targetStorageLoc->code)) : '';
+
+                $filteredVariants = [];
+                $matchedStock = 0;
+                foreach ($variants as $v) {
+                    $vLoc = strtolower(trim($v['location'] ?? ''));
+                    if (!$vLoc) continue;
+                    if ($vLoc === $tName || ($tCode && $vLoc === $tCode) || str_contains($vLoc, $tName) || ($tCode && str_contains($vLoc, $tCode))) {
+                        $filteredVariants[] = $v;
+                        $matchedStock += (float)($v['stock'] ?? $v['current_stock'] ?? 0);
+                    }
+                }
+
+                if (!empty($filteredVariants)) {
+                    $isMatch = true;
+                    $variants = $filteredVariants;
+                    $locationSpecificStock = $matchedStock;
+                } else {
+                    $isMatch = false;
+                }
+            } elseif ($isAll) {
+                $isMatch = true;
+                $locationSpecificStock = (float) $prod->warehouseStocks->sum('total_pieces');
+            } elseif ($isBranch) {
+                // Check if any variant has shelf in this branch
+                $matchedVariantStock = 0;
+                $hasVariantInBranch = false;
+                foreach ($variants as $v) {
+                    $vLoc = strtolower(trim($v['location'] ?? ''));
+                    if (!$vLoc) continue;
+                    foreach ($shopShelves as $sh) {
+                        $shName = strtolower(trim($sh->name));
+                        $shCode = $sh->code ? strtolower(trim($sh->code)) : '';
+                        if ($vLoc === $shName || ($shCode && $vLoc === $shCode) || str_contains($vLoc, $shName) || ($shCode && str_contains($vLoc, $shCode))) {
+                            $hasVariantInBranch = true;
+                            $matchedVariantStock += (float) ($v['stock'] ?? 0);
+                            break;
+                        }
+                    }
+                }
+
+                $hasWhStockInBranch = false;
+                if (!empty($branchWhIds)) {
+                    $bWhStock = $prod->warehouseStocks->whereIn('warehouse_id', $branchWhIds)->sum('total_pieces');
+                    if ($bWhStock > 0) {
+                        $hasWhStockInBranch = true;
+                        $matchedVariantStock += $bWhStock;
+                    }
+                }
+
+                if ($hasVariantInBranch || $hasWhStockInBranch) {
+                    $isMatch = true;
+                    $locationSpecificStock = (float) $matchedVariantStock;
+                }
+            } elseif ($whId) {
+                $whStock = $prod->warehouseStocks->where('warehouse_id', $whId)->sum('total_pieces');
+                $hasWhStock = $prod->warehouseStocks->where('warehouse_id', $whId)->isNotEmpty();
+
+                $hasVariantInWh = false;
+                foreach ($variants as $v) {
+                    $vLoc = strtolower(trim($v['location'] ?? ''));
+                    if (!$vLoc) continue;
+                    foreach ($whRacks as $rk) {
+                        $rkName = strtolower(trim($rk->name));
+                        $rkCode = $rk->code ? strtolower(trim($rk->code)) : '';
+                        if ($vLoc === $rkName || ($rkCode && $vLoc === $rkCode) || str_contains($vLoc, $rkName) || ($rkCode && str_contains($vLoc, $rkCode))) {
+                            $hasVariantInWh = true;
+                            break;
+                        }
+                    }
+                }
+
+                if ($hasWhStock || $hasVariantInWh) {
+                    $isMatch = true;
+                    $locationSpecificStock = (float) $whStock;
+                }
+            }
+
+            if (!$isMatch) {
+                continue;
+            }
+
+            $locationBreakdown = [];
+            foreach ($prod->warehouseStocks as $ws) {
+                $locationBreakdown[] = [
+                    'warehouse_id'       => $ws->warehouse_id,
+                    'warehouse_name'     => $ws->warehouse->warehouse_name ?? ('Warehouse #' . $ws->warehouse_id),
+                    'warehouse_location' => $ws->warehouse->location ?? '',
+                    'total_pieces'       => (float)$ws->total_pieces,
+                    'quantity'           => (float)$ws->quantity,
+                    'rack_shelf'         => $ws->remarks ?? '',
+                ];
+            }
+
+            $result[] = [
+                'id'                         => $prod->id,
+                'item_code'                  => $prod->item_code,
+                'item_name'                  => $prod->item_name,
+                'barcode_path'               => $prod->barcode_path,
+                'size_mode'                  => $prod->size_mode,
+                'calculated_total_stock_qty' => $locationSpecificStock !== null ? $locationSpecificStock : $prod->warehouseStocks->sum('total_pieces'),
+                'color'                      => $variants,
+                'location_breakdown'         => $locationBreakdown,
+                'cycle_count_metrics'        => $metrics,
+            ];
+        }
+
+        return response()->json([
+            'status'       => 'success',
+            'warehouse_id' => $warehouse_id,
+            'count'        => count($result),
+            'products'     => $result,
+        ]);
+    }
+
+    /**
+     * Cycle Count: Fetch Products Due for Count Today or Past Due
+     */
+    public function getDueCycleCountItems()
+    {
+        $products = Product::where('is_active', true)
+            ->where(function ($q) {
+                $q->whereNull('next_count_date')
+                  ->orWhere('next_count_date', '<=', Carbon::today()->toDateString());
+            })
+            ->with(['warehouseStocks.warehouse', 'category_relation', 'brand'])
+            ->orderBy('next_count_date', 'asc')
+            ->get();
+
+        $result = [];
+        foreach ($products as $prod) {
+            $metrics = $this->calculateCycleCountMetrics($prod);
+            $locationBreakdown = [];
+            foreach ($prod->warehouseStocks as $ws) {
+                $locationBreakdown[] = [
+                    'warehouse_id'       => $ws->warehouse_id,
+                    'warehouse_name'     => $ws->warehouse->warehouse_name ?? ('Warehouse #' . $ws->warehouse_id),
+                    'warehouse_location' => $ws->warehouse->location ?? '',
+                    'total_pieces'       => (float)$ws->total_pieces,
+                    'quantity'           => (float)$ws->quantity,
+                    'rack_shelf'         => $ws->remarks ?? '',
+                ];
+            }
+
+            $variants = [];
+            if ($prod->color) {
+                $parsed = is_string($prod->color) ? json_decode($prod->color, true) : $prod->color;
+                if (is_array($parsed)) {
+                    $variants = $parsed;
+                }
+            }
+
+            $result[] = [
+                'id'                         => $prod->id,
+                'item_code'                  => $prod->item_code,
+                'item_name'                  => $prod->item_name,
+                'barcode_path'               => $prod->barcode_path,
+                'size_mode'                  => $prod->size_mode,
+                'calculated_total_stock_qty' => $prod->warehouseStocks->sum('total_pieces'),
+                'color'                      => $variants,
+                'location_breakdown'         => $locationBreakdown,
+                'cycle_count_metrics'        => $metrics,
+            ];
+        }
+
+        return response()->json([
+            'status'   => 'success',
+            'count'    => count($result),
+            'products' => $result,
+        ]);
+    }
+
+    /**
+     * Cycle Count: Update Schedule / Frequency Duration (1 Day, 7 Days, 30 Days, 90 Days, Auto ABC)
+     */
+    public function updateCycleCountSchedule(Request $request)
+    {
+        $productIds = $request->input('product_ids', []);
+        if (is_numeric($productIds)) {
+            $productIds = [(int)$productIds];
+        } elseif (is_string($productIds)) {
+            $productIds = json_decode($productIds, true) ?: [(int)$productIds];
+        }
+
+        $duration = $request->input('duration', '30'); // '1', '7', '30', '90', or 'auto'
+        $mode = $request->input('mode', ($duration === 'auto' ? 'auto' : 'custom'));
+
+        if (empty($productIds)) {
+            return response()->json(['status' => 'error', 'message' => 'No products selected for schedule update.'], 400);
+        }
+
+        $updatedCount = 0;
+        $products = Product::whereIn('id', $productIds)->get();
+
+        foreach ($products as $prod) {
+            $metrics = $this->calculateCycleCountMetrics($prod);
+
+            if ($duration === 'auto') {
+                $days = $metrics['suggested_days'];
+                $class = $metrics['suggested_class'];
+                $prod->cycle_count_frequency_mode = 'auto';
+            } else {
+                $days = max(1, (int)$duration);
+                $prod->cycle_count_frequency_mode = 'custom';
+                if ($days <= 7) {
+                    $class = 'A';
+                } elseif ($days <= 30) {
+                    $class = 'B';
+                } else {
+                    $class = 'C';
+                }
+            }
+
+            $prod->cycle_count_days = $days;
+            $prod->cycle_count_class = $class;
+            $prod->next_count_date = Carbon::now()->addDays($days)->toDateString();
+            $prod->save();
+            $updatedCount++;
+        }
+
+        $durationLabel = $duration === 'auto' ? 'Auto (ABC Velocity)' : ($duration . ' Day(s)');
+
+        return response()->json([
+            'status'        => 'success',
+            'message'       => "Cycle count schedule updated for {$updatedCount} product(s) to {$durationLabel}.",
+            'duration'      => $duration,
+            'mode'          => $mode,
+            'updated_count' => $updatedCount,
+        ]);
+    }
 }
+

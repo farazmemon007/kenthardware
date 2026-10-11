@@ -192,6 +192,9 @@ Route::middleware('auth')->group(function () {
     // QuickBooks POS: Style Matrix Update & Physical Inventory Reconciliation
     Route::post('/products/{id}/update-style', [ProductController::class, 'updateStyle'])->name('products.update_style');
     Route::post('/products/physical-inventory/apply', [ProductController::class, 'applyPhysicalInventory'])->name('products.physical_inventory.apply');
+    Route::get('/products/cycle-count/location/{warehouse_id}', [ProductController::class, 'getCycleCountByLocation'])->name('products.cycle_count.by_location');
+    Route::get('/products/cycle-count/due-items', [ProductController::class, 'getDueCycleCountItems'])->name('products.cycle_count.due_items');
+    Route::post('/products/cycle-count/update-schedule', [ProductController::class, 'updateCycleCountSchedule'])->name('products.cycle_count.update_schedule');
     // Searches
     Route::get('/generate-barcode-image', [ProductController::class, 'generateBarcode'])->name('generate-barcode-image');
     Route::get('/get-subcategories/{category_id}', [ProductController::class, 'getSubcategories'])->name('fetch-subcategories');
