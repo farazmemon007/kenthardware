@@ -115,6 +115,8 @@
                                                     @endcanany
                                                     <li><a href="{{ route('opening_stock.index') }}"><i
                                                                 class="fas fa-cubes-stacked text-primary"></i> Opening Stock</a></li>
+                                                    <li><a href="{{ route('cycle_count.index') }}"><i
+                                                                class="fas fa-clipboard-check text-success"></i> Cycle Count Audit</a></li>
                                                 </ul>
                                             </div>
                                         @endcanany

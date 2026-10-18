@@ -50,7 +50,7 @@ class EmployeeController extends Controller
             return response()->json(['errors' => $validator->errors()], 422);
         }
 
-        $data = $request->except(['document_degree', 'document_certificate', 'document_hsc_marksheet', 'document_ssc_marksheet', 'document_cv', 'password', 'casual_leave_days']);
+        $data = $request->except(['document_degree', 'document_certificate', 'document_hsc_marksheet', 'document_ssc_marksheet', 'document_cv', 'password', 'casual_leave_days', 'basic_salary']);
         $data['is_docs_submitted'] = $request->has('is_docs_submitted') ? 1 : 0;
 
         // Handle Custom Shift Logic
@@ -86,15 +86,37 @@ class EmployeeController extends Controller
             if (! auth()->user()->can('hr.employees.create')) {
                 return response()->json(['error' => 'Unauthorized action.'], 403);
             }
-            // Create User Account
-            $user = \App\Models\User::create([
-                'name' => $request->first_name.' '.$request->last_name,
-                'email' => $request->email,
-                'password' => \Illuminate\Support\Facades\Hash::make($request->password),
-            ]);
+            // Create or link User Account safely
+            $user = \App\Models\User::where('email', $request->email)->first();
+            if (!$user) {
+                $user = \App\Models\User::create([
+                    'name' => $request->first_name.' '.$request->last_name,
+                    'email' => $request->email,
+                    'password' => \Illuminate\Support\Facades\Hash::make($request->password ?: '12345678'),
+                    'usertype' => 'employee',
+                ]);
+            } else {
+                $user->name = $request->first_name.' '.$request->last_name;
+                if ($request->filled('password')) {
+                    $user->password = \Illuminate\Support\Facades\Hash::make($request->password);
+                }
+                $user->save();
+            }
 
             $data['user_id'] = $user->id;
             $employee = Employee::create($data);
+        }
+
+        // Save Basic Salary in Salary Structure
+        if ($request->filled('basic_salary') && $employee) {
+            \App\Models\Hr\SalaryStructure::updateOrCreate(
+                ['employee_id' => $employee->id],
+                [
+                    'name' => 'Individual - ' . $employee->first_name . ' ' . $employee->last_name,
+                    'salary_type' => 'salary',
+                    'base_salary' => (float)$request->basic_salary,
+                ]
+            );
         }
 
         // Handle File Uploads (Create/Update in hr_employee_documents)
@@ -113,38 +135,41 @@ class EmployeeController extends Controller
 
         // Handle Casual Leave Days Sync
         if ($request->has('casual_leave_days')) {
-            $submittedDates = $request->casual_leave_days ? explode(',', $request->casual_leave_days) : [];
-            $submittedDates = array_map('trim', $submittedDates);
+            $submittedDays = $request->casual_leave_days ? explode(',', $request->casual_leave_days) : [];
+            $submittedDays = array_values(array_filter(array_map('trim', $submittedDays)));
 
-            // Get existing single-day Casual leaves
-            $existingLeaves = $employee->leaves()
+            // Delete previous form-assigned casual leaves for this employee
+            $employee->leaves()
                 ->where('leave_type', 'Casual')
-                ->whereRaw('start_date = end_date') // Only manage single-day leaves to avoid messing up ranges
-                ->get();
+                ->where(function ($q) {
+                    $q->where('reason', 'like', 'Casual Leave (%')
+                      ->orWhere('reason', 'Casual Leave assigned via Employee Form');
+                })
+                ->delete();
 
-            $existingDates = $existingLeaves->pluck('start_date')->map(function ($d) {
-                return \Carbon\Carbon::parse($d)->format('Y-m-d');
-            })->toArray();
+            // Create new leaves for each selected day
+            foreach ($submittedDays as $day) {
+                if (! empty($day)) {
+                    try {
+                        if (in_array(strtolower($day), ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'])) {
+                            $leaveDate = \Carbon\Carbon::parse("this $day")->format('Y-m-d');
+                            $reason = "Casual Leave (".ucfirst(strtolower($day)).")";
+                        } else {
+                            $leaveDate = \Carbon\Carbon::parse($day)->format('Y-m-d');
+                            $reason = "Casual Leave (".\Carbon\Carbon::parse($day)->format('l').")";
+                        }
+                    } catch (\Throwable $e) {
+                        $leaveDate = now()->format('Y-m-d');
+                        $reason = "Casual Leave ($day)";
+                    }
 
-            // 1. Create new leaves
-            foreach ($submittedDates as $date) {
-                if (! empty($date) && ! in_array($date, $existingDates)) {
-                    // Check if leave already exists (e.g. part of a range) - optional check
                     $employee->leaves()->create([
                         'leave_type' => 'Casual',
-                        'start_date' => $date,
-                        'end_date' => $date,
-                        'reason' => 'Casual Leave assigned via Employee Form',
+                        'start_date' => $leaveDate,
+                        'end_date' => $leaveDate,
+                        'reason' => $reason,
                         'status' => 'approved',
                     ]);
-                }
-            }
-
-            // 2. Delete removed leaves
-            foreach ($existingLeaves as $leave) {
-                $leaveDate = \Carbon\Carbon::parse($leave->start_date)->format('Y-m-d');
-                if (! in_array($leaveDate, $submittedDates)) {
-                    $leave->delete();
                 }
             }
         }

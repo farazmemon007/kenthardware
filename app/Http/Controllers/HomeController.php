@@ -21,6 +21,8 @@ class HomeController extends Controller
 
         if ($usertype == 'user') {
             return view('user_panel.dashboard', compact('userId'));
+        } elseif ($usertype == 'employee') {
+            return redirect()->route('cycle_count.index');
         } elseif ($usertype == 'admin') {
             // Counts
             $categoryCount = Auth::user()->can('categories.view') ? DB::table('categories')->count() : 0;

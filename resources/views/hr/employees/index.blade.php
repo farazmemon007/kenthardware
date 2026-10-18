@@ -1,9 +1,10 @@
 @extends('admin_panel.layout.app')
 
 @section('content')
-    <!-- Script for Face API -->
-    <script src="{{ asset('assets/vendors/face-api/js/face-api.min.js') }}"></script>
-
+    <!-- Script for Face API (Conditional) -->
+    @if(file_exists(public_path('assets/vendors/face-api/js/face-api.min.js')))
+        <script src="{{ asset('assets/vendors/face-api/js/face-api.min.js') }}"></script>
+    @endif
 
     @include('hr.partials.hr-styles')
 
@@ -17,7 +18,10 @@
                         <p class="page-subtitle">Manage your organization's employee database</p>
                     </div>
                     @can('hr.employees.create')
-                        <button type="button" class="btn btn-create" id="createBtn">
+                        <button type="button" class="btn btn-create" id="createBtn"
+                            data-toggle="modal" data-target="#employeeModal"
+                            data-bs-toggle="modal" data-bs-target="#employeeModal"
+                            onclick="if(window.openAddEmployeeModal){window.openAddEmployeeModal();}">
                             <i class="fa fa-user-plus"></i> Add Employee
                         </button>
                     @endcan
@@ -182,7 +186,12 @@
                                     value="{{ $emp->getDocument('ssc_marksheet') }}">
                                 <input type="hidden" class="doc_cv" value="{{ $emp->getDocument('cv') }}">
                                 <input type="hidden" class="casual_leave_dates"
-                                    value="{{ $emp->leaves->pluck('start_date')->map(fn($d) => \Carbon\Carbon::parse($d)->format('Y-m-d'))->implode(',') }}">
+                                    value="{{ $emp->leaves->where('leave_type', 'Casual')->map(function($l) {
+                                        if (preg_match('/Casual Leave \((.*?)\)/', $l->reason, $m)) {
+                                            return $m[1];
+                                        }
+                                        return \Carbon\Carbon::parse($l->start_date)->format('l');
+                                    })->unique()->implode(',') }}">
                             </div>
                         @empty
                             <div class="empty-state" style="grid-column: 1/-1;">
@@ -208,7 +217,7 @@
                         <i class="fa fa-user-plus"></i>
                         <span>Add Employee</span>
                     </h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    <button type="button" class="close text-white" data-dismiss="modal" data-bs-dismiss="modal" style="background:none;border:none;font-size:1.5rem;line-height:1;opacity:0.8;">&times;</button>
                 </div>
                 <form id="employeeForm" action="{{ route('hr.employees.store') }}" method="POST"
                     enctype="multipart/form-data" data-ajax-validate="true">
@@ -272,7 +281,7 @@
                             <div class="col-md-6">
                                 <div class="form-group-modern">
                                     <label class="form-label"><i class="fa fa-clock"></i> Shift</label>
-                                    <select name="shift_id" id="shift_id" class="form-select">
+                                    <select name="shift_id" id="shift_id" class="form-select" onchange="if(window.toggleCustomTimingField){window.toggleCustomTimingField(this.value);}">
                                         @php
                                             $defaultShift = $shifts->where('is_default', true)->first();
                                             $otherShifts = $shifts->where('is_default', false);
@@ -368,38 +377,24 @@
                             <!-- Casual Leave Days -->
                             <div class="col-md-12 mb-3">
                                 <div class="form-group-modern">
-                                    <label class="form-label" for="casual_leave_days">
-                                        <i class="fa fa-calendar-check me-1"></i>
+                                    <label class="form-label font-weight-bold" for="casual_leave_days">
+                                        <i class="fa fa-calendar-check text-primary me-1"></i>
                                         Casual Leave Days
                                     </label>
                                     <div id="casual_leave_days_container"
-                                        style="display: flex; flex-wrap: wrap; gap: 8px; padding: 8px 0;">
-                                        <span class="casual-day-option badge bg-light text-dark border"
-                                            data-value="Monday"
-                                            style="cursor:pointer; padding:8px 16px; font-size:15px;">Monday</span>
-                                        <span class="casual-day-option badge bg-light text-dark border"
-                                            data-value="Tuesday"
-                                            style="cursor:pointer; padding:8px 16px; font-size:15px;">Tuesday</span>
-                                        <span class="casual-day-option badge bg-light text-dark border"
-                                            data-value="Wednesday"
-                                            style="cursor:pointer; padding:8px 16px; font-size:15px;">Wednesday</span>
-                                        <span class="casual-day-option badge bg-light text-dark border"
-                                            data-value="Thursday"
-                                            style="cursor:pointer; padding:8px 16px; font-size:15px;">Thursday</span>
-                                        <span class="casual-day-option badge bg-light text-dark border"
-                                            data-value="Friday"
-                                            style="cursor:pointer; padding:8px 16px; font-size:15px;">Friday</span>
-                                        <span class="casual-day-option badge bg-light text-dark border"
-                                            data-value="Saturday"
-                                            style="cursor:pointer; padding:8px 16px; font-size:15px;">Saturday</span>
-                                        <span class="casual-day-option badge bg-light text-dark border"
-                                            data-value="Sunday"
-                                            style="cursor:pointer; padding:8px 16px; font-size:15px;">Sunday</span>
+                                        style="display: flex; flex-wrap: wrap; gap: 8px; padding: 6px 0;">
+                                        <button type="button" class="casual-day-option" data-value="Monday" onclick="if(window.toggleCasualDay){window.toggleCasualDay(this);}">Monday</button>
+                                        <button type="button" class="casual-day-option" data-value="Tuesday" onclick="if(window.toggleCasualDay){window.toggleCasualDay(this);}">Tuesday</button>
+                                        <button type="button" class="casual-day-option" data-value="Wednesday" onclick="if(window.toggleCasualDay){window.toggleCasualDay(this);}">Wednesday</button>
+                                        <button type="button" class="casual-day-option" data-value="Thursday" onclick="if(window.toggleCasualDay){window.toggleCasualDay(this);}">Thursday</button>
+                                        <button type="button" class="casual-day-option" data-value="Friday" onclick="if(window.toggleCasualDay){window.toggleCasualDay(this);}">Friday</button>
+                                        <button type="button" class="casual-day-option" data-value="Saturday" onclick="if(window.toggleCasualDay){window.toggleCasualDay(this);}">Saturday</button>
+                                        <button type="button" class="casual-day-option" data-value="Sunday" onclick="if(window.toggleCasualDay){window.toggleCasualDay(this);}">Sunday</button>
                                     </div>
                                     <input type="hidden" name="casual_leave_days" id="casual_leave_days" />
                                     <small class="text-muted d-block mt-1">
                                         <i class="fa fa-info-circle me-1"></i>
-                                        Click to select/deselect casual leave days. Selected days will be highlighted.
+                                        Click day button to select/unselect. Selected days are highlighted in blue.
                                     </small>
                                 </div>
                             </div>
@@ -445,7 +440,7 @@
                         </div>
                     </div>
                     <div class="modal-footer-modern">
-                        <button type="button" class="btn btn-cancel" data-bs-dismiss="modal">
+                        <button type="button" class="btn btn-cancel" data-dismiss="modal" data-bs-dismiss="modal">
                             <i class="fa fa-times me-2"></i>Cancel
                         </button>
                         <button type="submit" class="btn btn-save">
@@ -460,82 +455,125 @@
 
     <!-- Scripts -->
     <style>
-        .casual-day-option.selected {
-            background: #007bff !important;
-            color: #fff !important;
-            border-color: #007bff !important;
-            box-shadow: 0 2px 8px rgba(0, 123, 255, 0.08);
+        .casual-day-option {
+            border-radius: 6px !important;
+            padding: 6px 16px !important;
+            font-size: 13.5px !important;
+            font-weight: 500 !important;
+            cursor: pointer !important;
+            user-select: none !important;
+            border: 1px solid #d1d5db !important;
+            background-color: #f8fafc !important;
+            color: #334155 !important;
+            outline: none !important;
+            transition: all 0.15s ease-in-out !important;
+            display: inline-flex !important;
+            align-items: center !important;
+            justify-content: center !important;
         }
 
         .casual-day-option:hover {
-            background: #e3f0ff !important;
+            background-color: #eff6ff !important;
+            border-color: #3b82f6 !important;
+            color: #1d4ed8 !important;
+        }
+
+        .casual-day-option.selected,
+        .casual-day-option.active {
+            background-color: #2563eb !important;
+            border-color: #2563eb !important;
+            color: #ffffff !important;
+            box-shadow: 0 4px 10px rgba(37, 99, 235, 0.3) !important;
+            font-weight: 600 !important;
         }
     </style>
-    <!-- jQuery and Bootstrap are already loaded in the main layout -->
 
+    <script src="{{ asset('assets/js/jquery.min.js') }}"></script>
 
     <script>
-        // Badge click handler for casual leave days
-        $(document).ready(function() {
-            var $container = $('#casual_leave_days_container');
-            var $hiddenInput = $('#casual_leave_days');
+        // Global helper for toggling Custom Time input fields
+        window.toggleCustomTimingField = function(val) {
+            var container = document.getElementById('custom_time_container');
+            if (!container) return;
+            if (val === 'custom') {
+                container.style.display = 'flex';
+            } else {
+                container.style.display = 'none';
+                var s = document.getElementById('custom_start_time');
+                var e = document.getElementById('custom_end_time');
+                if (s) s.value = '';
+                if (e) e.value = '';
+            }
+        };
 
-            $container.on('click', '.casual-day-option', function() {
-                $(this).toggleClass('selected');
-                var selected = [];
-                $container.find('.casual-day-option.selected').each(function() {
-                    selected.push($(this).data('value'));
+        // Global helper for toggling Casual Leave Days
+        window.toggleCasualDay = function(btn) {
+            if (!btn) return;
+            if (btn.classList.contains('selected') || btn.classList.contains('active')) {
+                btn.classList.remove('selected', 'active');
+            } else {
+                btn.classList.add('selected', 'active');
+            }
+            var container = document.getElementById('casual_leave_days_container');
+            var selected = [];
+            if (container) {
+                var activeBtns = container.querySelectorAll('.casual-day-option.selected, .casual-day-option.active');
+                activeBtns.forEach(function(b) {
+                    var val = b.getAttribute('data-value');
+                    if (val && selected.indexOf(val) === -1) {
+                        selected.push(val);
+                    }
                 });
-                $hiddenInput.val(selected.join(','));
-                console.log('Selected days:', selected);
-            });
-        });
+            }
+            var hidden = document.getElementById('casual_leave_days');
+            if (hidden) {
+                hidden.value = selected.join(',');
+            }
+        };
 
-        // Debug: Check if jQuery is loaded
-        console.log('jQuery loaded:', typeof jQuery !== 'undefined');
-        console.log('$ loaded:', typeof $ !== 'undefined');
-
-        $(document).ready(function() {
-            console.log('Document ready fired');
-            console.log('createBtn exists:', $('#createBtn').length > 0);
-            console.log('employeeModal exists:', $('#employeeModal').length > 0);
-
-            // Toggle custom shift fields
-            $('#shift_id').change(function() {
-                if ($(this).val() === 'custom') {
-                    $('#custom_time_container').slideDown();
+        // Global helper to load / reset Casual Leave Days
+        window.setCasualDays = function(daysString) {
+            var container = document.getElementById('casual_leave_days_container');
+            var hidden = document.getElementById('casual_leave_days');
+            if (!container) return;
+            var days = (daysString || '').split(',').map(function(s) { return s.trim().toLowerCase(); }).filter(Boolean);
+            var buttons = container.querySelectorAll('.casual-day-option');
+            buttons.forEach(function(btn) {
+                var btnVal = (btn.getAttribute('data-value') || '').toLowerCase();
+                if (days.indexOf(btnVal) !== -1) {
+                    btn.classList.add('selected', 'active');
                 } else {
-                    $('#custom_time_container').slideUp();
-                    $('#custom_start_time').val('');
-                    $('#custom_end_time').val('');
+                    btn.classList.remove('selected', 'active');
                 }
             });
+            if (hidden) {
+                hidden.value = daysString || '';
+            }
+        };
 
-            // Create Employee - using event delegation to ensure it works
-            $(document).on('click', '#createBtn', function(e) {
-                e.preventDefault();
-                e.stopPropagation();
-                console.log('Create button clicked!');
-                console.log('Modal element:', $('#employeeModal'));
-                console.log('Bootstrap modal method:', typeof $('#employeeModal').modal);
+        $(document).ready(function() {
+            // Toggle custom shift fields via jQuery as well
+            $('#shift_id').on('change', function() {
+                window.toggleCustomTimingField($(this).val());
+            });
 
+            window.openAddEmployeeModal = function() {
                 $('#edit_id').val('');
-                $('#employeeForm')[0].reset();
+                if ($('#employeeForm').length) {
+                    $('#employeeForm')[0].reset();
+                }
                 $('#is_docs_submitted').prop('checked', false);
                 $('#documents_container').hide();
-                $('#custom_time_container').hide();
-                $('#shift_id').val($('#shift_id option:first').val()); // Select Default
-                $('#link_degree, #link_certificate, #link_hsc_marksheet, #link_ssc_marksheet, #link_cv')
-                    .html('');
+                $('#shift_id').val($('#shift_id option:first').val());
+                window.toggleCustomTimingField($('#shift_id').val());
+                window.setCasualDays('');
+                $('#link_degree, #link_certificate, #link_hsc_marksheet, #link_ssc_marksheet, #link_cv').html('');
                 $('#modalLabel').html('<i class="fa fa-user-plus"></i><span>Add Employee</span>');
-
-                // Clear casual leave day selections
-                $('#casual_leave_days_container .casual-day-option').removeClass('selected');
-                $('#casual_leave_days').val('');
-
-                console.log('About to show modal...');
                 $('#employeeModal').modal('show');
-                console.log('Modal show called');
+            };
+
+            $(document).on('click', '#createBtn', function(e) {
+                window.openAddEmployeeModal();
             });
 
             // Edit Employee
@@ -556,16 +594,15 @@
                     $('#shift_id').val('custom');
                     $('#custom_start_time').val(card.find('.custom_start_time').val());
                     $('#custom_end_time').val(card.find('.custom_end_time').val());
-                    $('#custom_time_container').show();
+                    window.toggleCustomTimingField('custom');
                 } else {
                     $('#shift_id').val(card.find('.shift_id').val());
-                    $('#custom_time_container').hide();
+                    window.toggleCustomTimingField($('#shift_id').val());
                 }
 
                 $('#joining_date').val(card.find('.joining_date').val());
                 $('#basic_salary').val(card.find('.basic_salary').val());
                 $('#status').val(card.find('.status').val());
-
 
                 if (card.find('.is_docs_submitted').val() == '1') {
                     $('#is_docs_submitted').prop('checked', true);
@@ -590,19 +627,9 @@
                 setLink('link_ssc_marksheet', card.find('.doc_ssc_marksheet').val());
                 setLink('link_cv', card.find('.doc_cv').val());
 
-
-                // Load casual leave days (badges)
+                // Load casual leave days
                 const leaveDays = card.find('.casual_leave_dates').val();
-                $('#casual_leave_days_container .casual-day-option').removeClass('selected');
-                if (leaveDays) {
-                    const daysArray = leaveDays.split(',').filter(d => d.trim() !== '');
-                    daysArray.forEach(function(day) {
-                        $('#casual_leave_days_container .casual-day-option[data-value="' + day +
-                            '"]').addClass('selected');
-                    });
-                    $('#casual_leave_days').val(leaveDays);
-                    console.log('Loaded leave days:', daysArray);
-                }
+                window.setCasualDays(leaveDays);
 
                 $('#modalLabel').html('<i class="fa fa-pen"></i><span>Edit Employee</span>');
                 $('#employeeModal').modal('show');
@@ -886,7 +913,51 @@
                     '<i class="fa fa-camera"></i> Capture & Save');
             });
 
-            // Custom submit handler removed - using data-ajax-validate
+            // Employee Form AJAX Submit Handler
+            $('#employeeForm').on('submit', function(e) {
+                e.preventDefault();
+                const $form = $(this);
+                const $btn = $form.find('button[type="submit"]');
+                const origHtml = $btn.html();
+                $btn.prop('disabled', true).html('<i class="fa fa-spinner fa-spin me-1"></i> Saving...');
+
+                const formData = new FormData(this);
+
+                $.ajax({
+                    url: $form.attr('action'),
+                    type: 'POST',
+                    data: formData,
+                    processData: false,
+                    contentType: false,
+                    success: function(resp) {
+                        $btn.prop('disabled', false).html(origHtml);
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Success!',
+                            text: resp.success || 'Employee saved successfully!',
+                            confirmButtonColor: '#059669'
+                        }).then(() => {
+                            location.reload();
+                        });
+                    },
+                    error: function(xhr) {
+                        $btn.prop('disabled', false).html(origHtml);
+                        let errMsg = 'Failed to save employee. Please check all required fields.';
+                        if (xhr.responseJSON && xhr.responseJSON.errors) {
+                            const errs = Object.values(xhr.responseJSON.errors).flat();
+                            errMsg = errs.join('<br>');
+                        } else if (xhr.responseJSON && xhr.responseJSON.error) {
+                            errMsg = xhr.responseJSON.error;
+                        }
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Validation Error',
+                            html: errMsg,
+                            confirmButtonColor: '#ef4444'
+                        });
+                    }
+                });
+            });
         });
     </script>
 

@@ -2,7 +2,7 @@
 @section('content')
 
 <style>
-    @import url('https://fonts.googleapis.com/css2?family=Caveat:wght@600;700&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;600;700&family=Caveat:wght@600;700&display=swap');
     /* ── LAYOUT RESET: make sure page uses full width cleanly ── */
     .erp-page { background: #f8fafc; min-height: calc(100vh - 80px); padding: 20px 0; font-family: 'Inter', system-ui, -apple-system, sans-serif; }
     .erp-page .container-fluid { max-width: 100%; box-sizing: border-box; }
@@ -226,11 +226,11 @@
         position: sticky; top: 0; z-index: 2;
         box-sizing: border-box;
     }
-    #productTable thead th {
+    #productTable thead th, #qbPiTable thead th {
         user-select: none;
         position: relative;
     }
-    #productTable thead th .col-resizer {
+    #productTable thead th .col-resizer, #qbPiTable thead th .col-resizer {
         position: absolute;
         top: 0;
         right: 0;
@@ -241,7 +241,7 @@
         z-index: 10;
         display: block;
     }
-    #productTable thead th .col-resizer::after {
+    #productTable thead th .col-resizer::after, #qbPiTable thead th .col-resizer::after {
         content: '';
         position: absolute;
         top: 0;
@@ -252,9 +252,17 @@
         transition: background 0.15s ease;
     }
     #productTable thead th .col-resizer:hover::after,
-    #productTable thead th .col-resizer.is-resizing::after {
+    #productTable thead th .col-resizer.is-resizing::after,
+    #qbPiTable thead th .col-resizer:hover::after,
+    #qbPiTable thead th .col-resizer.is-resizing::after {
         background: #2563eb;
         box-shadow: 0 0 5px rgba(37, 99, 235, 0.9);
+    }
+    .qb-pi-modal-backdrop {
+        z-index: 1070 !important;
+    }
+    #customizePiColumnsModal {
+        z-index: 1075 !important;
     }
     body.is-col-resizing {
         cursor: col-resize !important;
@@ -1554,174 +1562,241 @@
     }
 
     /* ══════════════════════════════════════════════════════════════
-       Physical Inventory Executive ERP Audit Document Styles
+       Physical Inventory Executive ERP Audit Document Styles (Clean Software Theme)
        ══════════════════════════════════════════════════════════════ */
     .doc-modal-content {
-        border-radius: 10px;
+        border-radius: 8px;
         border: 1px solid #cbd5e1;
-        box-shadow: 0 25px 50px -12px rgba(15, 23, 42, 0.3);
+        box-shadow: 0 25px 50px -12px rgba(15, 23, 42, 0.25);
         overflow: hidden;
         background: #f8fafc;
+        font-family: 'Inter', system-ui, -apple-system, sans-serif !important;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
     }
     .doc-modal-header {
-        background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
-        border-bottom: 2px solid #2563eb;
-        padding: 16px 22px;
-        color: #ffffff;
+        background: #ffffff;
+        border-bottom: 1px solid #e2e8f0;
+        padding: 12px 20px;
+        color: #0f172a;
     }
     .doc-hdr-icon-box {
-        width: 44px;
-        height: 44px;
+        width: 36px;
+        height: 36px;
         border-radius: 8px;
-        background: rgba(37, 99, 235, 0.2);
-        border: 1px solid rgba(59, 130, 246, 0.4);
+        background: #eff6ff;
+        border: 1px solid #bfdbfe;
         display: flex;
         align-items: center;
         justify-content: center;
-        color: #60a5fa;
-        font-size: 20px;
+        color: #2563eb;
+        font-size: 16px;
         flex-shrink: 0;
     }
     .doc-title-main {
-        font-size: 15.5px;
-        font-weight: 700;
-        color: #ffffff;
-        letter-spacing: 0.3px;
+        font-size: 15px;
+        font-weight: 800;
+        color: #0f172a;
+        letter-spacing: -0.25px;
         line-height: 1.25;
         margin: 0;
+        font-family: 'Inter', system-ui, -apple-system, sans-serif;
     }
     .doc-header-pill {
         display: inline-flex;
         align-items: center;
         gap: 6px;
-        background: rgba(255, 255, 255, 0.08);
-        border: 1px solid rgba(255, 255, 255, 0.15);
-        border-radius: 4px;
-        padding: 3px 9px;
+        background: #f8fafc;
+        border: 1px solid #e2e8f0;
+        border-radius: 5px;
+        padding: 2.5px 9px;
         font-size: 11px;
-        color: #e2e8f0;
-        font-weight: 500;
-        letter-spacing: 0.2px;
+        color: #475569;
+        font-weight: 600;
+        letter-spacing: 0.15px;
     }
     .doc-status-badge {
         display: inline-flex;
         align-items: center;
         gap: 6px;
-        background: rgba(245, 158, 11, 0.15);
-        border: 1px solid rgba(245, 158, 11, 0.4);
-        color: #fbbf24;
-        font-size: 11px;
+        background: #ecfdf5;
+        border: 1px solid #a7f3d0;
+        color: #047857;
+        font-size: 10.5px;
         font-weight: 700;
-        padding: 5px 11px;
-        border-radius: 20px;
+        padding: 3.5px 10px;
+        border-radius: 12px;
         text-transform: uppercase;
         letter-spacing: 0.4px;
     }
     .doc-status-dot {
-        width: 7px;
-        height: 7px;
+        width: 6px;
+        height: 6px;
         border-radius: 50%;
-        background: #fbbf24;
-        box-shadow: 0 0 8px #fbbf24;
+        background: #10b981;
         display: inline-block;
+        box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.2);
     }
     .doc-btn-close {
-        width: 32px;
-        height: 32px;
+        width: 30px;
+        height: 30px;
         border-radius: 6px;
-        background: rgba(255, 255, 255, 0.1);
-        border: 1px solid rgba(255, 255, 255, 0.15);
-        color: #cbd5e1;
+        background: #f8fafc;
+        border: 1px solid #cbd5e1;
+        color: #64748b;
         display: inline-flex;
         align-items: center;
         justify-content: center;
-        font-size: 16px;
+        font-size: 14px;
         cursor: pointer;
         transition: all 0.15s ease;
     }
     .doc-btn-close:hover {
-        background: rgba(239, 68, 68, 0.25);
-        border-color: rgba(239, 68, 68, 0.5);
-        color: #ef4444;
+        background: #fee2e2;
+        border-color: #fca5a5;
+        color: #dc2626;
     }
-    .doc-ribbon-card {
+    /* ── Executive Dual Dock Cards (Clean Modern SaaS & ERP Toolbar) ── */
+    .pi-dock-card {
         background: #ffffff;
         border: 1px solid #e2e8f0;
-        border-radius: 10px;
-        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03);
-        padding: 16px 20px;
+        border-radius: 8px;
+        box-shadow: 0 1px 3px 0 rgba(15, 23, 42, 0.04), 0 1px 2px -1px rgba(15, 23, 42, 0.02);
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+        height: 100%;
+        transition: border-color 0.15s ease, box-shadow 0.15s ease;
     }
-    .doc-scope-header {
+    .pi-dock-card:hover {
+        border-color: #cbd5e1;
+        box-shadow: 0 3px 8px -1px rgba(15, 23, 42, 0.06);
+    }
+    .pi-dock-header {
+        background: #f8fafc;
+        border-bottom: 1px solid #e2e8f0;
+        padding: 7px 12px;
         display: flex;
         align-items: center;
         justify-content: space-between;
-        margin-bottom: 12px;
-        gap: 12px;
-        flex-wrap: wrap;
+        min-height: 40px;
     }
-    .doc-scope-icon {
-        width: 34px;
-        height: 34px;
-        border-radius: 8px;
-        background: #eff6ff;
-        border: 1px solid #bfdbfe;
-        color: #2563eb;
-        display: flex;
+    .pi-dock-icon {
+        width: 26px;
+        height: 26px;
+        border-radius: 6px;
+        display: inline-flex;
         align-items: center;
         justify-content: center;
-        font-size: 14px;
+        font-size: 11.5px;
         flex-shrink: 0;
     }
-    .doc-scope-title {
-        font-size: 13.5px;
-        font-weight: 700;
-        color: #0f172a;
-        line-height: 1.25;
-        letter-spacing: -0.1px;
+    .pi-dock-icon-blue {
+        background: #eff6ff;
+        color: #2563eb;
+        border: 1px solid #dbeafe;
     }
-    .doc-scope-sub {
+    .pi-dock-icon-emerald {
+        background: #ecfdf5;
+        color: #059669;
+        border: 1px solid #a7f3d0;
+    }
+    .pi-dock-title {
+        font-family: 'Inter', sans-serif;
+        font-size: 11.5px;
+        font-weight: 700;
+        color: #1e293b;
+        letter-spacing: 0.35px;
+        text-transform: uppercase;
+    }
+    .pi-dock-subtitle {
+        font-family: 'Inter', sans-serif;
         font-size: 11px;
         color: #64748b;
-        font-weight: 400;
-        line-height: 1.2;
+        font-weight: 500;
+        margin-left: 3px;
+    }
+    .pi-dock-body {
+        padding: 10px 12px;
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        background: #ffffff;
+        flex: 1;
+    }
+    .pi-btn-due-pill {
+        background: #fffbeb;
+        color: #92400e;
+        border: 1px solid #fde68a;
+        border-radius: 6px;
+        padding: 3px 9px;
+        font-size: 11px;
+        font-weight: 600;
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        cursor: pointer;
+        transition: all 0.15s ease;
+        line-height: 1.3;
+    }
+    .pi-btn-due-pill:hover {
+        background: #fef3c7;
+        color: #78350f;
+        border-color: #fcd34d;
+    }
+    .pi-status-banner {
+        background: #f0fdf4;
+        border: 1px solid #bbf7d0;
+        color: #166534;
+        border-radius: 6px;
+        padding: 4px 10px;
+        font-size: 11.5px;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        box-shadow: 0 1px 2px rgba(16, 185, 129, 0.05);
     }
     .doc-badge-count {
         display: inline-flex;
         align-items: center;
-        gap: 5px;
+        gap: 4px;
         background: #f8fafc;
         color: #475569;
-        border: 1px solid #cbd5e1;
+        border: 1px solid #e2e8f0;
         border-radius: 20px;
-        padding: 4px 11px;
-        font-size: 11.5px;
+        padding: 2.5px 8px;
+        font-size: 11px;
         font-weight: 600;
-        transition: all 0.2s ease;
+        transition: all 0.15s ease;
     }
     .doc-badge-count.has-selection {
-        background: #ecfdf5;
-        color: #065f46;
-        border-color: #a7f3d0;
+        background: #eff6ff;
+        color: #1d4ed8;
+        border-color: #bfdbfe;
     }
     .doc-btn-chip {
         display: inline-flex;
         align-items: center;
-        gap: 5px;
-        padding: 5px 12px;
-        font-size: 11.5px;
+        gap: 4px;
+        padding: 2.5px 8px;
+        font-size: 11px;
         font-weight: 600;
-        border-radius: 6px;
-        border: 1px solid transparent;
+        border-radius: 5px;
+        border: 1px solid #e2e8f0;
+        background: #ffffff;
+        color: #475569;
         cursor: pointer;
         transition: all 0.15s ease;
-        line-height: 1.2;
+        line-height: 1.3;
         outline: none !important;
-        text-decoration: none;
-        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03);
     }
-    .doc-btn-chip:focus, .doc-btn-chip:active {
-        outline: none !important;
-        box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.2) !important;
+    .doc-btn-chip:hover {
+        background: #f8fafc;
+        border-color: #cbd5e1;
+        color: #0f172a;
     }
     .doc-btn-chip-primary {
         background: #eff6ff;
@@ -1733,15 +1808,110 @@
         border-color: #93c5fd;
         color: #1e40af;
     }
-    .doc-btn-chip-neutral {
-        background: #f8fafc;
-        border-color: #cbd5e1;
-        color: #475569;
+
+    /* ── Bulletproof Modern ERP Control Inputs (Zero Bootstrap dependencies) ── */
+    .pi-control-item {
+        display: inline-flex;
+        align-items: stretch;
+        height: 34px;
+        background: #ffffff;
+        border: 1px solid #cbd5e1;
+        border-radius: 6px;
+        overflow: hidden;
+        transition: border-color 0.15s ease, box-shadow 0.15s ease;
+        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.02);
     }
-    .doc-btn-chip-neutral:hover {
-        background: #f1f5f9;
-        border-color: #94a3b8;
+    .pi-control-item:focus-within {
+        border-color: #2563eb !important;
+        box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.15) !important;
+    }
+    .pi-control-label {
+        background: #f8fafc;
+        border-right: 1px solid #e2e8f0;
+        color: #475569;
+        font-family: 'Inter', sans-serif;
+        font-size: 11.5px;
+        font-weight: 600;
+        padding: 0 10px;
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        white-space: nowrap;
+        user-select: none;
+    }
+    .pi-control-select {
+        flex: 1 1 auto;
+        border: none !important;
+        background: #ffffff;
         color: #0f172a;
+        font-family: 'Inter', sans-serif;
+        font-size: 12px;
+        font-weight: 600;
+        padding: 0 28px 0 10px;
+        outline: none !important;
+        box-shadow: none !important;
+        cursor: pointer;
+        height: 100%;
+        -webkit-appearance: none;
+        -moz-appearance: none;
+        appearance: none;
+        background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%2364748b' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M2 5l6 6 6-6'/%3e%3c/svg%3e");
+        background-repeat: no-repeat;
+        background-position: right 8px center;
+        background-size: 10px 10px;
+    }
+    .pi-control-input {
+        flex: 1 1 auto;
+        border: none !important;
+        background: #ffffff;
+        color: #0f172a;
+        font-family: 'Inter', sans-serif;
+        font-size: 12px;
+        padding: 0 10px;
+        outline: none !important;
+        box-shadow: none !important;
+        height: 100%;
+    }
+    .pi-control-btn {
+        border: none;
+        border-left: 1px solid #e2e8f0;
+        background: #f8fafc;
+        color: #64748b;
+        padding: 0 10px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: all 0.12s ease;
+        font-size: 11px;
+    }
+    .pi-control-btn:hover {
+        background: #e2e8f0;
+        color: #0f172a;
+    }
+    .pi-btn-primary-action {
+        height: 34px;
+        padding: 0 10px;
+        background: #2563eb;
+        color: #ffffff;
+        border: 1px solid #1d4ed8;
+        border-radius: 6px;
+        font-family: 'Inter', sans-serif;
+        font-weight: 600;
+        font-size: 11.5px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 5px;
+        cursor: pointer;
+        transition: all 0.15s ease;
+        white-space: nowrap;
+        outline: none !important;
+    }
+    .pi-btn-primary-action:hover {
+        background: #1d4ed8;
+        color: #ffffff;
+        box-shadow: 0 2px 6px rgba(37, 99, 235, 0.3);
     }
 
     /* Segmented Mode Pill Toggle (Top Right) */
@@ -2061,90 +2231,227 @@
     }
     .doc-table-sheet-wrap {
         background: #ffffff;
-        border: 1px solid #cbd5e1;
+        border: 1px solid #e2e8f0;
         border-radius: 8px;
-        box-shadow: inset 0 1px 2px rgba(0,0,0,0.02);
-        max-height: 420px;
+        box-shadow: 0 1px 3px 0 rgba(15, 23, 42, 0.04), 0 1px 2px -1px rgba(15, 23, 42, 0.03);
+        max-height: 500px;
         overflow-y: auto;
+        overflow-x: auto;
     }
     #qbPiTable {
+        width: 100%;
+        border-collapse: separate !important;
+        border-spacing: 0 !important;
+        font-size: 12px;
         margin-bottom: 0;
-        font-size: 12.5px;
-        border-collapse: separate;
-        border-spacing: 0;
+        table-layout: auto;
+        font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
     }
     #qbPiTable thead th {
-        background: #f8fafc;
-        color: #475569;
-        font-weight: 700;
+        background: #f8fafc !important;
+        color: #475569 !important;
+        font-weight: 600;
         text-transform: uppercase;
         font-size: 11px;
         letter-spacing: 0.5px;
-        padding: 10px 12px;
-        border-bottom: 2px solid #cbd5e1;
+        padding: 9px 10px !important;
+        border-top: none !important;
+        border-bottom: 1px solid #e2e8f0 !important;
+        border-right: 1px solid #f1f5f9 !important;
+        white-space: nowrap;
         position: sticky;
         top: 0;
         z-index: 10;
+        box-sizing: border-box;
+        user-select: none;
     }
-    #qbPiTable tbody tr {
-        transition: background-color 0.15s ease, box-shadow 0.15s ease;
+    #qbPiTable thead th:last-child {
+        border-right: none !important;
     }
-    #qbPiTable tbody tr:nth-child(even) {
-        background-color: #f8fafc;
+    #qbPiTable tbody td {
+        padding: 7px 10px !important;
+        border: none !important;
+        border-bottom: 1px solid #f1f5f9 !important;
+        border-right: 1px solid #f8fafc !important;
+        color: #1e293b;
+        vertical-align: middle;
+        font-size: 12px;
+        line-height: 1.35;
+        white-space: nowrap;
+        box-sizing: border-box;
+        transition: background-color 0.12s ease;
     }
-    #qbPiTable tbody tr:hover {
-        background-color: #bfdbfe !important; /* Prominent dark blue hover */
+    #qbPiTable tbody td:last-child {
+        border-right: none !important;
+    }
+    #qbPiTable tbody tr:nth-child(even) td {
+        background-color: #fafbfd !important;
+    }
+    #qbPiTable tbody tr:nth-child(odd) td {
+        background-color: #ffffff !important;
+    }
+    #qbPiTable tbody tr:hover td {
+        background-color: #eff6ff !important;
     }
     #qbPiTable tbody tr:hover td:first-child {
-        box-shadow: inset 6px 0 0 #1d4ed8; /* Dark royal blue prominent indicator strip */
+        box-shadow: inset 3.5px 0 0 #2563eb;
     }
-    #qbPiTable tbody tr.pi-row-flash {
-        background-color: #93c5fd !important;
+    #qbPiTable tbody tr.pi-row-flash td {
+        background-color: #dbeafe !important;
         animation: piFlash 1.5s ease-out;
     }
     @keyframes piFlash {
-        0% { background-color: #60a5fa; }
-        100% { background-color: #f8fafc; }
-    }
-    #qbPiTable td {
-        padding: 8px 12px;
-        vertical-align: middle;
-        border-bottom: 1px solid #f1f5f9;
+        0% { background-color: #93c5fd; }
+        100% { background-color: #fafbfd; }
     }
     .doc-sku-pill {
-        font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-        font-weight: 700;
+        font-family: 'JetBrains Mono', SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+        font-weight: 600;
         background: #f1f5f9;
-        color: #1e293b;
-        padding: 3px 8px;
+        color: #334155;
+        padding: 2.5px 7px;
         border-radius: 4px;
-        border: 1px solid #cbd5e1;
-        font-size: 12px;
-        letter-spacing: 0.3px;
+        border: 1px solid #e2e8f0;
+        font-size: 11px;
         display: inline-block;
+        letter-spacing: -0.2px;
+    }
+    /* Modern Software Badges */
+    .pi-cat-badge {
+        font-family: 'Inter', sans-serif;
+        font-weight: 500;
+        background: #f5f3ff;
+        color: #5b21b6;
+        border: 1px solid #ede9fe;
+        padding: 2.5px 8px;
+        border-radius: 5px;
+        font-size: 11px;
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+    }
+    .pi-barcode-badge {
+        font-family: 'JetBrains Mono', monospace;
+        font-weight: 500;
+        background: #f8fafc;
+        color: #475569;
+        border: 1px solid #e2e8f0;
+        padding: 2.5px 7px;
+        border-radius: 4px;
+        font-size: 11px;
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+    }
+    .pi-attr-badge {
+        font-family: 'Inter', sans-serif;
+        font-weight: 600;
+        background: #f8fafc;
+        color: #1e293b;
+        border: 1px solid #e2e8f0;
+        padding: 2px 7px;
+        border-radius: 4px;
+        font-size: 11px;
+        display: inline-block;
+    }
+    .pi-size-badge {
+        font-family: 'Inter', sans-serif;
+        font-weight: 600;
+        background: #f8fafc;
+        color: #334155;
+        border: 1px solid #e2e8f0;
+        padding: 2px 7px;
+        border-radius: 4px;
+        font-size: 11px;
+        display: inline-block;
+    }
+    .pi-location-badge {
+        font-family: 'Inter', sans-serif;
+        font-weight: 600;
+        background: #f0fdf4;
+        color: #166534;
+        border: 1px solid #dcfce7;
+        padding: 3px 8px;
+        border-radius: 5px;
+        font-size: 11px;
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        max-width: 190px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+    .pi-velocity-badge {
+        font-family: 'Inter', sans-serif;
+        font-weight: 600;
+        font-size: 10.5px;
+        padding: 2.5px 8px;
+        border-radius: 4px;
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        letter-spacing: 0.1px;
+    }
+    .pi-velocity-a {
+        background: #fef2f2;
+        color: #b91c1c;
+        border: 1px solid #fee2e2;
+    }
+    .pi-velocity-b {
+        background: #eff6ff;
+        color: #1d4ed8;
+        border: 1px solid #dbeafe;
+    }
+    .pi-velocity-c {
+        background: #f8fafc;
+        color: #475569;
+        border: 1px solid #e2e8f0;
+    }
+    .pi-stock-badge {
+        font-family: 'JetBrains Mono', monospace;
+        font-weight: 600;
+        background: #f8fafc;
+        color: #1e293b;
+        border: 1px solid #e2e8f0;
+        padding: 2.5px 8px;
+        border-radius: 4px;
+        font-size: 11.5px;
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+    }
+    .pi-stock-badge.zero {
+        color: #94a3b8;
+        background: #f8fafc;
     }
     .qb-pi-stepper {
         display: inline-flex;
         align-items: center;
         background: #ffffff;
-        border: 1.5px solid #cbd5e1;
+        border: 1px solid #cbd5e1;
         border-radius: 6px;
         overflow: hidden;
-        box-shadow: 0 1px 2px rgba(0,0,0,0.03);
+        box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
+        transition: all 0.15s ease;
+    }
+    .qb-pi-stepper:focus-within {
+        border-color: #2563eb;
+        box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.15);
     }
     .qb-pi-stepper-btn {
-        width: 26px;
-        height: 28px;
+        width: 25px;
+        height: 27px;
         border: none;
         background: #f8fafc;
-        color: #475569;
-        font-size: 11px;
+        color: #64748b;
+        font-size: 10px;
         font-weight: 700;
         display: flex;
         align-items: center;
         justify-content: center;
         cursor: pointer;
-        transition: background 0.12s ease;
+        transition: all 0.12s ease;
         user-select: none;
     }
     .qb-pi-stepper-btn:hover {
@@ -2152,14 +2459,15 @@
         color: #0f172a;
     }
     .qb-pi-count-input {
-        width: 58px;
-        height: 28px;
+        width: 54px;
+        height: 27px;
         border: none;
         border-left: 1px solid #e2e8f0;
         border-right: 1px solid #e2e8f0;
         text-align: center;
+        font-family: 'JetBrains Mono', monospace;
         font-weight: 700;
-        font-size: 13.5px;
+        font-size: 12.5px;
         color: #0f172a;
         outline: none;
         background: #ffffff;
@@ -2171,117 +2479,111 @@
     .variance-chip {
         display: inline-flex;
         align-items: center;
-        gap: 5px;
+        gap: 4px;
         min-width: 68px;
         justify-content: center;
-        padding: 3px 10px;
-        font-weight: 700;
-        font-size: 11.5px;
-        border-radius: 20px;
-        line-height: 1.2;
+        padding: 3px 8px;
+        font-family: 'JetBrains Mono', monospace;
+        font-weight: 600;
+        font-size: 11px;
+        border-radius: 5px;
+        line-height: 1.25;
+        letter-spacing: -0.2px;
     }
     .variance-zero {
-        background: #f1f5f9;
-        color: #64748b;
-        border: 1px solid #cbd5e1;
+        background: #f0fdf4;
+        color: #16a34a;
+        border: 1px solid #bbf7d0;
     }
     .variance-surplus {
-        background: #ecfdf5;
-        color: #059669;
-        border: 1px solid #a7f3d0;
+        background: #eff6ff;
+        color: #2563eb;
+        border: 1px solid #bfdbfe;
     }
     .variance-shortage {
         background: #fef2f2;
         color: #dc2626;
         border: 1px solid #fecaca;
     }
-    .qb-pi-remove-btn {
-        width: 28px;
-        height: 28px;
-        border-radius: 6px;
-        border: 1px solid #fecaca;
-        background: #fff5f5;
-        color: #ef4444;
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        cursor: pointer;
-        font-size: 12px;
-        transition: all 0.12s ease;
-    }
-    .qb-pi-remove-btn:hover {
-        background: #ef4444;
-        color: #ffffff;
-        border-color: #ef4444;
-    }
     .doc-summary-strip {
         display: grid;
         grid-template-columns: repeat(4, 1fr);
         gap: 12px;
-        margin-top: 14px;
+        margin-top: 12px;
     }
     .doc-summary-kpi-card {
         background: #ffffff;
         border: 1px solid #e2e8f0;
         border-radius: 8px;
-        padding: 12px 14px;
-        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03);
+        padding: 10px 14px;
+        box-shadow: 0 1px 3px 0 rgba(15, 23, 42, 0.03);
         display: flex;
         align-items: center;
         gap: 12px;
+        transition: transform 0.15s ease, box-shadow 0.15s ease;
+    }
+    .doc-summary-kpi-card:hover {
+        box-shadow: 0 3px 8px -1px rgba(15, 23, 42, 0.06);
     }
     .doc-kpi-icon-wrap {
-        width: 38px;
-        height: 38px;
+        width: 34px;
+        height: 34px;
         border-radius: 8px;
         display: flex;
         align-items: center;
         justify-content: center;
-        font-size: 17px;
+        font-size: 14px;
         flex-shrink: 0;
     }
     .doc-summary-kpi-label {
+        font-family: 'Inter', sans-serif;
         font-size: 10.5px;
-        font-weight: 700;
+        font-weight: 600;
         text-transform: uppercase;
         color: #64748b;
         letter-spacing: 0.5px;
         margin-bottom: 2px;
     }
     .doc-summary-kpi-val {
-        font-size: 19px;
-        font-weight: 800;
-        line-height: 1.1;
+        font-family: 'JetBrains Mono', monospace;
+        font-size: 17px;
+        font-weight: 700;
+        line-height: 1.15;
         color: #0f172a;
     }
     .doc-btn-apply {
         height: 38px;
         padding: 0 20px;
-        background: linear-gradient(135deg, #059669 0%, #047857 100%);
+        background: #0f172a;
         color: #ffffff;
-        border: none;
+        border: 1px solid #0f172a;
         border-radius: 6px;
-        font-weight: 700;
+        font-family: 'Inter', sans-serif;
+        font-weight: 600;
         font-size: 13px;
-        box-shadow: 0 2px 6px rgba(5, 150, 105, 0.25);
+        letter-spacing: 0.2px;
+        box-shadow: 0 1px 2px rgba(15, 23, 42, 0.1);
         transition: all 0.15s ease;
         cursor: pointer;
         display: inline-flex;
         align-items: center;
-        gap: 7px;
+        gap: 8px;
     }
     .doc-btn-apply:hover {
-        background: linear-gradient(135deg, #047857 0%, #065f46 100%);
-        box-shadow: 0 4px 10px rgba(5, 150, 105, 0.35);
+        background: #1e293b;
+        border-color: #1e293b;
         color: #ffffff;
+        box-shadow: 0 4px 12px rgba(15, 23, 42, 0.15);
+        transform: translateY(-0.5px);
     }
     .doc-btn-discard {
         height: 38px;
         padding: 0 16px;
         background: #ffffff;
         color: #475569;
-        border: 1px solid #cbd5e1;
+        border: 1px solid #e2e8f0;
         border-radius: 6px;
+        font-family: 'Inter', sans-serif;
         font-weight: 600;
         font-size: 13px;
         transition: all 0.15s ease;
@@ -2291,8 +2593,8 @@
         gap: 6px;
     }
     .doc-btn-discard:hover {
-        background: #f1f5f9;
-        border-color: #94a3b8;
+        background: #f8fafc;
+        border-color: #cbd5e1;
         color: #0f172a;
     }
 
@@ -3153,6 +3455,12 @@
                     </div>
                 </div>
                 <div class="d-flex align-items-center gap-2">
+                    <a href="{{ route('cycle_count.index') }}" class="btn btn-sm btn-outline-primary fw-semibold d-inline-flex align-items-center gap-1.5" style="height:32px; font-size:12px; border-radius:4px; text-decoration:none;">
+                        <i class="fas fa-calendar-alt"></i> Schedule
+                    </a>
+                    <a href="{{ route('cycle_count.create') }}" class="btn btn-sm btn-primary fw-semibold d-inline-flex align-items-center gap-1.5" style="height:32px; font-size:12px; border-radius:4px; text-decoration:none;">
+                        <i class="fas fa-plus"></i> Assign Count
+                    </a>
                     <div class="doc-status-badge">
                         <span class="doc-status-dot"></span>
                         <span>IN RECONCILIATION</span>
@@ -3164,281 +3472,214 @@
             </div>
 
             <div class="modal-body p-3 bg-light">
-                <!-- Product Selection & Reconciliation Dock -->
-                <div class="doc-ribbon-card mb-2.5">
-                    <!-- ==========================================
-                         MODE A: BY PRODUCT (Clean 2-row layout matching user reference)
-                         ========================================== -->
-                    <div id="qbPiProductModeView">
-                        <!-- Row 1: Product Scope Selector on Left & Mode Switcher on Top-Right -->
-                        <div class="d-flex align-items-center justify-content-between flex-nowrap gap-3 pb-2.5 border-bottom">
-                            <!-- Left: Product Scope Search Bar -->
-                            <div class="d-flex align-items-center gap-2 flex-wrap">
-                                <div class="d-flex align-items-center gap-2">
-                                    <div class="doc-scope-icon">
-                                        <i class="fas fa-boxes-stacked"></i>
+                <!-- Product Selection & Reconciliation Dock (Software ERP Ribbon Style) -->
+                <!-- Enterprise Dual Dock: Left = Product & Item Scan, Right = Location & Audit Controls -->
+                <div class="doc-ribbon-card mb-2.5 p-2.5">
+                    <div class="row g-2.5 align-items-stretch">
+                        <!-- ══════════════════════════════════════════════════════════
+                             LEFT SIDE: PRODUCT SELECTION & BARCODE SCANNER
+                        ══════════════════════════════════════════════════════════ -->
+                        <div class="col-xl-6 col-lg-6 col-12 d-flex flex-column">
+                            <div class="pi-dock-card">
+                                <!-- Dock Header -->
+                                <div class="pi-dock-header">
+                                    <div class="d-flex align-items-center gap-2">
+                                        <div class="pi-dock-icon pi-dock-icon-blue">
+                                            <i class="fas fa-boxes-stacked"></i>
+                                        </div>
+                                        <div class="d-flex align-items-baseline">
+                                            <span class="pi-dock-title">Product Scope</span>
+                                            <span class="pi-dock-subtitle d-none d-sm-inline">&bull; Search &amp; Scan</span>
+                                        </div>
                                     </div>
-                                    <span class="fw-bold text-dark small" style="font-size: 12.5px; white-space: nowrap;">Product Scope:</span>
-                                </div>
-
-                                <div class="doc-select2-box-wrap" style="width: 440px; max-width: 100%;">
-                                    <select id="qbPiProductSelect" class="doc-ribbon-select2" multiple="multiple" data-placeholder="Search product name or code..." style="width: 100%;">
-                                        @if(isset($allProductsList))
-                                            @foreach($allProductsList as $pItem)
-                                                <option value="{{ $pItem->id }}">{{ $pItem->item_name }} &bull; [{{ $pItem->item_code }}]</option>
-                                            @endforeach
-                                        @endif
-                                    </select>
-                                </div>
-
-                                <div class="d-flex align-items-center gap-1.5" id="qbPiSelectActionBtns">
-                                    <button type="button" class="doc-btn-chip doc-btn-chip-primary" id="qbPiSelectAllProductsBtn" title="Select all catalog products">
-                                        <i class="fas fa-check-double"></i> Select All
-                                    </button>
-                                    <button type="button" class="doc-btn-chip doc-btn-chip-neutral" id="qbPiClearAllProductsBtn" title="Clear product selection">
-                                        <i class="fas fa-times"></i> Clear
-                                    </button>
-                                </div>
-
-                                <span class="doc-badge-count ms-1" id="qbPiSelectedCountBadge">
-                                    <i class="fas fa-layer-group text-muted me-1"></i> <strong>0</strong> Selected
-                                </span>
-                            </div>
-
-                            <!-- Right: Segmented Mode Switcher (Pinned to Top-Right) -->
-                            <div class="d-flex align-items-center gap-2 ms-auto flex-shrink-0" style="white-space: nowrap;">
-                                <span class="text-muted small fw-semibold d-none d-sm-inline" style="font-size: 11px;">COUNT SCOPE:</span>
-                                <div class="qb-mode-segmented-control">
-                                    <button type="button" class="qb-mode-pill-btn active qb-pi-mode-btn" data-mode="product">
-                                        <i class="fas fa-boxes-stacked"></i> By Product
-                                    </button>
-                                    <button type="button" class="qb-mode-pill-btn qb-pi-mode-btn" data-mode="location">
-                                        <i class="fas fa-warehouse"></i> By Location
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Row 2: Barcode Scanner, Frequency Dropdown & Action Tools -->
-                        <div class="d-flex align-items-center justify-content-between flex-wrap gap-2.5 pt-2.5">
-                            <!-- Left: Barcode Scanner & Step -->
-                            <div class="d-flex align-items-center gap-2 flex-wrap" style="flex: 1 1 360px;">
-                                <div class="input-group input-group-sm" style="width: 260px;">
-                                    <span class="input-group-text bg-white text-primary border-end-0" style="border-color: #cbd5e1; height: 32px;">
-                                        <i class="fas fa-barcode"></i>
-                                    </span>
-                                    <input type="text" id="qbPiScanItemInput" class="form-control border-start-0 ps-1" placeholder="Scan Barcode / SKU..." style="border-color: #cbd5e1; font-size: 12px; height: 32px;">
-                                </div>
-                                <div class="d-flex align-items-center gap-1" style="width: 100px;">
-                                    <span class="text-muted small fw-semibold" style="font-size: 11px;">Step:</span>
-                                    <input type="number" id="qbPiScanQtyInput" class="form-control form-control-sm text-center fw-bold px-1" value="1" min="1" step="1" style="border-color: #cbd5e1; height: 32px; font-size: 12px;">
-                                </div>
-                                <button type="button" class="doc-btn-primary px-3 text-nowrap" id="qbPiAddCountBtn" style="height: 32px; font-size: 11.5px; border-radius: 5px;">
-                                    <i class="fas fa-plus"></i> Add Count
-                                </button>
-                            </div>
-
-                            <!-- Center: Cycle Count Frequency Dropdown -->
-                            <div class="d-flex align-items-center gap-1.5 flex-wrap">
-                                <span class="text-secondary fw-bold small" style="font-size: 11.5px; white-space: nowrap;">
-                                    <i class="fas fa-clock text-primary me-1"></i> Count Frequency:
-                                </span>
-                                <div class="input-group input-group-sm" style="width: 260px;">
-                                    <select id="qbPiFrequencySelect" class="form-select form-select-sm fw-semibold" style="border-color: #cbd5e1; font-size: 12px; height: 32px;">
-                                        <option value="auto">⚡ Auto (ABC Sales Velocity)</option>
-                                        <option value="1">📅 Daily (1 Day)</option>
-                                        <option value="7">📅 Weekly (7 Days)</option>
-                                        <option value="30">📅 Monthly (30 Days)</option>
-                                        <option value="90">📅 Quarterly (90 Days)</option>
-                                    </select>
-                                    <button type="button" class="btn btn-outline-primary fw-bold" id="qbPiApplyScheduleBtn" style="height: 32px; font-size: 11.5px; padding: 0 12px;" title="Apply frequency to worksheet items">
-                                        <i class="fas fa-check"></i> Apply
-                                    </button>
-                                </div>
-                            </div>
-
-                            <!-- Right: Reset Tools & Due Button -->
-                            <div class="d-flex align-items-center gap-2 ms-auto flex-wrap">
-                                <button type="button" class="doc-btn-action-tool" id="qbPiSetUncountedZeroBtn" style="height: 32px; font-size: 11.5px;" title="Set counted quantity to 0 for all items in worksheet">
-                                    <i class="fas fa-eraser text-danger"></i> Set All to 0
-                                </button>
-                                <button type="button" class="doc-btn-action-tool" id="qbPiResetExpectedBtn" style="height: 32px; font-size: 11.5px;" title="Reset all counted quantities back to book stock">
-                                    <i class="fas fa-undo text-secondary"></i> Reset to Book
-                                </button>
-                                <button type="button" class="btn btn-sm btn-warning text-dark fw-bold py-1 px-2.5" id="qbPiLoadDueBtn" style="height: 32px; font-size: 11.5px; border-radius: 6px; box-shadow: 0 1px 3px rgba(245, 158, 11, 0.3);" title="Load products due for cycle count today">
-                                    <i class="fas fa-bell me-1"></i> Load Due Today (<span id="qbPiModalDueCount">{{ $dueCycleCount ?? 0 }}</span>)
-                                </button>
-                                <div id="qbPiCurrentProductBadge" style="display:none;">
-                                    <span class="doc-status-summary-pill" style="height: 32px; font-size: 11.5px; padding: 4px 10px;">
-                                        <i class="fas fa-check-circle text-success me-1"></i> <span id="qbPiCurrentProductName">—</span>
-                                    </span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- ==========================================
-                         MODE B: BY LOCATION
-                         Layout requested by user:
-                         - Row 1: Location Header (Left) | Count Scope (Top-Right)
-                         - Row 2: Barcode Scanner (Left) | Warehouse/Store Dropdown (Right, directly below Count Scope)
-                         - Row 3: Action Buttons (Left)  | Count Frequency Dropdown (Right, directly below Warehouse Dropdown)
-                         ========================================== -->
-                    <div id="qbPiLocationModeView" style="display: none;">
-                        <!-- Row 1: Location Scope Header on Left & Mode Switcher on Top-Right -->
-                        <div class="d-flex align-items-center justify-content-between flex-nowrap gap-3 pb-2.5 border-bottom">
-                            <!-- Left: Location Scope Header & Badge -->
-                            <div class="d-flex align-items-center gap-2.5">
-                                <div class="doc-scope-icon text-success" style="background: #ecfdf5; border-color: #a7f3d0;">
-                                    <i class="fas fa-warehouse"></i>
-                                </div>
-                                <div>
-                                    <div class="fw-bold text-dark" style="font-size: 13px; line-height: 1.2;">Location Scope: Physical Warehouse Inventory</div>
-                                    <div class="text-muted small" style="font-size: 11px;">Reconcile and cycle count stock partitioned by warehouse / store location</div>
-                                </div>
-                                <span class="doc-badge-count ms-2" id="qbPiLocationLoadedBadge" style="display: none; white-space: nowrap;">
-                                    <i class="fas fa-warehouse text-primary me-1"></i> <strong>0</strong> Products Loaded
-                                </span>
-                            </div>
-
-                            <!-- Right: Segmented Mode Switcher (Pinned to Top-Right) -->
-                            <div class="d-flex align-items-center gap-2 ms-auto flex-shrink-0" style="white-space: nowrap;">
-                                <span class="text-muted small fw-semibold d-none d-sm-inline" style="font-size: 11px;">COUNT SCOPE:</span>
-                                <div class="qb-mode-segmented-control">
-                                    <button type="button" class="qb-mode-pill-btn qb-pi-mode-btn" data-mode="product">
-                                        <i class="fas fa-boxes-stacked"></i> By Product
-                                    </button>
-                                    <button type="button" class="qb-mode-pill-btn active qb-pi-mode-btn" data-mode="location">
-                                        <i class="fas fa-warehouse"></i> By Location
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Row 2: Barcode Scanner on Left | Warehouse / Store Dropdown on Right (Directly below Count Scope) -->
-                        <div class="d-flex align-items-center justify-content-between flex-wrap gap-2.5 pt-2.5">
-                            <!-- Left: Barcode Scanner & Step -->
-                            <div class="d-flex align-items-center gap-2 flex-wrap" style="flex: 1 1 360px;">
-                                <div class="input-group input-group-sm" style="width: 260px;">
-                                    <span class="input-group-text bg-white text-primary border-end-0" style="border-color: #cbd5e1; height: 32px;">
-                                        <i class="fas fa-barcode"></i>
-                                    </span>
-                                    <input type="text" id="qbPiScanItemInputLoc" class="form-control border-start-0 ps-1" placeholder="Scan Barcode / SKU..." style="border-color: #cbd5e1; font-size: 12px; height: 32px;">
-                                </div>
-                                <div class="d-flex align-items-center gap-1" style="width: 100px;">
-                                    <span class="text-muted small fw-semibold" style="font-size: 11px;">Step:</span>
-                                    <input type="number" id="qbPiScanQtyInputLoc" class="form-control form-control-sm text-center fw-bold px-1" value="1" min="1" step="1" style="border-color: #cbd5e1; height: 32px; font-size: 12px;">
-                                </div>
-                                <button type="button" class="doc-btn-primary px-3 text-nowrap" id="qbPiAddCountBtnLoc" style="height: 32px; font-size: 11.5px; border-radius: 5px;">
-                                    <i class="fas fa-plus"></i> Add Count
-                                </button>
-                            </div>
-
-                            <!-- Right: Warehouse / Store & Rack / Shelf Controls (Directly below Count Scope) -->
-                            <div class="d-flex flex-column align-items-end gap-2 ms-auto">
-                                <!-- Line 1: Shop / Warehouse Dropdown -->
-                                <div class="d-flex align-items-center gap-2 flex-wrap justify-content-end">
-                                    <label for="qbPiWarehouseSelect" class="fw-semibold text-dark mb-0" style="font-size: 12px; letter-spacing: 0.1px; color: #1e293b; white-space: nowrap;">
-                                        <i class="fas fa-store text-success me-1" style="font-size: 12.5px;"></i> Shop / Warehouse:
-                                    </label>
                                     <div class="d-flex align-items-center gap-1.5">
-                                        <select id="qbPiWarehouseSelect" class="form-select form-select-sm fw-medium shadow-none" style="width: 270px; height: 32px; font-size: 12px; color: #1e293b; border: 1px solid #cbd5e1; border-radius: 6px; background-color: #ffffff;">
-                                            <option value="all">🌐 All Warehouses &amp; Shops</option>
-                                            @if(isset($shopsList) && $shopsList->count() > 0)
-                                                <optgroup label="🏪 Shops / Stores">
-                                                    @foreach($shopsList as $shop)
-                                                        <option value="branch_{{ $shop->id }}">🏪 {{ $shop->name }} ({{ $shop->address ?? 'Main Shop' }})</option>
-                                                    @endforeach
-                                                </optgroup>
-                                            @endif
-                                            @if(isset($warehousesList) && $warehousesList->count() > 0)
-                                                <optgroup label="🏢 Warehouses">
-                                                    @foreach($warehousesList as $wh)
-                                                        <option value="wh_{{ $wh->id }}">🏢 {{ $wh->warehouse_name }} ({{ $wh->location ?? 'Main' }})</option>
-                                                    @endforeach
-                                                </optgroup>
+                                        <button type="button" class="doc-btn-chip doc-btn-chip-primary" id="qbPiSelectAllProductsBtn" title="Select all catalog products">
+                                            <i class="fas fa-check-double"></i> All
+                                        </button>
+                                        <button type="button" class="doc-btn-chip" id="qbPiClearAllProductsBtn" title="Clear selection">
+                                            <i class="fas fa-times"></i> Clear
+                                        </button>
+                                        <span class="doc-badge-count ms-1" id="qbPiSelectedCountBadge">
+                                            <strong>0</strong> Selected
+                                        </span>
+                                    </div>
+                                </div>
+
+                                <!-- Dock Body -->
+                                <div class="pi-dock-body">
+                                    <!-- Product Search Box -->
+                                    <div class="doc-select2-box-wrap w-100">
+                                        <select id="qbPiProductSelect" class="doc-ribbon-select2" multiple="multiple" data-placeholder="Search product name or code..." style="width: 100%;">
+                                            @if(isset($allProductsList))
+                                                @foreach($allProductsList as $pItem)
+                                                    <option value="{{ $pItem->id }}">{{ $pItem->item_name }} &bull; [{{ $pItem->item_code }}]</option>
+                                                @endforeach
                                             @endif
                                         </select>
-                                        <button type="button" class="btn btn-sm btn-primary fw-semibold px-2.5 shadow-none" id="qbPiLoadWarehouseItemsBtn" style="height: 32px; font-size: 11.5px; border-radius: 6px; white-space: nowrap;">
-                                            <i class="fas fa-sync-alt me-1"></i> Load Items
-                                        </button>
                                     </div>
-                                </div>
 
-                                <!-- Line 2: Dependent Rack / Shelf Dropdown (Appears directly below Shop / Warehouse) -->
-                                <div class="d-flex align-items-center gap-2 flex-wrap justify-content-end" id="qbPiRackShelfRow">
-                                    <label for="qbPiRackShelfSelect" class="fw-semibold text-dark mb-0" style="font-size: 12px; letter-spacing: 0.1px; color: #1e293b; white-space: nowrap;" id="qbPiRackShelfLabel">
-                                        <i class="fas fa-boxes-stacked text-primary me-1" style="font-size: 12.5px;"></i> Rack / Shelf:
-                                    </label>
-                                    <div class="d-flex align-items-center gap-1.5">
-                                        <select id="qbPiRackShelfSelect" class="form-select form-select-sm fw-medium shadow-none" style="width: 270px; height: 32px; font-size: 12px; color: #1e293b; border: 1px solid #cbd5e1; border-radius: 6px; background-color: #ffffff;">
-                                            <option value="all">📦 All Racks &amp; Shelves</option>
-                                        </select>
-                                        <button type="button" class="btn btn-sm btn-outline-secondary fw-medium px-2 shadow-none" id="qbPiResetRackShelfBtn" style="height: 32px; font-size: 11.5px; border: 1px solid #cbd5e1; border-radius: 6px; color: #475569; white-space: nowrap;" title="Reset filter to all racks/shelves">
-                                            <i class="fas fa-undo"></i>
+                                    <!-- Barcode Scanner & Step Bar -->
+                                    <div class="d-flex align-items-center gap-2">
+                                        <div class="pi-control-item flex-grow-1">
+                                            <span class="pi-control-label"><i class="fas fa-barcode text-muted"></i></span>
+                                            <input type="text" id="qbPiScanItemInput" class="pi-control-input" placeholder="Scan Barcode / SKU to count...">
+                                        </div>
+                                        <div class="pi-control-item" style="width: 105px;">
+                                            <span class="pi-control-label">Step</span>
+                                            <input type="number" id="qbPiScanQtyInput" class="pi-control-input text-center fw-bold px-1" value="1" min="1" step="1" style="font-family: 'JetBrains Mono', monospace;">
+                                        </div>
+                                        <button type="button" class="pi-btn-primary-action" id="qbPiAddCountBtn">
+                                            <i class="fas fa-plus"></i> Add
                                         </button>
+                                        <!-- Hidden legacy aliases for event compatibility -->
+                                        <input type="hidden" id="qbPiScanItemInputLoc">
+                                        <input type="hidden" id="qbPiScanQtyInputLoc" value="1">
+                                        <span id="qbPiAddCountBtnLoc" style="display:none;"></span>
+                                    </div>
+
+                                    <!-- Feedback status banner (shown when products are active/loaded) -->
+                                    <div id="qbPiCurrentProductBadge" class="pi-status-banner" style="display:none;">
+                                        <i class="fas fa-check-circle text-success me-1.5 flex-shrink-0"></i>
+                                        <span id="qbPiCurrentProductName" class="text-truncate">—</span>
                                     </div>
                                 </div>
                             </div>
                         </div>
 
-                        <!-- Row 3: Action Buttons on Left | Frequency Dropdown & Apply Button on Right -->
-                        <div class="d-flex align-items-center justify-content-between flex-wrap gap-2.5 pt-2.5 border-top mt-2">
-                            <!-- Left: Reset Tools & Due Button & Summary Pill -->
-                            <div class="d-flex align-items-center gap-2 flex-wrap">
-                                <button type="button" class="doc-btn-action-tool" id="qbPiSetUncountedZeroBtnLoc" style="height: 32px; font-size: 11.5px;" title="Set counted quantity to 0 for all items in worksheet">
-                                    <i class="fas fa-eraser text-danger"></i> Set All to 0
-                                </button>
-                                <button type="button" class="doc-btn-action-tool" id="qbPiResetExpectedBtnLoc" style="height: 32px; font-size: 11.5px;" title="Reset all counted quantities back to book stock">
-                                    <i class="fas fa-undo text-secondary"></i> Reset to Book
-                                </button>
-                                <button type="button" class="btn btn-sm btn-warning text-dark fw-bold py-1 px-2.5" id="qbPiLoadDueBtnLoc" style="height: 32px; font-size: 11.5px; border-radius: 6px; box-shadow: 0 1px 2px rgba(245, 158, 11, 0.25);" title="Load products due for cycle count today">
-                                    <i class="fas fa-bell me-1"></i> Load Due Today (<span id="qbPiModalDueCountLoc">{{ $dueCycleCount ?? 0 }}</span>)
-                                </button>
-                                <div id="qbPiCurrentProductBadgeLoc" style="display:none;">
-                                    <span class="doc-status-summary-pill" style="height: 32px; font-size: 11.5px; padding: 4px 10px;">
-                                        <i class="fas fa-check-circle text-success me-1"></i> <span id="qbPiCurrentProductNameLoc">—</span>
-                                    </span>
+                        <!-- ══════════════════════════════════════════════════════════
+                             RIGHT SIDE: LOCATION & AUDIT CONTROLS
+                        ══════════════════════════════════════════════════════════ -->
+                        <div class="col-xl-6 col-lg-6 col-12 d-flex flex-column">
+                            <div class="pi-dock-card">
+                                <!-- Dock Header -->
+                                <div class="pi-dock-header">
+                                    <div class="d-flex align-items-center gap-2">
+                                        <div class="pi-dock-icon pi-dock-icon-emerald">
+                                            <i class="fas fa-warehouse"></i>
+                                        </div>
+                                        <div class="d-flex align-items-baseline">
+                                            <span class="pi-dock-title">Location &amp; Controls</span>
+                                            <span class="pi-dock-subtitle d-none d-sm-inline">&bull; Audit Setup</span>
+                                        </div>
+                                    </div>
+                                    <div class="d-flex align-items-center gap-1.5">
+                                        <button type="button" class="pi-btn-due-pill" id="qbPiLoadDueBtn" title="Load products due for cycle count today">
+                                            <i class="fas fa-bell text-warning"></i> Due Today (<span id="qbPiModalDueCount">{{ $dueCycleCount ?? 0 }}</span>)
+                                        </button>
+                                        <span class="doc-badge-count" id="qbPiLocationLoadedBadge" style="display: none;">
+                                            <strong>0</strong> Loaded
+                                        </span>
+                                        <span id="qbPiModalDueCountLoc" style="display:none;">{{ $dueCycleCount ?? 0 }}</span>
+                                        <span id="qbPiLoadDueBtnLoc" style="display:none;"></span>
+                                    </div>
                                 </div>
-                            </div>
 
-                            <!-- Right: Count Frequency Dropdown with Apply Button directly following it -->
-                            <div class="d-flex align-items-center gap-2 ms-auto flex-nowrap" style="white-space: nowrap;">
-                                <label for="qbPiFrequencySelectLoc" class="fw-semibold text-dark mb-0" style="font-size: 12px; letter-spacing: 0.1px; color: #1e293b; white-space: nowrap;">
-                                    <i class="fas fa-clock text-primary me-1" style="font-size: 12.5px;"></i> Count Frequency:
-                                </label>
-                                <div class="d-flex align-items-center gap-1.5 flex-nowrap">
-                                    <select id="qbPiFrequencySelectLoc" class="form-select form-select-sm fw-medium shadow-none" style="width: 215px; height: 32px; font-size: 12px; color: #1e293b; border: 1px solid #cbd5e1; border-radius: 6px; background-color: #ffffff;">
-                                        <option value="auto">⚡ Auto (ABC Sales Velocity)</option>
-                                        <option value="1">📅 Daily (1 Day)</option>
-                                        <option value="7">📅 Weekly (7 Days)</option>
-                                        <option value="30">📅 Monthly (30 Days)</option>
-                                        <option value="90">📅 Quarterly (90 Days)</option>
-                                    </select>
-                                    <button type="button" class="btn btn-sm btn-outline-primary fw-semibold px-2.5 shadow-none" id="qbPiApplyScheduleBtnLoc" style="height: 32px; font-size: 11.5px; border-radius: 6px; border: 1px solid #3b82f6; white-space: nowrap;" title="Apply frequency to worksheet items">
-                                        <i class="fas fa-check me-1"></i> Apply
-                                    </button>
+                                <!-- Dock Body -->
+                                <div class="pi-dock-body">
+                                    <!-- Location & Rack Selectors Row -->
+                                    <div class="d-flex align-items-center gap-2">
+                                        <!-- Location Select -->
+                                        <div class="pi-control-item flex-grow-1" style="min-width: 170px;">
+                                            <span class="pi-control-label"><i class="fas fa-store text-muted"></i> Loc</span>
+                                            <select id="qbPiWarehouseSelect" class="pi-control-select">
+                                                <option value="all">🌐 All Locations</option>
+                                                @if(isset($shopsList) && $shopsList->count() > 0)
+                                                    <optgroup label="🏪 Shops / Stores">
+                                                        @foreach($shopsList as $shop)
+                                                            <option value="branch_{{ $shop->id }}">🏪 {{ $shop->name }}</option>
+                                                        @endforeach
+                                                    </optgroup>
+                                                @endif
+                                                @if(isset($warehousesList) && $warehousesList->count() > 0)
+                                                    <optgroup label="🏢 Warehouses">
+                                                        @foreach($warehousesList as $wh)
+                                                            <option value="wh_{{ $wh->id }}">🏢 {{ $wh->warehouse_name }}</option>
+                                                        @endforeach
+                                                    </optgroup>
+                                                @endif
+                                            </select>
+                                        </div>
+
+                                        <!-- Rack Select with reset button -->
+                                        <div class="pi-control-item" id="qbPiRackShelfRow" style="min-width: 145px; flex: 1;">
+                                            <span class="pi-control-label" id="qbPiRackShelfLabel"><i class="fas fa-boxes-stacked text-muted"></i> W. Rack</span>
+                                            <select id="qbPiRackShelfSelect" class="pi-control-select">
+                                                <option value="all">📦 All Racks</option>
+                                            </select>
+                                            <button type="button" class="pi-control-btn" id="qbPiResetRackShelfBtn" title="Reset rack filter">
+                                                <i class="fas fa-undo"></i>
+                                            </button>
+                                        </div>
+
+                                        <!-- Load Location Button (Compact Width) -->
+                                        <button type="button" class="pi-btn-primary-action px-2.5" id="qbPiLoadWarehouseItemsBtn" title="Load products for selected location">
+                                            <i class="fas fa-sync-alt"></i> Load
+                                        </button>
+                                    </div>
+
+                                    <!-- Frequency Schedule & Action Buttons Toolbar -->
+                                    <div class="d-flex align-items-center justify-content-between gap-2 flex-wrap">
+                                        <div class="pi-control-item" style="width: 220px;">
+                                            <span class="pi-control-label"><i class="far fa-clock text-muted"></i> Frequency</span>
+                                            <select id="qbPiFrequencySelect" class="pi-control-select">
+                                                <option value="auto">⚡ Auto (Velocity)</option>
+                                                <option value="1">📅 Daily (1d)</option>
+                                                <option value="7">📅 Weekly (7d)</option>
+                                                <option value="30">📅 Monthly (30d)</option>
+                                                <option value="90">📅 Quarterly (90d)</option>
+                                            </select>
+                                            <button type="button" class="pi-control-btn text-primary fw-bold" id="qbPiApplyScheduleBtn" title="Apply frequency to worksheet items">
+                                                <i class="fas fa-check"></i>
+                                            </button>
+                                        </div>
+
+                                        <div class="btn-group btn-group-sm" role="group">
+                                            <button type="button" class="btn btn-outline-secondary fw-semibold d-inline-flex align-items-center gap-1.5" id="customizePiColumnsBtn" style="height: 34px; font-size: 11.5px; border-color: #cbd5e1; color: #334155;" title="Customize Columns (or right-click table header)">
+                                                <i class="fas fa-columns text-primary"></i> Columns
+                                            </button>
+                                            <button type="button" class="btn btn-outline-secondary fw-semibold d-inline-flex align-items-center gap-1.5" id="qbPiSetUncountedZeroBtn" style="height: 34px; font-size: 11.5px; border-color: #cbd5e1; color: #334155;" title="Set counted quantity to 0 for all items">
+                                                <i class="fas fa-eraser text-danger"></i> Set 0
+                                            </button>
+                                            <button type="button" class="btn btn-outline-secondary fw-semibold d-inline-flex align-items-center gap-1.5" id="qbPiResetExpectedBtn" style="height: 34px; font-size: 11.5px; border-color: #cbd5e1; color: #334155;" title="Reset all counted quantities back to book stock">
+                                                <i class="fas fa-undo text-secondary"></i> Reset Book
+                                            </button>
+                                        </div>
+
+                                        <button type="button" class="btn btn-sm btn-primary fw-semibold d-inline-flex align-items-center gap-1.5 ms-1" id="qbPiAssignStaffBtn" style="height: 34px; font-size: 11.5px;" title="Assign this location to staff as a formal Cycle Count">
+                                            <i class="fas fa-user-check"></i> Assign to Staff
+                                        </button>
+
+                                        <!-- Hidden legacy aliases -->
+                                        <span id="qbPiSetUncountedZeroBtnLoc" style="display:none;"></span>
+                                        <span id="qbPiResetExpectedBtnLoc" style="display:none;"></span>
+                                        <select id="qbPiFrequencySelectLoc" style="display:none;"><option value="auto">Auto</option></select>
+                                        <span id="qbPiApplyScheduleBtnLoc" style="display:none;"></span>
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <!-- Ledger Worksheet Table -->
+                <!-- Ledger Worksheet Table (Styled like Product Table in Image 2) -->
                 <div class="doc-table-sheet-wrap">
-                    <table class="table table-sm align-middle" id="qbPiTable" style="table-layout: auto; min-width: 1100px;">
+                    <table class="table table-hover align-middle nowrap" id="qbPiTable" style="width: 100%;">
                         <thead>
                             <tr>
-                                <th style="width: 110px; min-width: 100px;">Item / Barcode</th>
-                                <th style="min-width: 170px;">Product Description</th>
-                                <th style="min-width: 250px;" title="Physical Warehouse &amp; Rack/Shelf Locations">Location Breakdown</th>
-                                <th style="min-width: 180px; width: 190px;" title="ABC Velocity based on 3-Month Sales Average">Velocity &amp; ABC Class</th>
-                                <th style="width: 80px; min-width: 75px;">Attribute</th>
-                                <th style="width: 75px; min-width: 70px;">Size</th>
-                                <th class="text-center" style="width: 95px; min-width: 90px;" title="Current On-Hand Recorded in System">Book Stock</th>
-                                <th class="text-center" style="width: 135px; min-width: 130px;" title="Physical Stock Counted On Shelf">Physical Count</th>
-                                <th class="text-center" style="width: 95px; min-width: 90px;" title="Counted Qty minus Book Stock">Variance</th>
-                                <th class="text-center" style="width: 45px;">Remove</th>
+                                <th data-col-key="sr_no" style="width: 38px;" class="text-center">Sr #</th>
+                                <th data-col-key="item_unique" style="width: 110px;" class="text-center">Item Unique</th>
+                                <th data-col-key="image" style="width: 40px;" class="text-center">Image</th>
+                                <th data-col-key="product_name" style="min-width: 170px;">Product Name</th>
+                                <th data-col-key="category" style="width: 100px;" class="text-center">Category</th>
+                                <th data-col-key="barcode" style="width: 120px;" class="text-center">Barcode</th>
+                                <th data-col-key="attribute" style="width: 90px;" class="text-center">Attribute</th>
+                                <th data-col-key="size" style="width: 80px;" class="text-center">Size</th>
+                                <th data-col-key="location" style="width: 150px;">Location</th>
+                                <th data-col-key="velocity" style="width: 110px;" class="text-center">Velocity</th>
+                                <th data-col-key="stock" style="width: 85px;" class="text-center">Stock</th>
+                                <th data-col-key="physical_count" style="width: 120px;" class="text-center">Physical Count</th>
+                                <th data-col-key="variance" style="width: 85px;" class="text-center">Variance</th>
+                                <th data-col-key="actions" class="text-center" style="width: 50px;">Actions</th>
                             </tr>
                         </thead>
                         <tbody id="qbPiTableBody">
@@ -3527,6 +3768,64 @@
         <span>Reset Visibility</span>
     </button>
 </div>
+
+{{-- QuickBooks POS Style: Right-click Header Context Menu for Physical Inventory Table --}}
+<div id="qbPiContextMenu" class="qb-custom-context-menu">
+    <div class="qb-ctx-header">
+        <i class="fas fa-sliders-h text-primary"></i>
+        <span>Audit Worksheet</span>
+    </div>
+    <button type="button" class="qb-ctx-item text-primary" id="qbPiCtxCustomizeBtn">
+        <i class="fas fa-columns"></i>
+        <span><strong>Customize Columns...</strong></span>
+    </button>
+    <div class="qb-ctx-divider"></div>
+    <button type="button" class="qb-ctx-item text-muted" id="qbPiCtxResetWidthsBtn">
+        <i class="fas fa-arrows-alt-h"></i>
+        <span>Reset Column Widths</span>
+    </button>
+    <button type="button" class="qb-ctx-item text-muted" id="qbPiCtxResetBtn">
+        <i class="fas fa-undo"></i>
+        <span>Reset Visibility</span>
+    </button>
+</div>
+
+{{-- QuickBooks POS Style: Customize Physical Inventory Columns Modal --}}
+<div class="modal fade" id="customizePiColumnsModal" tabindex="-1" role="dialog" aria-hidden="true" style="z-index: 1075;">
+    <div class="modal-dialog modal-dialog-centered" style="max-width: 480px;" role="document">
+        <div class="modal-content border-0 shadow-lg" style="border-radius: 12px; overflow: hidden;">
+            <div class="modal-header py-2.5 px-3 bg-light border-bottom d-flex align-items-center justify-content-between">
+                <div class="d-flex align-items-center gap-2">
+                    <i class="fas fa-columns text-primary fs-6"></i>
+                    <div>
+                        <h6 class="modal-title fw-bold mb-0 text-dark" style="font-size: 14px;">Customize Inventory Columns</h6>
+                        <span class="text-muted" style="font-size: 11px;">Show or hide columns in the Physical Inventory table</span>
+                    </div>
+                </div>
+                <button type="button" class="close text-secondary qb-pi-modal-close" data-dismiss="modal" data-bs-dismiss="modal" aria-label="Close" style="font-size:24px;border:none;background:transparent;cursor:pointer;line-height:1;padding:0 4px;">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body p-3">
+                <div class="d-flex justify-content-between align-items-center mb-2 pb-2 border-bottom">
+                    <span class="fw-semibold text-secondary" style="font-size: 12px;">Available Columns:</span>
+                    <div class="btn-group btn-group-sm">
+                        <button type="button" class="btn btn-sm btn-outline-primary py-0 px-2" style="font-size: 11px;" id="piColSelectAll">Select All</button>
+                        <button type="button" class="btn btn-sm btn-outline-secondary py-0 px-2" style="font-size: 11px;" id="piColResetDefault">Reset Default</button>
+                    </div>
+                </div>
+                <div class="row g-2" id="piColumnsChecklist">
+                    {{-- Injected dynamically by JavaScript --}}
+                </div>
+            </div>
+            <div class="modal-footer py-2 px-3 bg-light border-top d-flex justify-content-between align-items-center">
+                <span class="text-muted fst-italic" style="font-size: 11px;"><i class="fas fa-info-circle me-1 text-primary"></i> Right-click table header anytime to open</span>
+                <button type="button" class="btn btn-primary btn-sm px-4 rounded-pill qb-pi-modal-close" data-dismiss="modal" data-bs-dismiss="modal">Apply &amp; Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 
 {{-- ══════════════════════════════════════════════════════════════
      PRODUCT VIEW MODAL (Compact Kent ERP Theme)
@@ -6149,17 +6448,10 @@ $(document).ready(function () {
 
     function switchQbPiMode(mode) {
         qbPiCurrentMode = mode;
-        $('.qb-pi-mode-btn').removeClass('active');
-        $(`.qb-pi-mode-btn[data-mode="${mode}"]`).addClass('active');
-
         if (mode === 'product') {
-            $('#qbPiProductModeView').show();
-            $('#qbPiLocationModeView').hide();
             $('#qbPiActiveWarehouseName').text('BY SELECTED PRODUCTS');
             syncSelectedProductsVariants();
         } else {
-            $('#qbPiProductModeView').hide();
-            $('#qbPiLocationModeView').show();
             const whVal = $('#qbPiWarehouseSelect').val();
             const whText = $('#qbPiWarehouseSelect option:selected').text();
             $('#qbPiActiveWarehouseName').text(whText.toUpperCase());
@@ -6178,7 +6470,7 @@ $(document).ready(function () {
 
         if (locVal.startsWith('wh_') || (!isNaN(locVal) && locVal !== 'all' && !locVal.startsWith('branch_'))) {
             const whId = parseInt(locVal.replace('wh_', ''));
-            $rackLabel.html('<i class="fas fa-cubes text-primary me-1" style="font-size: 14px;"></i> Warehouse Racks:');
+            $rackLabel.html('<i class="fas fa-cubes text-muted me-1"></i> W. Rack');
             $rackSelect.append('<option value="all">📦 All Warehouse Racks</option>');
 
             const filteredRacks = qbPiStorageLocations.filter(item => {
@@ -6195,7 +6487,7 @@ $(document).ready(function () {
             }
         } else if (locVal.startsWith('branch_') || locVal.startsWith('shop_')) {
             const branchId = parseInt(locVal.replace('branch_', '').replace('shop_', ''));
-            $rackLabel.html('<i class="fas fa-layer-group text-success me-1" style="font-size: 14px;"></i> Shop Shelves:');
+            $rackLabel.html('<i class="fas fa-layer-group text-muted me-1"></i> S. Shelf');
             $rackSelect.append('<option value="all">🏪 All Shop Shelves</option>');
 
             const filteredShelves = qbPiStorageLocations.filter(item => {
@@ -6212,7 +6504,7 @@ $(document).ready(function () {
             }
         } else {
             // "all" Warehouses & Shops
-            $rackLabel.html('<i class="fas fa-boxes-stacked text-primary me-1" style="font-size: 14px;"></i> Rack / Shelf:');
+            $rackLabel.html('<i class="fas fa-boxes-stacked text-muted me-1"></i> W. Rack');
             $rackSelect.append('<option value="all">📦 All Racks &amp; Shelves</option>');
 
             const racks = qbPiStorageLocations.filter(item => item.type === 'warehouse_rack' || !item.type);
@@ -6275,11 +6567,14 @@ $(document).ready(function () {
 
     $('#qbPiLoadWarehouseItemsBtn').on('click', function(e) {
         e.preventDefault();
+        qbPiCurrentMode = 'location';
+        const whText = $('#qbPiWarehouseSelect option:selected').text();
+        $('#qbPiActiveWarehouseName').text(whText.toUpperCase());
         loadCycleCountByLocation($('#qbPiWarehouseSelect').val(), $('#qbPiRackShelfSelect').val());
     });
 
     function loadCycleCountByLocation(warehouseId, rackShelfId = null) {
-        $('#qbPiTableBody').html('<tr><td colspan="10" class="text-center py-5 text-muted"><div class="spinner-border spinner-border-sm text-primary me-2"></div>Loading inventory items for selected location...</td></tr>');
+        $('#qbPiTableBody').html('<tr><td colspan="14" class="text-center py-5 text-muted"><div class="spinner-border spinner-border-sm text-primary me-2"></div>Loading inventory items for selected location...</td></tr>');
 
         const params = {};
         if (rackShelfId && rackShelfId !== 'all' && rackShelfId !== 'none') {
@@ -6311,8 +6606,8 @@ $(document).ready(function () {
                         .addClass('has-selection')
                         .show();
 
-                    $('#qbPiCurrentProductName, #qbPiCurrentProductNameLoc').html(`<strong>${resp.count}</strong> Products in Location &bull; <strong>${qbPiItems.length}</strong> Variants`);
-                    $('#qbPiCurrentProductBadge, #qbPiCurrentProductBadgeLoc').show();
+                    $('#qbPiCurrentProductName').html(`<strong>${resp.count}</strong> Products in Location &bull; <strong>${qbPiItems.length}</strong> Variants`);
+                    $('#qbPiCurrentProductBadge').show();
 
                     renderQbPiTable();
                 } else {
@@ -6323,7 +6618,7 @@ $(document).ready(function () {
             },
             error: function(xhr) {
                 console.error('Error fetching location cycle count:', xhr);
-                $('#qbPiTableBody').html('<tr><td colspan="10" class="text-center py-4 text-danger"><i class="fas fa-exclamation-triangle me-2"></i>Failed to load location inventory.</td></tr>');
+                $('#qbPiTableBody').html('<tr><td colspan="14" class="text-center py-4 text-danger"><i class="fas fa-exclamation-triangle me-2"></i>Failed to load location inventory.</td></tr>');
             }
         });
     }
@@ -6335,7 +6630,7 @@ $(document).ready(function () {
     });
 
     function loadDueCycleCountItems() {
-        $('#qbPiTableBody').html('<tr><td colspan="10" class="text-center py-5 text-muted"><div class="spinner-border spinner-border-sm text-warning me-2"></div>Loading products due for cycle count today...</td></tr>');
+        $('#qbPiTableBody').html('<tr><td colspan="14" class="text-center py-5 text-muted"><div class="spinner-border spinner-border-sm text-warning me-2"></div>Loading products due for cycle count today...</td></tr>');
         $('#qbPiActiveWarehouseName').text('DUE CYCLE COUNT (TODAY)');
 
         $.ajax({
@@ -6363,8 +6658,8 @@ $(document).ready(function () {
 
                     $('#qbPiModalDueCount, #qbPiModalDueCountLoc').text(resp.count || 0);
 
-                    $('#qbPiCurrentProductName, #qbPiCurrentProductNameLoc').html(`<strong>${resp.count}</strong> Due Products &bull; <strong>${qbPiItems.length}</strong> Variants for Counting`);
-                    $('#qbPiCurrentProductBadge, #qbPiCurrentProductBadgeLoc').show();
+                    $('#qbPiCurrentProductName').html(`<strong>${resp.count}</strong> Due Products &bull; <strong>${qbPiItems.length}</strong> Variants for Counting`);
+                    $('#qbPiCurrentProductBadge').show();
 
                     renderQbPiTable();
 
@@ -6385,7 +6680,7 @@ $(document).ready(function () {
             },
             error: function(xhr) {
                 console.error('Error loading due items', xhr);
-                $('#qbPiTableBody').html('<tr><td colspan="10" class="text-center py-4 text-danger"><i class="fas fa-exclamation-triangle me-2"></i>Failed to load due items.</td></tr>');
+                $('#qbPiTableBody').html('<tr><td colspan="14" class="text-center py-4 text-danger"><i class="fas fa-exclamation-triangle me-2"></i>Failed to load due items.</td></tr>');
             }
         });
     }
@@ -6577,6 +6872,9 @@ $(document).ready(function () {
         const locBreakdown = product.location_breakdown || [];
         const metrics = product.cycle_count_metrics || {};
 
+        const prodImage = String(product.image || '');
+        const prodCategory = String(product.category_relation?.name || product.category_name || '');
+
         if (variants.length === 0) {
             let expected = parseFloat(product.calculated_total_stock_qty || 0);
             if (product.warehouse_stocks && Array.isArray(product.warehouse_stocks)) {
@@ -6586,7 +6884,10 @@ $(document).ready(function () {
                 product_id: parseInt(product.id),
                 variant_index: null,
                 item_code: String(product.item_code || ('#' + product.id)),
+                base_item_name: String(product.item_name || 'Standard Item'),
                 item_name: String(product.item_name || 'Standard Item'),
+                image: prodImage,
+                category_name: prodCategory,
                 attribute: 'Standard',
                 size: 'Regular',
                 expected_qty: expected,
@@ -6610,7 +6911,10 @@ $(document).ready(function () {
                 product_id: parseInt(product.id),
                 variant_index: vIdx,
                 item_code: vCode,
+                base_item_name: String(product.item_name || vName),
                 item_name: vName,
+                image: String(v.image || prodImage || ''),
+                category_name: prodCategory,
                 attribute: attr,
                 size: size,
                 expected_qty: expected,
@@ -6653,7 +6957,7 @@ $(document).ready(function () {
         const missingIds = selectedIds.filter(id => !qbPiLoadedVariantsCache[id]);
 
         if (missingIds.length > 0) {
-            $('#qbPiTableBody').html('<tr><td colspan="10" class="text-center py-5 text-muted"><div class="spinner-border spinner-border-sm text-primary me-2"></div>Loading variants for ' + missingIds.length + ' product(s)...</td></tr>');
+            $('#qbPiTableBody').html('<tr><td colspan="14" class="text-center py-5 text-muted"><div class="spinner-border spinner-border-sm text-primary me-2"></div>Loading variants for ' + missingIds.length + ' product(s)...</td></tr>');
 
             const fetchPromises = missingIds.map(id => $.getJSON('/productview/' + id));
             Promise.all(fetchPromises).then(results => {
@@ -6705,6 +7009,8 @@ $(document).ready(function () {
     }
 
     $(document).on('change', '#qbPiProductSelect', function() {
+        qbPiCurrentMode = 'product';
+        $('#qbPiActiveWarehouseName').text('BY SELECTED PRODUCTS');
         syncSelectedProductsVariants();
     });
 
@@ -6727,8 +7033,8 @@ $(document).ready(function () {
         qbPiItems = [];
         $('#qbPiScanItemInput, #qbPiScanItemInputLoc').val('');
         $('#qbPiScanQtyInput, #qbPiScanQtyInputLoc').val(1);
-        $('#qbPiCurrentProductBadge, #qbPiCurrentProductBadgeLoc').hide();
-        $('#qbPiTableBody').html('<tr><td colspan="10" class="text-center py-5 text-muted"><div class="spinner-border spinner-border-sm text-primary me-2"></div>Loading inventory items for counting...</td></tr>');
+        $('#qbPiCurrentProductBadge').hide();
+        $('#qbPiTableBody').html('<tr><td colspan="14" class="text-center py-5 text-muted"><div class="spinner-border spinner-border-sm text-primary me-2"></div>Loading inventory items for counting...</td></tr>');
 
         try {
             if (typeof jQuery !== 'undefined' && typeof jQuery('#qbPhysicalInventoryModal').modal === 'function') {
@@ -6758,20 +7064,415 @@ $(document).ready(function () {
 
         setTimeout(function() {
             initQbPiSelect2();
+            renderPiColumnsChecklist();
+            applyPiColVisibility(getPiColPrefs());
+            initPiTableColumnResizing();
             if (loadDueImmediately) {
                 loadDueCycleCountItems();
             } else {
                 switchQbPiMode('product');
                 $('#qbPiProductSelect').val([]).trigger('change');
-                $('#qbPiTableBody').html('<tr><td colspan="10" class="text-center py-5 text-muted"><i class="fas fa-hand-pointer fs-3 text-secondary mb-2 d-block"></i>Please select one or more products above, or switch to <strong>By Location</strong> mode or click <strong>Load Due Today</strong>.</td></tr>');
+                $('#qbPiTableBody').html('<tr><td colspan="' + getPiVisibleColCount() + '" class="text-center py-5 text-muted"><i class="fas fa-hand-pointer fs-3 text-secondary mb-2 d-block"></i>Please select one or more products above, or switch to <strong>By Location</strong> mode or click <strong>Load Due Today</strong>.</td></tr>');
             }
         }, 120);
     }
 
-    // ── Ledger Table Rendering (with Physical Location Breakdown & ABC Velocity) ──
+    // ══════════════════════════════════════════════════════════════
+    // QUICKBOOKS POS STYLE: CUSTOMIZE PI TABLE COLUMNS & RESIZING
+    // ══════════════════════════════════════════════════════════════
+    const PI_COLUMNS = [
+        { key: 'sr_no',          label: 'Sr #',            default: true,  minWidth: 32 },
+        { key: 'item_unique',    label: 'Item Unique',     default: true,  minWidth: 70 },
+        { key: 'image',          label: 'Image',           default: true,  minWidth: 38 },
+        { key: 'product_name',   label: 'Product Name',    default: true,  minWidth: 140 },
+        { key: 'category',       label: 'Category',        default: true,  minWidth: 75 },
+        { key: 'barcode',        label: 'Barcode',         default: true,  minWidth: 80 },
+        { key: 'attribute',      label: 'Attribute',       default: true,  minWidth: 65 },
+        { key: 'size',           label: 'Size',            default: true,  minWidth: 60 },
+        { key: 'location',       label: 'Location',        default: true,  minWidth: 100 },
+        { key: 'velocity',       label: 'Velocity',        default: true,  minWidth: 80 },
+        { key: 'stock',          label: 'Stock',           default: true,  minWidth: 65 },
+        { key: 'physical_count', label: 'Physical Count',  default: true,  minWidth: 100 },
+        { key: 'variance',       label: 'Variance',        default: true,  minWidth: 70 },
+        { key: 'actions',        label: 'Actions',         default: true,  minWidth: 45 },
+    ];
+
+    const PI_COL_STORAGE_KEY = 'kent_pi_columns_v1';
+    const PI_WIDTH_STORAGE_KEY = 'kent_pi_col_widths_v1';
+
+    function getPiColPrefs() {
+        try {
+            const saved = localStorage.getItem(PI_COL_STORAGE_KEY);
+            if (saved) return JSON.parse(saved);
+        } catch(e) {}
+        const defaults = {};
+        PI_COLUMNS.forEach(c => defaults[c.key] = c.default);
+        return defaults;
+    }
+
+    function savePiColPrefs(prefs) {
+        try {
+            localStorage.setItem(PI_COL_STORAGE_KEY, JSON.stringify(prefs));
+        } catch(e) {}
+    }
+
+    function getPiVisibleColCount() {
+        const prefs = getPiColPrefs();
+        let count = 0;
+        PI_COLUMNS.forEach(c => {
+            if (prefs[c.key] !== false) count++;
+        });
+        return Math.max(1, count);
+    }
+
+    function applyPiColVisibility(prefs) {
+        if (!prefs) prefs = getPiColPrefs();
+        PI_COLUMNS.forEach(col => {
+            const isVisible = prefs[col.key] !== false;
+            $(`#qbPiTable thead th[data-col-key="${col.key}"]`).toggle(isVisible);
+            $(`#qbPiTable tbody tr td[data-col-key="${col.key}"]`).toggle(isVisible);
+        });
+        const visibleCount = getPiVisibleColCount();
+        $('#qbPiTable tbody tr td[colspan]').attr('colspan', visibleCount);
+        if (typeof initPiTableColumnResizing === 'function') {
+            setTimeout(initPiTableColumnResizing, 40);
+        }
+    }
+
+    function renderPiColumnsChecklist() {
+        const container = document.getElementById('piColumnsChecklist');
+        if (!container) return;
+
+        const prefs = getPiColPrefs();
+        container.innerHTML = '';
+
+        PI_COLUMNS.forEach(col => {
+            const isChecked = prefs[col.key] !== false;
+            const colDiv = document.createElement('div');
+            colDiv.className = 'col-6';
+            colDiv.innerHTML = `
+                <div class="form-check p-2 rounded border bg-light d-flex align-items-center gap-2" style="cursor: pointer; transition: background 0.15s;">
+                    <input class="form-check-input ms-0 mt-0 pi-col-chk" type="checkbox" id="chk_pi_${col.key}" data-key="${col.key}" ${isChecked ? 'checked' : ''} style="cursor: pointer; width: 16px; height: 16px;">
+                    <label class="form-check-label small fw-semibold text-dark mb-0 text-truncate" for="chk_pi_${col.key}" style="cursor: pointer; user-select: none;">
+                        ${col.label}
+                    </label>
+                </div>
+            `;
+            container.appendChild(colDiv);
+        });
+
+        container.querySelectorAll('.pi-col-chk').forEach(chk => {
+            chk.addEventListener('change', function() {
+                const colKey = this.dataset.key;
+                const currentPrefs = getPiColPrefs();
+                currentPrefs[colKey] = this.checked;
+                savePiColPrefs(currentPrefs);
+                applyPiColVisibility(currentPrefs);
+            });
+        });
+    }
+
+    const customizePiModalEl = document.getElementById('customizePiColumnsModal');
+
+    function showCustomizePiModal() {
+        renderPiColumnsChecklist();
+        if (!customizePiModalEl) return;
+        try {
+            if (typeof jQuery !== 'undefined' && typeof jQuery(customizePiModalEl).modal === 'function') {
+                jQuery(customizePiModalEl).modal('show');
+                return;
+            }
+        } catch(e) {}
+        try {
+            if (window.bootstrap && typeof bootstrap.Modal === 'function') {
+                const inst = bootstrap.Modal.getInstance ? bootstrap.Modal.getInstance(customizePiModalEl) : null;
+                (inst || new bootstrap.Modal(customizePiModalEl)).show();
+                return;
+            }
+        } catch(e) {}
+        customizePiModalEl.classList.add('show');
+        customizePiModalEl.style.display = 'block';
+        customizePiModalEl.removeAttribute('aria-hidden');
+        let bd = document.querySelector('.qb-pi-modal-backdrop');
+        if (!bd) {
+            bd = document.createElement('div');
+            bd.className = 'modal-backdrop fade show qb-pi-modal-backdrop';
+            document.body.appendChild(bd);
+            bd.onclick = hideCustomizePiModal;
+        }
+    }
+
+    function hideCustomizePiModal() {
+        if (!customizePiModalEl) return;
+        try {
+            if (typeof jQuery !== 'undefined' && typeof jQuery(customizePiModalEl).modal === 'function') {
+                jQuery(customizePiModalEl).modal('hide');
+            }
+        } catch(e) {}
+        try {
+            if (window.bootstrap && typeof bootstrap.Modal === 'function') {
+                const inst = bootstrap.Modal.getInstance ? bootstrap.Modal.getInstance(customizePiModalEl) : null;
+                if (inst) inst.hide();
+            }
+        } catch(e) {}
+        customizePiModalEl.classList.remove('show');
+        customizePiModalEl.style.display = 'none';
+        customizePiModalEl.setAttribute('aria-hidden', 'true');
+        const bd = document.querySelector('.qb-pi-modal-backdrop');
+        if (bd) bd.remove();
+    }
+
+    $(document).on('click', '.qb-pi-modal-close', function(e) {
+        e.preventDefault();
+        hideCustomizePiModal();
+    });
+
+    $(document).on('click', '#customizePiColumnsBtn, #qbPiCtxCustomizeBtn', function(e) {
+        e.preventDefault();
+        hidePiContextMenu();
+        showCustomizePiModal();
+    });
+
+    $('#piColSelectAll').on('click', function() {
+        const prefs = {};
+        PI_COLUMNS.forEach(c => prefs[c.key] = true);
+        savePiColPrefs(prefs);
+        applyPiColVisibility(prefs);
+        renderPiColumnsChecklist();
+    });
+
+    $('#piColResetDefault').on('click', function() {
+        const prefs = {};
+        PI_COLUMNS.forEach(c => prefs[c.key] = c.default);
+        savePiColPrefs(prefs);
+        applyPiColVisibility(prefs);
+        renderPiColumnsChecklist();
+    });
+
+    // ── Physical Inventory Table Context Menu ──
+    const qbPiContextMenu = document.getElementById('qbPiContextMenu');
+
+    if (qbPiContextMenu && qbPiContextMenu.parentElement !== document.body) {
+        document.body.appendChild(qbPiContextMenu);
+    }
+
+    const hidePiContextMenu = function() {
+        if (qbPiContextMenu) {
+            qbPiContextMenu.style.display = 'none';
+        }
+    };
+
+    const positionPiContextMenu = function(e) {
+        if (!qbPiContextMenu) return;
+        if (qbPiContextMenu.parentElement !== document.body) {
+            document.body.appendChild(qbPiContextMenu);
+        }
+
+        qbPiContextMenu.style.visibility = 'hidden';
+        qbPiContextMenu.style.display = 'block';
+
+        const menuWidth = qbPiContextMenu.offsetWidth || 210;
+        const menuHeight = qbPiContextMenu.offsetHeight || 105;
+
+        let posX = e.clientX;
+        let posY = e.clientY;
+
+        if (posX + menuWidth > window.innerWidth - 8) {
+            posX = window.innerWidth - menuWidth - 8;
+        }
+        if (posY + menuHeight > window.innerHeight - 8) {
+            posY = window.innerHeight - menuHeight - 8;
+        }
+
+        posX = Math.max(8, posX);
+        posY = Math.max(8, posY);
+
+        qbPiContextMenu.style.left = posX + 'px';
+        qbPiContextMenu.style.top = posY + 'px';
+        qbPiContextMenu.style.visibility = 'visible';
+    };
+
+    $('#qbPiTable thead').on('contextmenu', function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        positionPiContextMenu(e.originalEvent || e);
+    });
+
+    window.addEventListener('scroll', hidePiContextMenu, { passive: true });
+    window.addEventListener('resize', hidePiContextMenu, { passive: true });
+    document.addEventListener('scroll', hidePiContextMenu, { passive: true, capture: true });
+
+    $(document).on('click', function(e) {
+        if (qbPiContextMenu && !qbPiContextMenu.contains(e.target)) {
+            hidePiContextMenu();
+        }
+    });
+
+    $(document).on('keydown', function(e) {
+        if (e.key === 'Escape') {
+            hidePiContextMenu();
+        }
+    });
+
+    $('#qbPiCtxResetBtn').on('click', function(e) {
+        e.preventDefault();
+        hidePiContextMenu();
+        $('#piColResetDefault').click();
+    });
+
+    $('#qbPiCtxResetWidthsBtn').on('click', function(e) {
+        e.preventDefault();
+        hidePiContextMenu();
+        localStorage.removeItem(PI_WIDTH_STORAGE_KEY);
+        $('#qbPiTable thead th').css({ 'width': '', 'min-width': '', 'max-width': '' });
+        $('#qbPiTable').css({ 'width': '100%', 'min-width': '100%' });
+        setTimeout(initPiTableColumnResizing, 60);
+    });
+
+    // ── Draggable Column Width Resizing for #qbPiTable ──
+    function getSavedPiColWidths() {
+        try {
+            const raw = localStorage.getItem(PI_WIDTH_STORAGE_KEY);
+            if (raw) return JSON.parse(raw);
+        } catch(e) {}
+        return {};
+    }
+
+    function savePiColWidths(widths) {
+        try {
+            localStorage.setItem(PI_WIDTH_STORAGE_KEY, JSON.stringify(widths));
+        } catch(e) {}
+    }
+
+    function initPiTableColumnResizing() {
+        const $table = $('#qbPiTable');
+        if (!$table.length) return;
+
+        const savedWidths = getSavedPiColWidths();
+        const $visibleThs = $table.find('thead th:visible');
+
+        let totalCalculatedWidth = 0;
+
+        $visibleThs.each(function(i) {
+            const $th = $(this);
+            const colKey = $th.attr('data-col-key') || ('pi_col_' + i);
+
+            if (savedWidths[colKey]) {
+                const w = parseInt(savedWidths[colKey], 10);
+                $th.css({
+                    'width': w + 'px',
+                    'min-width': w + 'px',
+                    'max-width': w + 'px'
+                });
+                totalCalculatedWidth += w;
+            } else {
+                const currentW = Math.round($th.outerWidth());
+                if (currentW > 0) {
+                    $th.css({
+                        'width': currentW + 'px',
+                        'min-width': currentW + 'px',
+                        'max-width': currentW + 'px'
+                    });
+                    totalCalculatedWidth += currentW;
+                }
+            }
+
+            $th.find('.col-resizer').remove();
+
+            const $resizer = $('<div class="col-resizer" title="Drag to adjust width (Double-click to reset)"></div>');
+            $th.append($resizer);
+
+            $resizer.on('mousedown', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+
+                const startX = e.pageX;
+                const startW = $th.outerWidth();
+                const startTableW = $table.outerWidth();
+                let hasMoved = false;
+
+                $resizer.addClass('is-resizing');
+                $('body').addClass('is-col-resizing');
+
+                const colDef = PI_COLUMNS.find(c => c.key === colKey);
+                const minWidth = colDef ? colDef.minWidth : 45;
+
+                function onMouseMove(moveEvent) {
+                    const diff = moveEvent.pageX - startX;
+                    if (Math.abs(diff) > 2) {
+                        hasMoved = true;
+                    }
+
+                    const newW = Math.max(minWidth, Math.round(startW + diff));
+                    const actualDiff = newW - startW;
+
+                    $th.css({
+                        'width': newW + 'px',
+                        'min-width': newW + 'px',
+                        'max-width': newW + 'px'
+                    });
+
+                    const parentW = $table.parent().width();
+                    const newTableW = Math.max(parentW, startTableW + actualDiff);
+                    $table.css({
+                        'width': newTableW + 'px',
+                        'min-width': newTableW + 'px'
+                    });
+                }
+
+                function onMouseUp() {
+                    $(document).off('mousemove', onMouseMove);
+                    $(document).off('mouseup', onMouseUp);
+
+                    $resizer.removeClass('is-resizing');
+                    $('body').removeClass('is-col-resizing');
+
+                    if (hasMoved) {
+                        const currentWidths = getSavedPiColWidths();
+                        currentWidths[colKey] = Math.round($th.outerWidth());
+                        savePiColWidths(currentWidths);
+                    }
+                }
+
+                $(document).on('mousemove', onMouseMove);
+                $(document).on('mouseup', onMouseUp);
+            });
+
+            $resizer.on('dblclick', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+
+                const currentWidths = getSavedPiColWidths();
+                delete currentWidths[colKey];
+                savePiColWidths(currentWidths);
+
+                $th.css({
+                    'width': '',
+                    'min-width': '',
+                    'max-width': ''
+                });
+                $table.css({
+                    'width': '100%',
+                    'min-width': '100%'
+                });
+                setTimeout(initPiTableColumnResizing, 60);
+            });
+        });
+
+        if (totalCalculatedWidth > 0) {
+            const parentWidth = $table.parent().width();
+            const finalTableWidth = Math.max(parentWidth, totalCalculatedWidth);
+            $table.css({
+                'width': finalTableWidth + 'px',
+                'min-width': finalTableWidth + 'px'
+            });
+        }
+    }
+
+    // ── Ledger Table Rendering (Clean Enterprise ERP Grid Matching Image 2) ──
     function renderQbPiTable() {
         if (!qbPiItems || qbPiItems.length === 0) {
-            $('#qbPiTableBody').html('<tr><td colspan="10" class="text-center py-5 text-muted"><i class="fas fa-inbox fs-3 mb-2 text-secondary d-block"></i>No items loaded in worksheet.</td></tr>');
+            $('#qbPiTableBody').html('<tr><td colspan="' + getPiVisibleColCount() + '" class="text-center py-5 text-muted"><i class="fas fa-inbox fs-3 mb-2 text-secondary d-block"></i>No items loaded in worksheet.</td></tr>');
             $('#qbPiTotalCountItems').text(0);
             $('#qbPiMatchedItemsCount').text(0);
             $('#qbPiDiffItemsCount').text(0);
@@ -6786,96 +7487,88 @@ $(document).ready(function () {
 
             let diffBadge = '';
             if (diff === 0) {
-                diffBadge = '<span class="variance-chip variance-zero"><i class="fas fa-check-circle text-success"></i> 0</span>';
+                diffBadge = '<span class="variance-chip variance-zero"><i class="fas fa-check-circle text-success me-1"></i>0 Diff</span>';
             } else if (diff > 0) {
-                diffBadge = `<span class="variance-chip variance-surplus"><i class="fas fa-arrow-up"></i> +${diff}</span>`;
+                diffBadge = `<span class="variance-chip variance-surplus"><i class="fas fa-arrow-up me-1"></i>+${diff}</span>`;
             } else {
-                diffBadge = `<span class="variance-chip variance-shortage"><i class="fas fa-arrow-down"></i> ${diff}</span>`;
+                diffBadge = `<span class="variance-chip variance-shortage"><i class="fas fa-arrow-down me-1"></i>${diff}</span>`;
             }
 
-            // Location Breakdown badges (Theme-matching structured pill - bold & clearly visible)
-            let locBadgesHtml = '';
+            // Image cell (matching Image 2)
+            let imgHtml = '';
+            if (item.image) {
+                imgHtml = `<img src="/uploads/products/${escapeHtml(item.image)}" alt="${escapeHtml(item.base_item_name || item.item_name)}" class="product-img" onerror="this.onerror=null;this.parentElement.innerHTML='<div class=\\'no-img-badge\\'><i class=\\'fas fa-image\\'></i></div>';">`;
+            } else {
+                imgHtml = '<div class="no-img-badge"><i class="fas fa-image"></i></div>';
+            }
+
+            // Dedicated column 1: Category
+            let catBadge = item.category_name 
+                ? `<span class="pi-cat-badge"><i class="fas fa-th-list me-1 text-primary" style="font-size:10px;"></i>${escapeHtml(item.category_name)}</span>` 
+                : '<span class="text-muted small">—</span>';
+
+            // Dedicated column 2: Barcode
+            let barcodeBadge = item.barcode 
+                ? `<span class="pi-barcode-badge"><i class="fas fa-barcode text-secondary" style="font-size:10px;"></i>${escapeHtml(item.barcode)}</span>` 
+                : '<span class="text-muted small">—</span>';
+
+            // Dedicated column 3: Attribute (Color / Finish)
+            let attrBadge = (item.attribute && item.attribute !== 'Standard')
+                ? `<span class="pi-attr-badge">${escapeHtml(item.attribute)}</span>`
+                : '<span class="text-muted small">Standard</span>';
+
+            // Dedicated column 4: Size
+            let sizeBadge = (item.size && item.size !== 'Regular')
+                ? `<span class="pi-size-badge">${escapeHtml(item.size)}</span>`
+                : '<span class="text-muted small">Regular</span>';
+
+            // Dedicated column 5: Location (1 clean element per location)
+            let locDisplay = 'Main Store Floor';
             if (item.physical_location) {
-                locBadgesHtml += `
-                    <div class="d-inline-flex align-items-center gap-1.5 px-2.5 py-1 rounded bg-white border border-primary text-primary mb-1 shadow-sm" style="font-size:12.5px; font-weight:700; line-height:1.3;">
-                        <i class="fas fa-map-pin text-primary" style="font-size:13px;"></i>
-                        <span>${escapeHtml(item.physical_location)}</span>
-                    </div>
-                `;
+                locDisplay = item.physical_location;
+            } else if (item.location_breakdown && item.location_breakdown.length > 0) {
+                const lb = item.location_breakdown[0];
+                locDisplay = lb.warehouse_name || 'Warehouse';
+                if (lb.rack_shelf) locDisplay += ` [${lb.rack_shelf}]`;
+                if (item.location_breakdown.length > 1) {
+                    locDisplay += ` (+${item.location_breakdown.length - 1})`;
+                }
             }
-            if (item.location_breakdown && item.location_breakdown.length > 0) {
-                locBadgesHtml += item.location_breakdown.map(lb => {
-                    let rackTag = lb.rack_shelf 
-                        ? `<span class="badge border border-warning px-2 py-0.5 ms-1" style="font-size:11.5px; font-weight:700; background:#fef3c7; color:#78350f;">📍 ${escapeHtml(lb.rack_shelf)}</span>` 
-                        : '';
-                    return `
-                        <div class="d-flex align-items-center justify-content-between flex-wrap gap-1.5 px-2.5 py-1.5 rounded mb-1 border shadow-xs" style="background:#ffffff; border-color:#cbd5e1 !important; font-size:12px; line-height:1.3;">
-                            <div class="d-flex align-items-center gap-1.5 text-truncate">
-                                <i class="fas fa-warehouse text-primary" style="font-size:13px;"></i>
-                                <span class="fw-bold text-dark" style="font-size:12.5px;">${escapeHtml(lb.warehouse_name)}</span>
-                                ${lb.warehouse_location ? `<span class="text-secondary fw-semibold small">(${escapeHtml(lb.warehouse_location)})</span>` : ''}
-                            </div>
-                            <div class="d-flex align-items-center gap-1 flex-shrink-0">
-                                <span class="badge bg-light text-primary border border-primary px-2 py-0.5 font-monospace fw-bold" style="font-size:11.5px;">${lb.total_pieces} pcs</span>
-                                ${rackTag}
-                            </div>
-                        </div>
-                    `;
-                }).join('');
-            } else if (!item.physical_location) {
-                locBadgesHtml = `
-                    <div class="d-inline-flex align-items-center gap-1.5 px-2.5 py-1 rounded bg-light text-dark fw-bold border" style="font-size:12px;">
-                        <i class="fas fa-map-marker-alt text-secondary"></i>
-                        <span>Main Store Floor</span>
-                    </div>
-                `;
-            }
+            let locHtml = `<span class="pi-location-badge" title="${escapeHtml(locDisplay)}"><i class="fas fa-warehouse text-success me-1" style="font-size:10px;"></i>${escapeHtml(locDisplay)}</span>`;
 
-            // ABC Velocity & Sales Schedule (Bold & highly visible)
+            // Dedicated column 6: Velocity
             let m = item.cycle_count_metrics || {};
             let cls = m.current_class || m.suggested_class || 'C';
             let clsBadge = '';
             if (cls === 'A') {
-                clsBadge = `<span class="badge text-white px-2.5 py-1" style="background:#dc2626; font-size:11.5px; font-weight:700; border-radius:4px;"><i class="fas fa-fire me-1"></i>Class A (${m.current_days || 7}d)</span>`;
+                clsBadge = `<span class="pi-velocity-badge pi-velocity-a"><i class="fas fa-fire me-1"></i>Class A (${m.current_days || 7}d)</span>`;
             } else if (cls === 'B') {
-                clsBadge = `<span class="badge text-white px-2.5 py-1" style="background:#2563eb; font-size:11.5px; font-weight:700; border-radius:4px;"><i class="fas fa-bolt me-1"></i>Class B (${m.current_days || 30}d)</span>`;
+                clsBadge = `<span class="pi-velocity-badge pi-velocity-b"><i class="fas fa-bolt me-1"></i>Class B (${m.current_days || 30}d)</span>`;
             } else {
-                clsBadge = `<span class="badge text-white px-2.5 py-1" style="background:#475569; font-size:11.5px; font-weight:700; border-radius:4px;"><i class="fas fa-box-archive me-1"></i>Class C (${m.current_days || 90}d)</span>`;
+                clsBadge = `<span class="pi-velocity-badge pi-velocity-c"><i class="fas fa-box-archive me-1"></i>Class C (${m.current_days || 90}d)</span>`;
             }
 
-            let dueStatus = m.is_due 
-                ? `<span class="text-danger fw-bold d-inline-flex align-items-center gap-1" style="font-size:11.5px;"><i class="fas fa-exclamation-circle"></i> Due Today</span>` 
-                : `<span class="text-success fw-bold d-inline-flex align-items-center gap-1" style="font-size:11px;"><i class="fas fa-calendar-check"></i> Next: ${m.next_count_date || 'Scheduled'}</span>`;
-
-            let velocityHtml = `
-                <div class="d-flex flex-column align-items-start gap-1 py-0.5">
-                    <div>${clsBadge}</div>
-                    <div class="text-dark small font-monospace fw-semibold" style="font-size:11.5px; line-height:1.2;">
-                        3-Mo Avg: <strong class="text-primary fw-bold" style="font-size:12px;">${m.monthly_avg_sales || 0}</strong> pcs/mo
-                    </div>
-                    <div>${dueStatus}</div>
-                </div>
-            `;
+            // Dedicated column 7: Expected Stock
+            let expStock = parseFloat(item.expected_qty) || 0;
+            let stockBadgeClass = expStock === 0 ? 'zero' : '';
+            let stockBadgeHtml = `<span class="pi-stock-badge ${stockBadgeClass}"><i class="fas fa-cubes text-secondary me-1" style="font-size:10px;"></i>${expStock} Pcs</span>`;
 
             html += `
                 <tr data-pi-idx="${idx}">
-                    <td><span class="doc-sku-pill">${escapeHtml(item.item_code)}</span></td>
-                    <td class="fw-bold text-dark" style="max-width:240px; line-height:1.35; font-size:13px;" title="${escapeHtml(item.item_name)}">
-                        <div class="text-truncate">${escapeHtml(item.item_name)}</div>
-                        ${item.barcode ? `<div class="text-secondary font-monospace fw-semibold mt-0.5" style="font-size:11px;"><i class="fas fa-barcode me-1 text-primary"></i>${escapeHtml(item.barcode)}</div>` : ''}
+                    <td data-col-key="sr_no" class="text-center" style="font-family:'JetBrains Mono',monospace; font-size:11px; color:#94a3b8;">${idx + 1}</td>
+                    <td data-col-key="item_unique" class="text-center"><span class="doc-sku-pill">${escapeHtml(item.item_code)}</span></td>
+                    <td data-col-key="image" class="text-center">${imgHtml}</td>
+                    <td data-col-key="product_name" class="td-item-details" style="white-space:normal; min-width:170px;">
+                        <span class="item-name text-dark fw-bold" style="font-family:'Inter',sans-serif; font-size:12px; line-height:1.3; display:block;">${escapeHtml(item.base_item_name || item.item_name)}</span>
                     </td>
-                    <td style="min-width:260px;">
-                        <div class="d-flex flex-column gap-1">
-                            ${locBadgesHtml}
-                        </div>
-                    </td>
-                    <td style="min-width:180px;">
-                        ${velocityHtml}
-                    </td>
-                    <td><span class="badge bg-white text-dark border border-secondary px-2.5 py-1 fw-bold" style="font-size:12px;">${escapeHtml(item.attribute)}</span></td>
-                    <td><span class="badge bg-white text-dark border border-secondary px-2.5 py-1 fw-bold" style="font-size:12px;">${escapeHtml(item.size)}</span></td>
-                    <td class="text-center fw-bold text-dark font-monospace" style="font-size:14.5px;">${item.expected_qty}</td>
-                    <td class="text-center">
+                    <td data-col-key="category" class="text-center">${catBadge}</td>
+                    <td data-col-key="barcode" class="text-center">${barcodeBadge}</td>
+                    <td data-col-key="attribute" class="text-center">${attrBadge}</td>
+                    <td data-col-key="size" class="text-center">${sizeBadge}</td>
+                    <td data-col-key="location" class="text-start">${locHtml}</td>
+                    <td data-col-key="velocity" class="text-center">${clsBadge}</td>
+                    <td data-col-key="stock" class="text-center">${stockBadgeHtml}</td>
+                    <td data-col-key="physical_count" class="text-center">
                         <div class="qb-pi-stepper">
                             <button type="button" class="qb-pi-stepper-btn qb-pi-step-minus" data-pi-idx="${idx}" title="Decrease count by 1">
                                 <i class="fas fa-minus"></i>
@@ -6886,13 +7579,15 @@ $(document).ready(function () {
                             </button>
                         </div>
                     </td>
-                    <td class="text-center" id="qbPiDiff_${idx}">
+                    <td data-col-key="variance" class="text-center" id="qbPiDiff_${idx}">
                         ${diffBadge}
                     </td>
-                    <td class="text-center">
-                        <button type="button" class="qb-pi-remove-btn" data-pi-idx="${idx}" title="Remove item from worksheet">
-                            <i class="fas fa-trash-alt"></i>
-                        </button>
+                    <td data-col-key="actions" class="text-center">
+                        <div class="action-group">
+                            <button type="button" class="btn-act btn-act-delete qb-pi-remove-btn" data-pi-idx="${idx}" title="Remove item from count">
+                                <i class="fas fa-trash-alt"></i>
+                            </button>
+                        </div>
                     </td>
                 </tr>
             `;
@@ -6900,6 +7595,7 @@ $(document).ready(function () {
 
         $('#qbPiTableBody').html(html);
         recalcPiKpis();
+        applyPiColVisibility(getPiColPrefs());
     }
 
     function updateSinglePiRow(idx) {
@@ -6912,11 +7608,11 @@ $(document).ready(function () {
 
         let diffBadge = '';
         if (diff === 0) {
-            diffBadge = '<span class="variance-chip variance-zero"><i class="fas fa-check-circle text-success"></i> 0</span>';
+            diffBadge = '<span class="variance-chip variance-zero"><i class="fas fa-check-circle text-success me-1"></i>0 Diff</span>';
         } else if (diff > 0) {
-            diffBadge = `<span class="variance-chip variance-surplus"><i class="fas fa-arrow-up"></i> +${diff}</span>`;
+            diffBadge = `<span class="variance-chip variance-surplus"><i class="fas fa-arrow-up me-1"></i>+${diff}</span>`;
         } else {
-            diffBadge = `<span class="variance-chip variance-shortage"><i class="fas fa-arrow-down"></i> ${diff}</span>`;
+            diffBadge = `<span class="variance-chip variance-shortage"><i class="fas fa-arrow-down me-1"></i>${diff}</span>`;
         }
         $(`#qbPiDiff_${idx}`).html(diffBadge);
 
@@ -7318,6 +8014,33 @@ $(document).ready(function () {
             }
         }
     });
+
+    // ── Physical Inventory to Formal Cycle Count Assignment Link ──
+    $(document).on('click', '#qbPiAssignStaffBtn', function(e) {
+        e.preventDefault();
+        const rackId = $('#qbPiRackShelfSelect').val();
+        let assignUrl = '{{ route("cycle_count.create") }}';
+        if (rackId && rackId !== 'all' && rackId !== 'none') {
+            assignUrl += '?location_id=' + encodeURIComponent(rackId);
+        }
+        window.location.href = assignUrl;
+    });
+
+    // ── Auto-open Physical Inventory Modal if open_pi query parameter present ──
+    try {
+        const urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.get('open_pi') === '1' || urlParams.get('open_audit') === '1') {
+            setTimeout(function() {
+                openQbPhysicalInventoryModal(urlParams.get('due') === '1');
+                const targetLocId = urlParams.get('location_id');
+                if (targetLocId) {
+                    setTimeout(function() {
+                        $('#qbPiRackShelfSelect').val(targetLocId).trigger('change');
+                    }, 400);
+                }
+            }, 300);
+        }
+    } catch(e) {}
 
 });  // ── end $(document).ready ──
 </script>

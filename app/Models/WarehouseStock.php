@@ -16,6 +16,7 @@ class WarehouseStock extends Model
         'boxes_quantity',
         'total_pieces',
         'remarks',
+        'storage_location_id',
     ];
 
     public function warehouse()
@@ -43,6 +44,11 @@ class WarehouseStock extends Model
     {
         return $this->belongsToMany(Product::class, 'warehouse_stocks', 'warehouse_id', 'product_id')
             ->withPivot('quantity', 'price', 'remarks');
+    }
+
+    public function storageLocation()
+    {
+        return $this->belongsTo(StorageLocation::class, 'storage_location_id');
     }
 
     protected static function booted()

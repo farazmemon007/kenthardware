@@ -33,6 +33,7 @@ use App\Http\Controllers\VoucherController;
 use App\Http\Controllers\WarehouseController;
 use App\Http\Controllers\WarehouseStockController;
 use App\Http\Controllers\StorageLocationController;
+use App\Http\Controllers\CycleCountController;
 use App\Http\Controllers\ZoneController;
 use App\Http\Controllers\PCodeController;
 use App\Http\Controllers\OpeningStockController;
@@ -148,6 +149,7 @@ Route::middleware('auth')->group(function () {
     Route::get('productget', [ProductController::class, 'productget'])->name('productget');
 
     Route::get('/product', [ProductController::class, 'Product'])->middleware('permission:products.view')->name('product');
+    Route::get('/products', [ProductController::class, 'Product'])->middleware('permission:products.view')->name('products.index');
     Route::get('/productview/{id}', [ProductController::class, 'productview'])->name('productview');
     Route::get('/products/search', [ProductController::class, 'searchProducts'])->name('products.search');
 
@@ -272,6 +274,22 @@ Route::middleware('auth')->group(function () {
     Route::post('/storage-locations/store', [StorageLocationController::class, 'store'])->name('storage_locations.store');
     Route::get('/storage-locations/delete/{id}', [StorageLocationController::class, 'delete'])->name('storage_locations.delete');
     Route::get('/storage-locations/get-json', [StorageLocationController::class, 'getJson'])->name('storage_locations.get_json');
+
+    // Cycle Count & Physical Inventory Audit
+    Route::get('/cycle-count', [CycleCountController::class, 'index'])->name('cycle_count.index');
+    Route::get('/cycle-count/assign', [CycleCountController::class, 'create'])->name('cycle_count.create');
+    Route::post('/cycle-count/store', [CycleCountController::class, 'store'])->name('cycle_count.store');
+    Route::get('/cycle-count/{id}/sheet', [CycleCountController::class, 'sheet'])->name('cycle_count.sheet');
+    Route::post('/cycle-count/{id}/start-timer', [CycleCountController::class, 'startTimer'])->name('cycle_count.start_timer');
+    Route::post('/cycle-count/{id}/save-item', [CycleCountController::class, 'saveItemCount'])->name('cycle_count.save_item');
+    Route::post('/cycle-count/{id}/submit', [CycleCountController::class, 'submitCount'])->name('cycle_count.submit');
+    Route::get('/cycle-count/{id}/approve', [CycleCountController::class, 'approveScreen'])->name('cycle_count.approve');
+    Route::post('/cycle-count/{id}/update-reason', [CycleCountController::class, 'updateItemReason'])->name('cycle_count.update_reason');
+    Route::post('/cycle-count/{id}/approve-item/{itemId}', [CycleCountController::class, 'approveItem'])->name('cycle_count.approve_item');
+    Route::post('/cycle-count/{id}/approve-all', [CycleCountController::class, 'approveAll'])->name('cycle_count.approve_all');
+    Route::post('/cycle-count/{id}/recount', [CycleCountController::class, 'requestRecount'])->name('cycle_count.recount');
+    Route::post('/cycle-count/{id}/reassign', [CycleCountController::class, 'reassign'])->name('cycle_count.reassign');
+    Route::post('/cycle-count/{id}/cancel', [CycleCountController::class, 'cancel'])->name('cycle_count.cancel');
 
     // Branches
     // Branches

@@ -84,6 +84,8 @@
 
         /* Desktop Mega Menu Positioning */
         @media (min-width: 992px) {
+            .page-navigation > .nav-item.mega-menu,
+            .rt_nav_header .page-navigation > .nav-item.mega-menu,
             .rt_nav_header.horizontal-layout .nav-bottom .page-navigation > .nav-item.mega-menu {
                 position: static !important;
             }
@@ -100,6 +102,15 @@
                 border-radius: 10px !important;
                 box-shadow: 0 14px 35px rgba(0, 0, 0, 0.12), 0 2px 8px rgba(0, 0, 0, 0.04) !important;
                 border: 1px solid #eef2f6 !important;
+            }
+
+            .mega-menu .submenu::before {
+                content: '' !important;
+                position: absolute !important;
+                top: -8px !important;
+                left: 0 !important;
+                right: 0 !important;
+                height: 8px !important;
             }
 
             .mega-menu .col-group-wrapper {
@@ -676,6 +687,20 @@
             }
             body.product-page-body .rt_nav_header.product-navbar-mode .top_nav .product-nav-inline .page-navigation > .nav-item .submenu {
                 top: calc(100% + 2px) !important;
+                z-index: 999999 !important;
+            }
+            /* Product Navbar Mega Menu: Must be static so submenu centers relative to the full header bar instead of the single button */
+            body.product-page-body .rt_nav_header.product-navbar-mode .top_nav .product-nav-inline .page-navigation > .nav-item.mega-menu {
+                position: static !important;
+            }
+            body.product-page-body .rt_nav_header.product-navbar-mode .top_nav .product-nav-inline .page-navigation > .nav-item.mega-menu .submenu {
+                position: absolute !important;
+                top: calc(100% + 2px) !important;
+                left: 50% !important;
+                right: auto !important;
+                transform: translateX(-50%) !important;
+                width: max-content !important;
+                max-width: 96vw !important;
                 z-index: 999999 !important;
             }
         }

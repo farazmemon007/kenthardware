@@ -27,7 +27,7 @@ class LoginRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'email' => ['required', 'string', 'email'],
+            'email' => ['required', 'string'],
             'password' => ['required', 'string'],
         ];
     }
@@ -41,7 +41,30 @@ class LoginRequest extends FormRequest
     {
         $this->ensureIsNotRateLimited();
 
-        if (! Auth::attempt($this->only('email', 'password'), $this->boolean('remember'))) {
+        $input = trim($this->input('email'));
+        $password = $this->input('password');
+        $remember = $this->boolean('remember');
+
+        // Allow login by email or name/username or employee phone
+        $credentials = ['email' => $input, 'password' => $password];
+
+        if (!filter_var($input, FILTER_VALIDATE_EMAIL)) {
+            $matchedUser = \App\Models\User::where('name', $input)->first();
+            if (!$matchedUser) {
+                $matchedEmp = \App\Models\Hr\Employee::where('phone', $input)->whereNotNull('user_id')->first();
+                if ($matchedEmp && $matchedEmp->user) {
+                    $matchedUser = $matchedEmp->user;
+                }
+            }
+
+            if ($matchedUser) {
+                $credentials = ['id' => $matchedUser->id, 'password' => $password];
+            } else {
+                $credentials = ['name' => $input, 'password' => $password];
+            }
+        }
+
+        if (! Auth::attempt($credentials, $remember)) {
             RateLimiter::hit($this->throttleKey());
 
             throw ValidationException::withMessages([

@@ -2716,9 +2716,12 @@ class ProductController extends Controller
             $suggestedDays = 30;
         }
 
-        $currentClass = $product->cycle_count_class ?: $suggestedClass;
+        $currentClass = $product->abc_class ?: ($product->cycle_count_class ?: $suggestedClass);
         $currentDays = (int)($product->cycle_count_days ?: $suggestedDays);
         $frequencyMode = $product->cycle_count_frequency_mode ?: 'auto';
+        $fsnClass = $product->fsn_class ?: 'N';
+        $xyzClass = $product->xyz_class ?: 'Z';
+        $riskScore = $product->risk_priority_score ?: 3;
 
         $nextCountDate = $product->next_count_date ? Carbon::parse($product->next_count_date)->format('Y-m-d') : null;
         $isDue = empty($product->next_count_date) || Carbon::parse($product->next_count_date)->isPast() || Carbon::parse($product->next_count_date)->isToday();
@@ -2730,6 +2733,11 @@ class ProductController extends Controller
             'suggested_days'    => $suggestedDays,
             'current_class'     => $currentClass,
             'current_days'      => $currentDays,
+            'abc_class'         => $currentClass,
+            'fsn_class'         => $fsnClass,
+            'xyz_class'         => $xyzClass,
+            'risk_score'        => $riskScore,
+            'velocity_combo'    => "{$currentClass}-{$fsnClass}-{$xyzClass}",
             'frequency_mode'    => $frequencyMode,
             'next_count_date'   => $nextCountDate,
             'last_counted_at'   => $product->last_counted_at ? Carbon::parse($product->last_counted_at)->format('Y-m-d H:i') : null,
@@ -2771,7 +2779,7 @@ class ProductController extends Controller
             $whRacks = StorageLocation::where('warehouse_id', $whId)->get();
         }
 
-        $storageLocationId = request('storage_location_id');
+        $storageLocationId = request('storage_location_id') ?: request('location_id');
         $targetStorageLoc = null;
         if ($storageLocationId && $storageLocationId !== 'all') {
             $targetStorageLoc = StorageLocation::find((int)$storageLocationId);
@@ -2814,10 +2822,40 @@ class ProductController extends Controller
                     }
                 }
 
+                $wsLocStock = 0;
+                $hasWsMatch = false;
+                foreach ($prod->warehouseStocks as $ws) {
+                    if ($ws->storage_location_id == $targetStorageLoc->id) {
+                        $hasWsMatch = true;
+                        $wsLocStock += (float)$ws->total_pieces;
+                    } elseif ($targetStorageLoc->warehouse_id && $ws->warehouse_id == $targetStorageLoc->warehouse_id) {
+                        $rem = strtolower(trim($ws->remarks ?? ''));
+                        if ($rem && ($rem === $tName || ($tCode && $rem === $tCode) || str_contains($rem, $tName) || ($tCode && str_contains($rem, $tCode)))) {
+                            $hasWsMatch = true;
+                            $wsLocStock += (float)$ws->total_pieces;
+                        }
+                    }
+                }
+
                 if (!empty($filteredVariants)) {
                     $isMatch = true;
                     $variants = $filteredVariants;
                     $locationSpecificStock = $matchedStock;
+                } elseif ($hasWsMatch) {
+                    $isMatch = true;
+                    $locationSpecificStock = $wsLocStock;
+                    if (empty($variants)) {
+                        $variants = [[
+                            'name'     => $prod->item_name,
+                            'location' => $targetStorageLoc->name,
+                            'stock'    => $wsLocStock,
+                            'barcode'  => $prod->barcode_path ?: $prod->item_code,
+                            'serial_no'=> $prod->item_code,
+                            'p_code'   => $prod->p_code,
+                            'size'     => 'Regular',
+                            'color'    => 'Standard',
+                        ]];
+                    }
                 } else {
                     $isMatch = false;
                 }
@@ -2899,6 +2937,8 @@ class ProductController extends Controller
                 'id'                         => $prod->id,
                 'item_code'                  => $prod->item_code,
                 'item_name'                  => $prod->item_name,
+                'image'                      => $prod->image,
+                'category_name'              => $prod->category_relation->name ?? '',
                 'barcode_path'               => $prod->barcode_path,
                 'size_mode'                  => $prod->size_mode,
                 'calculated_total_stock_qty' => $locationSpecificStock !== null ? $locationSpecificStock : $prod->warehouseStocks->sum('total_pieces'),
@@ -2957,6 +2997,8 @@ class ProductController extends Controller
                 'id'                         => $prod->id,
                 'item_code'                  => $prod->item_code,
                 'item_name'                  => $prod->item_name,
+                'image'                      => $prod->image,
+                'category_name'              => $prod->category_relation->name ?? '',
                 'barcode_path'               => $prod->barcode_path,
                 'size_mode'                  => $prod->size_mode,
                 'calculated_total_stock_qty' => $prod->warehouseStocks->sum('total_pieces'),
