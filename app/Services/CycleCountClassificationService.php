@@ -362,10 +362,10 @@ class CycleCountClassificationService
     /**
      * Generate Next Count Number e.g. C-0412
      */
-    public function generateCountNumber()
+    public function generateCountNumber($offset = 0)
     {
         $lastCount = CycleCount::withTrashed()->orderBy('id', 'desc')->first();
-        $nextNum = $lastCount ? ($lastCount->id + 412) : 412;
+        $nextNum = $lastCount ? ($lastCount->id + 412 + $offset) : (412 + $offset);
         return sprintf('C-%04d', $nextNum);
     }
 }

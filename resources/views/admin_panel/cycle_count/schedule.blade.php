@@ -8,7 +8,10 @@
         color: #1e293b;
         background: #f1f5f9;
         padding: 12px;
-        min-height: 100vh;
+        min-height: calc(100vh - 56px);
+        width: 100%;
+        box-sizing: border-box;
+        overflow-x: auto;
     }
     .img2-container {
         background: #ffffff;
@@ -16,6 +19,9 @@
         border-radius: 6px;
         box-shadow: 0 1px 3px rgba(0,0,0,0.05);
         overflow: hidden;
+        min-width: 1060px;
+        max-width: 100%;
+        margin: 0 auto;
     }
 
     /* Top Dark Bar */
@@ -32,6 +38,33 @@
         display: flex;
         align-items: center;
         gap: 10px;
+    }
+    .top-strip-back-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        background: rgba(255, 255, 255, 0.12);
+        color: #f1f5f9;
+        padding: 4px 11px;
+        border-radius: 4px;
+        font-size: 0.76rem;
+        font-weight: 600;
+        text-decoration: none;
+        border: 1px solid rgba(255, 255, 255, 0.22);
+        transition: all 0.15s ease-in-out;
+        cursor: pointer;
+        line-height: 1.3;
+        margin-left: 8px;
+        white-space: nowrap;
+    }
+    .top-strip-back-btn:hover {
+        background: rgba(255, 255, 255, 0.24);
+        color: #ffffff;
+        border-color: rgba(255, 255, 255, 0.4);
+        text-decoration: none;
+    }
+    .top-strip-back-btn i {
+        font-size: 0.72rem;
     }
     .img2-top-bar .main-title {
         font-weight: 700;
@@ -250,17 +283,12 @@
         color: #94a3b8;
     }
 
-    /* Bottom 4 Explanation Boxes */
+    /* Bottom 4 Explanation Boxes: Fixed 4 Columns */
     .img2-bottom-grid {
         display: grid;
         grid-template-columns: repeat(4, 1fr);
         border-top: 1px solid #cbd5e1;
         background: #ffffff;
-    }
-    @media (max-width: 768px) {
-        .img2-bottom-grid {
-            grid-template-columns: 1fr;
-        }
     }
     .img2-box {
         padding: 12px 16px;
@@ -296,12 +324,17 @@
                     <span class="badge-pill-role">Owner / In-charge only</span>
                 @endif
             </div>
-            <div class="concept-note">
-                @if(Auth::check() && Auth::user()->usertype !== 'admin')
-                    Physical count tasks assigned to you. Click <strong>Start Count</strong> to open the blind count sheet.
-                @else
-                    CONCEPT for approval · item names, dates and staff are illustrative
-                @endif
+            <div class="d-flex align-items-center" style="gap: 12px;">
+                <div class="concept-note">
+                    @if(Auth::check() && Auth::user()->usertype !== 'admin')
+                        Physical count tasks assigned to you. Click <strong>Start Count</strong> to open the blind count sheet.
+                    @else
+                        CONCEPT for approval · item names, dates and staff are illustrative
+                    @endif
+                </div>
+                <a href="{{ route('home') }}" onclick="if(document.referrer && document.referrer.indexOf(window.location.host) !== -1 && document.referrer !== window.location.href) { history.back(); return false; }" class="top-strip-back-btn" title="Back to Previous Page">
+                    <i class="fas fa-arrow-left"></i> <span>Back</span>
+                </a>
             </div>
         </div>
 

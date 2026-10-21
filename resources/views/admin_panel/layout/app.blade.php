@@ -818,7 +818,9 @@
 </head>
 
 @php
-    $isProductPage = request()->routeIs("product") || request()->is("product");
+    $isDashboard = request()->routeIs('home') || request()->is('home') || request()->routeIs('dashboard') || (request()->is('dashboard') && !request()->is('web-orders/*'));
+    $useCompactNavbar = !$isDashboard;
+    $isProductPage = $useCompactNavbar;
 @endphp
 <body class="{{ $isProductPage ? 'product-page-body' : '' }}">
     <!--[if lt IE 8]>
@@ -843,7 +845,7 @@
                         <!-- Left: Logo Only (Image 3) -->
                         <div class="d-flex align-items-center flex-shrink-0">
                             @php
-                                $dynCompName = \App\Models\Setting::get('company_name', 'TrendHub');
+                                $dynCompName = \App\Models\Setting::get('company_name', 'Kent Hardware');
                                 $init1 = strtoupper(substr($dynCompName, 0, 1));
                                 $init2 = strlen($dynCompName) > 1 ? strtoupper(substr($dynCompName, 1, 1)) : '';
                             @endphp
@@ -954,7 +956,7 @@
                         <!-- Left: Dynamic Brand Logo + Company Name Pill -->
                         <div class="d-flex align-items-center">
                             @php
-                                $dynCompName = \App\Models\Setting::get('company_name', 'TrendHub');
+                                $dynCompName = \App\Models\Setting::get('company_name', 'Kent Hardware');
                                 $init1 = strtoupper(substr($dynCompName, 0, 1));
                                 $init2 = strlen($dynCompName) > 1 ? strtoupper(substr($dynCompName, 1, 1)) : '';
                             @endphp

@@ -8,7 +8,10 @@
         color: #1e293b;
         background: #f1f5f9;
         padding: 12px;
-        min-height: 100vh;
+        min-height: calc(100vh - 56px);
+        width: 100%;
+        box-sizing: border-box;
+        overflow-x: auto;
     }
     .img3-container {
         background: #ffffff;
@@ -16,6 +19,9 @@
         border-radius: 6px;
         box-shadow: 0 1px 3px rgba(0,0,0,0.05);
         overflow: hidden;
+        min-width: 1080px;
+        max-width: 100%;
+        margin: 0 auto;
     }
 
     /* Top Dark Bar */
@@ -32,6 +38,33 @@
         display: flex;
         align-items: center;
         gap: 10px;
+    }
+    .top-strip-back-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        background: rgba(255, 255, 255, 0.12);
+        color: #f1f5f9;
+        padding: 4px 11px;
+        border-radius: 4px;
+        font-size: 0.76rem;
+        font-weight: 600;
+        text-decoration: none;
+        border: 1px solid rgba(255, 255, 255, 0.22);
+        transition: all 0.15s ease-in-out;
+        cursor: pointer;
+        line-height: 1.3;
+        margin-left: 8px;
+        white-space: nowrap;
+    }
+    .top-strip-back-btn:hover {
+        background: rgba(255, 255, 255, 0.24);
+        color: #ffffff;
+        border-color: rgba(255, 255, 255, 0.4);
+        text-decoration: none;
+    }
+    .top-strip-back-btn i {
+        font-size: 0.72rem;
     }
     .img3-top-bar .main-title {
         font-weight: 700;
@@ -132,16 +165,11 @@
         background: #059669;
     }
 
-    /* 2-Column Side-by-Side Split Grid */
+    /* 2-Column Side-by-Side Split Grid: Always 2 Columns */
     .img3-split-grid {
         display: grid;
         grid-template-columns: 1fr 1fr;
         border-bottom: 1px solid #e2e8f0;
-    }
-    @media (max-width: 1100px) {
-        .img3-split-grid {
-            grid-template-columns: 1fr;
-        }
     }
     .img3-half-col {
         border-right: 1px solid #e2e8f0;
@@ -342,17 +370,12 @@
         background: #059669;
     }
 
-    /* Bottom 4 Explanation Boxes */
+    /* Bottom 4 Explanation Boxes: Fixed 4 Columns */
     .img3-bottom-grid {
         display: grid;
         grid-template-columns: repeat(4, 1fr);
         border-top: 1px solid #cbd5e1;
         background: #ffffff;
-    }
-    @media (max-width: 768px) {
-        .img3-bottom-grid {
-            grid-template-columns: 1fr;
-        }
     }
     .img3-box {
         padding: 12px 16px;
@@ -383,8 +406,19 @@
                 <span class="main-title">3 · Count sheet {{ $cycleCount->count_number }} — Location {{ $cycleCount->location ? $cycleCount->location->name : ($cycleCount->location_name ?: 'General') }}</span>
                 <span class="badge-pill-role">Staff screen · blind</span>
             </div>
-            <div class="concept-note">
-                BLIND AUDIT • System quantities hidden • Real-time duration tracked
+            <div class="d-flex align-items-center" style="gap:10px;">
+                @if(in_array($cycleCount->status, ['submitted', 'approved']) && Auth::check() && Auth::user()->usertype === 'admin')
+                    <a href="{{ route('cycle_count.approve', $cycleCount->id) }}"
+                       style="display:inline-flex; align-items:center; gap:5px; background:#dc2626; color:#fff; padding:4px 12px; border-radius:4px; font-size:0.78rem; font-weight:700; text-decoration:none; white-space:nowrap;">
+                        <i class="fas fa-tasks"></i> Back to Approval / Review
+                    </a>
+                @endif
+                <div class="concept-note">
+                    BLIND AUDIT • System quantities hidden • Real-time duration tracked
+                </div>
+                <a href="{{ route('cycle_count.index') }}" onclick="if(document.referrer && document.referrer.indexOf(window.location.host) !== -1 && document.referrer !== window.location.href) { history.back(); return false; }" class="top-strip-back-btn" title="Back to Schedule">
+                    <i class="fas fa-arrow-left"></i> <span>Back</span>
+                </a>
             </div>
         </div>
 

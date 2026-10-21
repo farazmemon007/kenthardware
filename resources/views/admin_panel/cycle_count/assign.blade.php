@@ -8,7 +8,10 @@
         color: #1e293b;
         background: #f1f5f9;
         padding: 12px;
-        min-height: 100vh;
+        min-height: calc(100vh - 56px);
+        width: 100%;
+        box-sizing: border-box;
+        overflow-x: auto;
     }
     .img1-container {
         background: #ffffff;
@@ -16,6 +19,9 @@
         border-radius: 6px;
         box-shadow: 0 1px 3px rgba(0,0,0,0.05);
         overflow: hidden;
+        min-width: 1080px;
+        max-width: 100%;
+        margin: 0 auto;
     }
 
     /* Top Dark Bar */
@@ -27,11 +33,39 @@
         align-items: center;
         justify-content: space-between;
         font-size: 0.85rem;
+        white-space: nowrap;
     }
     .img1-top-bar .title-section {
         display: flex;
         align-items: center;
         gap: 10px;
+    }
+    .top-strip-back-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        background: rgba(255, 255, 255, 0.12);
+        color: #f1f5f9;
+        padding: 4px 11px;
+        border-radius: 4px;
+        font-size: 0.76rem;
+        font-weight: 600;
+        text-decoration: none;
+        border: 1px solid rgba(255, 255, 255, 0.22);
+        transition: all 0.15s ease-in-out;
+        cursor: pointer;
+        line-height: 1.3;
+        margin-left: 8px;
+        white-space: nowrap;
+    }
+    .top-strip-back-btn:hover {
+        background: rgba(255, 255, 255, 0.24);
+        color: #ffffff;
+        border-color: rgba(255, 255, 255, 0.4);
+        text-decoration: none;
+    }
+    .top-strip-back-btn i {
+        font-size: 0.72rem;
     }
     .img1-top-bar .main-title {
         font-weight: 700;
@@ -50,16 +84,12 @@
         font-size: 0.72rem;
     }
 
-    /* 3-Column Layout */
+    /* 3-Column Layout: Fixed Solid Board Structure Across All Devices */
     .img1-main-grid {
         display: grid;
-        grid-template-columns: 240px 1fr 340px;
+        grid-template-columns: 260px 1fr 360px;
         border-bottom: 1px solid #e2e8f0;
-    }
-    @media (max-width: 1200px) {
-        .img1-main-grid {
-            grid-template-columns: 1fr;
-        }
+        min-height: 580px;
     }
 
     /* Column 1: Left Form */
@@ -68,6 +98,8 @@
         border-right: 1px solid #e2e8f0;
         background: #ffffff;
         font-size: 0.8rem;
+        width: 260px;
+        box-sizing: border-box;
     }
     .form-step-title {
         font-weight: 700;
@@ -106,43 +138,85 @@
         outline: none;
     }
 
-    /* Workload bars */
+    /* Workload section */
     .workload-section {
-        margin-top: 6px;
+        margin-top: 10px;
+        background: #f8fafc;
+        border: 1px solid #e2e8f0;
+        border-radius: 6px;
+        padding: 8px 10px;
         font-size: 0.74rem;
     }
     .workload-title {
         font-weight: 700;
         color: #475569;
+        font-size: 0.71rem;
+        text-transform: uppercase;
+        letter-spacing: 0.3px;
         margin-bottom: 6px;
-    }
-    .workload-row {
         display: flex;
         align-items: center;
+        justify-content: space-between;
+    }
+    .workload-card {
+        padding: 6px 8px;
+        margin-bottom: 6px;
+        background: #ffffff;
+        border: 1px solid #e2e8f0;
+        border-radius: 4px;
+        cursor: pointer;
+        transition: all 0.15s ease-in-out;
+    }
+    .workload-card:last-child {
+        margin-bottom: 0;
+    }
+    .workload-card:hover {
+        border-color: #93c5fd;
+        background: #f0f7ff;
+    }
+    .workload-card.is-active-staff {
+        border-color: #2563eb;
+        background: #eff6ff;
+        box-shadow: 0 1px 3px rgba(37, 99, 235, 0.12);
+    }
+    .workload-card-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
         gap: 6px;
         margin-bottom: 4px;
     }
     .workload-name {
-        width: 60px;
-        font-weight: 500;
-        color: #334155;
+        font-weight: 600;
+        color: #1e293b;
+        font-size: 0.75rem;
+        display: flex;
+        align-items: center;
+        gap: 5px;
+        overflow: hidden;
+        text-overflow: ellipsis;
         white-space: nowrap;
     }
+    .workload-count-badge {
+        font-size: 0.68rem;
+        color: #64748b;
+        font-weight: 600;
+        white-space: nowrap;
+    }
+    .workload-card.is-active-staff .workload-count-badge {
+        color: #1d4ed8;
+    }
     .workload-bar-track {
-        flex: 1;
-        height: 6px;
-        background: #f1f5f9;
+        width: 100%;
+        height: 5px;
+        background: #e2e8f0;
         border-radius: 3px;
         overflow: hidden;
     }
     .workload-bar-fill {
         height: 100%;
         border-radius: 3px;
-    }
-    .workload-count {
-        font-size: 0.7rem;
-        color: #64748b;
-        white-space: nowrap;
+        transition: width 0.3s ease;
     }
 
     /* Column 2: Middle Location Picker Table */
@@ -150,6 +224,8 @@
         padding: 14px 16px;
         border-right: 1px solid #e2e8f0;
         background: #ffffff;
+        min-width: 440px;
+        box-sizing: border-box;
     }
     .middle-header-title {
         font-weight: 700;
@@ -219,11 +295,13 @@
 
     /* Column 3: Right Preview & Checks */
     .col-right-preview {
-        padding: 14px 16px;
+        padding: 14px 14px;
         background: #f8fafc;
         display: flex;
         flex-direction: column;
         justify-content: space-between;
+        width: 355px;
+        box-sizing: border-box;
     }
     .preview-header-title {
         font-weight: 700;
@@ -316,6 +394,8 @@
         justify-content: flex-end;
         gap: 6px;
         margin-top: 10px;
+        white-space: nowrap;
+        flex-wrap: nowrap;
     }
     .btn-act-cancel {
         background: #64748b;
@@ -341,6 +421,7 @@
         font-size: 0.78rem;
         font-weight: 600;
         cursor: pointer;
+        text-decoration: none;
     }
     .btn-act-draft:hover {
         background: #334155;
@@ -354,21 +435,17 @@
         font-size: 0.78rem;
         font-weight: 600;
         cursor: pointer;
+        text-decoration: none;
     }
     .btn-act-assign:hover {
         background: #1d4ed8;
     }
 
-    /* Bottom 4 Explanation Boxes */
+    /* Bottom 4 Explanation Boxes: Fixed 4-Columns Side-by-Side */
     .img1-bottom-grid {
         display: grid;
         grid-template-columns: repeat(4, 1fr);
         background: #ffffff;
-    }
-    @media (max-width: 768px) {
-        .img1-bottom-grid {
-            grid-template-columns: 1fr;
-        }
     }
     .img1-box {
         padding: 12px 16px;
@@ -399,8 +476,13 @@
                 <span class="main-title">1 · Assign Cycle Count</span>
                 <span class="badge-pill-role">Owner / In-charge only</span>
             </div>
-            <div class="concept-note">
-                CONCEPT for approval · locations, dates and staff are illustrative
+            <div class="d-flex align-items-center" style="gap: 12px;">
+                <div class="concept-note">
+                    CONCEPT for approval · locations, dates and staff are illustrative
+                </div>
+                <a href="{{ route('cycle_count.index') }}" onclick="if(document.referrer && document.referrer.indexOf(window.location.host) !== -1 && document.referrer !== window.location.href) { history.back(); return false; }" class="top-strip-back-btn" title="Back to Schedule">
+                    <i class="fas fa-arrow-left"></i> <span>Back</span>
+                </a>
             </div>
         </div>
 
@@ -447,24 +529,28 @@
 
                     {{-- Staff workload this week --}}
                     <div class="workload-section">
-                        <div class="workload-title">Staff workload this week</div>
-                        @php
-                            $colors = ['#2563eb', '#10b981', '#f59e0b', '#8b5cf6'];
-                            $i = 0;
-                        @endphp
+                        <div class="workload-title">
+                            <span><i class="fas fa-chart-bar text-primary me-1"></i> Staff workload this week</span>
+                        </div>
                         @foreach($staffUsers as $st)
                             @php
                                 $wCount = $staffWorkload[$st->id] ?? 0;
-                                $barColor = $colors[$i % count($colors)];
-                                $barWidth = min(100, max(15, $wCount * 20));
-                                $i++;
+                                $percent = min(100, $wCount * 20);
+                                $barColor = $wCount > 5 ? '#ef4444' : ($wCount >= 3 ? '#f59e0b' : ($wCount > 0 ? '#2563eb' : '#94a3b8'));
                             @endphp
-                            <div class="workload-row">
-                                <span class="workload-name">[{{ $st->name }}]</span>
-                                <div class="workload-bar-track">
-                                    <div class="workload-bar-fill" style="width: {{ $barWidth }}%; background: {{ $barColor }};"></div>
+                            <div class="workload-card" id="workload_card_{{ $st->id }}" data-staff-id="{{ $st->id }}" title="Click to assign to {{ $st->name }}">
+                                <div class="workload-card-header">
+                                    <span class="workload-name">
+                                        <i class="fas fa-user-circle" style="color: {{ $barColor }}; font-size: 0.8rem;"></i>
+                                        {{ $st->name }}
+                                    </span>
+                                    <span class="workload-count-badge">
+                                        {{ $wCount }} {{ $wCount === 1 ? 'count' : 'counts' }} this week
+                                    </span>
                                 </div>
-                                <span class="workload-count">{{ $wCount }} counts this week</span>
+                                <div class="workload-bar-track">
+                                    <div class="workload-bar-fill" style="width: {{ $percent }}%; background: {{ $barColor }};"></div>
+                                </div>
                             </div>
                         @endforeach
                     </div>
@@ -484,15 +570,49 @@
 
                 {{-- Column 2: Middle Location Picker Table --}}
                 <div class="col-middle-table">
-                    <div class="middle-header-title">
-                        PICK LOCATION(S) — SORTED BY PRIORITY (SALES VELOCITY, DAYS SINCE LAST COUNT) · EACH LOCATION BECOMES ITS OWN COUNT
+                    <div class="middle-header-title d-flex align-items-center justify-content-between flex-wrap" style="gap: 6px;">
+                        <span>PICK LOCATION(S) — SORTED BY PRIORITY (SALES VELOCITY, DAYS SINCE LAST COUNT) · EACH LOCATION BECOMES ITS OWN COUNT</span>
+                        <span id="filterBadgeText" class="badge" style="background: #2563eb; color: #fff; font-size: 0.68rem; padding: 2px 8px; border-radius: 4px; font-weight: 700; text-transform: uppercase;">All Locations</span>
+                    </div>
+
+                    {{-- Mode Switch Toolbar: Single vs Multi Locations --}}
+                    <div class="loc-mode-toolbar d-flex align-items-center justify-content-between flex-wrap mb-2 p-2 rounded" style="background: #f8fafc; border: 1px solid #cbd5e1;">
+                        <div class="d-flex align-items-center gap-3">
+                            <span style="font-size: 0.74rem; font-weight: 700; color: #1e293b; text-transform: uppercase; letter-spacing: 0.3px;">
+                                <i class="fas fa-layer-group text-primary me-1"></i> Mode:
+                            </span>
+                            <label class="radio-option mb-0" style="cursor: pointer; font-size: 0.78rem; font-weight: 600; display: inline-flex; align-items: center; gap: 5px; color: #334155;">
+                                <input type="radio" name="loc_selection_mode" id="modeSingle" value="single" checked>
+                                <span>Single Location</span>
+                            </label>
+                            <label class="radio-option mb-0" style="cursor: pointer; font-size: 0.78rem; font-weight: 700; display: inline-flex; align-items: center; gap: 5px; color: #1d4ed8;">
+                                <input type="radio" name="loc_selection_mode" id="modeMulti" value="multi">
+                                <span>Multi Locations (Multi)</span>
+                            </label>
+                        </div>
+
+                        <div class="d-flex align-items-center gap-2">
+                            <span id="multiStatusPill" class="badge" style="background: #64748b; color: #fff; font-size: 0.68rem; padding: 4px 8px; border-radius: 4px; font-weight: 600;">
+                                Multi: OFF (1 location)
+                            </span>
+                            <div id="multiActionBtns" style="display: none; align-items: center; gap: 4px;">
+                                <button type="button" class="btn btn-xs btn-outline-primary" id="btnSelectAll" style="font-size: 0.7rem; padding: 2px 8px; border-radius: 3px; font-weight: 600;">
+                                    <i class="fas fa-check-double me-1"></i> Select All
+                                </button>
+                                <button type="button" class="btn btn-xs btn-outline-secondary" id="btnClearAll" style="font-size: 0.7rem; padding: 2px 8px; border-radius: 3px; font-weight: 600;">
+                                    Clear
+                                </button>
+                            </div>
+                        </div>
                     </div>
 
                     <div style="overflow-x: auto;">
                         <table class="loc-picker-table" id="locPickerTable">
                             <thead>
                                 <tr>
-                                    <th style="width: 25px;"></th>
+                                    <th style="width: 28px; text-align: center;">
+                                        <input type="checkbox" id="masterCheckbox" title="Select / Deselect all visible locations" style="display: none; cursor: pointer;">
+                                    </th>
                                     <th>LOCATION</th>
                                     <th>ZONE</th>
                                     <th>ITEMS</th>
@@ -503,14 +623,27 @@
                             </thead>
                             <tbody>
                                 @foreach($locations as $loc)
-                                    <tr class="{{ $loc['has_open_count'] ? 'row-disabled' : '' }}"
+                                    @php
+                                        $locType = strtolower($loc['type'] ?? '');
+                                        $locNameLower = strtolower($loc['name'] ?? '');
+                                        $locZoneLower = strtolower($loc['zone'] ?? '');
+                                        $isShelf = str_contains($locType, 'shelf') || str_contains($locNameLower, 'shelf') || str_contains($locZoneLower, 'shop') || str_contains($locZoneLower, 'branch');
+                                        $isRack = str_contains($locType, 'rack') || str_contains($locNameLower, 'rack') || str_contains($locZoneLower, 'godown') || str_contains($locZoneLower, 'warehouse') || str_contains($locZoneLower, 'east') || str_contains($locZoneLower, 'west');
+                                        $isHighVelocity = ($loc['priority'] === 'High') || ($loc['items_count'] > 0);
+                                    @endphp
+                                    <tr class="loc-row-item {{ $loc['has_open_count'] ? 'row-disabled' : '' }}"
                                         data-id="{{ $loc['id'] }}"
                                         data-name="{{ $loc['name'] }}"
                                         data-items="{{ $loc['items_count'] }}"
                                         data-priority="{{ $loc['priority'] }}"
-                                        data-open="{{ $loc['has_open_count'] ? 'yes' : 'no' }}">
-                                        <td>
+                                        data-open="{{ $loc['has_open_count'] ? 'yes' : 'no' }}"
+                                        data-is-shelf="{{ $isShelf ? '1' : '0' }}"
+                                        data-is-rack="{{ $isRack ? '1' : '0' }}"
+                                        data-is-fast="{{ $isHighVelocity ? '1' : '0' }}"
+                                        data-loc-type="{{ $locType }}">
+                                        <td style="text-align: center;">
                                             <input type="radio" name="location_id" value="{{ $loc['id'] }}"
+                                                   class="loc-select-input"
                                                    id="loc_r_{{ $loc['id'] }}"
                                                    {{ $loc['has_open_count'] ? 'disabled' : '' }}
                                                    {{ ((request('location_id') && request('location_id') == $loc['id']) || (!request('location_id') && $loop->first)) && !$loc['has_open_count'] ? 'checked' : '' }}>
@@ -531,7 +664,7 @@
                                         </td>
                                         <td>
                                             @if($loc['priority'] === 'High')
-                                                <span class="priority-pill high">High</span>
+                                                 <span class="priority-pill high">High</span>
                                             @elseif($loc['priority'] === 'Med')
                                                 <span class="priority-pill med">Med</span>
                                             @else
@@ -547,6 +680,11 @@
                                         </td>
                                     </tr>
                                 @endforeach
+                                <tr id="noMatchRow" style="display: none;">
+                                    <td colspan="7" class="text-center py-4 text-muted" style="font-size: 0.8rem;">
+                                        <i class="fas fa-info-circle text-primary me-1"></i> No locations match this count type.
+                                    </td>
+                                </tr>
                             </tbody>
                         </table>
                     </div>
@@ -559,27 +697,29 @@
                 {{-- Column 3: Right Preview & Checks --}}
                 <div class="col-right-preview">
                     <div>
-                        <div class="preview-header-title">PREVIEW — COUNTS THAT WILL BE CREATED (1)</div>
-                        <table class="preview-table">
-                            <thead>
-                                <tr>
-                                    <th>COUNT #</th>
-                                    <th>LOCATION</th>
-                                    <th>ITEMS</th>
-                                    <th>DATE</th>
-                                    <th>STAFF</th>
-                                </tr>
-                            </thead>
-                            <tbody id="previewTbody">
-                                <tr>
-                                    <td>{{ $nextCountNumber }}</td>
-                                    <td id="prevLocCell" style="font-weight: 700;">SA3</td>
-                                    <td id="prevItemsCell">54</td>
-                                    <td id="prevDateCell">[date]</td>
-                                    <td id="prevStaffCell">[Staff A]</td>
-                                </tr>
-                            </tbody>
-                        </table>
+                        <div class="preview-header-title" id="previewHeaderTitle">PREVIEW — COUNTS THAT WILL BE CREATED (1)</div>
+                        <div style="max-height: 220px; overflow-y: auto; margin-bottom: 12px; border: 1px solid #e2e8f0; border-radius: 4px; background: #ffffff;">
+                            <table class="preview-table" style="margin-bottom: 0;">
+                                <thead>
+                                    <tr>
+                                        <th>COUNT #</th>
+                                        <th>LOCATION</th>
+                                        <th>ITEMS</th>
+                                        <th>DATE</th>
+                                        <th>STAFF</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="previewTbody">
+                                    <tr>
+                                        <td>{{ $nextCountNumber }}</td>
+                                        <td id="prevLocCell" style="font-weight: 700;">SA3</td>
+                                        <td id="prevItemsCell">54</td>
+                                        <td id="prevDateCell">[date]</td>
+                                        <td id="prevStaffCell">[Staff A]</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
 
                         <div class="preview-header-title">CHECKS BEFORE SAVING</div>
                         <div class="checks-list">
@@ -665,69 +805,380 @@
 <script>
 document.addEventListener('DOMContentLoaded', function () {
     const table = document.getElementById('locPickerTable');
-    const rows = table.querySelectorAll('tbody tr');
+    const rows = table.querySelectorAll('tbody tr.loc-row-item');
     const assignedSelect = document.getElementById('assignedToSelect');
     const approverSelect = document.getElementById('approverSelect');
     const dateInput = document.getElementById('dateInput');
 
+    const modeSingle = document.getElementById('modeSingle');
+    const modeMulti = document.getElementById('modeMulti');
+    const multiStatusPill = document.getElementById('multiStatusPill');
+    const multiActionBtns = document.getElementById('multiActionBtns');
+    const masterCheckbox = document.getElementById('masterCheckbox');
+    const baseCountNumberStr = '{{ $nextCountNumber }}';
+
+    function formatCountNumber(index) {
+        const match = baseCountNumberStr.match(/^([A-Za-z]+-?)(\d+)$/);
+        if (match) {
+            const prefix = match[1];
+            const num = parseInt(match[2], 10) + index;
+            const padLen = match[2].length;
+            return prefix + String(num).padStart(padLen, '0');
+        }
+        return baseCountNumberStr;
+    }
+
+    function setSelectionMode(isMulti) {
+        if (isMulti) {
+            multiStatusPill.textContent = 'Multi: ON (Multi-location assign)';
+            multiStatusPill.style.background = '#2563eb';
+            multiActionBtns.style.display = 'inline-flex';
+            masterCheckbox.style.display = 'inline-block';
+
+            // Convert inputs to checkboxes with name="location_ids[]"
+            document.querySelectorAll('.loc-select-input').forEach(inp => {
+                inp.type = 'checkbox';
+                inp.name = 'location_ids[]';
+            });
+        } else {
+            multiStatusPill.textContent = 'Multi: OFF (1 location)';
+            multiStatusPill.style.background = '#64748b';
+            multiActionBtns.style.display = 'none';
+            masterCheckbox.style.display = 'none';
+
+            // Convert inputs to radio with name="location_id"
+            const allInputs = Array.from(document.querySelectorAll('.loc-select-input'));
+            const firstChecked = allInputs.find(i => i.checked);
+
+            allInputs.forEach(inp => {
+                inp.type = 'radio';
+                inp.name = 'location_id';
+                inp.checked = false;
+            });
+
+            // Keep only 1 checked
+            if (firstChecked) {
+                firstChecked.checked = true;
+            } else {
+                const firstVisible = allInputs.find(i => !i.disabled && i.closest('tr').style.display !== 'none');
+                if (firstVisible) firstVisible.checked = true;
+            }
+        }
+        syncState();
+    }
+
+    modeSingle.addEventListener('change', function () {
+        if (this.checked) setSelectionMode(false);
+    });
+
+    modeMulti.addEventListener('change', function () {
+        if (this.checked) setSelectionMode(true);
+    });
+
+    function escapeHtml(text) {
+        const div = document.createElement('div');
+        div.textContent = text;
+        return div.innerHTML;
+    }
+
     function syncState() {
-        // Checked location
-        const radio = document.querySelector('input[name="location_id"]:checked');
-        let locName = 'SA3';
-        let itemsCount = 54;
+        const isMulti = modeMulti.checked;
+        const checkedInputs = Array.from(document.querySelectorAll('.loc-select-input:checked'));
 
         rows.forEach(tr => tr.classList.remove('row-selected'));
 
-        if (radio) {
-            const tr = radio.closest('tr');
-            tr.classList.add('row-selected');
-            locName = tr.getAttribute('data-name');
-            itemsCount = parseInt(tr.getAttribute('data-items')) || 0;
-        }
+        let totalItems = 0;
+        let selectedLocs = [];
 
-        document.getElementById('prevLocCell').textContent = locName;
-        document.getElementById('prevItemsCell').textContent = itemsCount;
-        document.getElementById('totalItemsSelected').textContent = itemsCount;
-        document.getElementById('checkItemsText').textContent = itemsCount;
+        checkedInputs.forEach(inp => {
+            const tr = inp.closest('tr');
+            if (tr) {
+                tr.classList.add('row-selected');
+                const name = tr.getAttribute('data-name');
+                const items = parseInt(tr.getAttribute('data-items')) || 0;
+                totalItems += items;
+                selectedLocs.push({
+                    id: inp.value,
+                    name: name,
+                    items: items
+                });
+            }
+        });
 
         // Staff name
         const staffOpt = assignedSelect.options[assignedSelect.selectedIndex];
         const staffName = staffOpt ? staffOpt.getAttribute('data-name') : 'Staff A';
-        document.getElementById('prevStaffCell').textContent = '[' + staffName + ']';
-        document.getElementById('boxStaffName').textContent = staffName;
 
         // Date
-        document.getElementById('prevDateCell').textContent = dateInput.value || '[date]';
+        const dateVal = dateInput.value || '[date]';
+
+        // Update Preview Header & Table
+        const countTotal = selectedLocs.length;
+        const previewHeader = document.getElementById('previewHeaderTitle');
+        if (previewHeader) {
+            previewHeader.textContent = `PREVIEW — COUNTS THAT WILL BE CREATED (${countTotal})`;
+        }
+
+        const tbody = document.getElementById('previewTbody');
+        if (tbody) {
+            tbody.innerHTML = '';
+            if (countTotal === 0) {
+                const emptyTr = document.createElement('tr');
+                emptyTr.innerHTML = `<td colspan="5" style="text-align:center; color:#94a3b8; padding:10px;">No location selected</td>`;
+                tbody.appendChild(emptyTr);
+            } else {
+                selectedLocs.forEach((loc, idx) => {
+                    const tr = document.createElement('tr');
+                    const cNum = formatCountNumber(idx);
+                    tr.innerHTML = `
+                        <td style="font-weight: 600; color: #2563eb;">${cNum}</td>
+                        <td style="font-weight: 700;">${escapeHtml(loc.name)}</td>
+                        <td>${loc.items}</td>
+                        <td>${escapeHtml(dateVal)}</td>
+                        <td>[${escapeHtml(staffName)}]</td>
+                    `;
+                    tbody.appendChild(tr);
+                });
+            }
+        }
+
+        // Selected summary line
+        const summaryLine = document.getElementById('selectedSummaryLine');
+        if (summaryLine) {
+            summaryLine.innerHTML = `<strong>${countTotal}</strong> location${countTotal === 1 ? '' : 's'} selected · <span id="totalItemsSelected">${totalItems}</span> items in total`;
+        }
+
+        // Checks dynamic updates
+        const checkTargetItems = document.getElementById('checkTargetItems');
+        if (checkTargetItems) {
+            const icon = checkTargetItems.querySelector('span:first-child');
+            const text = checkTargetItems.querySelector('span:last-child');
+            if (countTotal === 0) {
+                icon.className = 'check-icon-warn';
+                icon.textContent = '!';
+                text.textContent = 'Please select at least one location';
+            } else if (countTotal === 1) {
+                if (totalItems >= 50 && totalItems <= 70) {
+                    icon.className = 'check-icon-pass';
+                    icon.textContent = '✓';
+                    text.textContent = `Items per sheet ${totalItems} — inside the 50–70 target`;
+                } else if (totalItems === 0) {
+                    icon.className = 'check-icon-warn';
+                    icon.textContent = '!';
+                    text.textContent = 'Selected location has 0 items mapped currently';
+                } else if (totalItems < 50) {
+                    icon.className = 'check-icon-pass';
+                    icon.textContent = '✓';
+                    text.textContent = `Items per sheet ${totalItems} — below 50–70 target (quick count)`;
+                } else {
+                    icon.className = 'check-icon-warn';
+                    icon.textContent = '!';
+                    text.textContent = `Items per sheet ${totalItems} — above 50–70 target`;
+                }
+            } else {
+                const avgItems = Math.round(totalItems / countTotal);
+                icon.className = 'check-icon-pass';
+                icon.textContent = '✓';
+                text.textContent = `Total ${totalItems} items across ${countTotal} sheets (avg ${avgItems}/sheet)`;
+            }
+        }
 
         // Four eyes check
         const approverOpt = approverSelect.options[approverSelect.selectedIndex];
         const checkApprover = document.getElementById('checkApproverFourEyes');
-        if (staffOpt && approverOpt && staffOpt.value === approverOpt.value) {
-            checkApprover.querySelector('span:first-child').className = 'check-icon-warn';
-            checkApprover.querySelector('span:first-child').textContent = '!';
-            checkApprover.querySelector('span:last-child').textContent = 'Warning: Approver cannot be the same as counter';
-        } else {
-            checkApprover.querySelector('span:first-child').className = 'check-icon-pass';
-            checkApprover.querySelector('span:first-child').textContent = '✓';
-            checkApprover.querySelector('span:last-child').textContent = 'Approver is not the assigned counter';
+        if (checkApprover) {
+            if (staffOpt && approverOpt && staffOpt.value === approverOpt.value) {
+                checkApprover.querySelector('span:first-child').className = 'check-icon-warn';
+                checkApprover.querySelector('span:first-child').textContent = '!';
+                checkApprover.querySelector('span:last-child').textContent = 'Warning: Approver cannot be the same as counter';
+            } else {
+                checkApprover.querySelector('span:first-child').className = 'check-icon-pass';
+                checkApprover.querySelector('span:first-child').textContent = '✓';
+                checkApprover.querySelector('span:last-child').textContent = 'Approver is not the assigned counter';
+            }
+        }
+
+        // Workload warning
+        const warnStaffLimit = document.getElementById('warnStaffLimit');
+        if (warnStaffLimit) {
+            if (countTotal > 1) {
+                warnStaffLimit.textContent = `[${staffName}] will receive ${countTotal} count assignments today`;
+            } else {
+                warnStaffLimit.textContent = `[${staffName}] has counts scheduled this week — within limit`;
+            }
+        }
+
+        // Box staff name
+        const boxStaffName = document.getElementById('boxStaffName');
+        if (boxStaffName) boxStaffName.textContent = staffName;
+
+        // Highlight selected staff in workload cards
+        document.querySelectorAll('.workload-card').forEach(card => card.classList.remove('is-active-staff'));
+        const activeCard = document.getElementById('workload_card_' + assignedSelect.value);
+        if (activeCard) activeCard.classList.add('is-active-staff');
+
+        // Master checkbox sync in multi mode
+        if (masterCheckbox && isMulti) {
+            const visibleInputs = Array.from(document.querySelectorAll('.loc-select-input')).filter(i => !i.disabled && i.closest('tr').style.display !== 'none');
+            masterCheckbox.checked = visibleInputs.length > 0 && visibleInputs.every(i => i.checked);
         }
     }
 
+    function filterLocationsByCountType() {
+        const typeRadio = document.querySelector('input[name="count_type"]:checked');
+        const selectedType = typeRadio ? typeRadio.value : 'fast_item';
+        let visibleCount = 0;
+        let isCurrentCheckedVisible = false;
+        let firstValidVisibleInput = null;
+
+        rows.forEach(tr => {
+            const isShelf = tr.getAttribute('data-is-shelf') === '1';
+            const isRack = tr.getAttribute('data-is-rack') === '1';
+            const priority = tr.getAttribute('data-priority');
+            const items = parseInt(tr.getAttribute('data-items')) || 0;
+            const isDisabled = tr.classList.contains('row-disabled');
+
+            let matches = true;
+            if (selectedType === 'salepoint_shelves') {
+                matches = isShelf;
+            } else if (selectedType === 'godown_racks') {
+                matches = isRack;
+            } else if (selectedType === 'fast_item') {
+                matches = (priority === 'High') || (items > 0);
+            } else if (selectedType === 'adhoc') {
+                matches = true;
+            }
+
+            if (matches) {
+                tr.style.display = '';
+                visibleCount++;
+                const inp = tr.querySelector('.loc-select-input');
+                if (inp && inp.checked) {
+                    isCurrentCheckedVisible = true;
+                }
+                if (!firstValidVisibleInput && inp && !isDisabled) {
+                    firstValidVisibleInput = inp;
+                }
+            } else {
+                tr.style.display = 'none';
+            }
+        });
+
+        // If Single mode and currently checked location is hidden by this filter, automatically check the first valid visible location
+        if (!modeMulti.checked && !isCurrentCheckedVisible && firstValidVisibleInput) {
+            firstValidVisibleInput.checked = true;
+        }
+
+        const noMatchRow = document.getElementById('noMatchRow');
+        if (noMatchRow) {
+            noMatchRow.style.display = (visibleCount === 0) ? '' : 'none';
+        }
+
+        // Update filter badge text in middle table header
+        const filterBadge = document.getElementById('filterBadgeText');
+        if (filterBadge) {
+            if (selectedType === 'salepoint_shelves') {
+                filterBadge.textContent = 'Sale-Point Shelves (' + visibleCount + ')';
+                filterBadge.style.background = '#0284c7';
+            } else if (selectedType === 'godown_racks') {
+                filterBadge.textContent = 'Godown Racks (' + visibleCount + ')';
+                filterBadge.style.background = '#475569';
+            } else if (selectedType === 'fast_item') {
+                filterBadge.textContent = 'Fast-Item Weekly (' + visibleCount + ')';
+                filterBadge.style.background = '#dc2626';
+            } else {
+                filterBadge.textContent = 'All Locations (' + visibleCount + ')';
+                filterBadge.style.background = '#2563eb';
+            }
+        }
+
+        syncState();
+    }
+
+    // Attach click events on rows
     rows.forEach(tr => {
         if (!tr.classList.contains('row-disabled')) {
             tr.addEventListener('click', function (e) {
-                if (e.target.tagName !== 'INPUT') {
-                    const r = tr.querySelector('input[type="radio"]');
-                    if (r && !r.disabled) r.checked = true;
+                if (e.target.tagName !== 'INPUT' && e.target.tagName !== 'LABEL') {
+                    const inp = tr.querySelector('.loc-select-input');
+                    if (inp && !inp.disabled) {
+                        if (inp.type === 'checkbox') {
+                            inp.checked = !inp.checked;
+                        } else {
+                            inp.checked = true;
+                        }
+                    }
                 }
                 syncState();
             });
         }
     });
 
+    // Inputs direct change listener
+    document.querySelectorAll('.loc-select-input').forEach(inp => {
+        inp.addEventListener('change', syncState);
+    });
+
+    // Master Checkbox
+    if (masterCheckbox) {
+        masterCheckbox.addEventListener('change', function () {
+            const isChecked = this.checked;
+            rows.forEach(tr => {
+                if (tr.style.display !== 'none' && !tr.classList.contains('row-disabled')) {
+                    const inp = tr.querySelector('.loc-select-input');
+                    if (inp && !inp.disabled) inp.checked = isChecked;
+                }
+            });
+            syncState();
+        });
+    }
+
+    // Select All Visible Button
+    const btnSelectAll = document.getElementById('btnSelectAll');
+    if (btnSelectAll) {
+        btnSelectAll.addEventListener('click', function () {
+            rows.forEach(tr => {
+                if (tr.style.display !== 'none' && !tr.classList.contains('row-disabled')) {
+                    const inp = tr.querySelector('.loc-select-input');
+                    if (inp && !inp.disabled) inp.checked = true;
+                }
+            });
+            if (masterCheckbox) masterCheckbox.checked = true;
+            syncState();
+        });
+    }
+
+    // Clear All Button
+    const btnClearAll = document.getElementById('btnClearAll');
+    if (btnClearAll) {
+        btnClearAll.addEventListener('click', function () {
+            document.querySelectorAll('.loc-select-input').forEach(inp => {
+                inp.checked = false;
+            });
+            if (masterCheckbox) masterCheckbox.checked = false;
+            syncState();
+        });
+    }
+
+    // Reactive filter on Count Type radio buttons
+    document.querySelectorAll('input[name="count_type"]').forEach(r => {
+        r.addEventListener('change', filterLocationsByCountType);
+    });
+
     assignedSelect.addEventListener('change', syncState);
     approverSelect.addEventListener('change', syncState);
     dateInput.addEventListener('change', syncState);
+
+    // Click on workload card to quickly select staff in dropdown
+    document.querySelectorAll('.workload-card').forEach(card => {
+        card.addEventListener('click', function () {
+            const staffId = this.getAttribute('data-staff-id');
+            if (staffId && assignedSelect) {
+                assignedSelect.value = staffId;
+                syncState();
+            }
+        });
+    });
 
     document.getElementById('btnAssignNotify').addEventListener('click', function () {
         if (!validate()) return;
@@ -742,9 +1193,9 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 
     function validate() {
-        const radio = document.querySelector('input[name="location_id"]:checked');
-        if (!radio) {
-            alert('Please select a location to count.');
+        const checked = document.querySelectorAll('.loc-select-input:checked');
+        if (checked.length === 0) {
+            alert('Please select at least one location to count.');
             return false;
         }
         if (assignedSelect.value === approverSelect.value) {
@@ -754,7 +1205,8 @@ document.addEventListener('DOMContentLoaded', function () {
         return true;
     }
 
-    syncState();
+    // Initialize on page load
+    filterLocationsByCountType();
 });
 </script>
 @endsection

@@ -186,7 +186,6 @@ class CycleCountController extends Controller
     {
         $request->validate([
             'count_type'   => 'required|string',
-            'location_id'  => 'required|exists:storage_locations,id',
             'count_date'   => 'required|date',
             'assigned_to'  => 'required|exists:users,id',
             'approver_id'  => 'required|exists:users,id',
@@ -199,23 +198,107 @@ class CycleCountController extends Controller
             ]);
         }
 
-        // Check for existing open count on this location
-        $existingOpen = CycleCount::where('location_id', $request->location_id)
-            ->whereIn('status', ['not_started', 'started', 'submitted', 'draft'])
-            ->first();
+        // Support both single location_id and multiple location_ids[]
+        $locationIds = [];
+        if ($request->has('location_ids') && is_array($request->input('location_ids'))) {
+            $locationIds = array_values(array_filter($request->input('location_ids')));
+        } elseif ($request->filled('location_id')) {
+            $locationIds = [(int)$request->input('location_id')];
+        }
 
-        if ($existingOpen) {
+        if (empty($locationIds)) {
             return back()->withInput()->withErrors([
-                'location_id' => "This location already has an open count ({$existingOpen->count_number}) in progress.",
+                'location_id' => 'Please select at least one location to count.',
             ]);
         }
 
-        $location = StorageLocation::with(['warehouse', 'branch'])->findOrFail($request->location_id);
+        // Check for existing open count on any of the selected locations
+        $existingOpen = CycleCount::whereIn('location_id', $locationIds)
+            ->whereIn('status', ['not_started', 'started', 'submitted', 'draft'])
+            ->with('location')
+            ->first();
+
+        if ($existingOpen) {
+            $locName = $existingOpen->location ? $existingOpen->location->name : 'one of the selected locations';
+            return back()->withInput()->withErrors([
+                'location_id' => "Location '{$locName}' already has an open count ({$existingOpen->count_number}) in progress.",
+            ]);
+        }
+
+        $isDraft = $request->input('action') === 'draft';
+        $createdCounts = [];
+
+        DB::beginTransaction();
+        try {
+            $allActive = Product::where('is_active', true)->with(['warehouseStocks', 'category'])->get();
+
+            foreach ($locationIds as $index => $locId) {
+                $location = StorageLocation::with(['warehouse', 'branch'])->findOrFail($locId);
+                $itemsToCreate = $this->collectItemsForLocation($location, $allActive);
+                $zone = $location->zone_or_aisle ?: ($location->warehouse ? $location->warehouse->warehouse_name : ($location->branch ? $location->branch->name : 'General'));
+                $countNumber = $this->classificationService->generateCountNumber($index);
+
+                $cycleCount = CycleCount::create([
+                    'count_number'   => $countNumber,
+                    'count_type'     => $request->count_type,
+                    'location_id'    => $location->id,
+                    'location_name'  => $location->full_display_name,
+                    'zone'           => $zone,
+                    'warehouse_id'   => $location->warehouse_id,
+                    'branch_id'      => $location->branch_id,
+                    'count_date'     => $request->count_date,
+                    'time_window'    => $request->time_window,
+                    'assigned_to'    => $request->assigned_to,
+                    'approver_id'    => $request->approver_id,
+                    'notes'          => $request->notes,
+                    'status'         => $isDraft ? 'draft' : 'not_started',
+                    'total_items'    => count($itemsToCreate),
+                    'entered_items'  => 0,
+                    'created_by'     => Auth::id(),
+                ]);
+
+                foreach ($itemsToCreate as $itemData) {
+                    $itemData['cycle_count_id'] = $cycleCount->id;
+                    CycleCountItem::create($itemData);
+                }
+
+                $createdCounts[] = $countNumber;
+            }
+
+            DB::commit();
+
+            $countQty = count($createdCounts);
+            $countListStr = implode(', ', $createdCounts);
+
+            if ($countQty === 1) {
+                $msg = $isDraft
+                    ? "Cycle count {$countListStr} saved as draft."
+                    : "Cycle count {$countListStr} assigned successfully to staff.";
+            } else {
+                $msg = $isDraft
+                    ? "{$countQty} cycle counts ({$countListStr}) saved as draft."
+                    : "{$countQty} cycle counts ({$countListStr}) assigned successfully to staff.";
+            }
+
+            return redirect()->route('cycle_count.index')->with('success', $msg);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return back()->withInput()->withErrors(['error' => 'Failed to assign count: ' . $e->getMessage()]);
+        }
+    }
+
+    /**
+     * Helper: Collect all countable items for a given storage location.
+     */
+    private function collectItemsForLocation(StorageLocation $location, $allActive = null): array
+    {
+        if ($allActive === null) {
+            $allActive = Product::where('is_active', true)->with(['warehouseStocks', 'category'])->get();
+        }
+
         $locName  = strtolower(trim($location->name));
         $locCode  = $location->code ? strtolower(trim($location->code)) : '';
 
-        // ─── Step 1: Collect all countable items for this location ────────────────
-        $allActive = Product::where('is_active', true)->with(['warehouseStocks', 'category'])->get();
         $itemsToCreate = [];
         $capturedProductIds = [];
 
@@ -306,7 +389,7 @@ class CycleCountController extends Controller
             }
         }
 
-        // ─── Fallback: warehouse stock products if no specific location tags found ──
+        // Fallback: warehouse stock products if no specific location tags found
         if (empty($itemsToCreate)) {
             if ($location->warehouse_id) {
                 $wsRows = WarehouseStock::where('warehouse_id', $location->warehouse_id)
@@ -370,47 +453,7 @@ class CycleCountController extends Controller
             }
         }
 
-        $zone = $location->zone_or_aisle ?: ($location->warehouse ? $location->warehouse->warehouse_name : ($location->branch ? $location->branch->name : 'General'));
-        $countNumber = $this->classificationService->generateCountNumber();
-        $isDraft = $request->input('action') === 'draft';
-
-        DB::beginTransaction();
-        try {
-            $cycleCount = CycleCount::create([
-                'count_number'   => $countNumber,
-                'count_type'     => $request->count_type,
-                'location_id'    => $location->id,
-                'location_name'  => $location->full_display_name,
-                'zone'           => $zone,
-                'warehouse_id'   => $location->warehouse_id,
-                'branch_id'      => $location->branch_id,
-                'count_date'     => $request->count_date,
-                'time_window'    => $request->time_window,
-                'assigned_to'    => $request->assigned_to,
-                'approver_id'    => $request->approver_id,
-                'notes'          => $request->notes,
-                'status'         => $isDraft ? 'draft' : 'not_started',
-                'total_items'    => count($itemsToCreate),
-                'entered_items'  => 0,
-                'created_by'     => Auth::id(),
-            ]);
-
-            foreach ($itemsToCreate as $itemData) {
-                $itemData['cycle_count_id'] = $cycleCount->id;
-                CycleCountItem::create($itemData);
-            }
-
-            DB::commit();
-
-            $msg = $isDraft
-                ? "Cycle count {$countNumber} saved as draft."
-                : "Cycle count {$countNumber} assigned successfully to staff.";
-
-            return redirect()->route('cycle_count.index')->with('success', $msg);
-        } catch (\Exception $e) {
-            DB::rollBack();
-            return back()->withInput()->withErrors(['error' => 'Failed to assign count: ' . $e->getMessage()]);
-        }
+        return $itemsToCreate;
     }
 
     /**

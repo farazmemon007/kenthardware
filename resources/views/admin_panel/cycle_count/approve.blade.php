@@ -8,7 +8,10 @@
         color: #1e293b;
         background: #f1f5f9;
         padding: 12px;
-        min-height: 100vh;
+        min-height: calc(100vh - 56px);
+        width: 100%;
+        box-sizing: border-box;
+        overflow-x: auto;
     }
     .img4-container {
         background: #ffffff;
@@ -16,6 +19,9 @@
         border-radius: 6px;
         box-shadow: 0 1px 3px rgba(0,0,0,0.05);
         overflow: hidden;
+        min-width: 1080px;
+        max-width: 100%;
+        margin: 0 auto;
     }
 
     /* Top Dark Bar */
@@ -32,6 +38,33 @@
         display: flex;
         align-items: center;
         gap: 10px;
+    }
+    .top-strip-back-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        background: rgba(255, 255, 255, 0.12);
+        color: #f1f5f9;
+        padding: 4px 11px;
+        border-radius: 4px;
+        font-size: 0.76rem;
+        font-weight: 600;
+        text-decoration: none;
+        border: 1px solid rgba(255, 255, 255, 0.22);
+        transition: all 0.15s ease-in-out;
+        cursor: pointer;
+        line-height: 1.3;
+        margin-left: 8px;
+        white-space: nowrap;
+    }
+    .top-strip-back-btn:hover {
+        background: rgba(255, 255, 255, 0.24);
+        color: #ffffff;
+        border-color: rgba(255, 255, 255, 0.4);
+        text-decoration: none;
+    }
+    .top-strip-back-btn i {
+        font-size: 0.72rem;
     }
     .img4-top-bar .main-title {
         font-weight: 700;
@@ -128,16 +161,11 @@
         border-bottom: 2px solid #0f172a;
     }
 
-    /* Main Grid: Discrepancy Table + Right Sidebar */
+    /* Main Grid: Discrepancy Table + Right Sidebar: Fixed 2-Column */
     .img4-main-grid {
         display: grid;
         grid-template-columns: 1fr 300px;
         border-bottom: 1px solid #e2e8f0;
-    }
-    @media (max-width: 1100px) {
-        .img4-main-grid {
-            grid-template-columns: 1fr;
-        }
     }
 
     /* Left Table Section */
@@ -442,17 +470,12 @@
         background: #059669;
     }
 
-    /* Bottom 4 Explanation Boxes */
+    /* Bottom 4 Explanation Boxes: Fixed 4 Columns */
     .img4-bottom-grid {
         display: grid;
         grid-template-columns: repeat(4, 1fr);
         border-top: 1px solid #cbd5e1;
         background: #ffffff;
-    }
-    @media (max-width: 768px) {
-        .img4-bottom-grid {
-            grid-template-columns: 1fr;
-        }
     }
     .img4-box {
         padding: 12px 16px;
@@ -483,8 +506,18 @@
                 <span class="main-title">4 · Approve count {{ $cycleCount->count_number }} — Shelf {{ $cycleCount->location ? $cycleCount->location->name : ($cycleCount->location_name ?: 'BCD 12') }}</span>
                 <span class="badge-pill-role">Owner / In-charge only · never the counter</span>
             </div>
-            <div class="concept-note">
-                CONCEPT for approval · all numbers are illustrative
+            <div class="d-flex align-items-center gap-2" style="gap:10px;">
+                <a href="{{ route('cycle_count.sheet', $cycleCount->id) }}"
+                   style="display:inline-flex; align-items:center; gap:5px; background:#1e40af; color:#fff; padding:4px 12px; border-radius:4px; font-size:0.78rem; font-weight:700; text-decoration:none; white-space:nowrap;"
+                   title="View what the staff physically entered on Screen 3">
+                    <i class="fas fa-list-check"></i> View Staff Sheet
+                </a>
+                <div class="concept-note" style="margin-left:8px;">
+                    CONCEPT for approval · all numbers are illustrative
+                </div>
+                <a href="{{ route('cycle_count.index') }}" onclick="if(document.referrer && document.referrer.indexOf(window.location.host) !== -1 && document.referrer !== window.location.href) { history.back(); return false; }" class="top-strip-back-btn" title="Back to Schedule">
+                    <i class="fas fa-arrow-left"></i> <span>Back</span>
+                </a>
             </div>
         </div>
 
@@ -507,11 +540,16 @@
                     <div class="kpi-box-label">VARIANCE VALUE (RS)</div>
                     <div class="kpi-box-val">{{ number_format(abs($cycleCount->total_variance_value), 0) }}</div>
                 </div>
-                <div class="kpi-box">
+                <div class="kpi-box" style="position:relative;">
                     <div class="kpi-box-label">COUNTED BY</div>
                     <div class="kpi-box-val" style="font-size: 0.95rem; font-weight: 700;">
                         [{{ $cycleCount->counter ? $cycleCount->counter->name : 'Staff B' }}] · {{ $cycleCount->submitted_at ? $cycleCount->submitted_at->format('H:i') : '09:18' }}
                     </div>
+                    <a href="{{ route('cycle_count.sheet', $cycleCount->id) }}"
+                       style="font-size:0.67rem; color:#3b82f6; text-decoration:none; font-weight:700; white-space:nowrap; display:inline-flex; align-items:center; gap:3px; margin-top:3px;"
+                       title="Open the exact qty, timestamps and items entered by counter">
+                        <i class="fas fa-external-link-alt" style="font-size:0.6rem;"></i> View Original Sheet
+                    </a>
                 </div>
                 <div class="kpi-box" style="border-left: 3px solid #10b981; background: #f0fdf4;">
                     <div class="kpi-box-label" style="color: #047857;">TIME DURATION TAKEN</div>
@@ -740,6 +778,13 @@
             </div>
 
             <div class="bottom-btn-group">
+                <a href="{{ route('cycle_count.sheet', $cycleCount->id) }}"
+                   class="btn-act-recount-all"
+                   style="text-decoration:none; background:#1e40af; border-color:#1e40af;"
+                   title="Inspect the exact quantities entered by the counter on Screen 3">
+                    <i class="fas fa-list-check me-1"></i> View Staff Sheet
+                </a>
+
                 <form action="{{ route('cycle_count.recount', $cycleCount->id) }}" method="POST" style="display:inline;">
                     @csrf
                     <button type="submit" class="btn-act-recount-all" onclick="return confirm('Request recount from staff for all variances?');">
