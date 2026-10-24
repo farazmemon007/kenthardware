@@ -2368,8 +2368,8 @@
                     <button type="button" class="qb-preset-btn qb-preset-bank" data-preset="full_bank">
                         <i class="fas fa-university me-1"></i> 100% Bank / Card
                     </button>
-                    <button type="button" class="qb-preset-btn qb-preset-khata" data-preset="full_khata">
-                        <i class="fas fa-file-invoice me-1"></i> 100% Khata (Udhar)
+                    <button type="button" class="qb-preset-btn qb-preset-khata" data-preset="full_khata" id="qbPresetKhataBtn">
+                        <i class="fas fa-book me-1"></i> 100% Khata (Udhar)
                     </button>
                     <button type="button" class="qb-preset-btn qb-preset-split" data-preset="split_cash_bank">
                         <i class="fas fa-balance-scale me-1"></i> 50/50 Cash + Bank
@@ -2458,24 +2458,24 @@
                     </div>
 
                     {{-- 3. Customer Khata / Ledger (Due) Card --}}
-                    <div class="col-md-4">
+                    <div class="col-md-4" id="qbKhataCardCol">
                         <div class="qb-tender-col-card qb-tender-card-khata">
                             <div class="qb-tender-header">
                                 <div class="qb-tender-title-wrap">
-                                    <span class="qb-tender-circle-icon bg-warning-subtle text-warning-emphasis"><i class="fas fa-file-invoice"></i></span>
-                                    <span class="qb-tender-title text-warning-emphasis">Khata / Udhar</span>
+                                    <span class="qb-tender-circle-icon bg-warning-subtle text-warning-emphasis"><i class="fas fa-book"></i></span>
+                                    <span class="qb-tender-title text-warning-emphasis">Ledger</span>
                                 </div>
                                 <button type="button" class="btn btn-xs btn-outline-warning text-dark qb-tender-full-btn" onclick="allocateFullTo('khata')">Full</button>
                             </div>
                             <div class="qb-tender-body">
                                 <div>
-                                    <label class="qb-tender-field-lbl">Target Ledger:</label>
+                                    <label class="qb-tender-field-lbl">Ledger Type:</label>
                                     <div class="form-control qb-tender-select bg-light text-truncate d-flex align-items-center" id="qbModalCustKhataTarget">
                                         Customer Ledger
                                     </div>
                                 </div>
                                 <div>
-                                    <label class="qb-tender-field-lbl">Due on Khata:</label>
+                                    <label class="qb-tender-field-lbl">Due on Ledger:</label>
                                     <div class="qb-tender-input-wrap">
                                         <span class="qb-tender-curr-addon text-warning-emphasis">Rs.</span>
                                         <input type="number" step="0.01" min="0" id="qbSplitKhataInput" class="form-control qb-tender-amount-input text-dark" placeholder="0.00" value="0.00">
@@ -5148,6 +5148,17 @@ $(document).ready(function() {
         $('#qbModalCustName').text(custName);
         $('#qbModalCustPrevBal').text('Rs. ' + prevBal.toFixed(2));
         $('#qbModalCustKhataTarget').text(isWalkin ? '⚠️ No Khata (Walk-in Customer)' : (custName + ' Khata'));
+
+        // Show/Hide Khata card and preset button for walk-in customers
+        if (isWalkin) {
+            $('#qbKhataCardCol').hide();
+            $('#qbPresetKhataBtn').hide();
+            // Force khata to 0 for walk-in
+            $('#qbSplitKhataInput').val('0.00');
+        } else {
+            $('#qbKhataCardCol').show();
+            $('#qbPresetKhataBtn').show();
+        }
 
         // Pre-select account dropdowns
         if (orderPaymentAllocation.cashAccountId) {
