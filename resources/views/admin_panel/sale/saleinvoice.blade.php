@@ -303,7 +303,20 @@
                 </div>
                 <div class="meta-row mt-2">
                     <div class="meta-label">M/s</div>
-                    <div class="meta-value" style="color: #1e40af;">{{ $sale->walkin_name ?? ($sale->customer_relation->customer_name ?? 'Walk-in Customer') }}</div>
+                    <div class="meta-value" style="color: #1e40af;">
+                        <strong>{{ $sale->walkin_name ?? ($sale->customer_relation->customer_name ?? 'Walk-in Customer') }}</strong>
+                        @php
+                            $phone = $sale->walkin_phone ?? ($sale->customer_relation->mobile ?? null);
+                            $addr = $sale->walkin_address ?? ($sale->customer_relation->address ?? null);
+                        @endphp
+                        @if($phone || $addr)
+                            <div style="font-size: 11px; color: #475569; font-weight: normal;">
+                                @if($phone) <span>Tel: {{ $phone }}</span> @endif
+                                @if($phone && $addr) | @endif
+                                @if($addr) <span>{{ $addr }}</span> @endif
+                            </div>
+                        @endif
+                    </div>
                 </div>
             </div>
             <div class="meta-right">

@@ -310,6 +310,15 @@
                 <span class="meta-label">Customer:</span>
                 <span class="meta-value">{{ Str::limit($sale->walkin_name ?? ($sale->customer_relation->customer_name ?? 'Walking Customer'), 22) }}</span>
             </div>
+            @php
+                $receiptPhone = $sale->walkin_phone ?? optional($sale->customer_relation)->mobile;
+            @endphp
+            @if($receiptPhone)
+            <div class="meta-row">
+                <span class="meta-label">Phone:</span>
+                <span class="meta-value">{{ $receiptPhone }}</span>
+            </div>
+            @endif
             @if (auth()->check())
             <div class="meta-row">
                 <span class="meta-label">Salesperson:</span>
@@ -497,33 +506,66 @@
             </div>
         </div>
 
-        <!-- Ledger -->
+        <!-- Ledger & Payment Breakdown -->
         <div class="balance-section">
+            @php
+                $actualPaid = 0;
+                if (isset($tenderPayments) && count($tenderPayments) > 0) {
+                    $actualPaid = (float) $totalPaidAmount;
+                } else {
+                    $actualPaid = (float)($sale->cash ?? 0) + (float)($sale->card ?? 0);
+                }
+                $changeGiven = max(0, (float)($sale->change ?? 0));
+                $netPaidTowardsBill = max(0, $actualPaid - $changeGiven);
+                $dueOnThisBill = max(0, $finalPayable - $actualPaid);
+                $finalBalance = $previousBalance + $finalPayable - $netPaidTowardsBill;
+            @endphp
+
             @if(!$isWalkin)
             <div class="tot-row">
                 <span>Prev Balance:</span>
                 <span>{{ number_format(abs($previousBalance), 0) }} {{ $previousBalance >= 0 ? 'Dr' : 'Cr' }}</span>
             </div>
             @endif
-            <div class="tot-row">
-                <span>Paid Amount:</span>
-                <span>{{ number_format($sale->cash, 0) }}</span>
-            </div>
+
+            @if(isset($tenderPayments) && count($tenderPayments) > 0)
+                <div style="border-top: 1px dotted #888; margin: 3px 0 2px 0;"></div>
+                <div style="font-weight: 600; font-size: 10px; margin-bottom: 2px; text-transform: uppercase;">Payment Details:</div>
+                @foreach($tenderPayments as $tender)
+                <div class="tot-row" style="font-size: 11px; padding-left: 6px;">
+                    <span style="color: #333;">• {{ $tender['account_title'] }}:</span>
+                    <span>Rs. {{ number_format($tender['amount'], 0) }}</span>
+                </div>
+                @endforeach
+                <div class="tot-row" style="font-weight: 600; border-top: 1px dashed #ccc; margin-top: 2px; padding-top: 2px;">
+                    <span>Total Paid:</span>
+                    <span>Rs. {{ number_format($actualPaid, 0) }}</span>
+                </div>
+            @else
+                <div class="tot-row">
+                    <span>Paid Amount:</span>
+                    <span>Rs. {{ number_format($actualPaid, 0) }}</span>
+                </div>
+            @endif
+
             @if($sale->change > 0)
             <div class="tot-row">
                 <span>Change{{ $sale->change_account ? ' ('.$sale->change_account->title.')' : '' }}:</span>
-                <span>{{ number_format($sale->change, 0) }}</span>
+                <span>Rs. {{ number_format($sale->change, 0) }}</span>
             </div>
             @endif
 
             @if(!$isWalkin)
-            @php
-                $finalBalance = $previousBalance + $sale->total_net - $sale->cash;
-            @endphp
-            <div class="tot-row closing-bal">
-                <span>CLOSING BALANCE:</span>
-                <span>{{ number_format(abs($finalBalance), 0) }} {{ $finalBalance >= 0 ? 'Dr' : 'Cr' }}</span>
-            </div>
+                @if($dueOnThisBill > 0)
+                <div class="tot-row" style="color: #c0392b; font-weight: 600;">
+                    <span>Due on Khata:</span>
+                    <span>Rs. {{ number_format($dueOnThisBill, 0) }}</span>
+                </div>
+                @endif
+                <div class="tot-row closing-bal">
+                    <span>CLOSING BALANCE:</span>
+                    <span>{{ number_format(abs($finalBalance), 0) }} {{ $finalBalance >= 0 ? 'Dr' : 'Cr' }}</span>
+                </div>
             @endif
         </div>
 

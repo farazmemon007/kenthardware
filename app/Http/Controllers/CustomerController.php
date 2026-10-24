@@ -16,12 +16,12 @@ class CustomerController extends Controller
     // 🔹 Load customers list by type (Main Customer returns all types)
     public function saleindex(Request $request)
     {
-        $type   = $request->type   ?? 'Main Customer';
+        $type   = $request->type   ?? 'all';
         $search = $request->search ?? '';
 
         $query = Customer::query();
 
-        if ($type && $type !== 'Main Customer' && $type !== 'all') {
+        if ($type && $type !== 'all' && $type !== 'Main Customer') {
             $query->where('customer_type', $type);
         }
 
@@ -29,11 +29,16 @@ class CustomerController extends Controller
             $query->where(function ($q) use ($search) {
                 $q->where('customer_name', 'like', "%{$search}%")
                   ->orWhere('customer_id',   'like', "%{$search}%")
-                  ->orWhere('mobile',        'like', "%{$search}%");
+                  ->orWhere('mobile',        'like', "%{$search}%")
+                  ->orWhere('address',       'like', "%{$search}%");
             });
         }
 
-        $customers = $query->orderBy('customer_name')->get();
+        $customers = $query->orderBy('customer_name')->limit(120)->get()->map(function ($c) {
+            $arr = $c->toArray();
+            $arr['previous_balance'] = $c->previous_balance;
+            return $arr;
+        });
 
         return response()->json($customers);
     }

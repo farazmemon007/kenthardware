@@ -393,6 +393,7 @@ Route::middleware('auth')->group(function () {
     Route::post('/pos/search-invoice', [App\Http\Controllers\POSController::class, 'searchInvoice'])->middleware('permission:sales.create')->name('pos.search_invoice');
     Route::get('/products/search', [ProductController::class, 'searchProducts'])->name('products.search');
     Route::get('/search-product-name', [SaleController::class, 'searchpname'])->name('search-product-name');
+    Route::get('/sale/products-by-category', [ProductController::class, 'getProductsByCategory'])->name('sale.products_by_category');
     Route::post('/sales/store', [SaleController::class, 'store'])->middleware('permission:sales.create')->name('sales.store');
     Route::post('/sales/post-final', [SaleController::class, 'postFinal'])->middleware('permission:sales.create')->name('sales.post_final');
 

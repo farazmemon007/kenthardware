@@ -60,10 +60,14 @@ class SaleController extends Controller
             }
         }
 
-        // Apply Mobile Number Filter
+        // Apply Mobile Number Filter (both registered customer and walkin phone)
         if ($request->filled('mobile_no')) {
-            $query->whereHas('customer_relation', function ($q) use ($request) {
-                $q->where('mobile', 'like', "%{$request->mobile_no}%");
+            $mobile = trim($request->mobile_no);
+            $query->where(function ($q) use ($mobile) {
+                $q->where('walkin_phone', 'like', "%{$mobile}%")
+                  ->orWhereHas('customer_relation', function ($cq) use ($mobile) {
+                      $cq->where('mobile', 'like', "%{$mobile}%");
+                  });
             });
         }
 
@@ -83,9 +87,35 @@ class SaleController extends Controller
             $query->where('reference', 'like', "%{$request->reference}%");
         }
 
-        // Apply Customer Filter
+        // Apply Customer Filter (Supports ID, Walk-in, or Free-text Name)
         if ($request->filled('customer_id')) {
-            $query->where('customer_id', $request->customer_id);
+            $customerFilter = trim($request->customer_id);
+
+            if (\Illuminate\Support\Str::startsWith($customerFilter, 'walkin:')) {
+                $walkinName = substr($customerFilter, 7);
+                $query->where('walkin_name', 'like', "%{$walkinName}%");
+            } elseif (is_numeric($customerFilter)) {
+                $cust = Customer::find($customerFilter);
+                $custName = $cust ? $cust->customer_name : null;
+                $firstWord = $custName ? explode(' ', trim($custName))[0] : '';
+                $query->where(function ($q) use ($customerFilter, $custName, $firstWord) {
+                    $q->where('customer_id', $customerFilter);
+                    if (!empty($custName)) {
+                        $q->orWhere('walkin_name', 'like', "%{$custName}%");
+                        if (strlen($firstWord) >= 3) {
+                            $q->orWhere('walkin_name', 'like', "%{$firstWord}%");
+                        }
+                    }
+                });
+            } else {
+                $query->where(function ($q) use ($customerFilter) {
+                    $q->where('walkin_name', 'like', "%{$customerFilter}%")
+                      ->orWhereHas('customer_relation', function ($cq) use ($customerFilter) {
+                          $cq->where('customer_name', 'like', "%{$customerFilter}%")
+                             ->orWhere('mobile', 'like', "%{$customerFilter}%");
+                      });
+                });
+            }
         }
 
         // Order By (Most recent / newest on top)
@@ -116,10 +146,20 @@ class SaleController extends Controller
             ]);
         }
 
-        // Load all customers for filter dropdown
+        // Load all registered customers for filter dropdown
         $customers = Customer::orderBy('customer_name')->get();
 
-        return view('admin_panel.sale.index', compact('sales', 'customers', 'stats'));
+        // Also load distinct walk-in customer names from sales
+        $walkinCustomers = Sale::whereNotNull('walkin_name')
+            ->where('walkin_name', '!=', '')
+            ->where('walkin_name', '!=', 'Walk-in Customer')
+            ->distinct()
+            ->pluck('walkin_name')
+            ->filter()
+            ->unique()
+            ->sort();
+
+        return view('admin_panel.sale.index', compact('sales', 'customers', 'walkinCustomers', 'stats'));
     }
 
     public function addsale()
@@ -133,6 +173,8 @@ class SaleController extends Controller
         $nextInvoiceNumber = \App\Models\InvoiceSeries::generateNextNo($activePrefix);
 
         $recentProducts = Product::latest()->take(12)->get();
+        $salesOfficers = \App\Models\SalesOfficer::orderBy('name')->get();
+        $vendors = \App\Models\Vendor::orderBy('name')->get();
 
         // Filter accounts (Cash/Bank) for Payment Voucher
         $accounts = \App\Models\Account::whereHas('head', function($q) {
@@ -141,9 +183,16 @@ class SaleController extends Controller
             ->orderBy('title')
             ->get();
 
+        $balanceService = app(\App\Services\BalanceService::class);
+        $defaultCashAccountId = $balanceService->getCashAccountId();
+        $defaultBankAccountId = $balanceService->getBankAccountId();
+        $defaultGiftAccountId = $balanceService->getGiftAccountId();
+        $allAccounts = \App\Models\Account::where('status', 1)->orderBy('title')->get();
+
         return view('admin_panel.sale.add_sale222', compact(
             'warehouse', 'customer', 'nextInvoiceNumber', 'accounts', 
-            'recentProducts', 'allSeries', 'activePrefix'
+            'recentProducts', 'allSeries', 'activePrefix', 'salesOfficers', 'vendors',
+            'defaultCashAccountId', 'defaultBankAccountId', 'defaultGiftAccountId', 'allAccounts'
         ));
     }
 
@@ -1036,7 +1085,7 @@ class SaleController extends Controller
 
     public function salereceipt($id)
     {
-        $sale = Sale::with('customer_relation')->findOrFail($id);
+        $sale = Sale::with(['customer_relation', 'change_account'])->findOrFail($id);
         $items = $this->_getSaleItems($sale);
 
         // Logic for Previous Balance (copied from saleinvoice)
@@ -1063,11 +1112,56 @@ class SaleController extends Controller
         }
         $currentBalance = $previousBalance + $sale->total_net;
 
+        // Payment Breakdown (Multi-Account Tender details from Receipt Voucher)
+        $tenderPayments = [];
+        $totalPaidAmount = 0;
+
+        $receiptVoucher = \App\Models\VoucherMaster::with(['details.account'])
+            ->where('remarks', 'like', "%{$sale->invoice_no}%")
+            ->where('voucher_type', \App\Models\VoucherMaster::TYPE_RECEIPT)
+            ->first();
+
+        if ($receiptVoucher && $receiptVoucher->details) {
+            foreach ($receiptVoucher->details as $d) {
+                if ((float)$d->debit > 0) {
+                    $accTitle = $d->account ? $d->account->title : 'Payment Account';
+                    $tenderPayments[] = [
+                        'account_id'    => $d->chart_of_account_id,
+                        'account_title' => $accTitle,
+                        'amount'        => (float)$d->debit,
+                    ];
+                    $totalPaidAmount += (float)$d->debit;
+                }
+            }
+        }
+
+        // Fallback if no receipt voucher details found
+        if (empty($tenderPayments)) {
+            if ((float)$sale->cash > 0) {
+                $tenderPayments[] = [
+                    'account_id'    => null,
+                    'account_title' => 'Cash',
+                    'amount'        => (float)$sale->cash,
+                ];
+                $totalPaidAmount += (float)$sale->cash;
+            }
+            if ((float)$sale->card > 0) {
+                $tenderPayments[] = [
+                    'account_id'    => null,
+                    'account_title' => 'Bank / Online',
+                    'amount'        => (float)$sale->card,
+                ];
+                $totalPaidAmount += (float)$sale->card;
+            }
+        }
+
         return view('admin_panel.sale.salereceipt', [
             'sale' => $sale,
             'saleItems' => $items,
             'previousBalance' => $previousBalance,
             'currentBalance' => $currentBalance,
+            'tenderPayments' => $tenderPayments,
+            'totalPaidAmount' => $totalPaidAmount,
         ]);
     }
 
@@ -1098,8 +1192,14 @@ class SaleController extends Controller
         ];
 
         if ($isWalkin) {
-            $rules['walkin_name'] = 'required|string|max:255';
-            $request->merge(['customer' => null]);
+            $request->merge([
+                'walkin_name' => $request->filled('walkin_name') ? $request->walkin_name : 'Walk-in Customer',
+                'customer' => null
+            ]);
+            $rules['walkin_name'] = 'nullable|string|max:255';
+            $rules['walkin_phone'] = 'nullable|string|max:50';
+            $rules['walkin_address'] = 'nullable|string';
+            $rules['reference'] = 'nullable|string';
         } else {
             $rules['customer'] = 'required|exists:customers,id';
         }
@@ -1125,7 +1225,9 @@ class SaleController extends Controller
             // 2. Prepare Header Data
             $isNew = ! $sale->exists;
             $sale->customer_id = $request->customer;
-            $sale->walkin_name = $isWalkin ? $request->walkin_name : null;
+            $sale->walkin_name = $isWalkin ? ($request->walkin_name ?: 'Walk-in Customer') : null;
+            $sale->walkin_phone = $isWalkin ? ($request->walkin_phone ?: $request->tel) : null;
+            $sale->walkin_address = $isWalkin ? ($request->walkin_address ?: $request->address) : null;
             $sale->reference = $request->reference;
             $sale->total_amount_Words = $request->total_amount_Words; // Consider auto-generating this too?
             $sale->sale_status = $status;
@@ -1355,7 +1457,22 @@ class SaleController extends Controller
                 $frontendGross = (float) ($request->gross_amount[$index] ?? 0);
                 $frontendNet   = (float) ($request->total[$index] ?? 0);
 
-                if ($frontendGross > 0) {
+                $calculatedGross = 0;
+                if ($sizeMode === 'by_cartons') {
+                    $subUnit = $request->sub_unit_mode[$index] ?? 'main';
+                    if ($subUnit === 'pcs') {
+                        $calculatedGross = round($totalPieces * $dbPrice, 2);
+                    } else {
+                        $calculatedGross = round($storedQtyBox * $dbPrice, 2);
+                    }
+                } else {
+                    $calculatedGross = round($totalPieces * $dbPrice, 2);
+                }
+
+                // Primary source is always real calculation ($totalPieces * $dbPrice)
+                if ($calculatedGross > 0) {
+                    $lineGross = $calculatedGross;
+                } elseif ($frontendGross > 0) {
                     $lineGross = $frontendGross;
                 } elseif ($frontendNet > 0) {
                     // frontendNet was already after discount in frontend
@@ -1365,16 +1482,7 @@ class SaleController extends Controller
                         $lineGross = $discount < 100 ? round($frontendNet / (1 - ($discount / 100)), 2) : $frontendNet;
                     }
                 } else {
-                    if ($sizeMode === 'by_cartons') {
-                        $subUnit = $request->sub_unit_mode[$index] ?? 'main';
-                        if ($subUnit === 'pcs') {
-                            $lineGross = $totalPieces * $dbPrice;
-                        } else {
-                            $lineGross = $storedQtyBox * $dbPrice;
-                        }
-                    } else {
-                        $lineGross = $totalPieces * $dbPrice;
-                    }
+                    $lineGross = 0;
                 }
 
                 // Apply Discount correctly
@@ -1463,21 +1571,63 @@ class SaleController extends Controller
                 $total_items += $totalPieces;
             }
 
+            $paymentMethod = $request->input('payment_method', 'cash');
+
             // Update Sale Totals
             $sale->total_bill_amount = $total_bill;
             $sale->total_extradiscount = $request->total_extra_cost ?? 0;
             $sale->total_net = $total_bill - $sale->total_extradiscount;
             $sale->total_items = $total_items;
 
-            $sale->cash = $request->cash ?? 0;
-            $sale->change = ($sale->cash - $sale->total_net);
-            $sale->change_account_id = $request->input('change_account_id') ?: null;
+            if ($status === 'posted') {
+                $inputCash = (float)($request->cash ?? 0);
+                $inputCard = (float)($request->card ?? 0);
+                $totalPaid = $inputCash + $inputCard;
 
-            if ($isWalkin && $sale->change < -0.05) {
-                throw \Illuminate\Validation\ValidationException::withMessages([
-                    'cash' => 'Walk-in customers must pay 100% upfront. Balance cannot be unpaid.'
-                ]);
+                // 100% Credit / Ledger (No upfront cash or card)
+                if ($paymentMethod === 'credit' && $totalPaid <= 0.009) {
+                    if ($isWalkin) {
+                        throw \Illuminate\Validation\ValidationException::withMessages([
+                            'customer' => 'Credit sale (Udhar) requires a registered customer to record in ledger. Please select or add a customer.'
+                        ]);
+                    }
+                    $sale->cash = 0;
+                    $sale->card = 0;
+                    $sale->change = -$sale->total_net;
+                } else {
+                    // Cash, Debit, Split, Account, etc.
+                    // Fallback for single tender if both inputs are 0
+                    if ($inputCash <= 0.009 && $inputCard <= 0.009 && $paymentMethod !== 'credit') {
+                        if ($paymentMethod === 'debit' || $paymentMethod === 'check') {
+                            $inputCard = $sale->total_net;
+                        } else {
+                            $inputCash = $sale->total_net;
+                        }
+                        $totalPaid = $inputCash + $inputCard;
+                    }
+
+                    $sale->cash = $inputCash;
+                    $sale->card = $inputCard;
+                    $sale->change = round($totalPaid - $sale->total_net, 2);
+
+                    // If change is negative, remaining balance is Due on customer ledger
+                    if ($sale->change < -0.05) {
+                        if ($isWalkin) {
+                            $unpaidAmt = number_format(abs($sale->change), 2);
+                            throw \Illuminate\Validation\ValidationException::withMessages([
+                                'customer' => "Walk-in customers cannot have unpaid balance on Khata (Rs. {$unpaidAmt}). Please select a registered customer or pay 100% upfront."
+                            ]);
+                        }
+                    }
+                }
+            } else {
+                // Booking / Put on Hold
+                $sale->cash = (float)($request->cash ?? 0);
+                $sale->card = (float)($request->card ?? 0);
+                $sale->change = 0;
             }
+
+            $sale->change_account_id = $request->input('change_account_id') ?: null;
 
             $sale->save();
 
@@ -1704,7 +1854,8 @@ class SaleController extends Controller
                 \Log::info('Proceeding to Auto-Receipt & Ledger logic for Sale #'.$sale->invoice_no);
 
                 // 1. DEDUCT STOCK FROM WAREHOUSE
-                $this->handleStockImpact($sale, 'out');
+                $allowNegative = $request->boolean('allow_insufficient_stock') || $request->input('allow_insufficient_stock') == '1';
+                $this->handleStockImpact($sale, 'out', $allowNegative);
 
                 $totalReturnVal = $totalReturnAmountForNet ?? 0;
                 $isExchange = $totalReturnVal > 0;
@@ -1771,51 +1922,100 @@ class SaleController extends Controller
                         }
                     }
 
-                    // --- AUTO RECEIPT (ENTRY 2: THE PAYMENT) ---
-                    $transactionService = app(\App\Services\TransactionService::class);
-                    $transactionService->createReceiptFromSale(
-                        $sale,
-                        $request->input('receipt_account_id', []),
-                        $request->input('receipt_amount', []),
-                        $sale->change_account_id
-                    );
+                    // --- AUTO RECEIPT (ENTRY 2: THE PAYMENT & MULTI-ACCOUNT TENDER) ---
+                    $receiptAccIds = $request->input('receipt_account_id', []);
+                    $receiptAmts = $request->input('receipt_amount', []);
+
+                    $filteredAccIds = [];
+                    $filteredAmts = [];
+                    if (is_array($receiptAccIds) && is_array($receiptAmts)) {
+                        foreach ($receiptAccIds as $idx => $accId) {
+                            $amt = (float)($receiptAmts[$idx] ?? 0);
+                            if ($amt > 0.009 && !empty($accId)) {
+                                $filteredAccIds[] = (int)$accId;
+                                $filteredAmts[] = $amt;
+                            }
+                        }
+                    }
+
+                    // Fallback if no receipt amounts explicitly sent, but cash/card was received
+                    if (empty($filteredAccIds) && ($sale->cash > 0.009 || $sale->card > 0.009)) {
+                        if ($sale->cash > 0.009) {
+                            $filteredAccIds[] = (int)$balanceService->getCashAccountId();
+                            $filteredAmts[] = (float)$sale->cash;
+                        }
+                        if ($sale->card > 0.009) {
+                            $chosenBankId = (int)($request->input('change_account_id') ?: $balanceService->getBankAccountId());
+                            $filteredAccIds[] = $chosenBankId;
+                            $filteredAmts[] = (float)$sale->card;
+                        }
+                    }
+
+                    if (!empty($filteredAccIds) && array_sum($filteredAmts) > 0.009) {
+                        $transactionService = app(\App\Services\TransactionService::class);
+                        $transactionService->createReceiptFromSale(
+                            $sale,
+                            $filteredAccIds,
+                            $filteredAmts,
+                            $sale->change_account_id
+                        );
+                    }
 
                     // --- AUTO REFUND (ENTRY 3: IF NET PAYABLE IS NEGATIVE) ---
-                    if ($isExchange && $trueNetPayable < 0 && $custForVoucher) {
+                    if ($isExchange && $trueNetPayable < 0) {
                         $refundAmt = abs($trueNetPayable);
-                        
                         $cashAccountId = $balanceService->getCashAccountId();
                         
-                        // Debit AR
-                        $journalService->recordEntry(
-                            clone $sale,
-                            $arAccountId,
-                            $refundAmt,
-                            0,
-                            "Refund Paid for POS Exchange #{$sale->invoice_no}",
-                            $date,
-                            $custForVoucher
-                        );
-                        
-                        // Credit Cash
-                        $journalService->recordEntry(
-                            clone $sale,
-                            $cashAccountId,
-                            0,
-                            $refundAmt,
-                            "Refund Paid for POS Exchange #{$sale->invoice_no}",
-                            $date
-                        );
+                        if ($custForVoucher) {
+                            // Debit AR
+                            $journalService->recordEntry(
+                                clone $sale,
+                                $arAccountId,
+                                $refundAmt,
+                                0,
+                                "Refund Paid for POS Exchange #{$sale->invoice_no}",
+                                $date,
+                                $custForVoucher
+                            );
+                            
+                            // Credit Cash
+                            $journalService->recordEntry(
+                                clone $sale,
+                                $cashAccountId,
+                                0,
+                                $refundAmt,
+                                "Refund Paid for POS Exchange #{$sale->invoice_no}",
+                                $date
+                            );
 
-                        // Log refund voucher
-                        \App\Models\CustomerPayment::create([
-                            'customer_id' => $custForVoucher->id,
-                            'admin_or_user_id' => auth()->id(),
-                            'payment_date' => $date,
-                            'payment_method' => 'Cash',
-                            'amount' => $refundAmt,
-                            'note' => "Refund Paid for POS Exchange #{$sale->invoice_no}"
-                        ]);
+                            // Log refund voucher
+                            \App\Models\CustomerPayment::create([
+                                'customer_id' => $custForVoucher->id,
+                                'admin_or_user_id' => auth()->id(),
+                                'payment_date' => $date,
+                                'payment_method' => 'Cash',
+                                'amount' => $refundAmt,
+                                'note' => "Refund Paid for POS Exchange #{$sale->invoice_no}"
+                            ]);
+                        } else {
+                            // Walk-in refund: Debit Sales Revenue, Credit Cash
+                            $journalService->recordEntry(
+                                clone $sale,
+                                $salesAccountId,
+                                $refundAmt,
+                                0,
+                                "Refund Paid for POS Exchange #{$sale->invoice_no} (Walk-in)",
+                                $date
+                            );
+                            $journalService->recordEntry(
+                                clone $sale,
+                                $cashAccountId,
+                                0,
+                                $refundAmt,
+                                "Refund Paid for POS Exchange #{$sale->invoice_no} (Walk-in)",
+                                $date
+                            );
+                        }
                     }
 
                     // --- MANUAL PRODUCT VENDOR LEDGER ---
@@ -1910,6 +2110,7 @@ class SaleController extends Controller
         });
         } catch (\Exception $e) {
             $errorMsg = $e->getMessage();
+            $isInsufficientStock = str_contains($errorMsg, 'Insufficient stock for');
             if ($e instanceof \Illuminate\Validation\ValidationException) {
                 $errorMsg = 'Validation Error: ' . implode(', ', collect($e->errors())->flatten()->toArray());
             } else {
@@ -1919,6 +2120,7 @@ class SaleController extends Controller
             if ($request->ajax() || $request->wantsJson()) {
                 return response()->json([
                     'ok' => false,
+                    'insufficient_stock' => $isInsufficientStock,
                     'message' => $errorMsg
                 ], 422);
             }
@@ -1926,33 +2128,21 @@ class SaleController extends Controller
         }
     }
 
-    public function handleStockImpact(Sale $sale, $type = 'out')
+    public function handleStockImpact(Sale $sale, $type = 'out', $allowNegative = false)
     {
         // Type: 'out' (Sale Posted), 'in' (Sale Cancelled), 'return' (Returned)
 
-        // Load items relationship if not already loaded (always re-query so edits
-        // don't deduct against the stale pre-edit items collection)
+        // Load items relationship if not already loaded
         $sale->load('items.product');
+
+        // Locate Primary Shop Location (Warehouse with location = 'Shop' or Warehouse #1)
+        $shopWh = Warehouse::where('location', 'Shop')->first() ?: Warehouse::find(1);
+        $shopWhId = $shopWh ? (int)$shopWh->id : 1;
 
         foreach ($sale->items as $item) {
             // Outsourced / Manual products do not affect warehouse stock
-            if ($item->is_manual) {
+            if ($item->is_manual || empty($item->product_id)) {
                 continue;
-            }
-
-            $targetWhId = $item->warehouse_id ?: (auth()->user()->warehouse_id ?? 1);
-            $stock = WarehouseStock::where('product_id', $item->product_id)
-                ->where('warehouse_id', $targetWhId)
-                ->lockForUpdate() // LOCK ROW
-                ->first();
-
-            if (! $stock) {
-                $stock = WarehouseStock::where('product_id', $item->product_id)->lockForUpdate()->first();
-            }
-
-            if (! $stock) {
-                // Create if missing? Or fail? User said "Validate warehouse stock".
-                throw new \Exception('Stock not found for product: '.$item->product_name);
             }
 
             // Calculate stock deduction quantity (for Kg products, total_pieces in WarehouseStock = total Kg)
@@ -1960,23 +2150,155 @@ class SaleController extends Controller
             $qtyPieces = (float)$item->total_pieces;
 
             if ($productMode === 'by_kg' || $productMode === 'by_gm') {
-                // total_pieces is always stored in KG for weight-based products (kg/gm/pcs sub-units
-                // all convert to kg in the frontend). So deduct the KG amount directly — no conversion.
                 $qtyPieces = (float) ($item->total_pieces > 0 ? $item->total_pieces : $item->qty);
             }
 
+            if ($qtyPieces <= 0) {
+                continue;
+            }
+
+            $ppb = ($item->product && $item->product->pieces_per_box > 0) ? $item->product->pieces_per_box : 1;
+
             if ($type === 'out') {
-                // Deduct
-                if ($stock->total_pieces < $qtyPieces) {
-                    $availFormatted = number_format($stock->total_pieces, 3);
-                    $unitLabel = ($productMode === 'by_kg' || $productMode === 'by_gm') ? 'Kg' : 'Pcs';
-                    throw new \Exception('Insufficient stock for '.$item->product_name.'. Available: '.$availFormatted.' '.$unitLabel);
+                // Get or initialize Shop Stock
+                $shopStock = WarehouseStock::firstOrCreate(
+                    ['product_id' => $item->product_id, 'warehouse_id' => $shopWhId],
+                    ['total_pieces' => 0, 'quantity' => 0]
+                );
+                $shopStock = WarehouseStock::where('id', $shopStock->id)->lockForUpdate()->first();
+
+                // Target warehouse requested on sale line item
+                $requestedWhId = $item->warehouse_id ? (int)$item->warehouse_id : $shopWhId;
+
+                // RULE: If sale is sourced from a warehouse other than shop,
+                // FIRST transfer from that warehouse to shop, THEN sell from shop!
+                if ($requestedWhId !== $shopWhId) {
+                    $srcStock = WarehouseStock::where('product_id', $item->product_id)
+                        ->where('warehouse_id', $requestedWhId)
+                        ->lockForUpdate()
+                        ->first();
+
+                    $srcAvail = $srcStock ? (float)$srcStock->total_pieces : 0;
+                    $transferQty = min($qtyPieces, $srcAvail);
+
+                    if ($transferQty > 0) {
+                        // Deduct from Source Warehouse
+                        $srcStock->total_pieces -= $transferQty;
+                        $srcStock->quantity = round($srcStock->total_pieces / $ppb, 2);
+                        $srcStock->save();
+
+                        // Add to Shop Warehouse
+                        $shopStock->total_pieces += $transferQty;
+                        $shopStock->quantity = round($shopStock->total_pieces / $ppb, 2);
+                        $shopStock->save();
+
+                        // Record StockTransfer
+                        \App\Models\StockTransfer::create([
+                            'from_warehouse_id' => $requestedWhId,
+                            'to_warehouse_id' => $shopWhId,
+                            'to_shop' => true,
+                            'product_id' => $item->product_id,
+                            'quantity' => $transferQty,
+                            'remarks' => "Auto-transfer from Wh #{$requestedWhId} to Shop for POS Sale #{$sale->invoice_no}",
+                        ]);
+
+                        // Record Movements
+                        DB::table('stock_movements')->insert([
+                            'product_id' => $item->product_id,
+                            'type' => 'out',
+                            'qty' => -$transferQty,
+                            'ref_type' => 'stock_transfer',
+                            'ref_id' => $sale->id,
+                            'note' => "Transfer out to Shop (Wh #{$shopWhId}) for Sale #{$sale->invoice_no}",
+                            'created_at' => now(),
+                            'updated_at' => now(),
+                        ]);
+
+                        DB::table('stock_movements')->insert([
+                            'product_id' => $item->product_id,
+                            'type' => 'in',
+                            'qty' => $transferQty,
+                            'ref_type' => 'stock_transfer',
+                            'ref_id' => $sale->id,
+                            'note' => "Transfer in from Warehouse #{$requestedWhId} to Shop for Sale #{$sale->invoice_no}",
+                            'created_at' => now(),
+                            'updated_at' => now(),
+                        ]);
+                    }
                 }
-                $stock->total_pieces -= $qtyPieces;
-                // Update approx boxes for display
-                $ppb = $item->product->pieces_per_box ?? 1;
-                $stock->quantity = round($stock->total_pieces / ($ppb > 0 ? $ppb : 1), 2);
-                $stock->save();
+
+                // If Shop still has insufficient stock, auto-pull deficit from other warehouses into Shop
+                if ($shopStock->total_pieces < $qtyPieces) {
+                    $deficit = $qtyPieces - $shopStock->total_pieces;
+                    $otherStocks = WarehouseStock::where('product_id', $item->product_id)
+                        ->where('warehouse_id', '!=', $shopWhId)
+                        ->where('total_pieces', '>', 0)
+                        ->orderByDesc('total_pieces')
+                        ->lockForUpdate()
+                        ->get();
+
+                    foreach ($otherStocks as $oStock) {
+                        if ($deficit <= 0) break;
+                        $avail = (float)$oStock->total_pieces;
+                        if ($avail <= 0) continue;
+                        $takeQty = min($deficit, $avail);
+
+                        $oStock->total_pieces -= $takeQty;
+                        $oStock->quantity = round($oStock->total_pieces / $ppb, 2);
+                        $oStock->save();
+
+                        $shopStock->total_pieces += $takeQty;
+                        $shopStock->quantity = round($shopStock->total_pieces / $ppb, 2);
+                        $shopStock->save();
+
+                        \App\Models\StockTransfer::create([
+                            'from_warehouse_id' => $oStock->warehouse_id,
+                            'to_warehouse_id' => $shopWhId,
+                            'to_shop' => true,
+                            'product_id' => $item->product_id,
+                            'quantity' => $takeQty,
+                            'remarks' => "Auto-transfer deficit from Wh #{$oStock->warehouse_id} to Shop for POS Sale #{$sale->invoice_no}",
+                        ]);
+
+                        DB::table('stock_movements')->insert([
+                            'product_id' => $item->product_id,
+                            'type' => 'out',
+                            'qty' => -$takeQty,
+                            'ref_type' => 'stock_transfer',
+                            'ref_id' => $sale->id,
+                            'note' => "Transfer out to Shop (Wh #{$shopWhId}) for Sale #{$sale->invoice_no}",
+                            'created_at' => now(),
+                            'updated_at' => now(),
+                        ]);
+
+                        DB::table('stock_movements')->insert([
+                            'product_id' => $item->product_id,
+                            'type' => 'in',
+                            'qty' => $takeQty,
+                            'ref_type' => 'stock_transfer',
+                            'ref_id' => $sale->id,
+                            'note' => "Transfer in from Wh #{$oStock->warehouse_id} to Shop for Sale #{$sale->invoice_no}",
+                            'created_at' => now(),
+                            'updated_at' => now(),
+                        ]);
+
+                        $deficit -= $takeQty;
+                    }
+                }
+
+                // Final check on Shop stock
+                if ($shopStock->total_pieces < $qtyPieces) {
+                    if (!$allowNegative) {
+                        $availFormatted = number_format(max(0, $shopStock->total_pieces), 3);
+                        $unitLabel = in_array($productMode, ['by_kg', 'by_gm']) ? 'Kg' : 'Pcs';
+                        throw new \Exception('Insufficient stock for '.$item->product_name.'. Available across all locations: '.$availFormatted.' '.$unitLabel);
+                    }
+                }
+
+                // Deduct from Shop
+                $shopStock->total_pieces -= $qtyPieces;
+                $shopStock->quantity = round($shopStock->total_pieces / $ppb, 2);
+                $shopStock->save();
 
                 // Movement
                 DB::table('stock_movements')->insert([
@@ -1985,17 +2307,26 @@ class SaleController extends Controller
                     'qty' => -$qtyPieces, // Negative for OUT
                     'ref_type' => 'sale',
                     'ref_id' => $sale->id,
-                    'note' => 'Sale Posted #'.$sale->invoice_no,
+                    'note' => 'Sale Posted #'.$sale->invoice_no.' (Sold from Shop)',
                     'created_at' => now(),
                     'updated_at' => now(),
                 ]);
+
+                // Update sale item to indicate it was dispensed from Shop
+                $item->warehouse_id = $shopWhId;
+                $item->save();
+
             } elseif ($type === 'in' || $type === 'return') {
-                // Restore (Cancel or Return)
-                $stock->total_pieces += $qtyPieces;
-                // Update approx boxes
-                $ppb = $item->product->pieces_per_box ?? 1;
-                $stock->quantity = round($stock->total_pieces / ($ppb > 0 ? $ppb : 1), 2);
-                $stock->save();
+                // Restore directly to Shop (Warehouse #1)
+                $shopStock = WarehouseStock::firstOrCreate(
+                    ['product_id' => $item->product_id, 'warehouse_id' => $shopWhId],
+                    ['total_pieces' => 0, 'quantity' => 0]
+                );
+                $shopStock = WarehouseStock::where('id', $shopStock->id)->lockForUpdate()->first();
+
+                $shopStock->total_pieces += $qtyPieces;
+                $shopStock->quantity = round($shopStock->total_pieces / $ppb, 2);
+                $shopStock->save();
 
                 // Movement
                 DB::table('stock_movements')->insert([
@@ -2004,7 +2335,7 @@ class SaleController extends Controller
                     'qty' => $qtyPieces,
                     'ref_type' => 'sale_'.$type, // sale_in (cancel), sale_return
                     'ref_id' => $sale->id,
-                    'note' => 'Sale '.ucfirst($type).' #'.$sale->invoice_no,
+                    'note' => 'Sale '.ucfirst($type).' #'.$sale->invoice_no.' (Restored to Shop)',
                     'created_at' => now(),
                     'updated_at' => now(),
                 ]);
@@ -2280,7 +2611,8 @@ class SaleController extends Controller
             $sale->save();
 
             // 1. DEDUCT STOCK FROM WAREHOUSE
-            $this->handleStockImpact($sale, 'out');
+            $allowNegative = request()->boolean('allow_insufficient_stock') || request()->input('allow_insufficient_stock') == '1';
+            $this->handleStockImpact($sale, 'out', $allowNegative);
 
             // 2. LEGACY LEDGER: Post Invoice First (Increases Balance)
             $this->updateLedger($sale);

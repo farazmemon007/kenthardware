@@ -212,9 +212,34 @@ class ProductController extends Controller
 
                 $expanded = [];
                 foreach ($variants as $v) {
-                    $size = (isset($v['size']) && $v['size'] !== '-') ? " {$v['size']}" : '';
-                    $color = (isset($v['color']) && $v['color'] !== '-') ? " ({$v['color']})" : '';
-                    $vName = ($v['name'] ?? $p->item_name) . $size . $color;
+                    $vSize = (isset($v['size']) && $v['size'] !== '-') ? trim($v['size']) : '';
+                    $vColor = (isset($v['color']) && $v['color'] !== '-') ? trim($v['color']) : '';
+                    $vBaseName = trim($v['name'] ?? $p->item_name);
+
+                    // If color/attribute is empty or '-', extract clean attribute from variant name or SKU
+                    if (empty($vColor) || $vColor === '-') {
+                        if (preg_match('/\(([^)]+)\)/', $vBaseName, $m)) {
+                            $parts = array_map('trim', explode('/', $m[1]));
+                            if (count($parts) >= 2) {
+                                $vColor = $parts[0];
+                                if (empty($vSize) || $vSize === '-') $vSize = $parts[1];
+                            } elseif (count($parts) === 1) {
+                                $vColor = $parts[0];
+                            }
+                        } elseif (!empty($v['sku']) && str_contains($v['sku'], '-')) {
+                            $skuSuffix = substr($v['sku'], strrpos($v['sku'], '-') + 1);
+                            $skuParts = array_map('trim', explode('/', $skuSuffix));
+                            if (!empty($skuParts[0])) $vColor = $skuParts[0];
+                        }
+                    }
+
+                    // Clean full descriptive text without duplicating size or attributes
+                    $descParts = [];
+                    if (!empty($vColor) && $vColor !== '-') $descParts[] = $vColor;
+                    if (!empty($vSize) && $vSize !== '-') $descParts[] = $vSize;
+                    $descSuffix = !empty($descParts) ? ' (' . implode(' / ', $descParts) . ')' : '';
+                    $vSalesDesc = $p->item_name . $descSuffix;
+                    $vName = $vSalesDesc;
                     
                     $vUnitName = $v['unit'] ?? $unitName;
                     $isCartonMode = ($p->size_mode === 'by_cartons' || strtolower($vUnitName) === 'carton');
@@ -368,12 +393,19 @@ class ProductController extends Controller
 
                     $expanded[] = [
                         'id' => $p->id . '|variant|' . base64_encode($variantJson),
-                        'text' => "{$serialBadge}{$vName} (SKU: {$p->item_code})",
+                        'text' => "{$serialBadge}{$vSalesDesc} (SKU: {$p->item_code})",
                         'serial_no' => $vSerial,
-                        'sku' => $p->item_code ?? '',
+                        'sku' => !empty($v['sku']) ? $v['sku'] : ($p->item_code ?? ''),
                         'stock' => $vStockDisplay,
                         'stock_pieces' => $vBalance,
-                        'name' => $vName,
+                        'name' => $p->item_name, // Clean base product name for Item Name column
+                        'product_name' => $p->item_name,
+                        'item_name' => $p->item_name,
+                        'variant_name' => $vSalesDesc,
+                        'sales_desc' => $vSalesDesc,
+                        'color' => !empty($vColor) ? $vColor : '-',
+                        'attribute' => !empty($vColor) ? $vColor : '-',
+                        'size' => !empty($vSize) ? $vSize : '-',
                         'size_mode' => $p->size_mode,
                         'unit_name' => $vUnitName,
                         'pieces_per_box' => $vPpb,
@@ -718,6 +750,44 @@ class ProductController extends Controller
     public function getCategoriesJson()
     {
         return response()->json(Category::orderBy('name')->get(['id', 'name']));
+    }
+
+    public function getProductsByCategory(Request $request)
+    {
+        $categoryId = $request->get('category_id');
+        $query = Product::where('is_active', true)
+            ->select('id', 'item_name', 'item_code', 'sale_price_per_piece', 'color', 'p_code', 'category_id')
+            ->withSum('warehouseStocks', 'total_pieces');
+        if ($categoryId && $categoryId !== 'all') {
+            $query->where('category_id', $categoryId);
+        }
+        $products = $query->orderBy('item_name')->limit(120)->get();
+
+        $result = $products->map(function ($p) {
+            $stock = (float) ($p->warehouse_stocks_sum_total_pieces ?? 0);
+            $hasVariants = false;
+            if ($p->color) {
+                try {
+                    $parsed = json_decode($p->color, true);
+                    if (is_array($parsed) && count($parsed) > 0 && isset($parsed[0]['name'])) {
+                        $hasVariants = true;
+                    }
+                } catch (\Exception $e) {}
+            }
+            return [
+                'id' => $p->id,
+                'name' => $p->item_name,
+                'sku' => $p->item_code ?? '',
+                'price' => (float) ($p->sale_price_per_piece ?? 0),
+                'stock' => $stock,
+                'stock_pieces' => $stock,
+                'has_variants' => $hasVariants,
+                'p_code' => $p->p_code ?? '',
+                'category_id' => $p->category_id,
+            ];
+        });
+
+        return response()->json(['products' => $result]);
     }
 
     public function getBrandsJson()

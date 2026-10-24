@@ -644,6 +644,51 @@ class BalanceService
     }
 
     /**
+     * Get Bank account ID (primary bank)
+     */
+    public function getBankAccountId(): int
+    {
+        $account = Account::whereHas('head', function ($q) {
+                $q->where('name', 'Bank');
+            })
+            ->orWhere('title', 'like', '%Bank%')
+            ->orWhere('title', 'like', '%Meezan%')
+            ->first();
+
+        if (! $account) {
+            $account = Account::where('type', 'Debit')
+                ->where('id', '!=', $this->getCashAccountId())
+                ->first();
+        }
+
+        return $account ? $account->id : $this->getCashAccountId();
+    }
+
+    /**
+     * Get Gift Card / Store Credit account ID
+     */
+    public function getGiftAccountId(): int
+    {
+        $account = Account::where('title', 'like', '%Gift%')
+            ->orWhere('account_code', 'GIFT')
+            ->first();
+
+        if (! $account) {
+            $account = Account::create([
+                'title' => 'Gift / Store Credit',
+                'account_code' => 'GIFT',
+                'type' => 'Debit',
+                'head_id' => null,
+                'opening_balance' => 0,
+                'status' => 1,
+                'is_active' => 1,
+            ]);
+        }
+
+        return $account->id;
+    }
+
+    /**
      * Get Accounts Payable account ID (Liability)
      * Auto-creates if missing.
      */

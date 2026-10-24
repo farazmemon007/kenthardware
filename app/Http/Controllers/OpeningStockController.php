@@ -600,7 +600,7 @@ class OpeningStockController extends Controller
                     if ($delta != 0) {
                         DB::table('stock_movements')->insert([
                             'product_id'   => $productId,
-                            'type'         => 'opening_stock',
+                            'type'         => $delta >= 0 ? 'in' : 'out',
                             'qty'          => $delta,
                             'ref_type'     => 'OPENING_STOCK',
                             'ref_id'       => $productId,
@@ -637,7 +637,7 @@ class OpeningStockController extends Controller
                     if ($delta != 0) {
                         DB::table('stock_movements')->insert([
                             'product_id'   => $productId,
-                            'type'         => 'opening_stock',
+                            'type'         => $delta >= 0 ? 'in' : 'out',
                             'qty'          => $delta,
                             'ref_type'     => 'OPENING_STOCK',
                             'ref_id'       => $productId,
@@ -777,7 +777,7 @@ class OpeningStockController extends Controller
                             if ($delta != 0) {
                                 DB::table('stock_movements')->insert([
                                     'product_id'   => $productId,
-                                    'type'         => 'opening_stock',
+                                    'type'         => $delta >= 0 ? 'in' : 'out',
                                     'qty'          => $delta,
                                     'ref_type'     => 'OPENING_STOCK',
                                     'ref_id'       => $productId,
@@ -818,7 +818,7 @@ class OpeningStockController extends Controller
                         if ($delta != 0) {
                             DB::table('stock_movements')->insert([
                                 'product_id'   => $productId,
-                                'type'         => 'opening_stock',
+                                'type'         => $delta >= 0 ? 'in' : 'out',
                                 'qty'          => $delta,
                                 'ref_type'     => 'OPENING_STOCK',
                                 'ref_id'       => $productId,

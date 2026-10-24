@@ -2,496 +2,759 @@
 
 @section('content')
     <style>
-        /* Modern Sales Management Styles */
-        .sale-stat-card {
-            background: #ffffff;
-            border: 1px solid #e2e8f0;
-            border-radius: 12px;
-            padding: 16px;
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
-            transition: all 0.2s ease-in-out;
-            height: 100%;
+        /* ==========================================================
+           QUICKBOOKS POS "SALES MANAGEMENT" PIXEL-PERFECT THEME
+           Matching add_sale222.blade.php Color Palette & Styling
+           ========================================================== */
+
+        /* Universal Space Reset to Eliminate Scrolling */
+        .app-page-body {
+            padding-top: 4px !important;
+            padding-bottom: 4px !important;
+            min-height: auto !important;
         }
-        .sale-stat-card:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+        .main-content {
+            padding-top: 4px !important;
+            padding-bottom: 4px !important;
+            min-height: auto !important;
         }
-        .sale-stat-icon {
-            width: 44px;
-            height: 44px;
-            border-radius: 10px;
+        .main-content-inner {
+            padding: 0 !important;
+        }
+        footer {
+            display: none !important;
+        }
+        .odoo-page-wrapper {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif !important;
+            padding: 0 4px !important;
+        }
+
+        /* 1. Top Window Title Bar (Navy Blue Gradient - Exact POS Title Bar) */
+        .qb-win-header {
+            height: 36px !important;
+            min-height: 36px !important;
+            background: linear-gradient(180deg, #18385e 0%, #102641 100%) !important;
+            color: #ffffff !important;
+            border-radius: 5px 5px 0 0;
+            border: 1px solid #0a192b;
+            border-bottom: 1px solid #06111f;
             display: flex;
             align-items: center;
-            justify-content: center;
-            font-size: 20px;
+            justify-content: space-between;
+            padding: 0 10px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.25);
+            margin-bottom: 4px !important;
         }
-
-        /* Clean & Bold Filter Panel */
-        .filter-panel {
-            background-color: #f8fafc !important;
-            border: 2px dashed #cbd5e1 !important;
-            border-radius: 12px !important;
-            padding: 16px !important;
+        .qb-win-title {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 13.5px;
+            font-weight: 800;
+            letter-spacing: 0.3px;
+            color: #ffffff;
         }
-        
-        .filter-panel label {
-            font-size: 11px;
-            font-weight: 700 !important;
-            color: #475569 !important;
+        .qb-win-title i {
+            color: #38bdf8;
+            font-size: 14px;
+        }
+        .qb-win-sub {
+            font-size: 10.5px;
+            font-weight: 600;
+            color: #93c5fd;
             text-transform: uppercase;
             letter-spacing: 0.5px;
         }
-        
-        .filter-panel .form-control,
-        .filter-panel .form-select {
-            border: 1.5px solid #cbd5e1 !important;
-            border-radius: 8px !important;
-            font-weight: 500 !important;
-            color: #1e293b !important;
-            transition: all 0.2s ease-in-out;
-            height: 38px !important;
-            font-size: 13px !important;
+
+        /* QuickBooks Glossy Action Buttons (Like Sale Screen) */
+        .qb-btn-green {
+            background: linear-gradient(180deg, #53af41 0%, #35832a 100%) !important;
+            border: 1px solid #286c1f !important;
+            border-radius: 4px !important;
+            box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.4), 0 1px 2px rgba(0, 0, 0, 0.2) !important;
+            color: #ffffff !important;
+            font-weight: 700 !important;
+            font-size: 11.5px !important;
+            padding: 3px 12px !important;
+            height: 26px !important;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            text-decoration: none !important;
+            cursor: pointer;
+            transition: filter 0.1s ease;
         }
-        
-        .filter-panel .form-control:focus,
-        .filter-panel .form-select:focus {
-            border-color: #3b82f6 !important;
-            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15) !important;
+        .qb-btn-green:hover {
+            filter: brightness(1.1);
+            color: #ffffff !important;
         }
 
-        /* Select2 In Filter Panel */
-        .filter-panel .select2-container {
-            width: 100% !important;
+        .qb-btn-blue {
+            background: linear-gradient(180deg, #5ea5ee 0%, #3077c1 48%, #2061a9 52%, #195293 100%) !important;
+            border: 1px solid #15457a !important;
+            border-radius: 4px !important;
+            box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.45), 0 1px 2px rgba(0, 0, 0, 0.2) !important;
+            color: #ffffff !important;
+            font-weight: 700 !important;
+            font-size: 11.5px !important;
+            padding: 3px 10px !important;
+            height: 26px !important;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            text-decoration: none !important;
+            cursor: pointer;
+            transition: filter 0.1s ease;
         }
-        .filter-panel .select2-container--default .select2-selection--single {
-            height: 38px !important;
-            border: 1.5px solid #cbd5e1 !important;
-            border-radius: 8px !important;
-            padding: 5px 8px !important;
-            background-color: #ffffff !important;
+        .qb-btn-blue:hover {
+            filter: brightness(1.1);
+            color: #ffffff !important;
         }
-        .filter-panel .select2-container--default .select2-selection--single .select2-selection__rendered {
-            line-height: 26px !important;
-            color: #1e293b !important;
+
+        .qb-btn-red {
+            background: linear-gradient(180deg, #e05252 0%, #c33838 100%) !important;
+            border: 1px solid #942222 !important;
+            border-radius: 4px !important;
+            box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.4), 0 1px 2px rgba(0, 0, 0, 0.2) !important;
+            color: #ffffff !important;
+            font-weight: 700 !important;
+            font-size: 11.5px !important;
+            padding: 3px 10px !important;
+            height: 26px !important;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            text-decoration: none !important;
+            cursor: pointer;
+            transition: filter 0.1s ease;
+        }
+        .qb-btn-red:hover {
+            filter: brightness(1.1);
+            color: #ffffff !important;
+        }
+
+        /* 2. Sub-Header Strip (Steel Blue Gradient - Exact POS Order Ribbon) */
+        .qb-sub-ribbon {
+            background: linear-gradient(180deg, #edf3fa 0%, #d4e0ee 100%) !important;
+            border: 1px solid #b2c5dc;
+            border-radius: 4px;
+            padding: 4px 8px;
+            margin-bottom: 4px !important;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 6px;
+            box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.6);
+        }
+
+        /* Status Tabs (Like QuickBooks Order Tabs in Image 1) */
+        .qb-status-tabs {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+        }
+        .qb-tab-pill {
+            background: rgba(255, 255, 255, 0.7);
+            border: 1px solid #a8bed8;
+            border-radius: 4px;
+            padding: 2px 8px;
+            font-size: 11px;
+            font-weight: 600;
+            color: #193452;
+            text-decoration: none !important;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            height: 24px;
+            transition: all 0.12s ease;
+            box-shadow: 0 1px 1px rgba(0, 0, 0, 0.05);
+        }
+        .qb-tab-pill:hover {
+            background: #ffffff;
+            color: #0f2744;
+            border-color: #8ca4c3;
+        }
+        .qb-tab-pill.active {
+            background: #ffffff !important;
+            border: 1.5px solid #18385e !important;
+            color: #102641 !important;
+            font-weight: 800;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15) !important;
+        }
+        .qb-tab-pill.active-success {
+            background: #ffffff !important;
+            border: 1.5px solid #15803d !important;
+            color: #15803d !important;
+            font-weight: 800;
+        }
+        .qb-tab-pill.active-warning {
+            background: #ffffff !important;
+            border: 1.5px solid #b45309 !important;
+            color: #b45309 !important;
+            font-weight: 800;
+        }
+        .qb-tab-pill.active-info {
+            background: #ffffff !important;
+            border: 1.5px solid #0369a1 !important;
+            color: #0369a1 !important;
+            font-weight: 800;
+        }
+        .qb-tab-pill.active-danger {
+            background: #ffffff !important;
+            border: 1.5px solid #b91c1c !important;
+            color: #b91c1c !important;
+            font-weight: 800;
+        }
+        .qb-tab-pill .badge {
+            font-size: 9.5px;
+            padding: 1px 4px;
+            border-radius: 6px;
+            font-family: Consolas, monospace;
+        }
+
+        /* Financial Summary Chips (Like Bottom Strip in Image 1) */
+        .qb-kpi-group {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            flex-wrap: wrap;
+        }
+        .qb-kpi-chip {
+            background: #ffffff;
+            border: 1px solid #8ca4c3;
+            border-radius: 4px;
+            padding: 2px 7px;
+            font-size: 11px;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            line-height: 1.2;
+            box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.8), 0 1px 1px rgba(0, 0, 0, 0.05);
+        }
+        .qb-kpi-chip .chip-label {
+            font-weight: 700;
+            color: #475569;
+            font-size: 10px;
+            text-transform: uppercase;
+        }
+        .qb-kpi-chip .chip-val {
+            font-weight: 800;
+            font-family: Consolas, monospace;
+        }
+
+        /* 3. Filter Bar (Light Slate Blue Gradient Strip) */
+        .qb-filter-bar {
+            background: linear-gradient(180deg, #f7fafd 0%, #e8f0f8 100%) !important;
+            border: 1px solid #b9cce2;
+            border-radius: 4px;
+            padding: 4px 8px;
+            margin-bottom: 5px !important;
+            box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.8);
+        }
+        .qb-filter-form {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            flex-wrap: nowrap;
+            width: 100%;
+            margin: 0;
+            overflow-x: auto;
+        }
+        .qb-filter-col {
+            position: relative;
+            display: flex;
+            align-items: center;
+            flex-shrink: 0;
+        }
+        .qb-input {
+            height: 26px !important;
+            border: 1px solid #8ca4c3 !important;
+            border-radius: 3px !important;
+            font-size: 11px !important;
             font-weight: 500 !important;
-            font-size: 13px !important;
+            color: #0f2744 !important;
+            padding: 1px 6px !important;
+            background-color: #ffffff;
+        }
+        .qb-input:focus {
+            border-color: #2563eb !important;
+            box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.18) !important;
+        }
+
+        /* Datepicker Container - Strictly Constrained */
+        .qb-filter-col.date-col {
+            width: 100px !important;
+            min-width: 100px !important;
+            max-width: 100px !important;
+            flex: 0 0 100px !important;
+        }
+        .qb-filter-col.date-col input,
+        .qb-filter-col.date-col .flatpickr-wrapper,
+        .qb-filter-col.date-col .input,
+        .qb-filter-col.date-col .form-control {
+            width: 100px !important;
+            min-width: 100px !important;
+            max-width: 100px !important;
+            height: 26px !important;
+            font-size: 11px !important;
+            padding: 2px 6px !important;
+            display: inline-block !important;
+            box-sizing: border-box !important;
+            border: 1px solid #8ca4c3 !important;
+            border-radius: 3px !important;
+            color: #0f2744 !important;
+        }
+
+        /* Select2 in Filter Bar */
+        .qb-filter-col .select2-container .select2-selection--single {
+            height: 26px !important;
+            border: 1px solid #8ca4c3 !important;
+            border-radius: 3px !important;
+            padding: 0 4px !important;
+            background: #ffffff;
+        }
+        .qb-filter-col .select2-container .select2-selection--single .select2-selection__rendered {
+            line-height: 24px !important;
+            font-size: 11px !important;
+            font-weight: 500 !important;
+            color: #0f2744 !important;
             padding-left: 0 !important;
         }
-        .filter-panel .select2-container--default .select2-selection--single .select2-selection__arrow {
-            height: 36px !important;
-            right: 6px !important;
-        }
-        .filter-panel .select2-container--default.select2-container--focus .select2-selection--single,
-        .filter-panel .select2-container--default.select2-container--open .select2-selection--single {
-            border-color: #3b82f6 !important;
-            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15) !important;
-        }
-        .select2-dropdown {
-            border: 1.5px solid #cbd5e1 !important;
-            border-radius: 8px !important;
-            box-shadow: 0 10px 20px -3px rgba(0, 0, 0, 0.1) !important;
-            z-index: 9999 !important;
-        }
-        .select2-search--dropdown .select2-search__field {
-            border: 1.5px solid #cbd5e1 !important;
-            border-radius: 6px !important;
-            padding: 6px 10px !important;
-            font-size: 13px !important;
+        .qb-filter-col .select2-container .select2-selection--single .select2-selection__arrow {
+            height: 24px !important;
+            right: 2px !important;
         }
 
-        /* Premium Buttons */
-        .btn-premium-primary {
-            background-color: #2563eb !important;
-            border: 1.5px solid #1d4ed8 !important;
+        /* Filter Buttons */
+        .qb-btn-search {
+            background: linear-gradient(180deg, #5ea5ee 0%, #3077c1 48%, #2061a9 52%, #195293 100%) !important;
+            border: 1px solid #15457a !important;
             color: #ffffff !important;
-            font-weight: 600 !important;
-            border-radius: 8px !important;
-            height: 38px !important;
-            padding: 0 16px !important;
-            transition: all 0.2s;
+            font-weight: 700 !important;
+            border-radius: 3px !important;
+            height: 26px !important;
+            padding: 0 10px !important;
+            font-size: 11px !important;
             display: inline-flex;
             align-items: center;
-            justify-content: center;
+            gap: 4px;
+            box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.4), 0 1px 2px rgba(0, 0, 0, 0.2);
+            white-space: nowrap;
         }
-        .btn-premium-primary:hover {
-            background-color: #1d4ed8 !important;
-            transform: translateY(-1px);
+        .qb-btn-search:hover {
+            filter: brightness(1.1);
+            color: #ffffff !important;
         }
-        
-        .btn-premium-secondary {
-            background-color: #ffffff !important;
-            border: 1.5px solid #cbd5e1 !important;
-            color: #475569 !important;
+        .qb-btn-reset {
+            background: linear-gradient(180deg, #ffffff 0%, #e8eff6 100%) !important;
+            border: 1px solid #8ca4c3 !important;
+            color: #334155 !important;
             font-weight: 600 !important;
-            border-radius: 8px !important;
-            height: 38px !important;
-            padding: 0 16px !important;
-            transition: all 0.2s;
+            border-radius: 3px !important;
+            height: 26px !important;
+            padding: 0 8px !important;
+            font-size: 11px !important;
             display: inline-flex;
             align-items: center;
-            justify-content: center;
         }
-        .btn-premium-secondary:hover {
-            background-color: #f1f5f9 !important;
-            border-color: #94a3b8 !important;
-            color: #1e293b !important;
-        }
-
-        /* Premium Table Styling */
-        .premium-card {
-            border: 1.5px solid #cbd5e1 !important;
-            border-radius: 12px !important;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05) !important;
-            background-color: #ffffff;
-        }
-
-        .premium-table {
-            border: 2px solid #475569 !important;
-            border-radius: 8px !important;
-            overflow: visible !important;
-        }
-
-        /* Prevent Dropdowns from Being Clipped */
-        .table-responsive {
-            border-radius: 8px !important;
-            overflow: visible !important;
-            min-height: 380px;
-        }
-
-        /* Premium Dropdown Menu Customizations */
-        .dropdown-menu {
-            border: 1.5px solid #cbd5e1 !important;
-            border-radius: 8px !important;
-            box-shadow: 0 10px 25px -3px rgba(0, 0, 0, 0.15), 0 4px 6px -2px rgba(0, 0, 0, 0.05) !important;
-            padding: 6px 0 !important;
-            z-index: 1060 !important;
-        }
-        .dropdown-item {
-            font-size: 12px !important;
-            font-weight: 600 !important;
-            color: #475569 !important;
-            padding: 8px 16px !important;
-            transition: all 0.15s ease-in-out !important;
-        }
-        .dropdown-item:hover {
-            background-color: #f1f5f9 !important;
+        .qb-btn-reset:hover {
+            background: #e2e8f0 !important;
             color: #0f172a !important;
         }
-        .dropdown-divider {
-            border-top: 1.5px solid #e2e8f0 !important;
-            margin: 6px 0 !important;
+
+        /* 4. Table Card (Exact Replica of Image 1 Grid Table) */
+        .qb-table-card {
+            background: #ffffff;
+            border: 1px solid #aebfd4;
+            border-radius: 4px;
+            padding: 4px 6px 6px 6px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
         }
-        
-        .premium-table thead th {
-            background-color: #f1f5f9 !important;
-            color: #1e293b !important;
-            font-weight: 700 !important;
-            text-transform: uppercase;
-            font-size: 11px;
-            letter-spacing: 0.5px;
-            border-bottom: 3px solid #475569 !important;
-            border-right: 1.5px solid #cbd5e1 !important;
-            padding: 12px 10px !important;
-        }
-        
-        .premium-table tbody td {
-            border: 1.5px solid #e2e8f0 !important;
-            padding: 12px 10px !important;
-            font-size: 13px !important;
-            color: #334155 !important;
+        .table-responsive {
+            border: 1px solid #aebfd4 !important;
+            border-radius: 3px !important;
             background-color: #ffffff;
+            overflow-x: auto;
+            min-height: 0 !important;
         }
-        
-        .premium-table tbody tr:hover td {
-            background-color: #f8fafc !important;
+        .qb-table {
+            margin-bottom: 0 !important;
+            font-size: 11.5px !important;
+            width: 100% !important;
+            border-collapse: collapse !important;
         }
 
-        /* Dropdown Action Button */
-        .btn-premium-action {
-            background-color: #f8fafc !important;
-            border: 1.5px solid #cbd5e1 !important;
-            color: #475569 !important;
+        /* Table Headers (Exact Image 1 Replica: Light Blue-Gray Gradient with Dividers) */
+        .qb-table thead th {
+            background: linear-gradient(180deg, #f7f9fc 0%, #e2eaf3 100%) !important;
+            color: #193452 !important;
             font-weight: 700 !important;
-            border-radius: 6px !important;
-            height: 32px !important;
-            padding: 0 12px !important;
-            font-size: 11px !important;
             text-transform: uppercase;
-            letter-spacing: 0.5px;
+            font-size: 10.5px !important;
+            letter-spacing: 0.3px;
+            border-bottom: 2px solid #aebfd4 !important;
+            border-right: 1px solid #c9d7e5 !important;
+            border-top: none !important;
+            padding: 6px 8px !important;
+            white-space: nowrap !important;
+        }
+        .qb-table thead th:last-child {
+            border-right: none !important;
+        }
+
+        /* Remove Broken DataTables Sort Glyphs [][ ] */
+        table.dataTable thead .sorting:before,
+        table.dataTable thead .sorting:after,
+        table.dataTable thead .sorting_asc:before,
+        table.dataTable thead .sorting_asc:after,
+        table.dataTable thead .sorting_desc:before,
+        table.dataTable thead .sorting_desc_disabled:before,
+        table.dataTable thead .sorting_asc_disabled:before,
+        table.dataTable thead .sorting_desc:after,
+        table.dataTable thead .sorting_desc_disabled:after,
+        .dataTables_wrapper .dataTable thead .sorting:before,
+        .dataTables_wrapper .dataTable thead .sorting:after,
+        .dataTables_wrapper .dataTable thead .sorting_asc:before,
+        .dataTables_wrapper .dataTable thead .sorting_asc:after,
+        .dataTables_wrapper .dataTable thead .sorting_desc:before,
+        .dataTables_wrapper .dataTable thead .sorting_desc:after,
+        .qb-table thead th:before,
+        .qb-table thead th:after {
+            display: none !important;
+            content: "" !important;
+        }
+        table.dataTable thead th,
+        table.dataTable thead td {
+            background-image: none !important;
+        }
+
+        /* Table Body Cells */
+        .qb-table tbody td {
+            border-bottom: 1px solid #e2e8f0 !important;
+            border-right: 1px solid #edf2f7 !important;
+            border-top: none !important;
+            padding: 4px 8px !important;
+            font-size: 11.5px !important;
+            color: #1a202c !important;
+            vertical-align: middle;
+        }
+        .qb-table tbody td:last-child {
+            border-right: none !important;
+        }
+
+        /* ==========================================================
+           ROW CURSOR HOVER: PASTEL MINT GREEN (Exact Sale Screen Replica)
+           ========================================================== */
+        .qb-table tbody tr {
+            cursor: pointer;
+            transition: background-color 0.1s ease-in-out;
+        }
+        .qb-table tbody tr:hover td,
+        .qb-table tbody tr:hover th {
+            background-color: #d5eed7 !important;
+            color: #111827 !important;
+        }
+        .qb-table tbody tr:hover td small,
+        .qb-table tbody tr:hover td .text-muted {
+            color: #2e4a32 !important;
+        }
+        .qb-table tbody tr.qb-active-row td {
+            background-color: #d5eed7 !important;
+            color: #111827 !important;
+        }
+
+        .qb-table td.text-nowrap,
+        .qb-table th.text-nowrap,
+        .qb-table .font-monospace {
+            white-space: nowrap !important;
+        }
+
+        /* Actions Button (Mini Tool Button) */
+        .odoo-action-btn, .btn-premium-action {
+            background: linear-gradient(180deg, #ffffff 0%, #edf3fa 100%) !important;
+            border: 1px solid #8ca4c3 !important;
+            color: #18385e !important;
+            font-weight: 700 !important;
+            border-radius: 3px !important;
+            height: 22px !important;
+            padding: 0 6px !important;
+            font-size: 10.5px !important;
             display: inline-flex !important;
             align-items: center !important;
             justify-content: center !important;
-            transition: all 0.2s ease-in-out !important;
+            box-shadow: 0 1px 1px rgba(0, 0, 0, 0.08);
+            transition: all 0.12s ease;
         }
-        .btn-premium-action:hover, 
-        .btn-premium-action:focus, 
+        .odoo-action-btn:hover,
+        .odoo-action-btn[aria-expanded="true"],
+        .btn-premium-action:hover,
         .btn-premium-action[aria-expanded="true"] {
-            background-color: #f1f5f9 !important;
-            border-color: #94a3b8 !important;
-            color: #1e293b !important;
+            background: #dbeafe !important;
+            border-color: #2563eb !important;
+            color: #1d4ed8 !important;
         }
 
-        /* Responsive Breakpoints (< 768px) */
-        @media (max-width: 768px) {
-            .sales-hdr-actions {
-                display: grid !important;
-                grid-template-columns: 1fr 1fr;
-                gap: 8px;
-                width: 100%;
-            }
-            .sales-hdr-actions .btn {
-                width: 100%;
-                justify-content: center;
-                height: 38px;
-                font-size: 0.8rem;
-            }
-            .sales-status-pills {
-                display: flex !important;
-                gap: 6px;
-                overflow-x: auto;
-                padding-bottom: 6px;
-                -webkit-overflow-scrolling: touch;
-            }
-            .sales-status-pills .btn {
-                flex: 0 0 auto;
-                white-space: nowrap;
-            }
-            /* DataTables Mobile Search Controls */
-            .dataTables_wrapper .dataTables_length,
-            .dataTables_wrapper .dataTables_filter {
-                float: none !important;
-                text-align: left !important;
-                margin-bottom: 10px;
-            }
-            .dataTables_wrapper .dataTables_filter input {
-                width: 100% !important;
-                margin-left: 0 !important;
-            }
+        /* Customer Initials Avatar */
+        .avatar-circle {
+            width: 22px !important;
+            height: 22px !important;
+            font-size: 10px !important;
+            font-weight: 700 !important;
+            border-radius: 50% !important;
         }
-        @media (min-width: 769px) {
-            .sales-hdr-actions {
-                display: flex;
-                gap: 8px;
-            }
-            .sales-status-pills {
-                display: flex;
-                gap: 8px;
-            }
+
+        /* Dropdown Menu in Grid */
+        .dropdown-menu {
+            border: 1px solid #aebfd4 !important;
+            border-radius: 4px !important;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15) !important;
+            padding: 3px 0 !important;
+            z-index: 1060 !important;
+            font-size: 11.5px !important;
+        }
+        .dropdown-item {
+            font-size: 11.5px !important;
+            font-weight: 600 !important;
+            color: #1e293b !important;
+            padding: 4px 12px !important;
+            transition: all 0.12s ease !important;
+        }
+        .dropdown-item:hover {
+            background-color: #eff6ff !important;
+            color: #1d4ed8 !important;
+        }
+        .dropdown-divider {
+            border-top: 1px solid #e2e8f0 !important;
+            margin: 3px 0 !important;
+        }
+
+        /* DataTables Controls (Clean QuickBooks Style) */
+        .dataTables_wrapper .dataTables_length {
+            font-size: 11px !important;
+            color: #475569 !important;
+            font-weight: 600 !important;
+        }
+        .dataTables_wrapper .dataTables_length select {
+            height: 22px !important;
+            border: 1px solid #8ca4c3 !important;
+            border-radius: 3px !important;
+            font-size: 10.5px !important;
+            padding: 0 4px !important;
+            margin: 0 4px !important;
+        }
+        .dataTables_wrapper .dataTables_filter {
+            font-size: 11px !important;
+            color: #475569 !important;
+            font-weight: 600 !important;
+        }
+        .dataTables_wrapper .dataTables_filter input {
+            height: 22px !important;
+            border: 1px solid #8ca4c3 !important;
+            border-radius: 3px !important;
+            font-size: 10.5px !important;
+            padding: 0 6px !important;
+            margin-left: 4px !important;
+        }
+        .dataTables_wrapper .dataTables_info {
+            font-size: 11px !important;
+            color: #475569 !important;
+            padding-top: 4px !important;
+            font-weight: 600 !important;
+        }
+        .dataTables_wrapper .dataTables_paginate {
+            padding-top: 4px !important;
+        }
+        .dataTables_wrapper .dataTables_paginate .page-link {
+            color: #193452 !important;
+            border: 1px solid #b2c5dc !important;
+            padding: 2px 7px !important;
+            font-size: 11px !important;
+            border-radius: 3px !important;
+            margin: 0 1px !important;
+            background: linear-gradient(180deg, #ffffff 0%, #edf3fa 100%);
+        }
+        .dataTables_wrapper .dataTables_paginate .page-item.active .page-link {
+            background: linear-gradient(180deg, #5ea5ee 0%, #3077c1 48%, #2061a9 52%, #195293 100%) !important;
+            border-color: #15457a !important;
+            color: #ffffff !important;
+            font-weight: 800 !important;
         }
     </style>
 
     <div class="main-content">
         <div class="main-content-inner">
-            <div class="container-fluid py-4">
+            <div class="container-fluid odoo-page-wrapper">
 
-                {{-- Page Header --}}
-                <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4">
-                    <div>
-                        <h4 class="fw-bold mb-0 text-dark d-flex align-items-center gap-2">
-                            <i class="fas fa-shopping-cart text-primary"></i> Sales Management
-                        </h4>
-                        <p class="text-muted mb-0 small">View, search, filter and edit your sales invoices & bookings</p>
+                {{-- Row 1: Top Window Title Bar (Navy Blue POS Replica) --}}
+                <div class="qb-win-header">
+                    <div class="qb-win-title">
+                        <i class="fas fa-file-invoice-dollar"></i>
+                        <span>Sales Management</span>
+                        <span class="qb-win-sub d-none d-sm-inline">/ Invoices</span>
                     </div>
-                    <div class="sales-hdr-actions">
-                        <a class="btn btn-outline-danger px-3 shadow-sm fw-medium d-inline-flex align-items-center justify-content-center gap-1"
-                            href="{{ route('sale.return.index') }}" style="border-radius: 8px;">
-                            <i class="fas fa-undo"></i> Returns
+
+                    {{-- Top Action Buttons (Glossy QuickBooks 3D Buttons) --}}
+                    <div class="d-flex align-items-center gap-1">
+                        <a class="qb-btn-red" href="{{ route('sale.return.index') }}" title="Returns">
+                            <i class="fas fa-undo-alt"></i> Returns
                         </a>
-                        <a class="btn btn-outline-primary px-3 shadow-sm fw-medium d-inline-flex align-items-center justify-content-center gap-1"
-                            href="{{ url('bookings') }}" style="border-radius: 8px;">
+                        <a class="qb-btn-blue" href="{{ url('bookings') }}" title="Bookings">
                             <i class="fas fa-bookmark"></i> Bookings
                         </a>
                         @can('sales.create')
-                            <a class="btn btn-primary px-3 shadow-sm fw-medium d-inline-flex align-items-center justify-content-center gap-1"
-                                href="{{ route('sale.add') }}" style="border-radius: 8px;">
-                                <i class="fas fa-plus"></i> Add Sale
+                            <a class="qb-btn-green" href="{{ route('sale.add') }}" title="Add Sale">
+                                <i class="fas fa-plus"></i> + New Sale (F1)
                             </a>
                         @endcan
                     </div>
                 </div>
 
-                {{-- KPI Stat Cards --}}
-                <div class="row g-3 mb-4">
-                    <div class="col-6 col-md-3">
-                        <div class="sale-stat-card">
-                            <div class="d-flex align-items-center justify-content-between">
-                                <div>
-                                    <div class="text-muted small fw-bold text-uppercase" style="font-size: 11px;">Total Invoices</div>
-                                    <h4 class="fw-bold text-dark mb-0 mt-1" id="statTotalCount">{{ number_format($stats['total_count'] ?? 0) }}</h4>
-                                </div>
-                                <div class="sale-stat-icon bg-primary-subtle text-primary" style="background-color: #eff6ff; color: #2563eb;">
-                                    <i class="fas fa-file-invoice"></i>
-                                </div>
-                            </div>
-                        </div>
+                {{-- Row 2: Status Ribbon (Left) & Financial KPIs (Right) --}}
+                <div class="qb-sub-ribbon">
+                    {{-- Status Filter Pills (QuickBooks Order Tab Style) --}}
+                    <div class="qb-status-tabs">
+                        <a href="{{ route('sale.index', ['status' => 'all']) }}"
+                            class="qb-tab-pill {{ request('status') == 'all' || !request('status') ? 'active' : '' }}">
+                            All <span class="badge {{ request('status') == 'all' || !request('status') ? 'bg-primary text-white' : 'bg-secondary text-white' }}">{{ $stats['total_count'] ?? 0 }}</span>
+                        </a>
+                        <a href="{{ route('sale.index', ['status' => 'posted']) }}"
+                            class="qb-tab-pill {{ request('status') == 'posted' ? 'active-success' : '' }}">
+                            <i class="fas fa-check-circle text-success"></i> Posted <span class="badge {{ request('status') == 'posted' ? 'bg-success text-white' : 'bg-success-subtle text-success' }}">{{ $stats['posted_count'] ?? 0 }}</span>
+                        </a>
+                        <a href="{{ route('sale.index', ['status' => 'draft']) }}"
+                            class="qb-tab-pill {{ request('status') == 'draft' ? 'active-warning' : '' }}">
+                            <i class="fas fa-pencil-alt text-warning"></i> Draft <span class="badge {{ request('status') == 'draft' ? 'bg-warning text-dark' : 'bg-warning-subtle text-dark' }}">{{ $stats['draft_count'] ?? 0 }}</span>
+                        </a>
+                        <a href="{{ route('sale.index', ['status' => 'booked']) }}"
+                            class="qb-tab-pill {{ request('status') == 'booked' ? 'active-info' : '' }}">
+                            <i class="fas fa-bookmark text-info"></i> Booked <span class="badge {{ request('status') == 'booked' ? 'bg-info text-white' : 'bg-info-subtle text-info' }}">{{ $stats['booked_count'] ?? 0 }}</span>
+                        </a>
+                        <a href="{{ route('sale.index', ['status' => 'returned']) }}"
+                            class="qb-tab-pill {{ request('status') == 'returned' ? 'active-danger' : '' }}">
+                            <i class="fas fa-undo-alt text-danger"></i> Returned <span class="badge {{ request('status') == 'returned' ? 'bg-danger text-white' : 'bg-danger-subtle text-danger' }}">{{ $stats['returned_count'] ?? 0 }}</span>
+                        </a>
                     </div>
-                    <div class="col-6 col-md-3">
-                        <div class="sale-stat-card">
-                            <div class="d-flex align-items-center justify-content-between">
-                                <div>
-                                    <div class="text-muted small fw-bold text-uppercase" style="font-size: 11px;">Total Net Revenue</div>
-                                    <h4 class="fw-bold text-success mb-0 mt-1" id="statTotalNet">Rs. {{ number_format($stats['total_net'] ?? 0, 2) }}</h4>
-                                </div>
-                                <div class="sale-stat-icon bg-success-subtle text-success" style="background-color: #ecfdf5; color: #059669;">
-                                    <i class="fas fa-coins"></i>
-                                </div>
-                            </div>
+
+                    {{-- Inline Financial KPI Chips --}}
+                    <div class="qb-kpi-group">
+                        <div class="qb-kpi-chip" title="Total Invoices">
+                            <span class="chip-label">Total:</span>
+                            <span class="chip-val text-primary" id="statTotalCount">{{ number_format($stats['total_count'] ?? 0) }}</span>
                         </div>
-                    </div>
-                    <div class="col-6 col-md-3">
-                        <div class="sale-stat-card">
-                            <div class="d-flex align-items-center justify-content-between">
-                                <div>
-                                    <div class="text-muted small fw-bold text-uppercase" style="font-size: 11px;">Discounts Given</div>
-                                    <h4 class="fw-bold text-warning mb-0 mt-1" id="statTotalDiscount" style="color: #d97706 !important;">Rs. {{ number_format($stats['total_discount'] ?? 0, 2) }}</h4>
-                                </div>
-                                <div class="sale-stat-icon bg-warning-subtle text-warning" style="background-color: #fffbeb; color: #d97706;">
-                                    <i class="fas fa-tags"></i>
-                                </div>
-                            </div>
+                        <div class="qb-kpi-chip" title="Total Net Revenue">
+                            <span class="chip-label">Net:</span>
+                            <span class="chip-val text-success" id="statTotalNet">Rs. {{ number_format($stats['total_net'] ?? 0, 2) }}</span>
                         </div>
-                    </div>
-                    <div class="col-6 col-md-3">
-                        <div class="sale-stat-card">
-                            <div class="d-flex align-items-center justify-content-between">
-                                <div>
-                                    <div class="text-muted small fw-bold text-uppercase" style="font-size: 11px;">Posted / Booked</div>
-                                    <h4 class="fw-bold text-info mb-0 mt-1" id="statStatusCounts" style="color: #0284c7 !important;">
-                                        {{ $stats['posted_count'] ?? 0 }} <span class="fs-6 fw-normal text-muted">/ {{ $stats['booked_count'] ?? 0 }}</span>
-                                    </h4>
-                                </div>
-                                <div class="sale-stat-icon bg-info-subtle text-info" style="background-color: #f0f9ff; color: #0284c7;">
-                                    <i class="fas fa-check-circle"></i>
-                                </div>
-                            </div>
+                        <div class="qb-kpi-chip" title="Discounts Given">
+                            <span class="chip-label">Disc:</span>
+                            <span class="chip-val text-warning" id="statTotalDiscount">Rs. {{ number_format($stats['total_discount'] ?? 0, 2) }}</span>
+                        </div>
+                        <div class="qb-kpi-chip" title="Posted / Booked">
+                            <span class="chip-label">Posted/Booked:</span>
+                            <span class="chip-val text-info" id="statStatusCounts">
+                                {{ $stats['posted_count'] ?? 0 }} <span class="text-muted fw-normal">/ {{ $stats['booked_count'] ?? 0 }}</span>
+                            </span>
                         </div>
                     </div>
                 </div>
 
-                {{-- Status Filter Pills --}}
-                <div class="mb-4 sales-status-pills">
-                    <a href="{{ route('sale.index', ['status' => 'all']) }}"
-                        class="btn btn-sm {{ request('status') == 'all' || !request('status') ? 'btn-secondary' : 'btn-outline-secondary' }} rounded-3 shadow-sm px-3 fw-bold">
-                        All <span class="badge bg-white text-dark ms-1">{{ $stats['total_count'] ?? 0 }}</span>
-                    </a>
-                    <a href="{{ route('sale.index', ['status' => 'posted']) }}"
-                        class="btn btn-sm {{ request('status') == 'posted' ? 'btn-success' : 'btn-outline-success' }} rounded-3 shadow-sm px-3 fw-bold">
-                        Posted <span class="badge bg-white text-success ms-1">{{ $stats['posted_count'] ?? 0 }}</span>
-                    </a>
-                    <a href="{{ route('sale.index', ['status' => 'draft']) }}"
-                        class="btn btn-sm {{ request('status') == 'draft' ? 'btn-warning text-dark' : 'btn-outline-warning' }} rounded-3 shadow-sm px-3 fw-bold">
-                        Draft <span class="badge bg-white text-dark ms-1">{{ $stats['draft_count'] ?? 0 }}</span>
-                    </a>
-                    <a href="{{ route('sale.index', ['status' => 'booked']) }}"
-                        class="btn btn-sm {{ request('status') == 'booked' ? 'btn-info text-white' : 'btn-outline-info' }} rounded-3 shadow-sm px-3 fw-bold">
-                        Booked <span class="badge bg-white text-info ms-1">{{ $stats['booked_count'] ?? 0 }}</span>
-                    </a>
-                    <a href="{{ route('sale.index', ['status' => 'returned']) }}"
-                        class="btn btn-sm {{ request('status') == 'returned' ? 'btn-danger' : 'btn-outline-danger' }} rounded-3 shadow-sm px-3 fw-bold">
-                        Returned <span class="badge bg-white text-danger ms-1">{{ $stats['returned_count'] ?? 0 }}</span>
-                    </a>
+                {{-- Row 3: Filter Bar (Single Line, Never Wraps) --}}
+                <div class="qb-filter-bar" id="filterPanelContainer">
+                    <form id="filterForm" class="qb-filter-form" autocomplete="off" onsubmit="return false;">
+                        <div class="qb-filter-col" style="width: 100px; flex: 0 0 100px;">
+                            <select id="quick_filter" class="form-select qb-input" style="width: 100%;">
+                                <option value="custom">Custom</option>
+                                <option value="daily">Daily</option>
+                                <option value="weekly">Weekly</option>
+                                <option value="monthly">Monthly</option>
+                                <option value="yearly">Yearly</option>
+                            </select>
+                        </div>
+                        <div class="qb-filter-col date-col">
+                            <input type="text" class="form-control qb-input datepicker-custom" name="from_date" id="filter_from_date" placeholder="From Date">
+                        </div>
+                        <div class="qb-filter-col date-col">
+                            <input type="text" class="form-control qb-input datepicker-custom" name="to_date" id="filter_to_date" placeholder="To Date">
+                        </div>
+                        <div class="qb-filter-col" style="width: 95px; flex: 0 0 95px;">
+                            <input type="text" class="form-control qb-input" name="bill_no" id="filter_bill_no" value="{{ request('bill_no') ?? request('invoice_no') }}" placeholder="Inv/Bill#">
+                        </div>
+                        <div class="qb-filter-col" style="width: 85px; flex: 0 0 85px;">
+                            <input type="text" class="form-control qb-input" name="reference" id="filter_reference" placeholder="Ref#">
+                        </div>
+                        <div class="qb-filter-col" style="flex: 1 1 180px; min-width: 150px; max-width: 280px;">
+                            <select class="form-select select2-customer qb-input" name="customer_id" id="filter_customer_id" style="width: 100%;">
+                                <option value="">All Customers</option>
+                                @if(isset($walkinCustomers) && count($walkinCustomers) > 0)
+                                    <optgroup label="Walk-in Customers">
+                                        @foreach ($walkinCustomers as $wName)
+                                            <option value="walkin:{{ $wName }}" {{ request('customer_id') == 'walkin:'.$wName ? 'selected' : '' }}>
+                                                {{ $wName }} (Walk-in)
+                                            </option>
+                                        @endforeach
+                                    </optgroup>
+                                @endif
+                                <optgroup label="Registered Customers">
+                                    @foreach ($customers as $c)
+                                        <option value="{{ $c->id }}" {{ request('customer_id') == $c->id ? 'selected' : '' }}>
+                                            {{ $c->customer_name }} {{ $c->mobile ? '('.$c->mobile.')' : '' }}
+                                        </option>
+                                    @endforeach
+                                </optgroup>
+                            </select>
+                        </div>
+                        <div class="qb-filter-col d-flex align-items-center gap-1" style="flex: 0 0 auto;">
+                            <button type="button" class="btn qb-btn-search" id="btnSearch" title="Search">
+                                <i class="fas fa-search me-1"></i> Search
+                            </button>
+                            <button type="button" class="btn qb-btn-reset" id="btnReset" title="Reset Filters">
+                                <i class="fas fa-undo"></i>
+                            </button>
+                        </div>
+                    </form>
                 </div>
 
-                <div class="card premium-card">
-                    <div class="card-body p-3 p-md-4">
-                        @if (session('success'))
-                            <div class="alert alert-success d-flex align-items-center gap-2 rounded-3 mb-4">
-                                <i class="fas fa-check-circle"></i>
-                                <span>{{ session('success') }}</span>
-                                <button type="button" class="btn-close ms-auto" data-bs-dismiss="alert" aria-label="Close"></button>
-                            </div>
-                        @endif
+                {{-- Session Flash Alerts --}}
+                @if (session('success'))
+                    <div class="alert alert-success d-flex align-items-center gap-2 rounded py-1 px-2 mb-1" style="font-size: 11px;">
+                        <i class="fas fa-check-circle"></i>
+                        <span>{{ session('success') }}</span>
+                        <button type="button" class="btn-close ms-auto p-1" data-bs-dismiss="alert" aria-label="Close" style="font-size: 8px;"></button>
+                    </div>
+                @endif
+                @if (session('error'))
+                    <div class="alert alert-danger d-flex align-items-center gap-2 rounded py-1 px-2 mb-1" style="font-size: 11px;">
+                        <i class="fas fa-exclamation-circle"></i>
+                        <span>{{ session('error') }}</span>
+                        <button type="button" class="btn-close ms-auto p-1" data-bs-dismiss="alert" aria-label="Close" style="font-size: 8px;"></button>
+                    </div>
+                @endif
 
-                        @if (session('error'))
-                            <div class="alert alert-danger d-flex align-items-center gap-2 rounded-3 mb-4">
-                                <i class="fas fa-exclamation-circle"></i>
-                                <span>{{ session('error') }}</span>
-                                <button type="button" class="btn-close ms-auto" data-bs-dismiss="alert" aria-label="Close"></button>
-                            </div>
-                        @endif
-
-                        {{-- Mobile Filter Panel Toggle Button --}}
-                        <button type="button" class="btn btn-sm btn-outline-secondary w-100 d-md-none mb-3 fw-bold d-flex align-items-center justify-content-center gap-2" id="toggleFilterPanel">
-                            <i class="fas fa-filter"></i> Search & Filters Toggle
-                        </button>
-
-                        {{-- AJAX Filter Panel --}}
-                        <div class="card filter-panel mb-4" id="filterPanelContainer">
-                            <div class="card-body p-0">
-                                <form id="filterForm" class="row g-2 g-md-3 align-items-end" autocomplete="off" onsubmit="return false;">
-                                    <div class="col-6 col-md-2">
-                                        <label class="form-label mb-1">Quick Filter</label>
-                                        <select id="quick_filter" class="form-select">
-                                            <option value="custom">Custom Range</option>
-                                            <option value="daily">Daily (Today)</option>
-                                            <option value="weekly">Weekly (This Week)</option>
-                                            <option value="monthly">Monthly (This Month)</option>
-                                            <option value="yearly">Yearly (This Year)</option>
-                                        </select>
-                                    </div>
-                                    <div class="col-6 col-md-2">
-                                        <label class="form-label mb-1">From Date</label>
-                                        <input type="text" class="form-control datepicker-custom bg-white" name="from_date" id="filter_from_date" placeholder="dd/mm/yyyy">
-                                    </div>
-                                    <div class="col-6 col-md-2">
-                                        <label class="form-label mb-1">To Date</label>
-                                        <input type="text" class="form-control datepicker-custom bg-white" name="to_date" id="filter_to_date" placeholder="dd/mm/yyyy">
-                                    </div>
-                                    <div class="col-6 col-md-2">
-                                        <label class="form-label mb-1">Invoice / Bill#</label>
-                                        <input type="text" class="form-control" name="bill_no" id="filter_bill_no" value="{{ request('bill_no') ?? request('invoice_no') }}" placeholder="Inv / Bill#...">
-                                    </div>
-                                    <div class="col-6 col-md-1">
-                                        <label class="form-label mb-1">M.Bill / Ref</label>
-                                        <input type="text" class="form-control" name="reference" id="filter_reference" placeholder="M.Bill...">
-                                    </div>
-                                    <div class="col-6 col-md-3">
-                                        <label class="form-label mb-1">Customer</label>
-                                        <select class="form-select select2-customer" name="customer_id" id="filter_customer_id" style="width: 100%;">
-                                            <option value="">All Customers</option>
-                                            @foreach ($customers as $c)
-                                                <option value="{{ $c->id }}" {{ request('customer_id') == $c->id ? 'selected' : '' }}>
-                                                    {{ $c->customer_name }} {{ $c->mobile ? '('.$c->mobile.')' : '' }}
-                                                </option>
-                                            @endforeach
-                                        </select>
-                                    </div>
-                                    <div class="col-12 d-flex justify-content-end gap-2 mt-2">
-                                        <button type="button" class="btn btn-premium-secondary px-3" id="btnReset">
-                                            <i class="fas fa-undo me-1"></i>Reset
-                                        </button>
-                                        <button type="button" class="btn btn-premium-primary px-4" id="btnSearch">
-                                            <i class="fas fa-search me-1"></i>Search
-                                        </button>
-                                    </div>
-                                </form>
-                            </div>
-                        </div>
-
-                        {{-- Table Container --}}
-                        <div class="table-responsive">
-                            <table id="sales-table" class="table table-hover align-middle datanew premium-table" style="width:100%">
-                                <thead class="bg-light">
-                                    <tr>
-                                        <th class="py-3 ps-3 rounded-start text-secondary fw-semibold text-uppercase small">Invoice / Bill#</th>
-                                        <th class="py-3 text-secondary fw-semibold text-uppercase small">Customer</th>
-                                        <th class="py-3 text-secondary fw-semibold text-uppercase small">M.Bill</th>
-                                        <th class="py-3 text-secondary fw-semibold text-uppercase small">Products</th>
-                                        <th class="py-3 text-secondary fw-semibold text-uppercase small text-center">Qty</th>
-                                        <th class="py-3 text-secondary fw-semibold text-uppercase small text-end">Gross</th>
-                                        <th class="py-3 text-secondary fw-semibold text-uppercase small text-end">Inline Disc</th>
-                                        <th class="py-3 text-secondary fw-semibold text-uppercase small text-end">Add. Disc</th>
-                                        <th class="py-3 text-secondary fw-semibold text-uppercase small text-end">Net Total</th>
-                                        <th class="py-3 text-secondary fw-semibold text-uppercase small">Date</th>
-                                        <th class="py-3 text-secondary fw-semibold text-uppercase small">Status</th>
-                                        <th class="py-3 pe-3 rounded-end text-secondary fw-semibold text-uppercase small text-center">Action</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="salesTableBody">
-                                    @include('admin_panel.sale.partials.sales_table_body')
-                                </tbody>
-                            </table>
-                        </div>
+                {{-- Row 4: Table Card (Exact Replica of POS Grid Table) --}}
+                <div class="qb-table-card">
+                    <div class="table-responsive">
+                        <table id="sales-table" class="table table-hover align-middle datanew qb-table" style="width:100%">
+                            <thead>
+                                <tr>
+                                    <th class="ps-2">Invoice / Bill#</th>
+                                    <th>Customer</th>
+                                    <th>M.Bill</th>
+                                    <th>Products</th>
+                                    <th class="text-center">Qty</th>
+                                    <th class="text-end">Gross</th>
+                                    <th class="text-end">Inline Disc</th>
+                                    <th class="text-end">Add. Disc</th>
+                                    <th class="text-end">Net Total</th>
+                                    <th>Date</th>
+                                    <th>Status</th>
+                                    <th class="text-center pe-2">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody id="salesTableBody">
+                                @include('admin_panel.sale.partials.sales_table_body')
+                            </tbody>
+                        </table>
                     </div>
                 </div>
 
@@ -506,8 +769,9 @@
             // Initialize Select2 with search for customer dropdown
             if ($('.select2-customer').length > 0) {
                 $('.select2-customer').select2({
-                    placeholder: "All Customers",
+                    placeholder: "Customer (Name or select)...",
                     allowClear: true,
+                    tags: true,
                     width: '100%'
                 });
             }
@@ -522,13 +786,17 @@
                         $('#sales-table').DataTable({
                             "pageLength": 10,
                             "order": [],
+                            "columnDefs": [
+                                { "orderable": false, "targets": [11] } // Action column not sortable
+                            ],
                             "language": {
                                 "search": "",
-                                "searchPlaceholder": "Search sales..."
+                                "searchPlaceholder": "Search sales...",
+                                "lengthMenu": "Show _MENU_"
                             },
-                            "dom": "<'row mb-3 align-items-center'<'col-12 col-md-6 mb-2 mb-md-0'l><'col-12 col-md-6'f>>" +
+                            "dom": "<'d-flex justify-content-between align-items-center mb-1'<'d-flex align-items-center gap-1 font-monospace'l><'d-flex align-items-center'f>>" +
                                 "<'row'<'col-12'tr>>" +
-                                "<'row mt-3 align-items-center'<'col-12 col-md-5 mb-2 mb-md-0'i><'col-12 col-md-7'p>>",
+                                "<'d-flex justify-content-between align-items-center mt-1'<'text-muted small'i><'d-flex justify-content-end'p>>",
                         });
                     }
                 } catch(e) {
@@ -539,6 +807,13 @@
             // Initial call
             initDataTable();
 
+            // Active row highlight on click (like POS / Sale screen)
+            $(document).on('click', '#sales-table tbody tr', function(e) {
+                if ($(e.target).closest('.dropdown, a, button').length > 0) return;
+                $('#sales-table tbody tr').removeClass('qb-active-row');
+                $(this).addClass('qb-active-row');
+            });
+
             // Mobile Filter Panel Toggle
             $('#toggleFilterPanel').on('click', function() {
                 $('#filterPanelContainer').slideToggle(200);
@@ -548,7 +823,7 @@
             function applySalesFilter() {
                 const $btn = $('#btnSearch');
                 const origHtml = $btn.html();
-                $btn.prop('disabled', true).html('<span class="spinner-border spinner-border-sm me-1"></span>Searching...');
+                $btn.prop('disabled', true).html('<span class="spinner-border spinner-border-sm"></span>');
 
                 let formData = $('#filterForm').serialize();
                 let urlParams = new URLSearchParams(window.location.search);
@@ -577,7 +852,7 @@
                             $('#statTotalCount').text(Number(response.stats.total_count || 0).toLocaleString());
                             $('#statTotalNet').text('Rs. ' + Number(response.stats.total_net || 0).toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2}));
                             $('#statTotalDiscount').text('Rs. ' + Number(response.stats.total_discount || 0).toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2}));
-                            $('#statStatusCounts').html((response.stats.posted_count || 0) + ' <span class="fs-6 fw-normal text-muted">/ ' + (response.stats.booked_count || 0) + '</span>');
+                            $('#statStatusCounts').html((response.stats.posted_count || 0) + ' <span class="text-muted fw-normal">/ ' + (response.stats.booked_count || 0) + '</span>');
                         }
 
                         initDataTable();
@@ -727,6 +1002,14 @@
                         form.submit();
                     }
                 });
+            });
+
+            // Keyboard Shortcut F1 -> New Sale
+            $(document).on('keydown', function(e) {
+                if (e.key === 'F1') {
+                    e.preventDefault();
+                    window.location.href = "{{ route('sale.add') }}";
+                }
             });
         });
     </script>

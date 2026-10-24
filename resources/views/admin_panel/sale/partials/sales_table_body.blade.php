@@ -9,33 +9,33 @@
             $pNames = $sale->product;
         }
 
-        $statusBadge = '<span class="badge badge-warning text-dark border border-warning">Draft</span>';
-        $isExchange = \Illuminate\Support\Str::startsWith($sale->reference, 'Exchange for');
+        $statusBadge = '<span class="badge bg-warning-subtle text-dark border border-warning-subtle rounded-pill px-2 py-1">Draft</span>';
+        $isExchange = \Illuminate\Support\Str::startsWith($sale->reference ?? '', 'Exchange for');
         
         if ($sale->sale_status === 'posted') {
             if ($sale->is_booking) {
-                $statusBadge = '<span class="badge badge-success border border-success"><i class="fas fa-check-circle me-1"></i>Confirmed Booking</span>';
+                $statusBadge = '<span class="badge bg-success-subtle text-success border border-success-subtle rounded-pill px-2 py-1"><i class="fas fa-check-circle me-1"></i>Confirmed Booking</span>';
             } elseif ($isExchange) {
-                $statusBadge = '<span class="badge badge-info text-white border border-info"><i class="fas fa-exchange-alt me-1"></i>Exchange</span>';
+                $statusBadge = '<span class="badge bg-info-subtle text-info border border-info-subtle rounded-pill px-2 py-1"><i class="fas fa-exchange-alt me-1"></i>Exchange</span>';
             } else {
-                $statusBadge = '<span class="badge badge-success border border-success">Posted</span>';
+                $statusBadge = '<span class="badge bg-success-subtle text-success border border-success-subtle rounded-pill px-2 py-1"><i class="fas fa-check-circle me-1"></i>Posted</span>';
             }
         } elseif ($sale->sale_status === 'booked') {
             if ($sale->is_booking) {
-                $statusBadge = '<span class="badge badge-warning text-dark border border-warning"><i class="fas fa-bookmark me-1"></i>Booked</span>';
+                $statusBadge = '<span class="badge bg-warning-subtle text-dark border border-warning-subtle rounded-pill px-2 py-1"><i class="fas fa-bookmark me-1"></i>Booked</span>';
             } else {
-                $statusBadge = '<span class="badge badge-info text-white border border-info"><i class="fas fa-file-invoice me-1"></i>Quotation</span>';
+                $statusBadge = '<span class="badge bg-info-subtle text-info border border-info-subtle rounded-pill px-2 py-1"><i class="fas fa-file-invoice me-1"></i>Quotation</span>';
             }
         } elseif ($sale->sale_status === 'returned') {
-            $statusBadge = '<span class="badge badge-danger border border-danger">Returned</span>';
+            $statusBadge = '<span class="badge bg-danger-subtle text-danger border border-danger-subtle rounded-pill px-2 py-1">Returned</span>';
         } elseif ($sale->sale_status == 1) {
-            $statusBadge = '<span class="badge badge-danger border border-danger">Return</span>';
+            $statusBadge = '<span class="badge bg-danger-subtle text-danger border border-danger-subtle rounded-pill px-2 py-1">Return</span>';
         } elseif ($sale->sale_status === null) {
-            $statusBadge = '<span class="badge badge-success border border-success">Sale</span>';
+            $statusBadge = '<span class="badge bg-success-subtle text-success border border-success-subtle rounded-pill px-2 py-1">Sale</span>';
         }
 
         if ($sale->returns && $sale->returns->count() > 0) {
-            $statusBadge .= '<br><small class="badge badge-danger border border-danger mt-1"><i class="fas fa-undo-alt me-1"></i> Partial Return</small>';
+            $statusBadge .= '<br><small class="badge bg-danger-subtle text-danger border border-danger-subtle rounded-pill px-2 mt-1"><i class="fas fa-undo-alt me-1"></i> Partial Return</small>';
         }
 
         $inline_val = $sale->items ? $sale->items->sum('discount_amount') : 0;
@@ -54,25 +54,45 @@
     @endphp
 
     {{-- Table Row --}}
-    <tr class="border-bottom-0">
-        <td class="ps-3 fw-bold font-monospace">
+    <tr>
+        <td class="fw-bold font-monospace text-nowrap">
             @if ($sale->invoice_no)
                 <span class="text-primary fw-bold">{{ $sale->invoice_no }}</span>
-                <small class="text-muted d-block" style="font-size: 11px;">#{{ $sale->id }}</small>
+                <small class="text-muted d-block" style="font-size: 10px;">#{{ $sale->id }}</small>
             @else
                 <span class="text-muted">#{{ $sale->id }}</span>
             @endif
         </td>
-        <td>
+        @php
+            $isWalkin = empty($sale->customer_id);
+            $custName = optional($sale->customer_relation)->customer_name ?: ($sale->walkin_name ?: 'Walk-in Customer');
+            $custPhone = optional($sale->customer_relation)->mobile ?: ($sale->walkin_phone ?: '');
+            $initial = strtoupper(substr($custName ?: 'W', 0, 1));
+        @endphp
+        <td class="text-nowrap" style="min-width: 170px;">
             <div class="d-flex align-items-center">
-                <div class="avatar-circle bg-info-subtle text-info me-2 fw-bold d-flex align-items-center justify-content-center rounded-circle"
-                    style="width: 32px; height: 32px; font-size: 14px; background-color: #e0f2fe; color: #0369a1;">
-                    {{ strtoupper(substr(optional($sale->customer_relation)->customer_name ?? 'C', 0, 1)) }}
+                <div class="avatar-circle {{ $isWalkin ? 'bg-secondary-subtle text-secondary border' : 'bg-primary-subtle text-primary border border-primary-subtle' }} me-2 fw-bold d-flex align-items-center justify-content-center rounded-circle flex-shrink-0"
+                    style="width: 26px; height: 26px; font-size: 11px;">
+                    {{ $initial }}
                 </div>
-                <span class="fw-medium text-dark">{{ optional($sale->customer_relation)->customer_name ?? 'N/A' }}</span>
+                <div>
+                    <span class="fw-semibold text-dark d-block" style="font-size: 12px; line-height: 1.2;">{{ $custName }}</span>
+                    @if($isWalkin)
+                        <div class="d-flex align-items-center gap-1 mt-0">
+                            <span class="badge bg-light text-secondary border font-monospace py-0 px-1" style="font-size: 9px;">Walk-in</span>
+                            @if($custPhone)
+                                <small class="text-muted" style="font-size: 10px;">{{ $custPhone }}</small>
+                            @endif
+                        </div>
+                    @else
+                        @if($custPhone)
+                            <small class="text-muted d-block" style="font-size: 10px;">{{ $custPhone }}</small>
+                        @endif
+                    @endif
+                </div>
             </div>
         </td>
-        <td class="font-monospace text-dark">{{ $sale->reference ?? '-' }}</td>
+        <td class="font-monospace text-dark text-nowrap">{{ $sale->reference ?? '-' }}</td>
         @php
             $itemPCodes = $sale->items ? $sale->items->pluck('p_code')->filter()->unique()->implode(', ') : '';
         @endphp
@@ -85,30 +105,30 @@
         <td class="text-center font-monospace">
             {{ $sale->total_items > 0 ? $sale->total_items : $sale->qty }}
         </td>
-        <td class="text-end fw-bold text-dark font-monospace">
+        <td class="text-end fw-bold text-dark font-monospace text-nowrap">
             Rs. {{ number_format($gross_subtotal, 2) }}
         </td>
-        <td class="text-end text-dark font-monospace">
+        <td class="text-end text-dark font-monospace text-nowrap">
             Rs. {{ number_format($inline_val, 2) }}
             @if ($inline_val > 0)
                 <div class="text-muted small mt-1" style="font-size: 10px;">({{ number_format($inline_pct, 1) }}%)</div>
             @endif
         </td>
-        <td class="text-end text-dark font-monospace">
+        <td class="text-end text-dark font-monospace text-nowrap">
             @if ($sale->total_extradiscount > 0)
                 @php
                     $add_val = $sale->total_extradiscount;
                     $add_pct = $bill_amount > 0 ? ($add_val / $bill_amount) * 100 : 0;
                 @endphp
-                <span class="badge rounded-pill border px-2 py-1" style="background-color: #fff8e1; color: #b78103; border-color: #ffe082 !important; font-size: 11px; font-weight: 700; display: inline-flex; align-items: center; gap: 4px;">
+                <span class="badge rounded-pill border px-2 py-1 text-nowrap" style="background-color: #fff8e1; color: #b78103; border-color: #ffe082 !important; font-size: 11px; font-weight: 700; display: inline-flex; align-items: center; gap: 4px;">
                     <i class="fas fa-tag" style="font-size: 10px;"></i> Rs. {{ number_format($add_val, 2) }}
                 </span>
                 <div class="text-muted small mt-1" style="font-size: 10px;">({{ number_format($add_pct, 1) }}%)</div>
             @else
-                <span class="text-muted">Rs. 0.00</span>
+                <span class="text-muted text-nowrap">Rs. 0.00</span>
             @endif
         </td>
-        <td class="text-end text-success fw-bold font-monospace">
+        <td class="text-end text-success fw-bold font-monospace text-nowrap">
             @if (isset($isExchange) && $isExchange)
                 @if ($collected > 0)
                     Rs. {{ number_format($collected, 2) }}
@@ -128,10 +148,10 @@
         <td>{!! $statusBadge !!}</td>
         <td class="pe-3 text-center">
             <div class="dropdown">
-                <button class="btn btn-premium-action dropdown-toggle" type="button" data-toggle="dropdown" data-display="static" aria-expanded="false">
+                <button class="btn btn-sm odoo-action-btn btn-premium-action dropdown-toggle" type="button" data-bs-toggle="dropdown" data-toggle="dropdown" data-display="static" aria-expanded="false">
                     <i class="fas fa-ellipsis-v small me-1"></i> Actions
                 </button>
-                <ul class="dropdown-menu dropdown-menu-right border-0 shadow-lg rounded-3">
+                <ul class="dropdown-menu dropdown-menu-end dropdown-menu-right border shadow">
                     @can('sales.edit')
                         <li>
                             <a class="dropdown-item d-flex align-items-center gap-2 py-2" href="{{ route('sales.edit', $sale->id) }}">
