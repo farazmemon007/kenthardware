@@ -16,6 +16,7 @@ class PurchaseReturnItem extends Model
         'unit',
         'line_total',
         'color',
+        'item_number',
     ];
     
     public function product()

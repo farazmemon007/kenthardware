@@ -21,8 +21,11 @@ class AccountsHeadController extends Controller
         $accounts = Account::with(['head', 'histories.user'])
             ->whereNotIn('account_code', $excludedCodes)
             ->whereNotIn('title', $excludedTitles)
-            ->orderBy('id', 'asc')
-            ->get();
+            ->get()
+            ->sortBy(function ($a) {
+                return ($a->head ? $a->head->name : 'zzz') . '_' . $a->id;
+            })
+            ->values();
 
         return view('admin_panel.chart_of_accounts', compact('heads', 'accounts'));
     }
@@ -138,17 +141,39 @@ class AccountsHeadController extends Controller
         $account = Account::findOrFail($id);
 
         $query = JournalEntry::where('account_id', $id)
-            ->with('party')
+            ->with(['party', 'source'])
             ->orderBy('entry_date', 'asc')
             ->orderBy('id', 'asc');
 
-        if ($request->has('from_date') && $request->has('to_date')) {
+        $openingBalance = (float) ($account->opening_balance ?? 0);
+
+        if ($request->filled('from_date') && $request->filled('to_date')) {
             $query->whereBetween('entry_date', [$request->from_date, $request->to_date]);
+
+            $priorDebit = JournalEntry::where('account_id', $id)
+                ->where('entry_date', '<', $request->from_date)
+                ->sum('debit');
+            $priorCredit = JournalEntry::where('account_id', $id)
+                ->where('entry_date', '<', $request->from_date)
+                ->sum('credit');
+            $openingBalance += ($priorDebit - $priorCredit);
+        } elseif ($request->filled('from_date')) {
+            $query->where('entry_date', '>=', $request->from_date);
+
+            $priorDebit = JournalEntry::where('account_id', $id)
+                ->where('entry_date', '<', $request->from_date)
+                ->sum('debit');
+            $priorCredit = JournalEntry::where('account_id', $id)
+                ->where('entry_date', '<', $request->from_date)
+                ->sum('credit');
+            $openingBalance += ($priorDebit - $priorCredit);
+        } elseif ($request->filled('to_date')) {
+            $query->where('entry_date', '<=', $request->to_date);
         }
 
         $entries = $query->get();
 
-        return view('admin_panel.accounts.ledger', compact('account', 'entries'));
+        return view('admin_panel.accounts.ledger', compact('account', 'entries', 'openingBalance'));
     }
 
     public function toggleStatus($id)

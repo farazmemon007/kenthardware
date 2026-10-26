@@ -53,13 +53,24 @@ class EmployeeController extends Controller
         $data = $request->except(['document_degree', 'document_certificate', 'document_hsc_marksheet', 'document_ssc_marksheet', 'document_cv', 'password', 'casual_leave_days', 'basic_salary']);
         $data['is_docs_submitted'] = $request->has('is_docs_submitted') ? 1 : 0;
 
-        // Handle Custom Shift Logic
-        if ($request->shift_id === 'custom') {
+        // Handle Custom Shift Logic & empty shift_id
+        if ($request->shift_id === 'custom' || empty($request->shift_id)) {
             $data['shift_id'] = null; // No standard shift assigned
         } else {
             // Standard shift assigned, clear custom times
             $data['custom_start_time'] = null;
             $data['custom_end_time'] = null;
+        }
+
+        // Clean nullable integer / datetime / text fields to avoid MySQL strict mode errors
+        $data['punch_gap_minutes'] = $request->filled('punch_gap_minutes') ? (int) $request->punch_gap_minutes : null;
+        $data['custom_start_time'] = $request->filled('custom_start_time') ? $request->custom_start_time : null;
+        $data['custom_end_time'] = $request->filled('custom_end_time') ? $request->custom_end_time : null;
+        if (isset($data['date_of_birth']) && empty($data['date_of_birth'])) {
+            $data['date_of_birth'] = null;
+        }
+        if (isset($data['biometric_device_id']) && empty($data['biometric_device_id'])) {
+            $data['biometric_device_id'] = null;
         }
 
         if ($request->filled('edit_id')) {
@@ -68,17 +79,31 @@ class EmployeeController extends Controller
             }
             $employee = Employee::findOrFail($request->edit_id);
 
-            // Update User email if changed
+            // Update or link User Account safely
+            $user = null;
             if ($employee->user_id) {
                 $user = \App\Models\User::find($employee->user_id);
-                if ($user) {
-                    $user->email = $request->email;
-                    $user->name = $request->first_name.' '.$request->last_name;
-                    if ($request->filled('password')) {
-                        $user->password = \Illuminate\Support\Facades\Hash::make($request->password);
-                    }
-                    $user->save();
+            }
+            if (! $user) {
+                $user = \App\Models\User::where('email', $request->email)->first();
+            }
+
+            if ($user) {
+                $user->email = $request->email;
+                $user->name = $request->first_name.' '.$request->last_name;
+                if ($request->filled('password')) {
+                    $user->password = \Illuminate\Support\Facades\Hash::make($request->password);
                 }
+                $user->save();
+                $data['user_id'] = $user->id;
+            } else {
+                $user = \App\Models\User::create([
+                    'name' => $request->first_name.' '.$request->last_name,
+                    'email' => $request->email,
+                    'password' => \Illuminate\Support\Facades\Hash::make($request->password ?: '12345678'),
+                    'usertype' => 'employee',
+                ]);
+                $data['user_id'] = $user->id;
             }
 
             $employee->update($data);

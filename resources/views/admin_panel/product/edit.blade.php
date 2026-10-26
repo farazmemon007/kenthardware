@@ -2095,16 +2095,16 @@
                                             </div>
                                         </div>
 
-                                        {{-- Unit of Measurement (Master for all variants) --}}
+                                        {{-- Unit of Measurement (Master for all variants & QuickBooks POS UOM) --}}
                                         <div class="form-row-item">
-                                            <label class="field-label">
-                                                Unit of Measure <span class="text-danger ms-1">*</span>
-                                                <span class="tooltip-icon" title="Master unit of measurement applicable to this product and all its variants (e.g. Pcs, Carton, Box, Kg, Meter)"><i class="fas fa-question-circle"></i></span>
+                                            <label class="field-label d-flex align-items-center justify-content-between">
+                                                <span>Base Unit of Measure <span class="text-danger ms-1">*</span></span>
+                                                <span class="tooltip-icon" title="QuickBooks POS Unit of Measure System: Define Base Unit and multi-level units (e.g. Feet -> Pipe-16ft, Pipe-20ft) with separate prices, barcodes and ordering/selling preferences."><i class="fas fa-question-circle"></i></span>
                                             </label>
                                             <div class="field-value">
-                                                <div class="d-flex gap-1">
-                                                    <select class="odoo-select fw-semibold" id="general_unit_id" name="unit_id" required>
-                                                        <option value="">Select Unit...</option>
+                                                <div class="d-flex gap-1 align-items-center flex-wrap">
+                                                    <select class="odoo-select fw-semibold" id="general_unit_id" name="unit_id" required style="min-width: 140px; flex: 1;">
+                                                        <option value="">Select Base Unit...</option>
                                                         @if(isset($units))
                                                             @foreach ($units as $u)
                                                                 <option value="{{ $u->id }}" data-name="{{ $u->name }}" {{ ($product->unit_id == $u->id || (!empty($product->unit) && $product->unit->name === $u->name)) ? 'selected' : '' }}>{{ $u->name }}</option>
@@ -2112,9 +2112,21 @@
                                                         @endif
                                                     </select>
                                                     <button type="button" class="btn-quick-add" data-bs-toggle="modal" data-bs-target="#unitModal" data-toggle="modal" data-target="#unitModal" title="Add Unit">+</button>
+                                                    <button type="button" class="btn btn-outline-primary btn-sm px-2 py-1 fw-bold shadow-sm d-inline-flex align-items-center" id="btnOpenUomModal" data-toggle="modal" data-target="#quickbooksUomModal" data-bs-toggle="modal" data-bs-target="#quickbooksUomModal" style="font-size: 11px; height: 31px; border-radius: 4px;" title="Open QuickBooks Unit of Measure Configuration">
+                                                        <i class="fas fa-layer-group me-1 text-primary"></i> Units
+                                                    </button>
                                                 </div>
+                                                <div class="mt-1 d-flex align-items-center gap-1" id="uomSummaryBadge">
+                                                    @if(!empty($product->uom_data) && is_array($product->uom_data) && !empty($product->uom_data['units']))
+                                                        <span class="badge bg-soft-primary text-primary border border-primary-subtle" style="font-size: 10px;">
+                                                            <i class="fas fa-check-circle me-1"></i> QB Units: {{ count($product->uom_data['units']) }} defined
+                                                        </span>
+                                                    @endif
+                                                </div>
+                                                {{-- Hidden input for serializing QuickBooks UOM JSON structure --}}
+                                                <input type="hidden" name="uom_data" id="product_uom_data" value="{{ is_array($product->uom_data) ? json_encode($product->uom_data) : ($product->uom_data ?? '') }}">
                                                 <small class="text-muted" style="font-size:11px;">
-                                                    <i class="fas fa-link text-primary me-1"></i> Inherited automatically by all variants
+                                                    <i class="fas fa-link text-primary me-1"></i> Base unit for inventory valuation & QuickBooks multi-unit conversions
                                                 </small>
                                             </div>
                                         </div>
@@ -2324,6 +2336,14 @@
                                             </div>
                                         </div>
 
+                                        {{-- Item Number (Unique ID / Client Item #) --}}
+                                        <div class="form-row-item">
+                                            <label class="field-label">Item # <small class="text-primary">(Unique Variant/Item No)</small></label>
+                                            <div class="field-value">
+                                                <input type="text" class="odoo-input font-monospace text-primary fw-bold" name="item_number" id="item_number" value="{{ $product->item_number ?? '' }}" placeholder="e.g. 2916, 1781">
+                                            </div>
+                                        </div>
+
                                         {{-- Company --}}
                                         <div class="form-row-item">
                                             <label class="field-label">Barcode</label>
@@ -2439,6 +2459,7 @@
                                                     <th style="width: 32px;" class="text-center col-select"><input type="checkbox" class="form-check-input" id="selectAllVariantsCheck" title="Select All"></th>
                                                     <th style="width: 105px;" class="col-serial text-center">Serial No</th>
                                                     <th style="width: 130px;" class="col-ref">Internal Ref</th>
+                                                    <th style="width: 105px;" class="col-item-number">Item #</th>
                                                     <th style="min-width: 120px;" class="col-name">Product Name</th>
                                                     <th style="min-width: 180px;" class="col-attrs">Attributes</th>
                                                     <th style="min-width: 165px; width: 165px;" class="col-storage-type">
@@ -2909,7 +2930,7 @@
                         @csrf
                         <div class="modal-header border-0 pb-0">
                             <h6 class="modal-title fw-bold" style="font-size:13px;">New Unit of Measure</h6>
-                            <button type="button" class="btn-close" data-bs-dismiss="modal" data-dismiss="modal" aria-label="Close"></button>
+                            <button type="button" class="close" data-dismiss="modal" data-bs-dismiss="modal" aria-label="Close" style="opacity:0.8; font-size:22px; border:none; background:transparent; cursor:pointer;"><span aria-hidden="true">&times;</span></button>
                         </div>
                         <div class="modal-body">
                             <input type="hidden" name="page" value="product_page">
@@ -2923,6 +2944,9 @@
                 </div>
             </div>
         </div>
+
+        {{-- QuickBooks Desktop Point of Sale Unit of Measure (UOM) Modal --}}
+        @include('admin_panel.product.partials.quickbooks_uom_modal')
 
         {{-- Standard Packaging Quick Add Modal --}}
         <div id="packageTypeModal" class="modal fade" tabindex="-1" aria-hidden="true">
@@ -3065,6 +3089,7 @@
                                 $matrixCols = [
                                     ['key' => 'col-serial',     'label' => 'Serial No'],
                                     ['key' => 'col-ref',        'label' => 'Internal Ref'],
+                                    ['key' => 'col-item-number', 'label' => 'Item #'],
                                     ['key' => 'col-name',       'label' => 'Product Name'],
                                     ['key' => 'col-attrs',      'label' => 'Attributes'],
                                     ['key' => 'col-storage-type', 'label' => 'Location Type'],
@@ -3807,6 +3832,7 @@
         window.VARIANT_COLUMNS = [
             { key: 'col-serial',     label: 'Serial No',          default: true },
             { key: 'col-ref',        label: 'Internal Ref',       default: true },
+            { key: 'col-item-number', label: 'Item #',            default: true },
             { key: 'col-name',       label: 'Product Name',       default: true },
             { key: 'col-attrs',      label: 'Attributes',         default: true },
             { key: 'col-storage-type', label: 'Location Type',    default: true },
@@ -4367,18 +4393,39 @@
                                     opt.setAttribute('data-pieces', pieces);
                                 }
                                 opt.setAttribute('data-name', itemName);
-                                $(selectSelector).append(opt).trigger('change');
+                                const $sel = $(selectSelector);
+                                if ($sel.length) {
+                                    let exists = false;
+                                    $sel.find('option').each(function() {
+                                        if ($(this).val() == itemId || $(this).text().trim().toLowerCase() === itemName.toLowerCase()) {
+                                            $sel.val($(this).val()).trigger('change');
+                                            exists = true;
+                                            return false;
+                                        }
+                                    });
+                                    if (!exists) {
+                                        $sel.append(opt).val(itemId).trigger('change');
+                                    }
+                                }
+                                if (modalId === 'unitModal' && window.QuickbooksUom && typeof window.QuickbooksUom.handleNewUnitCreated === 'function') {
+                                    window.QuickbooksUom.handleNewUnitCreated(itemName, itemId, window.QuickbooksUom.lastQuickAddTarget);
+                                    window.QuickbooksUom.lastQuickAddTarget = null;
+                                }
 
                                 $('#' + modalId).modal('hide');
                                 modalForm[0].reset();
                                 Swal.fire({
                                     icon: 'success', 
-                                    title: 'Added successfully', 
+                                    title: (typeof res.success === 'string' ? res.success : 'Added successfully'), 
                                     toast: true, 
                                     position: 'top-end', 
                                     showConfirmButton: false, 
                                     timer: 1500
                                 });
+                            }
+                        } else if (res.errors) {
+                                let msg = Object.values(res.errors).flat().join('<br>');
+                                Swal.fire({icon: 'warning', title: 'Notice', html: msg});
                             }
                         },
                         error: function(err) {
@@ -6256,6 +6303,7 @@
                         existingData[vName] = {
                             serial: tr.querySelector('[name="variant_serial_no[]"]')?.value,
                             ref: tr.querySelector('[name="variant_ref[]"]')?.value,
+                            itemNumber: tr.querySelector('[name="variant_item_number[]"]')?.value,
                             stock: tr.querySelector('[name="variant_stock[]"]')?.value,
                             sale: tr.querySelector('[name="variant_sale_price[]"]')?.value,
                             purch: tr.querySelector('[name="variant_purchase_price[]"]')?.value,
@@ -6364,6 +6412,8 @@
                     const defaultSerial = (savedVar && (savedVar.serial_no || savedVar.serial)) ? (savedVar.serial_no || savedVar.serial) : `${vPrefix}-${String(idx + 1).padStart(4, '0')}`;
                     const vSerial = prev.serial !== undefined ? prev.serial : defaultSerial;
                     const vRef = prev.ref !== undefined ? prev.ref : (savedVar && (savedVar.sku || savedVar.ref) ? (savedVar.sku || savedVar.ref) : (itemCodeVal ? `${itemCodeVal}-${comboLabels.replace(/\s+/g, '')}` : ''));
+                    const defaultItemNumber = (savedVar && savedVar.item_number) ? savedVar.item_number : '';
+                    const vItemNumber = prev.itemNumber !== undefined ? prev.itemNumber : defaultItemNumber;
                     const vStock = prev.stock !== undefined ? prev.stock : (savedVar && savedVar.stock !== undefined ? savedVar.stock : '0');
                     const vSale = prev.sale !== undefined ? prev.sale : (savedVar && savedVar.sale_price !== undefined ? parseFloat(savedVar.sale_price).toFixed(2) : (baseSale + extraPriceTotal).toFixed(2));
                     const vPurch = prev.purch !== undefined ? prev.purch : (savedVar && (savedVar.purch_price !== undefined || savedVar.purchase_price !== undefined) ? parseFloat(savedVar.purch_price || savedVar.purchase_price).toFixed(2) : baseCost.toFixed(2));
@@ -6396,6 +6446,9 @@
                         </td>
                         <td class="p-1 col-ref">
                             <input type="text" class="form-control form-control-sm text-muted font-monospace" name="variant_ref[]" value="${vRef}" placeholder="Ref">
+                        </td>
+                        <td class="p-1 col-item-number">
+                            <input type="text" class="form-control form-control-sm font-monospace text-primary fw-bold" name="variant_item_number[]" value="${vItemNumber}" placeholder="Item #">
                         </td>
                         <td class="p-1 fw-semibold text-dark col-name" style="font-size: 12.5px; max-width: 140px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="${comboName}">
                             ${productName}
@@ -6485,6 +6538,7 @@
                 const baseStock = (savedBase && savedBase.stock !== undefined) ? savedBase.stock : '0';
                 const baseSerial = (savedBase && (savedBase.serial_no || savedBase.serial)) ? (savedBase.serial_no || savedBase.serial) : `${getProductPrefix(productName)}-0001`;
                 const baseRef = (savedBase && (savedBase.sku || savedBase.ref)) ? (savedBase.sku || savedBase.ref) : (window.existingProduct ? (window.existingProduct.item_code || '') : '');
+                const baseItemNumber = (savedBase && savedBase.item_number) ? savedBase.item_number : (document.getElementById('item_number')?.value.trim() || '');
                 const baseBarcode = (savedBase && savedBase.barcode) ? savedBase.barcode : generateRandomBarcode();
                 const baseLocation = (savedBase && savedBase.location) ? savedBase.location : (document.getElementById('remarks')?.value.trim() || '');
 
@@ -6502,6 +6556,9 @@
                     </td>
                     <td class="p-1 col-ref">
                         <input type="text" class="form-control form-control-sm text-muted font-monospace" name="variant_ref[]" value="${baseRef}" placeholder="Ref">
+                    </td>
+                    <td class="p-1 col-item-number">
+                        <input type="text" class="form-control form-control-sm font-monospace text-primary fw-bold" name="variant_item_number[]" value="${baseItemNumber}" placeholder="Item #">
                     </td>
                     <td class="p-1 col-name">
                         <input type="text" class="form-control form-control-sm base-name-input fw-bold" name="variant_name[]" value="${productName}" placeholder="Product Name">
@@ -6623,6 +6680,9 @@
                         </td>
                         <td class="p-1 col-ref">
                             <input type="text" class="form-control form-control-sm text-muted font-monospace" name="variant_ref[]" value="" placeholder="Ref">
+                        </td>
+                        <td class="p-1 col-item-number">
+                            <input type="text" class="form-control form-control-sm font-monospace text-primary fw-bold" name="variant_item_number[]" value="" placeholder="Item #">
                         </td>
                         <td class="p-1 col-name">
                             <input type="text" class="form-control form-control-sm" name="variant_name[]" value="${pName} - New Variant">
@@ -7308,4 +7368,10 @@
             }
         });
     </script>
+    {{-- QuickBooks Unit of Measure Scripts --}}
+    <script>
+        window.initialProductStock = {{ (float) ($product->warehouseStocks ? $product->warehouseStocks->sum('total_pieces') : 0) }};
+        window.allUnitsList = {!! json_encode(isset($units) ? $units->pluck('name')->values()->all() : []) !!};
+    </script>
+    <script src="{{ asset('assets/js/quickbooks_uom.js') . '?v=' . time() }}"></script>
 @endsection

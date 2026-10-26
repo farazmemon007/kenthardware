@@ -32,12 +32,16 @@
                                         </div>
                                         <p class="mb-1">{{ $notification->message }}</p>
                                         <div class="d-flex justify-content-between align-items-center">
-                                            @if ($notification->action_url)
-                                                <a href="{{ $notification->action_url }}"
-                                                    class="btn btn-sm btn-outline-primary">View Details</a>
-                                            @else
-                                                <span></span>
-                                            @endif
+                                            <div>
+                                                @if ($notification->source_type === 'PriceApprovalRequest' || str_contains($notification->title, 'Price Approval'))
+                                                    <button type="button" class="btn btn-sm btn-warning text-dark fw-bold me-2" onclick="if(window.openPriceApprovalModal){ window.openPriceApprovalModal({{ $notification->source_id }}); }">
+                                                        <i class="fas fa-gavel me-1"></i> Review & Decide (Approve / Reject)
+                                                    </button>
+                                                @elseif ($notification->action_url)
+                                                    <a href="{{ $notification->action_url }}"
+                                                        class="btn btn-sm btn-outline-primary">View Details</a>
+                                                @endif
+                                            </div>
                                             @if (!$notification->is_read)
                                                 <button class="btn btn-sm btn-success mark-read"
                                                     data-id="{{ $notification->id }}">

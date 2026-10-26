@@ -16,7 +16,7 @@ class POSController extends Controller
     public function index(Request $request = null)
     {
         // 1. Fetch all active products
-        $products = Product::where('is_active', true)->with('warehouseStocks')->get();
+        $products = Product::where('is_active', true)->with(['warehouseStocks', 'unit'])->get();
 
         $posProducts = [];
         foreach ($products as $p) {
@@ -207,7 +207,9 @@ class POSController extends Controller
 
                     $variantItems[] = [
                         'id' => $p->id . '|variant|' . base64_encode($variantJson),
+                        'product_id' => $p->id,
                         'name' => $vName,
+                        'item_number' => $v['item_number'] ?? ($v['item_no'] ?? ''),
                         'serial_no' => $v['serial_no'] ?? '',
                         'size_val' => $v['size'] ?? '-',
                         'color_val' => $v['color'] ?? '-',
@@ -231,6 +233,7 @@ class POSController extends Controller
                     'id' => $p->id,
                     'name' => $p->item_name,
                     'sku' => $p->item_code ?? '',
+                    'item_number' => $p->item_number ?? '',
                     'stock' => $totalStockDisplay,
                     'stock_pieces' => $totalStockPieces,
                     'size_mode' => $p->size_mode,
@@ -240,6 +243,9 @@ class POSController extends Controller
                     'weight_per_piece' => $p->weight_per_piece ?? 0,
                     'image' => $p->image ? asset('uploads/products/'.$p->image) : null,
                     'variants' => $variantItems,
+                    'uom_units' => $p->getUomUnitsList(),
+                    'uom_sell_unit' => $p->getUomSellUnit(),
+                    'base_unit_name' => $p->unit->name ?? 'Pcs',
                 ];
 
             } else {
@@ -255,6 +261,7 @@ class POSController extends Controller
                     'id' => $p->id,
                     'name' => $p->item_name,
                     'sku' => $p->item_code ?? '',
+                    'item_number' => $p->item_number ?? '',
                     'stock' => $stockDisplay,
                     'stock_pieces' => $stockPieces,
                     'size_mode' => $p->size_mode,
@@ -264,6 +271,9 @@ class POSController extends Controller
                     'weight_per_piece' => $p->weight_per_piece ?? 0,
                     'image' => $p->image ? asset('uploads/products/'.$p->image) : null,
                     'variants' => [],
+                    'uom_units' => $p->getUomUnitsList(),
+                    'uom_sell_unit' => $p->getUomSellUnit(),
+                    'base_unit_name' => $p->unit->name ?? 'Pcs',
                 ];
             }
         }
@@ -493,6 +503,18 @@ class POSController extends Controller
             }
         }
 
+        $carpenterCommPercent = 0;
+        $carpenterName = null;
+        if (!empty($sale->carpenter_id)) {
+            $carpenter = \App\Models\Carpenter::find($sale->carpenter_id);
+            $carpenterName = $carpenter ? $carpenter->name : 'Carpenter';
+            if ($sale->carpenter_commission_type === 'percentage') {
+                $carpenterCommPercent = (float)$sale->carpenter_commission_rate;
+            } elseif ($sale->total_bill_amount > 0 && (float)$sale->carpenter_commission_amount > 0) {
+                $carpenterCommPercent = round(((float)$sale->carpenter_commission_amount / (float)$sale->total_bill_amount) * 100, 4);
+            }
+        }
+
         $items = [];
         foreach ($sale->items as $item) {
             $variant = [];
@@ -525,7 +547,15 @@ class POSController extends Controller
             }
             
             $netTotal = max(0, $lineTotal - $discountShare);
-            $netUnitPrice = $item->total_pieces > 0 ? ($netTotal / $item->total_pieces) : 0;
+            $rawNetUnitPrice = $item->total_pieces > 0 ? ($netTotal / $item->total_pieces) : 0;
+
+            // Subtract carpenter commission percentage from return price given to customer
+            $commDeductionPerPiece = 0;
+            $finalReturnPrice = $rawNetUnitPrice;
+            if ($carpenterCommPercent > 0) {
+                $commDeductionPerPiece = round(($rawNetUnitPrice * $carpenterCommPercent) / 100, 2);
+                $finalReturnPrice = max(0, round($rawNetUnitPrice - $commDeductionPerPiece, 2));
+            }
 
             $items[] = [
                 'id' => $item->id,
@@ -540,7 +570,10 @@ class POSController extends Controller
                 'already_returned' => $alreadyReturned,
                 'max_returnable' => $maxReturnable,
                 'price_sold' => $item->price_per_piece ?? $item->price ?? 0,
-                'net_unit_price' => round($netUnitPrice, 2),
+                'raw_net_unit_price' => round($rawNetUnitPrice, 2),
+                'commission_deduction_percent' => $carpenterCommPercent,
+                'commission_deduction_per_piece' => $commDeductionPerPiece,
+                'net_unit_price' => round($finalReturnPrice, 2),
                 'discount_share_per_piece' => round($discountShare / ($item->total_pieces > 0 ? $item->total_pieces : 1), 2),
             ];
         }
@@ -550,6 +583,8 @@ class POSController extends Controller
             'invoice_no' => $sale->invoice_no,
             'customer_name' => $sale->walkin_name ?: ($sale->customer_relation->customer_name ?? 'Walking Customer'),
             'customer_id' => $sale->customer_id,
+            'carpenter_name' => $carpenterName,
+            'carpenter_commission_percent' => $carpenterCommPercent,
             'items' => $items
         ]);
     }

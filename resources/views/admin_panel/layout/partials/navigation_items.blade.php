@@ -149,6 +149,8 @@
                                                     @can('sales.officers.view')
                                                         <li><a href="{{ url('sales-officers') }}"><i class="fas fa-user-tie"></i>
                                                                 Sales Officer</a></li>
+                                                    <li><a href="{{ route('carpenters.index') }}"><i class="fas fa-hammer"></i> Carpenters</a></li>
+                                                    <li><a href="{{ route('carpenter_commissions.index') }}"><i class="fas fa-hand-holding-usd"></i> Carpenter Commissions</a></li>
                                                     @endcan
                                                     @can('receipts.voucher.view')
                                                         <li><a href="{{ route('all_recepit_vochers') }}"><i

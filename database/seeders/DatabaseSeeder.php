@@ -18,11 +18,9 @@ class DatabaseSeeder extends Seeder
         // Run other seeders
         $this->call([
             CategorySeeder::class,
-            // ProductSeeder::class,
             WarehouseSeeder::class,
-            // PermissionRoleUserSeeder::class, // REMOVED: Using new AllModulesPermissionsSeeder
             ModulesTableSeeder::class, 
-            AllModulesPermissionsSeeder::class, // NEW: All module permissions (module.view, module.create, etc.)
+            SystemRolesAndPermissionsSeeder::class, // Complete Spatie RBAC & Module Permissions
             SuperadminSeeder::class, 
         ]);
     }

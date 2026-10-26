@@ -356,36 +356,42 @@
                         $variantUnit = strtolower($item['variant_unit'] ?? '');
                         
                         // Disp Qty
-                        $dispQty = $totalPieces;
-                        $dispUnit = 'Pcs';
-                        if ($sizeMode === 'by_kg' || $sizeMode === 'by_gm') {
-                            $kgWt = (float)($item['qty_box'] ?? $item['qty'] ?? 0);
-                            $wtConv = (float)($item['pieces_per_box'] ?? 0);
-                            if ($wtConv <= 0) $wtConv = 1;
-                            if (in_array($variantUnit, ['pcs', 'pc', 'piece', 'pieces'])) {
-                                $dispQty = $kgWt > 0 ? $kgWt / $wtConv : 0;
-                                $dispUnit = 'Pcs';
-                            } elseif (in_array($variantUnit, ['gm', 'g'])) {
-                                $dispQty = $kgWt * 1000;
-                                $dispUnit = 'Gm';
-                            } else {
-                                $dispQty = $kgWt;
-                                $dispUnit = 'Kg';
-                            }
+                        if (!empty($item['uom_name'])) {
+                            $uomQty = (float)($item['qty'] ?? ($item['total_pieces'] / max(1, (float)($item['uom_ratio'] ?? 1))));
+                            $dispQty = ($uomQty == (int)$uomQty ? (int)$uomQty : number_format($uomQty, 2));
+                            $dispUnit = $item['uom_name'];
                         } else {
-                            if ($sizeMode == 'by_pieces') {
-                                $dispQty = $totalPieces;
-                                $dispUnit = 'Pcs';
-                            } else {
-                                if ($boxes > 0 && $loosePieces == 0) {
-                                    $dispQty = $boxes;
-                                    $dispUnit = $sizeMode == 'by_cartons' ? 'Ctn' : 'Box';
-                                } elseif ($boxes == 0 && $loosePieces > 0) {
-                                    $dispQty = $loosePieces;
+                            $dispQty = $totalPieces;
+                            $dispUnit = 'Pcs';
+                            if ($sizeMode === 'by_kg' || $sizeMode === 'by_gm') {
+                                $kgWt = (float)($item['qty_box'] ?? $item['qty'] ?? 0);
+                                $wtConv = (float)($item['pieces_per_box'] ?? 0);
+                                if ($wtConv <= 0) $wtConv = 1;
+                                if (in_array($variantUnit, ['pcs', 'pc', 'piece', 'pieces'])) {
+                                    $dispQty = $kgWt > 0 ? $kgWt / $wtConv : 0;
                                     $dispUnit = 'Pcs';
+                                } elseif (in_array($variantUnit, ['gm', 'g'])) {
+                                    $dispQty = $kgWt * 1000;
+                                    $dispUnit = 'Gm';
                                 } else {
+                                    $dispQty = $kgWt;
+                                    $dispUnit = 'Kg';
+                                }
+                            } else {
+                                if ($sizeMode == 'by_pieces') {
                                     $dispQty = $totalPieces;
                                     $dispUnit = 'Pcs';
+                                } else {
+                                    if ($boxes > 0 && $loosePieces == 0) {
+                                        $dispQty = $boxes;
+                                        $dispUnit = $sizeMode == 'by_cartons' ? 'Ctn' : 'Box';
+                                    } elseif ($boxes == 0 && $loosePieces > 0) {
+                                        $dispQty = $loosePieces;
+                                        $dispUnit = 'Pcs';
+                                    } else {
+                                        $dispQty = $totalPieces;
+                                        $dispUnit = 'Pcs';
+                                    }
                                 }
                             }
                         }

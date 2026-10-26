@@ -864,6 +864,10 @@
         background: linear-gradient(180deg, #f59e0b 0%, #d97706 100%);
         border-color: #b45309;
     }
+    .qb-pay-tab[data-method="account"] {
+        background: linear-gradient(180deg, #6366f1 0%, #4338ca 100%);
+        border-color: #3730a3;
+    }
 
     .qb-amount-due-banner {
         display: flex;
@@ -2043,6 +2047,10 @@
             </button>
         </div>
         <div class="d-flex align-items-center gap-2">
+            <button type="button" class="qb-banner-toggle-btn" id="btnCarpenterCommission" onclick="openCarpenterModal(event)" title="Carpenter Commission (Hidden Backend)">
+                <i class="fas fa-hammer me-1 text-secondary" id="carpenterBtnIcon"></i> <span id="carpenterBtnText">Carpenter</span>
+                <span class="badge bg-success ms-1 d-none" id="carpenterActiveBadge" style="font-size: 9px; padding: 2px 4px;">Set</span>
+            </button>
             <button type="button" class="qb-banner-toggle-btn" id="btnCustomizeSalesColumns" onclick="openCustomizeSalesColumnsModal(event)" data-toggle="modal" data-target="#modalCustomizeSalesColumns" data-bs-toggle="modal" data-bs-target="#modalCustomizeSalesColumns" title="Customize Columns (Show / Hide)">
                 <i class="fas fa-columns me-1 text-primary"></i> <span>Columns</span>
             </button>
@@ -2068,6 +2076,12 @@
         <input type="hidden" id="creditDaysInput" name="credit_days" value="0">
         <input type="hidden" id="remarks" name="reference" value="">
         <input type="hidden" id="partyTypeSelect" name="partyType" value="Main Customer">
+
+        {{-- Carpenter Commission Hidden Fields --}}
+        <input type="hidden" id="carpenter_id" name="carpenter_id" value="">
+        <input type="hidden" id="carpenter_commission_type" name="carpenter_commission_type" value="percentage">
+        <input type="hidden" id="carpenter_commission_rate" name="carpenter_commission_rate" value="0">
+        <input type="hidden" id="carpenter_commission_amount" name="carpenter_commission_amount" value="0">
         <input type="hidden" id="is_walkin" name="is_walkin" value="1">
         <input type="hidden" id="walkinNameInput" name="walkin_name" value="Walk-in Customer">
         <input type="hidden" id="walkinPhoneInput" name="walkin_phone" value="">
@@ -2191,13 +2205,13 @@
         {{-- 6. BOTTOM PAYMENT TABS STRIP --}}
         <div class="qb-payment-bar">
             <div class="qb-payment-tabs-group">
-                <button type="button" class="qb-pay-tab active" data-method="cash"><i class="fas fa-money-bill-wave me-1"></i> Cash</button>
-                <button type="button" class="qb-pay-tab" data-method="credit"><i class="fas fa-file-invoice me-1"></i> Credit</button>
-                <button type="button" class="qb-pay-tab" data-method="debit"><i class="fas fa-credit-card me-1"></i> Debit</button>
-                <button type="button" class="qb-pay-tab" data-method="check"><i class="fas fa-money-check me-1"></i> Check</button>
-                <button type="button" class="qb-pay-tab" data-method="gift"><i class="fas fa-gift me-1"></i> Gift</button>
-                <button type="button" class="qb-pay-tab" data-method="account"><i class="fas fa-book me-1"></i> Account</button>
-                <button type="button" class="qb-pay-tab" data-method="split" style="background: linear-gradient(180deg, #38bdf8 0%, #0284c7 100%); border-color: #0369a1;"><i class="fas fa-random me-1"></i> Split</button>
+                <button type="button" class="qb-pay-tab active" data-method="cash" title="100% Cash Payment"><i class="fas fa-money-bill-wave me-1"></i> Cash</button>
+                <button type="button" class="qb-pay-tab" data-method="credit" title="Credit / Custom Amount Allocation"><i class="fas fa-file-invoice me-1"></i> Credit</button>
+                <button type="button" class="qb-pay-tab" data-method="debit" title="100% Bank / Card"><i class="fas fa-credit-card me-1"></i> Debit</button>
+                <button type="button" class="qb-pay-tab" data-method="check" title="100% Bank Check"><i class="fas fa-money-check me-1"></i> Check</button>
+                <button type="button" class="qb-pay-tab" data-method="gift" title="100% Gift Card"><i class="fas fa-gift me-1"></i> Gift</button>
+                <button type="button" class="qb-pay-tab" data-method="account" title="100% Customer Ledger / Khata (Main Customer Only)"><i class="fas fa-book me-1"></i> Account</button>
+                <button type="button" class="qb-pay-tab" data-method="split" style="background: linear-gradient(180deg, #38bdf8 0%, #0284c7 100%); border-color: #0369a1;" title="Split Payment Across Accounts"><i class="fas fa-random me-1"></i> Split</button>
 
                 <div class="ms-2 d-inline-flex align-items-center">
                     <span class="badge bg-white text-dark border px-2 py-1 shadow-sm d-inline-flex align-items-center" style="font-size:11px; cursor:pointer;" onclick="openPaymentAccountSelectorModal()" title="Click to view / split payment across Chart of Accounts & Khata">
@@ -2291,6 +2305,154 @@
 {{-- ==========================================================
      MODALS: ACCEPT RETURN, QUICK PRODUCTS, EDIT ROW, ETC.
      ========================================================== --}}
+
+{{-- Modal: Carpenter Commission (Hidden Backend) --}}
+<div class="modal fade" id="modalCarpenterCommission" tabindex="-1" aria-hidden="true" style="z-index: 1060;">
+    <div class="modal-dialog modal-dialog-centered" style="max-width: 430px;">
+        <div class="modal-content border-0 shadow-lg" style="border-radius: 10px; overflow: hidden;">
+            <div class="modal-header text-white py-2 px-3" style="background: linear-gradient(135deg, #1f2937 0%, #111827 100%);">
+                <div class="d-flex align-items-center gap-2">
+                    <i class="fas fa-hammer text-warning"></i>
+                    <div>
+                        <h6 class="modal-title fw-bold mb-0 text-white" style="font-size: 14px;">Carpenter Commission</h6>
+                        <small class="text-white-50" style="font-size: 10.5px;">Set hidden backend commission</small>
+                    </div>
+                </div>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body p-3" style="background: #f8fafc;">
+                {{-- Carpenter Select Field with Quick Add button --}}
+                <div class="mb-3">
+                    <label class="form-label fw-bold text-dark mb-1" style="font-size: 12px;">
+                        <i class="fas fa-user-tie text-primary me-1"></i> Carpenter Name
+                    </label>
+                    <div class="input-group input-group-sm">
+                        <select id="modal_carpenter_id" class="form-select form-select-sm fw-bold">
+                            <option value="">-- No Carpenter / None --</option>
+                            @if(isset($carpenters))
+                                @foreach($carpenters as $carp)
+                                    <option value="{{ $carp->id }}" 
+                                            data-type="{{ $carp->default_commission_type }}" 
+                                            data-rate="{{ $carp->default_commission_rate }}"
+                                            data-name="{{ $carp->name }}"
+                                            data-phone="{{ $carp->phone }}">
+                                        {{ $carp->name }} {{ $carp->phone ? '('.$carp->phone.')' : '' }}
+                                    </option>
+                                @endforeach
+                            @endif
+                        </select>
+                        <button type="button" class="btn btn-outline-primary fw-bold" id="btnOpenAddCarpenterModal" title="Add New Carpenter">
+                            <i class="fas fa-plus"></i> New
+                        </button>
+                    </div>
+                </div>
+
+                {{-- Commission Type & Rate --}}
+                <div class="row g-2 mb-3">
+                    <div class="col-6">
+                        <label class="form-label fw-bold text-dark mb-1" style="font-size: 12px;">
+                            <i class="fas fa-percentage text-success me-1"></i> Commission Type
+                        </label>
+                        <select id="modal_carpenter_comm_type" class="form-select form-select-sm fw-bold">
+                            <option value="percentage">Percentage (%)</option>
+                            <option value="fixed">Fixed Rupees (Rs.)</option>
+                        </select>
+                    </div>
+                    <div class="col-6">
+                        <label class="form-label fw-bold text-dark mb-1" style="font-size: 12px;">
+                            <i class="fas fa-coins text-warning me-1"></i> Commission Value
+                        </label>
+                        <div class="input-group input-group-sm">
+                            <input type="number" id="modal_carpenter_comm_rate" class="form-control form-control-sm fw-bold text-end" step="0.01" min="0" placeholder="0.00" value="0">
+                            <span class="input-group-text fw-bold text-muted" id="modal_comm_unit_symbol">%</span>
+                        </div>
+                    </div>
+                </div>
+
+                {{-- Live Preview / Helper box --}}
+                <div class="p-2 rounded border bg-white mb-2" style="font-size: 12px;">
+                    <div class="d-flex justify-content-between text-muted mb-1">
+                        <span>Current Sale Net:</span>
+                        <strong class="text-dark font-monospace" id="modal_carp_sale_total">Rs. 0.00</strong>
+                    </div>
+                    <div class="d-flex justify-content-between text-muted mb-1">
+                        <span>Est. Commission:</span>
+                        <strong class="text-success font-monospace" id="modal_carp_est_commission">Rs. 0.00</strong>
+                    </div>
+                    <div class="text-muted fst-italic" style="font-size: 10.5px; border-top: 1px dashed #e2e8f0; padding-top: 4px;">
+                        <i class="fas fa-eye-slash text-secondary me-1"></i> Hidden: Will not show on customer receipt/invoice.
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer py-2 px-3 bg-light d-flex justify-content-between">
+                <button type="button" class="btn btn-outline-danger btn-sm fw-bold" id="btnClearCarpenterCommission">
+                    <i class="fas fa-times me-1"></i> Clear
+                </button>
+                <div class="d-flex gap-2">
+                    <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary btn-sm fw-bold px-3" id="btnApplyCarpenterCommission">
+                        <i class="fas fa-check me-1"></i> Save & Apply
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{{-- Modal: Quick Add Carpenter --}}
+<div class="modal fade" id="modalQuickAddCarpenter" tabindex="-1" aria-hidden="true" style="z-index: 1070;">
+    <div class="modal-dialog modal-dialog-centered" style="max-width: 440px;">
+        <div class="modal-content border-0 shadow-lg" style="border-radius: 10px; overflow: hidden;">
+            <div class="modal-header text-white py-2 px-3" style="background: linear-gradient(135deg, #1e40af 0%, #1e3a8a 100%);">
+                <h6 class="modal-title fw-bold mb-0 text-white" style="font-size: 14px;">
+                    <i class="fas fa-user-plus me-1 text-warning"></i> Quick Add New Carpenter
+                </h6>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body p-3" style="background: #f8fafc;">
+                <form id="formQuickAddCarpenter">
+                    <div class="mb-2">
+                        <label class="form-label fw-bold text-dark mb-1" style="font-size: 12px;">Carpenter Name <span class="text-danger">*</span></label>
+                        <input type="text" class="form-control form-control-sm fw-bold" id="quick_carp_name" required placeholder="e.g. Ustad Tariq">
+                    </div>
+                    <div class="row g-2 mb-2">
+                        <div class="col-6">
+                            <label class="form-label fw-semibold text-dark mb-1" style="font-size: 11.5px;">Phone / Mobile</label>
+                            <input type="text" class="form-control form-control-sm" id="quick_carp_phone" placeholder="0300-1234567">
+                        </div>
+                        <div class="col-6">
+                            <label class="form-label fw-semibold text-dark mb-1" style="font-size: 11.5px;">CNIC</label>
+                            <input type="text" class="form-control form-control-sm" id="quick_carp_cnic" placeholder="Optional">
+                        </div>
+                    </div>
+                    <div class="row g-2 mb-2">
+                        <div class="col-6">
+                            <label class="form-label fw-semibold text-dark mb-1" style="font-size: 11.5px;">Default Comm. Type</label>
+                            <select id="quick_carp_type" class="form-select form-select-sm">
+                                <option value="percentage">Percentage (%)</option>
+                                <option value="fixed">Fixed Rupees (Rs.)</option>
+                            </select>
+                        </div>
+                        <div class="col-6">
+                            <label class="form-label fw-semibold text-dark mb-1" style="font-size: 11.5px;">Default Rate</label>
+                            <input type="number" class="form-control form-control-sm text-end" id="quick_carp_rate" step="0.01" min="0" value="0" placeholder="0.00">
+                        </div>
+                    </div>
+                    <div class="mb-2">
+                        <label class="form-label fw-semibold text-dark mb-1" style="font-size: 11.5px;">Address / Area</label>
+                        <input type="text" class="form-control form-control-sm" id="quick_carp_address" placeholder="Optional">
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer py-2 px-3 bg-light d-flex justify-content-between">
+                <button type="button" class="btn btn-secondary btn-sm" id="btnCancelQuickCarpenter">Cancel</button>
+                <button type="button" class="btn btn-success btn-sm fw-bold px-3" id="btnSaveQuickCarpenter">
+                    <i class="fas fa-save me-1"></i> Save Carpenter
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
 
 {{-- Modal 1: Accept Return / Receipt Lookup --}}
 <div class="modal fade" id="modalAcceptReturn" tabindex="-1" aria-hidden="true" style="z-index: 1060;">
@@ -3160,21 +3322,49 @@
     </div>
 </div>
 
-{{-- Modal 10: Zero Item Price (Image 2 Replica) --}}
-<div class="modal fade" id="modalZeroPriceItem" tabindex="-1" data-bs-backdrop="static" data-bs-keyboard="false" aria-hidden="true" style="z-index: 1070;">
+<!-- QUICKBOOKS DESKTOP POS: CHOOSE UNIT OF MEASURE MODAL (ADD SALE) -->
+<div class="modal fade" id="qbChooseUomModalAddSale" tabindex="-1" aria-labelledby="qbChooseUomModalAddSaleLabel" aria-hidden="true" style="z-index: 1080;">
     <div class="modal-dialog modal-dialog-centered" style="max-width: 440px;">
-        <div class="modal-content border-0 shadow-lg" style="border-radius: 4px; overflow: hidden; border: 1px solid #1e3a5f;">
-            <div class="qb-zero-price-header">
-                <span>Zero Item Price</span>
+        <div class="modal-content shadow-lg border-0" style="border-radius: 8px;">
+            <div class="modal-header py-2 px-3 bg-light border-bottom d-flex align-items-center justify-content-between">
+                <h6 class="modal-title fw-bold text-dark d-flex align-items-center mb-0" id="qbChooseUomModalAddSaleLabel" style="font-size: 14px;">
+                    <i class="fas fa-layer-group text-primary me-2"></i> Choose Unit of Measure
+                </h6>
+                <button type="button" class="close text-dark" data-dismiss="modal" data-bs-dismiss="modal" aria-label="Close" style="border: none; background: transparent; font-size: 22px; line-height: 1;">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body p-3">
+                <div class="text-muted small mb-2">
+                    Select the unit of measure to sell <strong id="qbAddSaleModalProductName" class="text-dark"></strong>:
+                </div>
+                <div class="d-flex flex-column gap-2" id="qbAddSaleModalUnitsContainer" style="max-height: 320px; overflow-y: auto;">
+                    <!-- Populated dynamically via JS -->
+                </div>
+            </div>
+            <div class="modal-footer py-2 px-3 bg-light border-top d-flex justify-content-end gap-2">
+                <button type="button" class="btn btn-secondary btn-sm px-3" data-dismiss="modal" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary btn-sm px-4 fw-bold" id="btnConfirmQbAddSaleUomChoice">OK</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+{{-- Modal 10: Item Price Entry / Zero Item Price (Image 1 & 2 Replica) --}}
+<div class="modal fade" id="modalZeroPriceItem" tabindex="-1" data-bs-backdrop="static" data-bs-keyboard="false" aria-hidden="true" style="z-index: 1070;">
+    <div class="modal-dialog modal-dialog-centered" style="max-width: 450px;">
+        <div class="modal-content border-0 shadow-lg" style="border-radius: 6px; overflow: hidden; border: 1.5px solid #1e3a5f;">
+            <div class="qb-zero-price-header d-flex justify-content-between align-items-center">
+                <span id="zpModalTitle" class="fw-bold" style="font-size: 14px;">Item Price</span>
                 <button type="button" class="btn btn-link text-white p-0 text-decoration-none shadow-none" data-dismiss="modal" data-bs-dismiss="modal" id="btnZPHeaderClose" style="font-size: 18px; line-height: 1; opacity: 0.85; cursor: pointer;"><i class="fas fa-times"></i></button>
             </div>
             <div class="modal-body p-3" style="background: #eef2f8;">
-                <div class="d-flex align-items-center gap-3 mb-3">
+                <div class="d-flex align-items-center gap-3 mb-2.5" id="zpPriceTitleRow" style="display: none;">
                     <div class="qb-info-circle-big">i</div>
-                    <div class="fs-4 fw-bolder text-dark" id="zpPriceTitle">Rs. 0.00 Price</div>
+                    <div class="fs-5 fw-bolder text-dark" id="zpPriceTitle"></div>
                 </div>
 
-                <div class="qb-zero-price-box mb-3">
+                <div class="qb-zero-price-box mb-2.5">
                     <table class="qb-modal-spec-table">
                         <tr>
                             <td class="spec-label">Item Name</td>
@@ -3204,17 +3394,36 @@
                             <td class="spec-label">Unit of Measure</td>
                             <td class="spec-value" id="zpUnit">-</td>
                         </tr>
+                        <tr>
+                            <td class="spec-label">P-Code</td>
+                            <td class="spec-value font-monospace" id="zpPCode">
+                                <span class="badge text-white font-monospace" style="background: #1e40af; font-size: 12px; font-weight: 700; padding: 2px 7px; border-radius: 4px;">Sky: <span id="zpSkyVal">-</span></span>
+                                <span class="badge text-white font-monospace ms-1" style="background: #0f172a; font-size: 12px; font-weight: 700; padding: 2px 7px; border-radius: 4px;">Root: <span id="zpRotVal">-</span></span>
+                            </td>
+                        </tr>
                     </table>
                 </div>
 
-                <div class="text-secondary small mb-2 text-center" style="line-height: 1.35;">
-                    The active inventory price for this item is zero.<br>
-                    <strong>Enter the price to be charged on the document.</strong>
+                <div class="text-secondary small mb-2 text-center" id="zpDescText" style="line-height: 1.35; font-size: 12.5px;">
+                    Enter the price to be charged on the document.
                 </div>
 
-                <div class="d-flex align-items-center justify-content-center gap-2 mb-3">
-                    <label class="fw-bold text-dark mb-0" style="font-size: 13px;">New Price</label>
-                    <input type="number" step="any" id="zpNewPriceInput" class="form-control form-control-sm text-end fw-bold fs-6" style="max-width: 140px; border: 1px solid #64748b;" placeholder="0.00" min="0">
+                {{-- Price Input Field --}}
+                <div class="d-flex align-items-center justify-content-center gap-2 mb-1.5">
+                    <label class="fw-bold text-dark mb-0" style="font-size: 13.5px;">New Price</label>
+                    <input type="number" step="any" id="zpNewPriceInput" class="form-control form-control-sm text-end fw-bold fs-6" style="max-width: 150px; border: 1.5px solid #1e3a5f; height: 36px; border-radius: 4px;" placeholder="0.00" min="0">
+                </div>
+
+                {{-- Root Price & ROT Code Info (Hidden as requested) --}}
+                <div class="text-center small mb-2" id="zpRootPriceInfo" style="font-size: 11.5px; font-weight: 600; color: #475569; display: none;">
+                    Root Price: <span class="badge bg-secondary font-monospace" id="zpRootPriceBadge">Rs. 0.00</span>
+                    <span id="zpRotCodeBadge" class="badge bg-dark font-monospace ms-1" style="display: none;">ROT: <span id="zpRotCodeVal"></span></span>
+                </div>
+
+                {{-- Price Below Root Warning Banner --}}
+                <div id="zpPriceBelowRootWarning" class="alert alert-warning py-1.5 px-2 mb-2 small d-none" style="font-size: 12px; border-radius: 4px; border-left: 4px solid #d97706; background: #fffbeb; color: #92400e;">
+                    <i class="fas fa-exclamation-triangle text-warning me-1"></i>
+                    <strong>Need Admin Permission:</strong> Price <span class="badge bg-danger font-monospace" id="zpWarnEnteredPrice">Rs. 0.00</span> is less than Root Price.
                 </div>
 
                 <div class="pt-2 border-top border-secondary-subtle">
@@ -3285,6 +3494,13 @@
                             <td class="spec-label">Unit of Measure</td>
                             <td class="spec-value" id="qeUnit">-</td>
                         </tr>
+                        <tr>
+                            <td class="spec-label">P-Code</td>
+                            <td class="spec-value font-monospace" id="qePCode">
+                                <span class="badge text-white font-monospace" style="background: #1e40af; font-size: 12px; font-weight: 700; padding: 2px 7px; border-radius: 4px;">Sky: <span id="qeSkyVal">-</span></span>
+                                <span class="badge text-white font-monospace ms-1" style="background: #0f172a; font-size: 12px; font-weight: 700; padding: 2px 7px; border-radius: 4px;">Root: <span id="qeRotVal">-</span></span>
+                            </td>
+                        </tr>
                     </table>
                 </div>
 
@@ -3304,9 +3520,17 @@
                     </div>
                 </div>
 
+                {{-- Confirmed Price Line (Read-only from Step 1) --}}
+                <div class="d-flex align-items-center justify-content-between px-2 py-1 mb-2 bg-white rounded border" style="border-color: #cbd5e1 !important;">
+                    <span style="font-size: 13.5px; font-weight: 600; color: #475569;">
+                        <i class="fas fa-tag text-primary me-1"></i> Confirmed Unit Price:
+                    </span>
+                    <span class="badge bg-success font-monospace fw-bold px-2.5 py-1" id="qeConfirmedPriceBadge" style="font-size: 14px;">Rs. 0.00</span>
+                </div>
+
                 <div class="d-flex align-items-center justify-content-between gap-2 mb-2 px-1">
                     <label class="mb-0" style="font-size: 14.5px !important; font-weight: 600 !important; color: #1e293b !important;">Enter sales receipt quantity:</label>
-                    <input type="number" step="any" id="qeQtyInput" class="form-control text-center" style="max-width: 90px; height: 34px; border: 1.5px solid #334155; border-radius: 4px; font-size: 16px !important; font-weight: 700 !important; color: #000000 !important;" value="1" min="1">
+                    <input type="number" step="any" id="qeQtyInput" class="form-control text-center" style="max-width: 90px; height: 34px; border: 1.5px solid #334155; border-radius: 4px; font-size: 16px !important; font-weight: 700 !important; color: #000000 !important;" value="1" min="1" autofocus>
                 </div>
 
                 <div class="form-check mt-1 pt-1.5 border-top border-dark-subtle" id="qeDontWarnRow" style="display: none;">
@@ -3322,6 +3546,60 @@
                     <button type="button" class="btn btn-danger btn-sm px-3" id="btnQERemoveItem" style="font-size: 13.5px; font-weight: 600;">Remove Item</button>
                     <button type="button" class="btn btn-primary btn-sm px-4" id="btnQEContinue" style="font-size: 14px; font-weight: 700;">Continue</button>
                 </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{{-- Modal 12: Staff Waiting for Price Approval --}}
+<div class="modal fade" id="modalStaffWaitingApproval" tabindex="-1" data-backdrop="static" data-bs-backdrop="static" data-keyboard="false" data-bs-keyboard="false" aria-hidden="true" style="z-index: 1085;">
+    <div class="modal-dialog modal-dialog-centered" style="max-width: 440px;">
+        <div class="modal-content border-0 shadow-lg" style="border-radius: 8px; overflow: hidden; border: 2px solid #2563eb !important;">
+            <div class="modal-header py-2.5 px-3 text-white" style="background: linear-gradient(135deg, #1e3a5f 0%, #0f172a 100%); border-bottom: 2px solid #3b82f6;">
+                <div class="d-flex align-items-center gap-2">
+                    <span class="spinner-border spinner-border-sm text-warning" role="status"></span>
+                    <h6 class="modal-title fw-bold mb-0 text-white" style="font-size: 13.5px;">Waiting for Admin Permission</h6>
+                </div>
+                <span class="badge bg-light text-primary font-monospace" id="waitingReqIdBadge">Req #--</span>
+            </div>
+            <div class="modal-body p-3 text-center" style="background: #f8fafc;">
+                <div class="py-2">
+                    <div class="mb-3">
+                        <div class="spinner-grow text-primary" style="width: 3rem; height: 3rem;" role="status">
+                            <span class="visually-hidden">Waiting...</span>
+                        </div>
+                    </div>
+                    <h6 class="fw-bold text-dark mb-1" id="waitingItemNameText">-</h6>
+                    <p class="text-muted small mb-3" id="waitingItemDescText">-</p>
+
+                    <div class="card border p-2 mb-3 bg-white" style="border-color: #cbd5e1 !important;">
+                        <div class="d-flex justify-content-between align-items-center py-1 border-bottom">
+                            <span class="text-muted small">Quantity:</span>
+                            <span class="fw-bold text-dark" id="waitingQtyText">1</span>
+                        </div>
+                        <div class="d-flex justify-content-between align-items-center py-1 border-bottom">
+                            <span class="text-muted small">Root / Floor Price:</span>
+                            <span class="fw-bold text-secondary font-monospace" id="waitingRootPriceText">Rs. 0.00</span>
+                        </div>
+                        <div class="d-flex justify-content-between align-items-center py-1">
+                            <span class="text-danger small fw-bold">Requested Price:</span>
+                            <span class="fw-bolder text-danger fs-6 font-monospace" id="waitingReqPriceText">Rs. 0.00</span>
+                        </div>
+                    </div>
+
+                    <div class="alert alert-info py-2 px-3 small mb-0 text-start" style="font-size: 11.5px; background: #eff6ff; color: #1e40af; border: 1px solid #bfdbfe;">
+                        <i class="fas fa-info-circle me-1"></i>
+                        A notification has been sent to Admin / Super Admin. This screen will automatically update as soon as Admin allows or rejects the request.
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer py-2 px-3 d-flex justify-content-between bg-light" style="border-top: 1px solid #cbd5e1;">
+                <span class="text-muted small" style="font-size: 11px;">
+                    <i class="fas fa-sync fa-spin me-1 text-primary"></i> Listening for Admin...
+                </span>
+                <button type="button" class="btn btn-secondary btn-sm px-3 fw-bold" id="btnCancelWaitingApproval">
+                    <i class="fas fa-times me-1"></i> Cancel Request
+                </button>
             </div>
         </div>
     </div>
@@ -3631,6 +3909,9 @@ window.openCustomizeSalesColumnsModal = function(e) {
 
 // Immediate application on parse so columns do not flicker
 window.applySalesGridColVisibility();
+window.isUserAdmin = {{ auth()->check() && auth()->user()->isSuperAdmin() ? 'true' : 'false' }};
+window.currentUserId = {{ auth()->id() ?? 'null' }};
+window.currentUserName = "{{ addslashes(auth()->user()->name ?? 'Staff') }}";
 
 $(document).ready(function() {
     // CSRF Token setup
@@ -3687,6 +3968,13 @@ $(document).ready(function() {
                 detailsText: '',
                 salesOfficerId: ''
             },
+            carpenter: {
+                id: '',
+                type: 'percentage',
+                rate: '0',
+                amount: '0',
+                name: 'Carpenter'
+            },
             notes: ''
         };
     }
@@ -3711,6 +3999,13 @@ $(document).ready(function() {
             statusLabel: $('#qbCustomerStatusLabel').text() || 'Chase up,',
             detailsText: $('#qbCustomerDetailsText').text() || '',
             salesOfficerId: $('#salesOfficerId').val() || ''
+        };
+        orders[activeOrderIndex].carpenter = {
+            id: $('#carpenter_id').val() || '',
+            type: $('#carpenter_commission_type').val() || 'percentage',
+            rate: $('#carpenter_commission_rate').val() || '0',
+            amount: $('#carpenter_commission_amount').val() || '0',
+            name: $('#carpenterBtnText').text() || 'Carpenter'
         };
         orders[activeOrderIndex].notes = $('#saleNotes').length ? $('#saleNotes').val() : '';
     }
@@ -3766,6 +4061,25 @@ $(document).ready(function() {
         // 4. Restore notes
         if ($('#saleNotes').length && ord.notes !== undefined) {
             $('#saleNotes').val(ord.notes);
+        }
+
+        // 5. Restore Carpenter Commission
+        const carp = ord.carpenter || {};
+        $('#carpenter_id').val(carp.id || '');
+        $('#carpenter_commission_type').val(carp.type || 'percentage');
+        $('#carpenter_commission_rate').val(carp.rate || '0');
+        $('#carpenter_commission_amount').val(carp.amount || '0');
+
+        if (carp.id && parseInt(carp.id) > 0) {
+            const dispName = (carp.name && carp.name !== 'Carpenter') ? carp.name : 'Carpenter';
+            $('#carpenterBtnText').text(dispName.length > 10 ? dispName.substring(0, 10) + '...' : dispName);
+            const badgeText = carp.type === 'fixed' ? ('Rs.' + carp.rate) : (carp.rate + '%');
+            $('#carpenterActiveBadge').removeClass('d-none').text(badgeText);
+            $('#btnCarpenterCommission').addClass('border-success text-success');
+        } else {
+            $('#carpenterBtnText').text('Carpenter');
+            $('#carpenterActiveBadge').addClass('d-none');
+            $('#btnCarpenterCommission').removeClass('border-success text-success');
         }
 
         renderGrid();
@@ -3956,6 +4270,7 @@ $(document).ready(function() {
 
         results.forEach((item, index) => {
             const sku = item.sku || item.item_code || item.serial_no || '-';
+            const itemNumberBadge = item.item_number ? `<span class="badge bg-primary text-white font-monospace ms-1" style="font-size:10.5px;">Item #: ${item.item_number}</span>` : '';
             const pCodeBadge = item.p_code ? `<span class="badge bg-warning-subtle text-dark border border-warning-subtle font-monospace ms-1" style="font-size:10px;">P: ${item.p_code}</span>` : '';
             const stockQty = item.stock || item.stock_pieces || 0;
             const stockBadge = stockQty > 0 
@@ -3968,15 +4283,15 @@ $(document).ready(function() {
             <div class="qb-autocomplete-item qb-product-search-item ${index === 0 ? 'selected' : ''}" data-json='${JSON.stringify(item).replace(/'/g, "&apos;")}'>
                 <div style="flex: 1; min-width: 0; padding-right: 8px;">
                     <div class="text-truncate">
-                        <strong class="text-primary font-monospace">#${sku}</strong> 
-                        <span class="fw-semibold text-dark">${desc}</span> 
+                        <strong class="text-primary" style="font-size: 13.5px; font-weight: 700;">${desc}</strong> 
+                        ${itemNumberBadge}
+                        <span class="badge bg-secondary-subtle text-dark border border-secondary-subtle font-monospace ms-1" style="font-size: 10.5px;">#${sku}</span>
                         ${pCodeBadge}
                     </div>
                     ${item.color || item.size ? `<small class="text-muted" style="font-size:10.5px;">Var: ${item.color || ''} ${item.size ? '/ ' + item.size : ''}</small>` : ''}
                 </div>
                 <div class="text-end flex-shrink-0">
                     ${stockBadge}
-                    <span class="fw-bold text-dark ms-2 font-monospace">Rs. ${price}</span>
                 </div>
             </div>`;
         });
@@ -4339,6 +4654,24 @@ $(document).ready(function() {
 
         $('#qbBtnResetCustomerBanner').html('<i class="fas fa-user-edit me-1"></i> Edit Walk-in').removeClass('btn-outline-danger').addClass('btn-outline-warning text-dark').show();
 
+        // Walk-in customers cannot have unpaid Khata or be on Account
+        if (typeof orderPaymentAllocation !== 'undefined') {
+            if (orderPaymentAllocation.method === 'account' || orderPaymentAllocation.method === 'credit' || orderPaymentAllocation.khataAmount > 0.009) {
+                const grandTotal = parseFloat($('#qbStatGrandTotal').text()) || 0;
+                orderPaymentAllocation.method = 'cash';
+                orderPaymentAllocation.cashAmount = grandTotal;
+                orderPaymentAllocation.bankAmount = 0;
+                orderPaymentAllocation.khataAmount = 0;
+                currentActivePaymentMethod = 'cash';
+                $('.qb-pay-tab').removeClass('active');
+                $('.qb-pay-tab[data-method="cash"]').addClass('active');
+                $('#qbAmountDueVal').text('0.00');
+                if (typeof syncPaymentAccounts === 'function') {
+                    syncPaymentAccounts();
+                }
+            }
+        }
+
         if (typeof saveCurrentOrderState === 'function') {
             saveCurrentOrderState();
         }
@@ -4684,7 +5017,7 @@ $(document).ready(function() {
         };
     };
 
-    window.addItemToGrid = function(item, isReturn = false, origReceiptNo = '', origSaleItemId = null) {
+    window.addItemToGrid = function(item, isReturn = false, origReceiptNo = '', origSaleItemId = null, origSaleId = null) {
         // Check if item contains variant info or base product
         let pId = item.product_id || item.id;
         if (typeof pId === 'string' && pId.includes('|variant|')) {
@@ -4701,6 +5034,9 @@ $(document).ready(function() {
         const size = parsed.size;
         const pCode = item.p_code || '';
         const salesDesc = parsed.salesDesc;
+        const rootPrice = parseFloat(item.wholesale_price !== undefined ? item.wholesale_price : (item.rot_price !== undefined ? item.rot_price : (item.rootPrice || 0)));
+        const adminApproved = !!item.admin_approved;
+        const approvedPrice = item.admin_approved ? rawPrice : null;
 
         const uid = generateUid();
         const rowData = {
@@ -4708,6 +5044,8 @@ $(document).ready(function() {
             isReturn: isReturn,
             receiptNo: origReceiptNo,
             saleItemId: origSaleItemId,
+            originalSaleId: origSaleId || item.original_sale_id || item.sale_id || null,
+            isManual: !!item.is_manual,
             productId: pId,
             itemNumber: itemNumber,
             itemName: itemName,
@@ -4716,10 +5054,18 @@ $(document).ready(function() {
             size: size,
             qty: isReturn ? -Math.abs(parseFloat(item.returnQty || item.qty || 1)) : Math.abs(parseFloat(item.qty || 1)),
             price: rawPrice,
+            rootPrice: rootPrice,
+            adminApproved: adminApproved,
+            approvedPrice: approvedPrice,
+            approvalId: item.approval_id || null,
             discount: parseFloat(item.discount || 0),
             pCode: pCode,
             salesDesc: salesDesc,
-            colorJson: item.variantData ? (typeof item.variantData === 'string' ? item.variantData : JSON.stringify(item.variantData)) : ''
+            stock: (item.stock !== undefined ? parseFloat(item.stock) : (item.stock_pieces !== undefined ? parseFloat(item.stock_pieces) : 0)),
+            colorJson: item.variantData ? (typeof item.variantData === 'string' ? item.variantData : JSON.stringify(item.variantData)) : '',
+            uomUnits: item.uomUnits || item.uom_units || [],
+            uomName: item.uomName || item.uom_sell_unit || item.unit || 'Pcs',
+            uomRatio: parseFloat(item.uomRatio || 1) || 1
         };
 
         gridRows.push(rowData);
@@ -4780,7 +5126,17 @@ $(document).ready(function() {
                     <strong>${row.itemNumber}</strong>
                     ${returnBadgeHtml}
                 </td>
-                <td class="col-item-name"><strong>${row.itemName}</strong></td>
+                <td class="col-item-name">
+                    <strong>${row.itemName}</strong>
+                    <div class="qb-row-subtext" style="font-size:11px;">
+                        <span class="text-muted">Unit:</span> <span class="badge bg-light text-primary border">${row.uomName || row.unit || 'Pcs'}</span>
+                        ${(row.uomUnits && row.uomUnits.length > 1) ? `
+                            <button type="button" class="btn btn-xs btn-outline-primary py-0 px-1 ms-1 btn-open-choose-uom-addsale" data-uid="${row.uid}" style="font-size: 10px; height: 18px; line-height: 16px;">
+                                <i class="fas fa-layer-group me-1"></i>Units
+                            </button>
+                        ` : ''}
+                    </div>
+                </td>
                 <td class="col-vendor-desc">${row.vendorDesc}</td>
                 <td class="col-attribute">${row.attribute}</td>
                 <td class="col-size">
@@ -4788,7 +5144,10 @@ $(document).ready(function() {
                     ${pCodeHtml}
                 </td>
                 <td class="col-qty text-end fw-bold">${row.qty}</td>
-                <td class="col-price text-end">${row.price.toFixed(2)}</td>
+                <td class="col-price text-end">
+                    ${row.price.toFixed(2)}
+                    ${row.adminApproved ? '<span class="badge bg-success-subtle text-success border border-success-subtle d-inline-block font-monospace ms-1" style="font-size: 8.5px; padding: 1px 3px;" title="Admin Authorized Below Root Price"><i class="fas fa-check-circle"></i> Auth</span>' : ''}
+                </td>
                 <td class="col-ext-price text-end fw-bold">${extPrice.toFixed(2)}</td>
                 <td class="col-sales-desc">${row.salesDesc}</td>
             </tr>`;
@@ -4929,8 +5288,50 @@ $(document).ready(function() {
         const row = gridRows.find(r => r.uid === uid);
         if (row) {
             const rawQty = parseFloat($('#editRowQty').val()) || 1;
+            const newPrice = parseFloat($('#editRowPrice').val()) || 0;
+            const rootPrice = row.rootPrice || 0;
+
+            if (rootPrice > 0 && newPrice < rootPrice && !window.isUserAdmin && (!row.adminApproved || row.approvedPrice !== newPrice)) {
+                if (typeof Swal !== 'undefined') {
+                    Swal.fire({
+                        title: 'Need Admin Permission!',
+                        html: `Entered price <b class="text-danger font-monospace">Rs. ${newPrice.toFixed(2)}</b> is lower than the Root Price <b class="font-monospace">Rs. ${rootPrice.toFixed(2)}</b>.<br><br><strong>Need admin permission to sell at this price.</strong><br>Do you want to send an approval request to Admin?`,
+                        icon: 'warning',
+                        showCancelButton: true,
+                        confirmButtonText: '<i class="fas fa-paper-plane me-1"></i> Yes, Request Admin',
+                        cancelButtonText: 'Cancel',
+                        confirmButtonColor: '#1e40af',
+                        cancelButtonColor: '#64748b'
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            $('#modalEditLineItem').modal('hide');
+                            sendPriceApprovalRequest({
+                                productId: row.productId,
+                                sku: row.itemNumber,
+                                name: row.itemName,
+                                salesDesc: row.salesDesc,
+                                unit: 'Pcs',
+                                price: row.price,
+                                rootPrice: rootPrice,
+                                raw: {
+                                    product_id: row.productId,
+                                    sku: row.itemNumber,
+                                    name: row.itemName,
+                                    sales_desc: row.salesDesc,
+                                    price: newPrice,
+                                    retail_price: newPrice,
+                                    qty: rawQty,
+                                    wholesale_price: rootPrice
+                                }
+                            }, rawQty, newPrice, rootPrice);
+                        }
+                    });
+                }
+                return;
+            }
+
             row.qty = (row.isReturn || row.qty < 0) ? -Math.abs(rawQty) : Math.abs(rawQty);
-            row.price = parseFloat($('#editRowPrice').val()) || 0;
+            row.price = newPrice;
             row.discount = parseFloat($('#editRowDiscount').val()) || 0;
             row.attribute = $('#editRowAttribute').val() || '-';
             row.size = $('#editRowSize').val() || '-';
@@ -4989,11 +5390,25 @@ $(document).ready(function() {
         $('#qbStatDiscount').text(overallDisc.toFixed(2));
         $('#qbStatGrandTotal').text(grandTotal.toFixed(2));
 
+        const isWalkin = ($('#is_walkin').val() === '1');
+
         // Payment allocation adjustment on total change
-        if (orderPaymentAllocation.method === 'cash') {
+        if (isWalkin && (orderPaymentAllocation.method === 'account' || orderPaymentAllocation.method === 'credit' || orderPaymentAllocation.khataAmount > 0)) {
+            orderPaymentAllocation.method = 'cash';
             orderPaymentAllocation.cashAmount = grandTotal;
             orderPaymentAllocation.bankAmount = 0;
             orderPaymentAllocation.khataAmount = 0;
+            currentActivePaymentMethod = 'cash';
+            $('.qb-pay-tab').removeClass('active');
+            $('.qb-pay-tab[data-method="cash"]').addClass('active');
+        } else if (orderPaymentAllocation.method === 'cash') {
+            orderPaymentAllocation.cashAmount = grandTotal;
+            orderPaymentAllocation.bankAmount = 0;
+            orderPaymentAllocation.khataAmount = 0;
+        } else if (orderPaymentAllocation.method === 'account') {
+            orderPaymentAllocation.cashAmount = 0;
+            orderPaymentAllocation.bankAmount = 0;
+            orderPaymentAllocation.khataAmount = grandTotal;
         } else if (orderPaymentAllocation.method === 'debit' || orderPaymentAllocation.method === 'check') {
             orderPaymentAllocation.cashAmount = 0;
             orderPaymentAllocation.bankAmount = grandTotal;
@@ -5016,6 +5431,10 @@ $(document).ready(function() {
         $('#inputPaymentMethod').val(orderPaymentAllocation.method);
         $('#qbAmountDueVal').text(orderPaymentAllocation.khataAmount.toFixed(2));
         $('#totalBalance').val(grandTotal.toFixed(2));
+
+        if (typeof syncPaymentAccounts === 'function') {
+            syncPaymentAccounts();
+        }
     }
 
     // ==============================================================
@@ -5038,25 +5457,26 @@ $(document).ready(function() {
 
             if (isRet) {
                 // Return Item Fields
+                const origSaleIdVal = row.originalSaleId || row.receiptNo || '';
                 $itemContainer.append(`
                     <input type="hidden" name="return_product_id[]" value="${row.productId}">
                     <input type="hidden" name="return_qty[]" value="${Math.abs(row.qty)}">
                     <input type="hidden" name="return_price[]" value="${row.price}">
                     <input type="hidden" name="return_color[]" value="${row.colorJson || ''}">
-                    <input type="hidden" name="return_is_manual[]" value="0">
+                    <input type="hidden" name="return_is_manual[]" value="${row.isManual ? 1 : 0}">
                     <input type="hidden" name="return_sale_item_id[]" value="${row.saleItemId || ''}">
+                    <input type="hidden" name="original_sale_id[]" value="${origSaleIdVal}">
+                    <input type="hidden" name="return_uom_name[]" value="${row.uomName || ''}">
+                    <input type="hidden" name="return_uom_ratio[]" value="${row.uomRatio || 1}">
                 `);
-                if (!origSaleIdSet && row.saleItemId) {
-                    $itemContainer.append(`<input type="hidden" name="original_sale_id" value="${row.receiptNo || ''}">`);
-                    origSaleIdSet = true;
-                }
             } else {
                 // Normal Sale Item Fields
+                const totalPiecesVal = (row.uomRatio && row.uomRatio > 0) ? (Math.abs(row.qty) * row.uomRatio) : Math.abs(row.qty);
                 $itemContainer.append(`
                     <input type="hidden" name="product_id[]" value="${row.productId}">
                     <input type="hidden" name="qty[]" value="${Math.abs(row.qty)}">
                     <input type="hidden" name="carton_qty[]" value="${Math.abs(row.qty)}">
-                    <input type="hidden" name="total_pieces[]" value="${Math.abs(row.qty)}">
+                    <input type="hidden" name="total_pieces[]" value="${totalPiecesVal}">
                     <input type="hidden" name="price_per_piece[]" value="${row.price}">
                     <input type="hidden" name="visible_price[]" value="${row.price}">
                     <input type="hidden" name="item_disc[]" value="${row.discount}">
@@ -5065,8 +5485,11 @@ $(document).ready(function() {
                     <input type="hidden" name="total[]" value="${lineExt.toFixed(2)}">
                     <input type="hidden" name="color[]" value="${row.colorJson || ''}">
                     <input type="hidden" name="size_display[]" value="${row.size}">
+                    <input type="hidden" name="stock[]" value="${row.stock !== undefined ? row.stock : ''}">
                     <input type="hidden" name="p_code[]" value="${row.pCode || ''}">
                     <input type="hidden" name="warehouse_id[]" value="{{ auth()->user()->warehouse_id ?? 1 }}">
+                    <input type="hidden" name="uom_name[]" value="${row.uomName || ''}">
+                    <input type="hidden" name="uom_ratio[]" value="${row.uomRatio || 1}">
                 `);
             }
         });
@@ -5126,6 +5549,14 @@ $(document).ready(function() {
             } else {
                 badgeHtml = `<i class="fas fa-file-invoice text-warning me-1"></i> Credit: <strong>${custName} Khata (Rs. ${orderPaymentAllocation.khataAmount.toFixed(2)})</strong>`;
             }
+        } else if (orderPaymentAllocation.method === 'account') {
+            badgeHtml = `<i class="fas fa-book text-warning me-1"></i> Account: <strong>${custName} Khata (Rs. ${orderPaymentAllocation.khataAmount.toFixed(2)})</strong>`;
+        } else if (orderPaymentAllocation.method === 'credit') {
+            if (isWalkin) {
+                badgeHtml = `<i class="fas fa-file-invoice text-warning me-1"></i> Credit (Khata): <strong>Select Customer (Rs. ${orderPaymentAllocation.khataAmount.toFixed(2)})</strong>`;
+            } else {
+                badgeHtml = `<i class="fas fa-file-invoice text-warning me-1"></i> Credit: <strong>${custName} Khata (Rs. ${orderPaymentAllocation.khataAmount.toFixed(2)})</strong>`;
+            }
         } else {
             badgeHtml = `<i class="fas fa-book text-secondary me-1"></i> Account: <strong>${cashTitle}</strong>`;
         }
@@ -5153,7 +5584,6 @@ $(document).ready(function() {
         if (isWalkin) {
             $('#qbKhataCardCol').hide();
             $('#qbPresetKhataBtn').hide();
-            // Force khata to 0 for walk-in
             $('#qbSplitKhataInput').val('0.00');
         } else {
             $('#qbKhataCardCol').show();
@@ -5169,10 +5599,26 @@ $(document).ready(function() {
         }
 
         // Set inputs based on initialMode or current allocation
-        if (initialMode === 'credit') {
+        if (initialMode === 'account') {
             $('#qbSplitCashInput').val('0.00');
             $('#qbSplitBankInput').val('0.00');
             $('#qbSplitKhataInput').val(grandTotal.toFixed(2));
+        } else if (initialMode === 'credit') {
+            if (isWalkin) {
+                $('#qbSplitCashInput').val(grandTotal.toFixed(2));
+                $('#qbSplitBankInput').val('0.00');
+                $('#qbSplitKhataInput').val('0.00');
+            } else {
+                if (orderPaymentAllocation.khataAmount > 0.009 || orderPaymentAllocation.cashAmount > 0.009 || orderPaymentAllocation.bankAmount > 0.009) {
+                    $('#qbSplitCashInput').val(orderPaymentAllocation.cashAmount.toFixed(2));
+                    $('#qbSplitBankInput').val(orderPaymentAllocation.bankAmount.toFixed(2));
+                    $('#qbSplitKhataInput').val(orderPaymentAllocation.khataAmount.toFixed(2));
+                } else {
+                    $('#qbSplitCashInput').val('0.00');
+                    $('#qbSplitBankInput').val('0.00');
+                    $('#qbSplitKhataInput').val(grandTotal.toFixed(2));
+                }
+            }
         } else if (initialMode === 'bank') {
             $('#qbSplitCashInput').val('0.00');
             $('#qbSplitBankInput').val(grandTotal.toFixed(2));
@@ -5181,10 +5627,10 @@ $(document).ready(function() {
             $('#qbSplitCashInput').val(orderPaymentAllocation.cashAmount.toFixed(2));
             $('#qbSplitBankInput').val(orderPaymentAllocation.bankAmount.toFixed(2));
             $('#qbSplitKhataInput').val(orderPaymentAllocation.khataAmount.toFixed(2));
-        } else if (orderPaymentAllocation.method === 'credit') {
-            $('#qbSplitCashInput').val('0.00');
-            $('#qbSplitBankInput').val('0.00');
-            $('#qbSplitKhataInput').val(grandTotal.toFixed(2));
+        } else if (orderPaymentAllocation.method === 'credit' || orderPaymentAllocation.method === 'account') {
+            $('#qbSplitCashInput').val(orderPaymentAllocation.cashAmount.toFixed(2));
+            $('#qbSplitBankInput').val(orderPaymentAllocation.bankAmount.toFixed(2));
+            $('#qbSplitKhataInput').val(orderPaymentAllocation.khataAmount > 0.009 ? orderPaymentAllocation.khataAmount.toFixed(2) : grandTotal.toFixed(2));
         } else if (orderPaymentAllocation.method === 'debit' || orderPaymentAllocation.method === 'check') {
             $('#qbSplitCashInput').val('0.00');
             $('#qbSplitBankInput').val(grandTotal.toFixed(2));
@@ -5198,6 +5644,15 @@ $(document).ready(function() {
 
         reconcileModalAllocation();
         $('#modalSelectPaymentAccount').modal('show');
+        setTimeout(() => {
+            if (initialMode === 'credit') {
+                $('#qbSplitKhataInput').focus().select();
+            } else if (initialMode === 'bank') {
+                $('#qbSplitBankInput').focus().select();
+            } else {
+                $('#qbSplitCashInput').focus().select();
+            }
+        }, 300);
     };
 
     function reconcileModalAllocation() {
@@ -5205,11 +5660,12 @@ $(document).ready(function() {
         const cash = parseFloat($('#qbSplitCashInput').val()) || 0;
         const bank = parseFloat($('#qbSplitBankInput').val()) || 0;
         const khata = parseFloat($('#qbSplitKhataInput').val()) || 0;
-        const totalAllocated = cash + bank + khata;
+        const totalPaid = cash + bank;
+        const totalAllocated = totalPaid + khata;
         const diff = totalBill - totalAllocated;
 
         $('#qbBalTotalBill').text('Rs. ' + totalBill.toFixed(2));
-        $('#qbBalTotalPaid').text('Rs. ' + (cash + bank).toFixed(2));
+        $('#qbBalTotalPaid').text('Rs. ' + totalPaid.toFixed(2));
         $('#qbBalDueKhata').text('Rs. ' + khata.toFixed(2));
 
         const isWalkin = ($('#is_walkin').val() === '1');
@@ -5236,12 +5692,22 @@ $(document).ready(function() {
                 </span>
             `);
             return true;
-        } else if (diff > 0) {
+        } else if (diff > 0.009) {
             $('#btnApplySplitPayment').prop('disabled', false);
+            let fillBtns = '';
+            if (!isWalkin) {
+                fillBtns += `<button type="button" class="btn btn-xs btn-outline-warning text-dark py-0 px-2 fw-bold" onclick="autoFillRemainder('khata')" title="Allocate remainder to Khata">+ Khata Rs. ${diff.toFixed(2)}</button>`;
+            }
+            fillBtns += `<button type="button" class="btn btn-xs btn-outline-success py-0 px-2 fw-bold ms-1" onclick="autoFillRemainder('cash')" title="Allocate remainder to Cash">+ Cash Rs. ${diff.toFixed(2)}</button>`;
+            fillBtns += `<button type="button" class="btn btn-xs btn-outline-primary py-0 px-2 fw-bold ms-1" onclick="autoFillRemainder('bank')" title="Allocate remainder to Bank">+ Bank Rs. ${diff.toFixed(2)}</button>`;
+
             $('#qbBalStatusBadge').html(`
-                <span class="badge bg-warning text-dark fw-bold px-2 py-1 shadow-sm" style="font-size: 11px;">
-                    <i class="fas fa-exclamation-circle me-1"></i> Unallocated: Rs. ${diff.toFixed(2)}
-                </span>
+                <div class="d-flex align-items-center flex-wrap gap-1">
+                    <span class="badge bg-warning text-dark fw-bold px-2 py-1 shadow-sm" style="font-size: 11px;">
+                        <i class="fas fa-exclamation-circle me-1"></i> Unallocated: Rs. ${diff.toFixed(2)}
+                    </span>
+                    ${fillBtns}
+                </div>
             `);
             return true;
         } else {
@@ -5256,29 +5722,12 @@ $(document).ready(function() {
         }
     }
 
-    // Modal Input Listeners
+    // Modal Input Listeners - user types freely in any field without clobbering other fields!
     $('#qbSplitCashInput').on('input', function() {
-        const totalBill = parseFloat($('#qbStatGrandTotal').text()) || 0;
-        const cash = parseFloat($(this).val()) || 0;
-        const bank = parseFloat($('#qbSplitBankInput').val()) || 0;
-        const isWalkin = ($('#is_walkin').val() === '1');
-        if (isWalkin) {
-            const remBank = Math.max(0, totalBill - cash);
-            $('#qbSplitBankInput').val(remBank.toFixed(2));
-            $('#qbSplitKhataInput').val('0.00');
-        } else {
-            const remKhata = Math.max(0, totalBill - cash - bank);
-            $('#qbSplitKhataInput').val(remKhata.toFixed(2));
-        }
         reconcileModalAllocation();
     });
 
     $('#qbSplitBankInput').on('input', function() {
-        const totalBill = parseFloat($('#qbStatGrandTotal').text()) || 0;
-        const cash = parseFloat($('#qbSplitCashInput').val()) || 0;
-        const bank = parseFloat($(this).val()) || 0;
-        const remKhata = Math.max(0, totalBill - cash - bank);
-        $('#qbSplitKhataInput').val(remKhata.toFixed(2));
         reconcileModalAllocation();
     });
 
@@ -5286,8 +5735,32 @@ $(document).ready(function() {
         reconcileModalAllocation();
     });
 
+    window.autoFillRemainder = function(target) {
+        const totalBill = parseFloat($('#qbStatGrandTotal').text()) || 0;
+        const cash = parseFloat($('#qbSplitCashInput').val()) || 0;
+        const bank = parseFloat($('#qbSplitBankInput').val()) || 0;
+        const khata = parseFloat($('#qbSplitKhataInput').val()) || 0;
+        const isWalkin = ($('#is_walkin').val() === '1');
+
+        if (target === 'khata') {
+            if (isWalkin) {
+                Swal.fire('Customer Required', 'Walk-in customers cannot have unpaid Khata. Please select a registered customer first.', 'warning');
+                return;
+            }
+            const rem = Math.max(0, totalBill - cash - bank);
+            $('#qbSplitKhataInput').val(rem.toFixed(2));
+        } else if (target === 'cash') {
+            const rem = Math.max(0, totalBill - bank - khata);
+            $('#qbSplitCashInput').val(rem.toFixed(2));
+        } else if (target === 'bank') {
+            const rem = Math.max(0, totalBill - cash - khata);
+            $('#qbSplitBankInput').val(rem.toFixed(2));
+        }
+        reconcileModalAllocation();
+    };
+
     // Quick 1-Click Presets
-    $('.qb-quick-preset-btn').on('click', function() {
+    $(document).on('click', '.qb-preset-btn', function() {
         const p = $(this).data('preset');
         const totalBill = parseFloat($('#qbStatGrandTotal').text()) || 0;
         const isWalkin = ($('#is_walkin').val() === '1');
@@ -5367,7 +5840,7 @@ $(document).ready(function() {
         if (khata > 0.009 && (cash > 0.009 || bank > 0.009)) {
             orderPaymentAllocation.method = 'split';
         } else if (khata > 0.009) {
-            orderPaymentAllocation.method = 'credit';
+            orderPaymentAllocation.method = 'account';
         } else if (bank > 0.009 && cash > 0.009) {
             orderPaymentAllocation.method = 'split';
         } else if (bank > 0.009) {
@@ -5398,18 +5871,83 @@ $(document).ready(function() {
         const grandTotal = parseFloat($('#qbStatGrandTotal').text()) || 0;
         const isWalkin = ($('#is_walkin').val() === '1');
 
-        if (m === 'split') {
-            openPaymentAccountSelectorModal('split');
-            return;
-        }
+        if (m === 'cash') {
+            $('.qb-pay-tab').removeClass('active');
+            $(this).addClass('active');
+            currentActivePaymentMethod = 'cash';
 
-        if (m === 'credit') {
-            openPaymentAccountSelectorModal('credit');
+            orderPaymentAllocation.method = 'cash';
+            orderPaymentAllocation.cashAmount = grandTotal;
+            orderPaymentAllocation.bankAmount = 0;
+            orderPaymentAllocation.khataAmount = 0;
+
+            $('#qbAmountDueVal').text('0.00');
+            $('#inputCashReceived').val(grandTotal.toFixed(2));
+            $('#inputCardAmount').val('0.00');
+            $('#inputPaymentMethod').val('cash');
+
+            syncPaymentAccounts();
+            if (typeof saveCurrentOrderState === 'function') {
+                saveCurrentOrderState();
+            }
             return;
         }
 
         if (m === 'account') {
-            openPaymentAccountSelectorModal('account');
+            if (isWalkin) {
+                Swal.fire({
+                    title: 'Customer Required',
+                    text: 'Account (Khata) sale sirf registered / main customer ke liye hai. Walk-in customer ko pori payment karni hogi. Barah-e-karam pehle customer select karein.',
+                    icon: 'warning',
+                    confirmButtonText: '<i class="fas fa-user-plus me-1"></i> Select Customer',
+                    confirmButtonColor: '#2563eb'
+                }).then(() => {
+                    $('#qbCustomerSearchInput').focus();
+                });
+                return;
+            }
+
+            $('.qb-pay-tab').removeClass('active');
+            $(this).addClass('active');
+            currentActivePaymentMethod = 'account';
+
+            orderPaymentAllocation.method = 'account';
+            orderPaymentAllocation.cashAmount = 0;
+            orderPaymentAllocation.bankAmount = 0;
+            orderPaymentAllocation.khataAmount = grandTotal;
+
+            $('#qbAmountDueVal').text(grandTotal.toFixed(2));
+            $('#inputCashReceived').val('0.00');
+            $('#inputCardAmount').val('0.00');
+            $('#inputPaymentMethod').val('account');
+
+            syncPaymentAccounts();
+            if (typeof saveCurrentOrderState === 'function') {
+                saveCurrentOrderState();
+            }
+            return;
+        }
+
+        if (m === 'credit') {
+            if (isWalkin) {
+                Swal.fire({
+                    title: 'Customer Required for Credit',
+                    text: 'Credit / Khata sale sirf registered / main customer ke liye hai. Walk-in customer ko pori payment karni hogi.',
+                    icon: 'warning',
+                    confirmButtonText: '<i class="fas fa-user-plus me-1"></i> Select Customer',
+                    confirmButtonColor: '#2563eb'
+                }).then(() => {
+                    $('#qbCustomerSearchInput').focus();
+                });
+                return;
+            }
+
+            openPaymentAccountSelectorModal('credit');
+            return;
+        }
+
+        if (m === 'split') {
+            openPaymentAccountSelectorModal('split');
             return;
         }
 
@@ -5417,12 +5955,7 @@ $(document).ready(function() {
         $(this).addClass('active');
         currentActivePaymentMethod = m;
 
-        if (m === 'cash') {
-            orderPaymentAllocation.method = 'cash';
-            orderPaymentAllocation.cashAmount = grandTotal;
-            orderPaymentAllocation.bankAmount = 0;
-            orderPaymentAllocation.khataAmount = 0;
-        } else if (m === 'debit' || m === 'check') {
+        if (m === 'debit' || m === 'check') {
             orderPaymentAllocation.method = m;
             orderPaymentAllocation.cashAmount = 0;
             orderPaymentAllocation.bankAmount = grandTotal;
@@ -5434,8 +5967,12 @@ $(document).ready(function() {
             orderPaymentAllocation.khataAmount = 0;
         }
 
+        $('#qbAmountDueVal').text('0.00');
+        $('#inputCashReceived').val(orderPaymentAllocation.cashAmount.toFixed(2));
+        $('#inputCardAmount').val(orderPaymentAllocation.bankAmount.toFixed(2));
+        $('#inputPaymentMethod').val(m);
+
         syncPaymentAccounts();
-        recomputeTotals();
         if (typeof saveCurrentOrderState === 'function') {
             saveCurrentOrderState();
         }
@@ -6212,13 +6749,50 @@ $(document).ready(function() {
         const size = parsed.size;
         const unit = rawItem.unit_name || rawItem.unit || (vData && vData.unit) || 'Pcs';
         const price = parseFloat(rawItem.price !== undefined ? rawItem.price : (rawItem.retail_price !== undefined ? rawItem.retail_price : (rawItem.sale_price_per_piece || 0)));
+        const rootPrice = parseFloat(rawItem.wholesale_price !== undefined ? rawItem.wholesale_price : (rawItem.rot_price !== undefined ? rawItem.rot_price : ((vData && (vData.wholesale_price !== undefined ? vData.wholesale_price : vData.rot_price)) || 0)));
         const stock = parseFloat(rawItem.stock_pieces !== undefined ? rawItem.stock_pieces : (rawItem.stock || 0));
-        const pCode = rawItem.sky_p_code || rawItem.p_code || (vData && (vData.sky_p_code || vData.p_code)) || '';
-        const rotCode = rawItem.rot_p_code || (vData && vData.rot_p_code) || '';
+        let pCode = rawItem.sky_p_code || rawItem.p_code || (vData && (vData.sky_p_code || vData.p_code)) || '';
+        if (!pCode && price > 0 && typeof window.encodeToPCode === 'function') {
+            pCode = window.encodeToPCode(price);
+        }
+
+        let rotCode = rawItem.rot_p_code || (vData && vData.rot_p_code) || '';
+        if (!rotCode && rootPrice > 0 && typeof window.encodeToPCode === 'function') {
+            rotCode = window.encodeToPCode(rootPrice);
+        }
+
+        let pId = rawItem.product_id;
+        if (!pId && rawItem.id) {
+            if (typeof rawItem.id === 'string' && rawItem.id.indexOf('|') !== -1) {
+                pId = parseInt(rawItem.id.split('|')[0], 10);
+            } else if (!isNaN(parseInt(rawItem.id, 10))) {
+                pId = parseInt(rawItem.id, 10);
+            }
+        }
+
+        let uomUnits = rawItem.uom_units || (vData && vData.uom_units) || [];
+        let uomSellUnit = rawItem.uom_sell_unit || (vData && vData.uom_sell_unit) || '';
+        let baseUnitName = rawItem.base_unit_name || unit;
+        let selectedUnit = baseUnitName;
+        let uomRatio = 1;
+
+        if (Array.isArray(uomUnits) && uomUnits.length > 0) {
+            let defaultUnit = null;
+            if (uomSellUnit) {
+                defaultUnit = uomUnits.find(u => u.name && u.name.toLowerCase() === uomSellUnit.toLowerCase());
+            }
+            if (!defaultUnit) {
+                defaultUnit = uomUnits.find(u => parseFloat(u.ratio) === 1) || uomUnits[0];
+            }
+            if (defaultUnit) {
+                selectedUnit = defaultUnit.name;
+                uomRatio = parseFloat(defaultUnit.ratio) || 1;
+            }
+        }
 
         return {
             raw: rawItem,
-            productId: rawItem.product_id || rawItem.id,
+            productId: pId || null,
             sku: rawItem.sku || rawItem.item_code || rawItem.serial_no || '',
             name: itemName,
             salesDesc: salesDesc,
@@ -6228,11 +6802,15 @@ $(document).ready(function() {
             size: size,
             unit: unit,
             price: price,
+            rootPrice: rootPrice,
             stock: stock,
             pCode: pCode,
             rotCode: rotCode,
             variantData: vData || rawItem.variantData || null,
-            qty: parseFloat(rawItem.qty || 1)
+            qty: parseFloat(rawItem.qty || 1),
+            uomUnits: uomUnits,
+            uomName: selectedUnit,
+            uomRatio: uomRatio
         };
     }
 
@@ -6241,49 +6819,162 @@ $(document).ready(function() {
         const meta = extractItemMetadata(item);
         pendingSaleItem = meta;
 
-        // Step 1: Check Zero Price (Image 2 Replica)
-        if (meta.price <= 0 && !userDontAskZeroPrice) {
-            showZeroPriceModal(meta);
-            return;
-        }
-
-        // Step 2: Check Quantity & Insufficient Stock (Image 3 Replica)
-        showQuantityEntryModal(meta);
+        // Step 1: Price Entry Modal (Modal 10) - Always ask / confirm price first (even if price is in DB)
+        showZeroPriceModal(meta);
     };
 
     function showZeroPriceModal(meta) {
-        let codeLabel = '';
-        if (meta.pCode) codeLabel += ` [P-Code: ${meta.pCode}]`;
-        if (meta.rotCode) codeLabel += ` [ROT: ${meta.rotCode}]`;
+        const rootPrice = parseFloat(meta.rootPrice) || 0;
 
-        $('#zpPriceTitle').text('Rs. 0.00 Price' + codeLabel);
-        $('#zpItemName').text(meta.name);
-        $('#zpSalesDesc').text(meta.salesDesc);
-        $('#zpDept').text(meta.dept);
-        $('#zpVendor').text(meta.vendor);
-        $('#zpAttribute').text(meta.attribute);
-        $('#zpSize').text(meta.size);
-        $('#zpUnit').text(meta.unit);
+        $('#zpModalTitle').text('Item Price');
+        // Hide Image 3 price line completely as requested
+        $('#zpPriceTitle').text('');
+        $('#zpPriceTitleRow').hide();
+        $('#zpDescText').text('Enter the price to be charged on the document.');
+
+        // Empty field & cursor as requested ("new price ke field empty rakho cursor field ma ho. or price show nai ho.")
         $('#zpNewPriceInput').val('');
 
+        $('#zpItemName').text(meta.name);
+        $('#zpSalesDesc').text(meta.salesDesc || '-');
+        $('#zpDept').text(meta.dept || '-');
+        $('#zpVendor').text(meta.vendor || '-');
+        $('#zpAttribute').text(meta.attribute || '-');
+        $('#zpSize').text(meta.size || '-');
+        $('#zpUnit').text(meta.unit || '-');
+        // P-Code in Image 2 box table: Show both Sky and Root P-Codes
+        $('#zpSkyVal').text(meta.pCode || '-');
+        $('#zpRotVal').text(meta.rotCode || '-');
+
+        // Root Price & ROT Code Info hidden from modal as requested
+        $('#zpRootPriceInfo').hide();
+
+        checkZpPriceBelowRootWarning();
+
         $('#modalZeroPriceItem').modal('show');
-        setTimeout(() => $('#zpNewPriceInput').focus(), 320);
+        $('#modalZeroPriceItem').one('shown.bs.modal', function() {
+            $('#zpNewPriceInput').focus();
+        });
+        setTimeout(() => {
+            $('#zpNewPriceInput').focus();
+        }, 320);
     }
+
+    function checkZpPriceBelowRootWarning() {
+        if (!pendingSaleItem) return;
+        const valStr = $('#zpNewPriceInput').val();
+        if (!valStr || valStr.trim() === '') {
+            $('#zpPriceBelowRootWarning').addClass('d-none');
+            return;
+        }
+        const p = parseFloat(valStr);
+        const root = pendingSaleItem.rootPrice || 0;
+        if (!isNaN(p) && root > 0 && p < root) {
+            $('#zpWarnEnteredPrice').text('Rs. ' + p.toFixed(2));
+            $('#zpPriceBelowRootWarning').removeClass('d-none');
+        } else {
+            $('#zpPriceBelowRootWarning').addClass('d-none');
+        }
+    }
+
+    $('#zpNewPriceInput').on('input change', function() {
+        checkZpPriceBelowRootWarning();
+    });
+
+    $('#zpNewPriceInput').on('keydown', function(e) {
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            $('#btnZPContinue').click();
+        }
+    });
 
     $('#btnZPContinue').on('click', function() {
         if (!pendingSaleItem) return;
-        const newPrice = parseFloat($('#zpNewPriceInput').val()) || 0;
+        const inputVal = $('#zpNewPriceInput').val();
+        const newPrice = parseFloat(inputVal);
+
+        if (inputVal === '' || isNaN(newPrice) || newPrice < 0) {
+            if (typeof Swal !== 'undefined') {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Price Required',
+                    text: 'Please enter a valid price before continuing.',
+                    timer: 2000,
+                    showConfirmButton: false
+                });
+            } else {
+                alert('Please enter a valid price.');
+            }
+            $('#zpNewPriceInput').focus();
+            return;
+        }
+
         pendingSaleItem.price = newPrice;
         pendingSaleItem.raw.price = newPrice;
         pendingSaleItem.raw.retail_price = newPrice;
 
-        if ($('#chkDontAskZeroPrice').is(':checked')) {
-            userDontAskZeroPrice = true;
+        if ($('#chkUpdateSalePrice').is(':checked')) {
+            pendingSaleItem.raw.update_sale_price = true;
         }
 
-        $('#modalZeroPriceItem').modal('hide');
-        showQuantityEntryModal(pendingSaleItem);
+        const rootPrice = pendingSaleItem.rootPrice || 0;
+
+        // Check if price is below root price
+        if (rootPrice > 0 && newPrice < rootPrice) {
+            // If already approved by admin for this price, proceed to Quantity Modal
+            if (pendingSaleItem.approved_by_admin && pendingSaleItem.approved_price === newPrice) {
+                transitionToQtyModal(pendingSaleItem);
+                return;
+            }
+
+            // If user is Admin / Super Admin, allow price override directly -> proceed to Quantity Modal
+            if (window.isUserAdmin) {
+                transitionToQtyModal(pendingSaleItem);
+                return;
+            }
+
+            // Otherwise, Staff requires Admin permission!
+            if (typeof Swal !== 'undefined') {
+                Swal.fire({
+                    title: 'Need Admin Permission!',
+                    html: `Entered price <b class="text-danger font-monospace">Rs. ${newPrice.toFixed(2)}</b> is lower than the Root Price.<br><br><strong>Need admin permission to sell at this price.</strong><br>Do you want to send an approval request to Admin?`,
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonText: '<i class="fas fa-paper-plane me-1"></i> Yes, Request Admin',
+                    cancelButtonText: 'Cancel',
+                    confirmButtonColor: '#1e40af',
+                    cancelButtonColor: '#64748b'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        sendPriceApprovalRequest(pendingSaleItem, pendingSaleItem.qty || 1, newPrice, rootPrice);
+                    }
+                });
+            } else {
+                if (confirm(`Entered price Rs. ${newPrice.toFixed(2)} is lower than Root Price. Need admin permission to sell at this price. Request Admin Approval?`)) {
+                    sendPriceApprovalRequest(pendingSaleItem, pendingSaleItem.qty || 1, newPrice, rootPrice);
+                }
+            }
+            return;
+        }
+
+        // Price is valid and >= root price -> Proceed to Step 2 (Quantity Modal)
+        transitionToQtyModal(pendingSaleItem);
     });
+
+    function transitionToQtyModal(item) {
+        let fired = false;
+        function openQty() {
+            if (fired) return;
+            fired = true;
+            showQuantityEntryModal(item);
+        }
+
+        $('#modalZeroPriceItem').one('hidden.bs.modal', function() {
+            setTimeout(openQty, 40);
+        });
+        $('#modalZeroPriceItem').modal('hide');
+        setTimeout(openQty, 220); // Fallback
+    }
 
     $('#btnZPCancel, #btnZPHeaderClose').on('click', function() {
         $('#modalZeroPriceItem').modal('hide');
@@ -6296,22 +6987,56 @@ $(document).ready(function() {
         const reqQty = meta.qty || 1;
 
         $('#qeItemName').text(meta.name);
-        $('#qeSalesDesc').text(meta.salesDesc);
-        $('#qeDept').text(meta.dept);
-        $('#qeVendor').text(meta.vendor);
-        $('#qeAttribute').text(meta.attribute);
-        $('#qeSize').text(meta.size);
-        $('#qeUnit').text(meta.unit);
+        $('#qeSalesDesc').text(meta.salesDesc || '-');
+        $('#qeDept').text(meta.dept || '-');
+        $('#qeVendor').text(meta.vendor || '-');
+        $('#qeAttribute').text(meta.attribute || '-');
+        $('#qeSize').text(meta.size || '-');
+        $('#qeUnit').text(meta.unit || '-');
+        // P-Code in Quantity Modal: Show both Sky and Root P-Codes
+        $('#qeSkyVal').text(meta.pCode || '-');
+        $('#qeRotVal').text(meta.rotCode || '-');
         $('#qeQtyOnHand').text(avail);
         $('#qeQtyAvail').text(avail);
         $('#qeQtyInput').val(reqQty);
+
+        // Display confirmed unit price from Step 1
+        const priceToShow = (meta.price || 0).toFixed(2);
+        $('#qeConfirmedPriceBadge').text('Rs. ' + priceToShow);
 
         const isLow = (avail <= 0 || reqQty > avail);
         updateQtyModalDisplay(isLow);
 
         $('#modalQtyEntry').modal('show');
-        setTimeout(() => $('#qeQtyInput').focus().select(), 320);
+
+        const focusAndSelectQty = function() {
+            const el = document.getElementById('qeQtyInput');
+            if (el) {
+                el.focus();
+                try { el.select(); } catch(e) {}
+            }
+        };
+
+        focusAndSelectQty();
+        setTimeout(focusAndSelectQty, 60);
+        setTimeout(focusAndSelectQty, 180);
+        setTimeout(focusAndSelectQty, 350);
+        setTimeout(focusAndSelectQty, 550);
     }
+
+    $('#modalQtyEntry').on('shown.bs.modal', function() {
+        const el = document.getElementById('qeQtyInput');
+        if (el) {
+            el.focus();
+            try { el.select(); } catch(e) {}
+        }
+        setTimeout(function() {
+            if (el) {
+                el.focus();
+                try { el.select(); } catch(e) {}
+            }
+        }, 80);
+    });
 
     function updateQtyModalDisplay(isLow) {
         if (isLow) {
@@ -6336,12 +7061,30 @@ $(document).ready(function() {
         updateQtyModalDisplay(avail <= 0 || q > avail);
     });
 
+    $('#qeQtyInput').on('keydown', function(e) {
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            $('#btnQEContinue').click();
+        }
+    });
+
     $('#btnQEContinue').on('click', function() {
         if (!pendingSaleItem) return;
-        const finalQty = parseFloat($('#qeQtyInput').val()) || 1;
+        const finalQty = parseFloat($('#qeQtyInput').val());
+
+        if (isNaN(finalQty) || finalQty <= 0) {
+            if (typeof Swal !== 'undefined') Swal.fire('Invalid Quantity', 'Please enter a valid quantity greater than 0.', 'error');
+            return;
+        }
+
         pendingSaleItem.qty = finalQty;
         pendingSaleItem.raw.qty = finalQty;
-        pendingSaleItem.raw.price = pendingSaleItem.price;
+
+        commitAddItemToGrid();
+    });
+
+    function commitAddItemToGrid() {
+        if (!pendingSaleItem) return;
 
         if ($('#chkDontWarnQty').is(':checked')) {
             userDontWarnInsufficientQty = true;
@@ -6349,10 +7092,160 @@ $(document).ready(function() {
 
         $('#modalQtyEntry').modal('hide');
 
-        // Add to grid in QuickBooks POS layout with toolbar (Image 4)
         addItemToGrid(pendingSaleItem.raw);
         playBeep();
         pendingSaleItem = null;
+        $itemInput.focus();
+    }
+
+    let staffApprovalPollingTimer = null;
+    let currentWaitingRequestId = null;
+
+    function sendPriceApprovalRequest(meta, qty, reqPrice, rootPrice) {
+        $('#modalQtyEntry').modal('hide');
+
+        $('#waitingReqIdBadge').text('Sending...');
+        $('#waitingItemNameText').text(meta.name);
+        $('#waitingItemDescText').text(meta.salesDesc || '');
+        $('#waitingQtyText').text(qty + ' ' + (meta.unit || 'Pcs'));
+        $('#waitingRootPriceText').text('Rs. ' + rootPrice.toFixed(2));
+        $('#waitingReqPriceText').text('Rs. ' + reqPrice.toFixed(2));
+
+        $('#modalStaffWaitingApproval').modal('show');
+
+        let safeProductId = meta.productId;
+        if (typeof safeProductId === 'string' && safeProductId.indexOf('|') !== -1) {
+            safeProductId = parseInt(safeProductId.split('|')[0], 10);
+        } else if (safeProductId) {
+            safeProductId = parseInt(safeProductId, 10);
+        }
+        if (isNaN(safeProductId)) safeProductId = null;
+
+        let safeVariantKey = meta.sku || (meta.variantData ? meta.variantData.serial_no : null);
+        if (!safeVariantKey && meta.raw && typeof meta.raw.id === 'string' && meta.raw.id.indexOf('|variant|') !== -1) {
+            safeVariantKey = meta.serial_no || meta.attribute || null;
+        }
+
+        $.ajax({
+            url: "{{ route('price_approval.request') }}",
+            type: "POST",
+            data: {
+                _token: "{{ csrf_token() }}",
+                product_id: safeProductId,
+                variant_key: safeVariantKey,
+                item_name: meta.name,
+                sales_desc: meta.salesDesc,
+                qty: qty,
+                regular_price: meta.raw.trade_price || meta.price || rootPrice,
+                root_price: rootPrice,
+                requested_price: reqPrice
+            },
+            dataType: "json",
+            success: function(resp) {
+                if (resp.success && resp.status === 'pending') {
+                    currentWaitingRequestId = resp.request_id;
+                    $('#waitingReqIdBadge').text('Req #' + resp.request_id);
+                    startStaffApprovalPolling(resp.request_id, meta, qty, reqPrice);
+                } else if (resp.success && resp.is_admin) {
+                    $('#modalStaffWaitingApproval').modal('hide');
+                    meta.approved_by_admin = true;
+                    meta.approved_price = reqPrice;
+                    pendingSaleItem = meta;
+                    showQuantityEntryModal(pendingSaleItem);
+                } else {
+                    $('#modalStaffWaitingApproval').modal('hide');
+                    if (typeof Swal !== 'undefined') Swal.fire('Error', resp.message || 'Could not send request', 'error');
+                }
+            },
+            error: function(xhr) {
+                $('#modalStaffWaitingApproval').modal('hide');
+                const msg = xhr.responseJSON ? xhr.responseJSON.message : 'Failed to connect to Admin approval service';
+                if (typeof Swal !== 'undefined') Swal.fire('Error', msg, 'error');
+            }
+        });
+    }
+
+    function startStaffApprovalPolling(reqId, meta, qty, reqPrice) {
+        if (staffApprovalPollingTimer) clearInterval(staffApprovalPollingTimer);
+
+        staffApprovalPollingTimer = setInterval(function() {
+            $.ajax({
+                url: "/price-approval/check-status/" + reqId,
+                type: "GET",
+                dataType: "json",
+                success: function(resp) {
+                    if (!resp || !resp.success) return;
+
+                    if (resp.status === 'approved') {
+                        clearInterval(staffApprovalPollingTimer);
+                        staffApprovalPollingTimer = null;
+                        currentWaitingRequestId = null;
+                        $('#modalStaffWaitingApproval').modal('hide');
+
+                        playBeep();
+
+                        if (typeof Swal !== 'undefined') {
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Admin Allowed!',
+                                html: `Admin <b>${resp.approver_name || 'Super Admin'}</b> allowed selling <b>${meta.name}</b> at <b class="text-success font-monospace">Rs. ${parseFloat(reqPrice).toFixed(2)}</b>.`,
+                                timer: 3000,
+                                showConfirmButton: true
+                            });
+                        }
+
+                        meta.approved_by_admin = true;
+                        meta.approved_price = reqPrice;
+                        meta.approval_id = reqId;
+                        meta.price = reqPrice;
+                        meta.raw.price = reqPrice;
+                        meta.raw.retail_price = reqPrice;
+                        meta.raw.qty = qty;
+                        meta.raw.admin_approved = true;
+
+                        pendingSaleItem = meta;
+                        // Open Quantity Entry Modal (Step 2)
+                        showQuantityEntryModal(pendingSaleItem);
+                    } else if (resp.status === 'rejected') {
+                        clearInterval(staffApprovalPollingTimer);
+                        staffApprovalPollingTimer = null;
+                        currentWaitingRequestId = null;
+                        $('#modalStaffWaitingApproval').modal('hide');
+
+                        const reasonText = resp.rejection_reason ? `<br><small class="text-muted">Reason: ${resp.rejection_reason}</small>` : '';
+
+                        if (typeof Swal !== 'undefined') {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Admin Rejected!',
+                                html: `Admin <b>${resp.approver_name || 'Super Admin'}</b> rejected selling below root price.${reasonText}`,
+                                confirmButtonText: 'OK',
+                                confirmButtonColor: '#dc2626'
+                            });
+                        }
+
+                        meta.price = meta.rootPrice;
+                        meta.raw.price = meta.rootPrice;
+                        meta.raw.retail_price = meta.rootPrice;
+                        pendingSaleItem = meta;
+                        // Re-open Price Modal (Step 1)
+                        showZeroPriceModal(pendingSaleItem);
+                    }
+                }
+            });
+        }, 2000);
+    }
+
+    $('#btnCancelWaitingApproval').on('click', function() {
+        if (staffApprovalPollingTimer) {
+            clearInterval(staffApprovalPollingTimer);
+            staffApprovalPollingTimer = null;
+        }
+        if (currentWaitingRequestId) {
+            $.post("/price-approval/cancel/" + currentWaitingRequestId, { _token: "{{ csrf_token() }}" });
+            currentWaitingRequestId = null;
+        }
+        $('#modalStaffWaitingApproval').modal('hide');
         $itemInput.focus();
     });
 
@@ -6468,25 +7361,65 @@ $(document).ready(function() {
                     return;
                 }
 
-                let html = '<table class="table table-sm table-bordered bg-white" style="font-size:11.5px;">';
-                html += '<thead class="table-light"><tr><th>Product</th><th>Sold Qty</th><th>Max Return</th><th>Return Qty</th><th>Action</th></tr></thead><tbody>';
+                let html = '';
+                const hasComm = res.carpenter_commission_percent && parseFloat(res.carpenter_commission_percent) > 0;
+                if (hasComm) {
+                    html += `
+                    <div class="alert alert-info py-2 px-3 mb-3 d-flex flex-wrap align-items-center justify-content-between gap-2 shadow-sm" style="font-size:12px; border-left: 4px solid #0284c7; background-color: #f0f9ff; border-radius: 6px;">
+                        <div>
+                            <i class="fas fa-hammer text-primary me-1 fs-6"></i>
+                            <strong class="text-dark">Carpenter Commission (${res.carpenter_commission_percent}%):</strong>
+                            <span class="text-muted">Carpenter: <strong class="text-dark">${res.carpenter_name || 'Assigned'}</strong></span>
+                        </div>
+                        <div class="d-flex align-items-center gap-1">
+                            <span class="text-muted small me-1">Policy:</span>
+                            <div class="btn-group btn-group-sm" role="group">
+                                <input type="radio" class="btn-check return-comm-mode" name="commRefundMode" id="modeClawback" value="clawback" checked>
+                                <label class="btn btn-outline-primary py-1 px-2 fw-bold" for="modeClawback" style="font-size:11px;" title="Customer ko receipt ka pura rate wapas karein aur commission carpenter se auto-deduct karein (ERP International Standard)">
+                                    <i class="fas fa-check-circle me-1"></i> Full Refund (Deduct from Carpenter)
+                                </label>
+
+                                <input type="radio" class="btn-check return-comm-mode" name="commRefundMode" id="modeCustomerDeduct" value="cust_deduct">
+                                <label class="btn btn-outline-secondary py-1 px-2" for="modeCustomerDeduct" style="font-size:11px;" title="Customer se commission kaat kar net rate wapas karein">
+                                    Deduct from Customer
+                                </label>
+                            </div>
+                        </div>
+                    </div>`;
+                }
+
+                html += '<table class="table table-sm table-bordered bg-white align-middle" id="returnItemsTable" style="font-size:11.5px;">';
+                html += '<thead class="table-light"><tr><th>Product</th><th>Sold Qty</th><th>Max Return</th><th>Refund Price</th><th>Return Qty</th><th>Action</th></tr></thead><tbody>';
 
                 res.items.forEach(it => {
+                    const fullPrice = parseFloat(it.raw_net_unit_price || it.price_sold || 0);
+                    const netPrice = parseFloat(it.net_unit_price || it.price_sold || 0);
+                    const deductAmt = parseFloat(it.commission_deduction_per_piece || 0);
+
                     html += `
-                    <tr>
+                    <tr data-full-price="${fullPrice}" data-net-price="${netPrice}" data-deduct-amt="${deductAmt}">
                         <td>
                             <strong>${it.product_name}</strong>
                             <small class="text-muted d-block">${it.variant_data || ''}</small>
                         </td>
                         <td>${it.sold_qty}</td>
                         <td><span class="badge bg-success-subtle text-success border">${it.max_returnable}</span></td>
+                        <td class="ret-price-col">
+                            ${hasComm ? `
+                                <strong class="text-primary ret-display-price">Rs. ${fullPrice.toFixed(2)}</strong>
+                                <small class="text-success d-block ret-comm-note" style="font-size: 10px;"><i class="fas fa-shield-alt"></i> Carpenter se -Rs. ${deductAmt.toFixed(2)} katenge</small>
+                            ` : `
+                                <strong>Rs. ${netPrice.toFixed(2)}</strong>
+                            `}
+                        </td>
                         <td style="width: 80px;">
                             <input type="number" class="form-control form-control-sm text-center ret-qty-box" value="1" min="1" max="${it.max_returnable}">
                         </td>
                         <td style="width: 90px;">
                             <button type="button" class="btn btn-sm btn-danger fw-bold btn-add-ret-item"
                                     data-item='${JSON.stringify(it).replace(/'/g, "&apos;")}'
-                                    data-receipt-no="${res.invoice_no}">
+                                    data-receipt-no="${res.invoice_no}"
+                                    data-sale-id="${res.sale_id}">
                                 <i class="fas fa-undo"></i> Return
                             </button>
                         </td>
@@ -6503,16 +7436,43 @@ $(document).ready(function() {
         });
     });
 
+    // Toggle between Full Refund (Deduct from Carpenter) vs Deduct from Customer
+    $(document).on('change', '.return-comm-mode', function() {
+        const mode = $(this).val();
+        $('#returnItemsTable tbody tr').each(function() {
+            const $row = $(this);
+            const fullPrice = parseFloat($row.data('full-price')) || 0;
+            const netPrice = parseFloat($row.data('net-price')) || 0;
+            const deductAmt = parseFloat($row.data('deduct-amt')) || 0;
+
+            if (mode === 'clawback') {
+                $row.find('.ret-display-price').text('Rs. ' + fullPrice.toFixed(2)).removeClass('text-dark').addClass('text-primary');
+                $row.find('.ret-comm-note').html('<i class="fas fa-shield-alt"></i> Carpenter se -Rs. ' + deductAmt.toFixed(2) + ' katenge').removeClass('text-danger').addClass('text-success');
+            } else {
+                $row.find('.ret-display-price').text('Rs. ' + netPrice.toFixed(2)).removeClass('text-primary').addClass('text-dark');
+                $row.find('.ret-comm-note').html('<i class="fas fa-cut"></i> Customer se -Rs. ' + deductAmt.toFixed(2) + ' deducted').removeClass('text-success').addClass('text-danger');
+            }
+        });
+    });
+
     $(document).on('click', '.btn-add-ret-item', function() {
         const item = $(this).data('item');
         const receiptNo = $(this).data('receipt-no');
-        const qty = parseFloat($(this).closest('tr').find('.ret-qty-box').val()) || 1;
+        const saleId = $(this).data('sale-id');
+        const $tr = $(this).closest('tr');
+        const qty = parseFloat($tr.find('.ret-qty-box').val()) || 1;
+        const commMode = $('input[name="commRefundMode"]:checked').val() || 'clawback';
 
         item.returnQty = qty;
-        item.price = item.net_unit_price || item.price || 0;
+        // If clawback mode, customer gets full price (raw_net_unit_price). If cust_deduct, customer gets net_unit_price.
+        if (commMode === 'clawback' && item.raw_net_unit_price) {
+            item.price = parseFloat(item.raw_net_unit_price);
+        } else {
+            item.price = parseFloat(item.net_unit_price || item.price || 0);
+        }
         item.name = item.product_name;
 
-        addItemToGrid(item, true, receiptNo, item.id);
+        addItemToGrid(item, true, receiptNo, item.id, saleId);
         $('#modalAcceptReturn').modal('hide');
         showAlert('success', `Added return item for Receipt #${receiptNo}`);
     });
@@ -6552,13 +7512,15 @@ $(document).ready(function() {
         }
 
         // Validate credit / unpaid Khata balance with walk-in customer
-        const unpaidKhata = (typeof orderPaymentAllocation !== 'undefined' && orderPaymentAllocation.khataAmount) ? orderPaymentAllocation.khataAmount : (currentActivePaymentMethod === 'credit' ? (parseFloat($('#qbStatGrandTotal').text()) || 0) : 0);
-        if (actionType === 'sale' && unpaidKhata > 0.05 && $('#is_walkin').val() === '1') {
+        const isWalkin = ($('#is_walkin').val() === '1');
+        const unpaidKhata = (typeof orderPaymentAllocation !== 'undefined' && orderPaymentAllocation.khataAmount) ? orderPaymentAllocation.khataAmount : (currentActivePaymentMethod === 'account' || currentActivePaymentMethod === 'credit' ? (parseFloat($('#qbStatGrandTotal').text()) || 0) : 0);
+        if (actionType === 'sale' && isWalkin && (unpaidKhata > 0.05 || currentActivePaymentMethod === 'account')) {
             Swal.fire({
-                title: 'Customer Required for Credit',
-                text: 'Credit / Unpaid Khata balance (Rs. ' + unpaidKhata.toFixed(2) + ') requires selecting a registered customer to record in ledger.',
+                title: 'Customer Required',
+                text: 'Account / Khata sale sirf registered / main customer ke liye hai. Walk-in customer ko pori payment karni hogi. Barah-e-karam pehle customer select karein.',
                 icon: 'warning',
-                confirmButtonText: 'Select Customer'
+                confirmButtonText: '<i class="fas fa-user-plus me-1"></i> Select Customer',
+                confirmButtonColor: '#2563eb'
             }).then(() => {
                 $('#qbCustomerSearchInput').focus();
             });
@@ -6567,6 +7529,9 @@ $(document).ready(function() {
 
         $('#action').val(actionType);
         syncHiddenInputs();
+        if (typeof syncPaymentAccounts === 'function') {
+            syncPaymentAccounts();
+        }
 
         const $btns = $('#btnSaveOnly, #btnSaveAndPrint, #btnPutOnHold');
         $btns.prop('disabled', true);
@@ -6762,14 +7727,8 @@ $(document).ready(function() {
 
     // "Save Only"
     $('#btnSaveOnly').on('click', function() {
-        processSubmission('sale', function(id) {
-            Swal.fire({
-                title: 'Receipt Saved!',
-                text: 'Sales receipt posted to ledger and inventory deducted.',
-                icon: 'success',
-                timer: 1400,
-                showConfirmButton: false
-            }).then(() => {
+        processSubmission('sale', function(id, res) {
+            const proceedNext = () => {
                 if (orders.length > 1) {
                     orders.splice(activeOrderIndex, 1);
                     orders.forEach((o, i) => o.number = i + 1);
@@ -6780,7 +7739,43 @@ $(document).ready(function() {
                     loadOrderState(0);
                     refreshInvoiceNumber();
                 }
-            });
+            };
+
+            if (res && res.has_market_items && res.market_slip_url) {
+                Swal.fire({
+                    title: 'Sale Saved!',
+                    html: `
+                        <div class="text-start">
+                            <p class="mb-2 text-success"><i class="fas fa-check-circle me-1"></i> Sales receipt posted to ledger and inventory deducted.</p>
+                            <div class="alert alert-warning py-2 px-3 mb-0" style="font-size: 13px;">
+                                <i class="fas fa-shopping-basket me-1"></i> <strong>Local Market Items:</strong><br>
+                                Is sale mein shortage / out-of-stock items hain jo local market se mangwane hain. Kya aap <strong>Local Market Purchase Slip</strong> print karna chahte hain?
+                            </div>
+                        </div>
+                    `,
+                    icon: 'question',
+                    showCancelButton: true,
+                    confirmButtonText: '<i class="fas fa-print me-1"></i> Print Market Slip',
+                    cancelButtonText: '<i class="fas fa-times me-1"></i> Don\'t Print',
+                    confirmButtonColor: '#0284c7',
+                    cancelButtonColor: '#64748b'
+                }).then((marketRes) => {
+                    if (marketRes.isConfirmed) {
+                        window.open(res.market_slip_url, '_blank');
+                    }
+                    proceedNext();
+                });
+            } else {
+                Swal.fire({
+                    title: 'Receipt Saved!',
+                    text: 'Sales receipt posted to ledger and inventory deducted.',
+                    icon: 'success',
+                    timer: 1400,
+                    showConfirmButton: false
+                }).then(() => {
+                    proceedNext();
+                });
+            }
         });
     });
 
@@ -6789,7 +7784,8 @@ $(document).ready(function() {
         processSubmission('sale', function(id, res) {
             const printUrl = (res && res.receipt_url) ? res.receipt_url : ('{{ url('sales') }}/' + id + '/recepit');
             window.open(printUrl, '_blank');
-            setTimeout(() => {
+
+            const proceedNext = () => {
                 if (orders.length > 1) {
                     orders.splice(activeOrderIndex, 1);
                     orders.forEach((o, i) => o.number = i + 1);
@@ -6800,7 +7796,36 @@ $(document).ready(function() {
                     loadOrderState(0);
                     refreshInvoiceNumber();
                 }
-            }, 600);
+            };
+
+            if (res && res.has_market_items && res.market_slip_url) {
+                setTimeout(() => {
+                    Swal.fire({
+                        title: 'Local Market Slip',
+                        html: `
+                            <div class="text-start">
+                                <div class="alert alert-warning py-2 px-3 mb-0" style="font-size: 13px;">
+                                    <i class="fas fa-shopping-basket me-1"></i> <strong>Local Market Items:</strong><br>
+                                    Is sale mein shortage items hain. Kya aap <strong>Local Market Purchase Slip</strong> bhi print karna chahte hain?
+                                </div>
+                            </div>
+                        `,
+                        icon: 'question',
+                        showCancelButton: true,
+                        confirmButtonText: '<i class="fas fa-print me-1"></i> Print Market Slip',
+                        cancelButtonText: '<i class="fas fa-times me-1"></i> Don\'t Print',
+                        confirmButtonColor: '#0284c7',
+                        cancelButtonColor: '#64748b'
+                    }).then((marketRes) => {
+                        if (marketRes.isConfirmed) {
+                            window.open(res.market_slip_url, '_blank');
+                        }
+                        proceedNext();
+                    });
+                }, 500);
+            } else {
+                setTimeout(proceedNext, 600);
+            }
         });
     });
 
@@ -7036,8 +8061,314 @@ $(document).ready(function() {
         window.applySalesGridColVisibility();
     }
 
+    // ==============================================================
+    // 14. CARPENTER COMMISSION MODAL & ACTIONS
+    // ==============================================================
+    window.openCarpenterModal = function(e) {
+        if (e) {
+            e.preventDefault();
+            e.stopPropagation();
+        }
+
+        const currentCId = $('#carpenter_id').val() || '';
+        const currentType = $('#carpenter_commission_type').val() || 'percentage';
+        const currentRate = parseFloat($('#carpenter_commission_rate').val()) || 0;
+
+        $('#modal_carpenter_id').val(currentCId);
+        $('#modal_carpenter_comm_type').val(currentType);
+        $('#modal_carpenter_comm_rate').val(currentRate);
+        $('#modal_comm_unit_symbol').text(currentType === 'fixed' ? 'Rs.' : '%');
+
+        updateCarpenterPreview();
+        $('#modalCarpenterCommission').modal('show');
+    };
+
+    function updateCarpenterPreview() {
+        let total = 0;
+        if (typeof gridRows !== 'undefined' && Array.isArray(gridRows)) {
+            total = gridRows.reduce((sum, r) => sum + (parseFloat(r.total) || 0), 0);
+        } else {
+            total = parseFloat($('#qbAmountDueVal').text().replace(/,/g, '')) || 0;
+        }
+
+        const type = $('#modal_carpenter_comm_type').val();
+        const val = parseFloat($('#modal_carpenter_comm_rate').val()) || 0;
+
+        let estComm = 0;
+        if (type === 'percentage') {
+            estComm = (total * val) / 100;
+        } else {
+            estComm = val;
+        }
+
+        $('#modal_carp_sale_total').text('Rs. ' + total.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }));
+        $('#modal_carp_est_commission').text('Rs. ' + estComm.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }));
+    }
+
+    $('#modal_carpenter_id').on('change', function() {
+        const $opt = $(this).find('option:selected');
+        if ($opt.val()) {
+            const defType = $opt.data('type') || 'percentage';
+            const defRate = parseFloat($opt.data('rate')) || 0;
+            $('#modal_carpenter_comm_type').val(defType);
+            $('#modal_carpenter_comm_rate').val(defRate);
+            $('#modal_comm_unit_symbol').text(defType === 'fixed' ? 'Rs.' : '%');
+        }
+        updateCarpenterPreview();
+    });
+
+    $('#modal_carpenter_comm_type').on('change', function() {
+        const type = $(this).val();
+        $('#modal_comm_unit_symbol').text(type === 'fixed' ? 'Rs.' : '%');
+        updateCarpenterPreview();
+    });
+
+    $('#modal_carpenter_comm_rate').on('input', function() {
+        updateCarpenterPreview();
+    });
+
+    $('#btnApplyCarpenterCommission').on('click', function() {
+        const cId = $('#modal_carpenter_id').val();
+        const cType = $('#modal_carpenter_comm_type').val();
+        const cRate = parseFloat($('#modal_carpenter_comm_rate').val()) || 0;
+        const $opt = $('#modal_carpenter_id').find('option:selected');
+        const cName = $opt.val() ? ($opt.data('name') || $opt.text().trim().split('(')[0].trim()) : '';
+
+        let total = 0;
+        if (typeof gridRows !== 'undefined' && Array.isArray(gridRows)) {
+            total = gridRows.reduce((sum, r) => sum + (parseFloat(r.total) || 0), 0);
+        } else {
+            total = parseFloat($('#qbAmountDueVal').text().replace(/,/g, '')) || 0;
+        }
+
+        let cAmount = 0;
+        if (cType === 'percentage') {
+            cAmount = (total * cRate) / 100;
+        } else {
+            cAmount = cRate;
+        }
+
+        if (cId && parseInt(cId) > 0) {
+            $('#carpenter_id').val(cId);
+            $('#carpenter_commission_type').val(cType);
+            $('#carpenter_commission_rate').val(cRate);
+            $('#carpenter_commission_amount').val(cAmount.toFixed(2));
+
+            // Update button UI
+            $('#carpenterBtnText').text(cName.length > 10 ? cName.substring(0, 10) + '...' : cName);
+            const badgeText = cType === 'fixed' ? ('Rs.' + cRate) : (cRate + '%');
+            $('#carpenterActiveBadge').removeClass('d-none').text(badgeText);
+            $('#btnCarpenterCommission').addClass('border-success text-success');
+
+            // Save in active order tab state
+            if (typeof orders !== 'undefined' && orders[activeOrderIndex]) {
+                orders[activeOrderIndex].carpenter = {
+                    id: cId,
+                    type: cType,
+                    rate: cRate,
+                    amount: cAmount.toFixed(2),
+                    name: cName
+                };
+            }
+
+            showAlert('success', `Carpenter ${cName} commission set (${badgeText})`);
+        } else {
+            // Cleared
+            $('#carpenter_id').val('');
+            $('#carpenter_commission_type').val('percentage');
+            $('#carpenter_commission_rate').val('0');
+            $('#carpenter_commission_amount').val('0');
+
+            $('#carpenterBtnText').text('Carpenter');
+            $('#carpenterActiveBadge').addClass('d-none');
+            $('#btnCarpenterCommission').removeClass('border-success text-success');
+
+            if (typeof orders !== 'undefined' && orders[activeOrderIndex]) {
+                orders[activeOrderIndex].carpenter = {
+                    id: '',
+                    type: 'percentage',
+                    rate: '0',
+                    amount: '0',
+                    name: 'Carpenter'
+                };
+            }
+        }
+
+        $('#modalCarpenterCommission').modal('hide');
+    });
+
+    $('#btnClearCarpenterCommission').on('click', function() {
+        $('#modal_carpenter_id').val('');
+        $('#modal_carpenter_comm_rate').val('0');
+        $('#btnApplyCarpenterCommission').trigger('click');
+    });
+
+    // Quick Add Carpenter Modal Handlers
+    $('#btnOpenAddCarpenterModal').on('click', function() {
+        $('#modalCarpenterCommission').modal('hide');
+        $('#formQuickAddCarpenter')[0].reset();
+        $('#modalQuickAddCarpenter').modal('show');
+    });
+
+    $('#btnCancelQuickCarpenter').on('click', function() {
+        $('#modalQuickAddCarpenter').modal('hide');
+        $('#modalCarpenterCommission').modal('show');
+    });
+
+    $('#btnSaveQuickCarpenter').on('click', function() {
+        const name = $('#quick_carp_name').val().trim();
+        if (!name) {
+            Swal.fire('Required', 'Please enter Carpenter Name.', 'warning');
+            return;
+        }
+
+        const phone = $('#quick_carp_phone').val().trim();
+        const cnic = $('#quick_carp_cnic').val().trim();
+        const type = $('#quick_carp_type').val();
+        const rate = parseFloat($('#quick_carp_rate').val()) || 0;
+        const address = $('#quick_carp_address').val().trim();
+
+        const $btn = $(this);
+        $btn.prop('disabled', true).html('<i class="fas fa-spinner fa-spin me-1"></i> Saving...');
+
+        $.ajax({
+            url: "{{ route('carpenters.ajax_store') }}",
+            type: 'POST',
+            data: {
+                _token: '{{ csrf_token() }}',
+                name: name,
+                phone: phone,
+                cnic: cnic,
+                default_commission_type: type,
+                default_commission_rate: rate,
+                address: address
+            },
+            success: function(res) {
+                $btn.prop('disabled', false).html('<i class="fas fa-save me-1"></i> Save Carpenter');
+                if (res.success && res.carpenter) {
+                    const c = res.carpenter;
+                    const phoneText = c.phone ? ` (${c.phone})` : '';
+                    const newOpt = `<option value="${c.id}" data-type="${c.default_commission_type}" data-rate="${c.default_commission_rate}" data-name="${c.name}" data-phone="${c.phone || ''}" selected>${c.name}${phoneText}</option>`;
+                    $('#modal_carpenter_id').append(newOpt);
+                    $('#modal_carpenter_id').val(c.id).trigger('change');
+
+                    $('#modalQuickAddCarpenter').modal('hide');
+                    $('#modalCarpenterCommission').modal('show');
+                    showAlert('success', `Carpenter ${c.name} added successfully!`);
+                } else {
+                    Swal.fire('Error', res.message || 'Failed to save carpenter.', 'error');
+                }
+            },
+            error: function(xhr) {
+                $btn.prop('disabled', false).html('<i class="fas fa-save me-1"></i> Save Carpenter');
+                const msg = xhr.responseJSON && xhr.responseJSON.message ? xhr.responseJSON.message : 'Failed to save carpenter.';
+                Swal.fire('Error', msg, 'error');
+            }
+        });
+    });
+
+    // ==============================================================
+    // QUICKBOOKS DESKTOP POS: CHOOSE UNIT OF MEASURE MODAL (ADD SALE)
+    // ==============================================================
+    let activeUomAddSaleRowUid = null;
+    let selectedAddSaleUomChoice = null;
+
+    $(document).on('click', '.btn-open-choose-uom-addsale', function(e) {
+        e.stopPropagation();
+        const uid = $(this).data('uid');
+        const row = gridRows.find(r => r.uid === uid);
+        if (!row || !row.uomUnits || row.uomUnits.length === 0) return;
+
+        activeUomAddSaleRowUid = uid;
+        selectedAddSaleUomChoice = null;
+
+        $('#qbAddSaleModalProductName').text(row.itemName);
+        const $container = $('#qbAddSaleModalUnitsContainer');
+        $container.empty();
+
+        row.uomUnits.forEach(u => {
+            const isSelected = (row.uomName && row.uomName.toLowerCase() === u.name.toLowerCase());
+            if (isSelected) {
+                selectedAddSaleUomChoice = u;
+            }
+            const ratioVal = parseFloat(u.ratio) || 1;
+            const ratioText = (ratioVal === 1) ? 'Base Unit' : `${ratioVal} Base Units`;
+            const priceText = (parseFloat(u.price) > 0) ? `Rs ${parseFloat(u.price).toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}` : 'Default Price';
+
+            const cardHtml = `
+                <button type="button" class="btn btn-outline-secondary text-start p-2.5 qb-addsale-uom-card-btn ${isSelected ? 'active border-primary bg-primary text-white' : ''}" 
+                        data-unit-name="${u.name}" 
+                        data-ratio="${ratioVal}" 
+                        data-price="${u.price || 0}"
+                        style="border-radius: 6px; transition: all 0.15s ease;">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <span class="fw-bold fs-6">${u.name}</span>
+                            <span class="badge ${isSelected ? 'bg-light text-dark' : 'bg-light text-secondary border'} ms-2" style="font-size: 11px;">
+                                ${ratioText}
+                            </span>
+                        </div>
+                        <div class="text-end">
+                            <span class="fw-bold fs-6 ${isSelected ? 'text-white' : 'text-primary'}">${priceText}</span>
+                            ${u.barcode ? `<div class="${isSelected ? 'text-white-50' : 'text-muted'}" style="font-size: 10px;">UPC: ${u.barcode}</div>` : ''}
+                        </div>
+                    </div>
+                </button>
+            `;
+            $container.append(cardHtml);
+        });
+
+        $('#qbChooseUomModalAddSale').modal('show');
+    });
+
+    $(document).on('click', '.qb-addsale-uom-card-btn', function() {
+        $('.qb-addsale-uom-card-btn').removeClass('active border-primary bg-primary text-white');
+        $('.qb-addsale-uom-card-btn .badge').removeClass('bg-light text-dark').addClass('bg-light text-secondary border');
+        $('.qb-addsale-uom-card-btn .text-end span').removeClass('text-white').addClass('text-primary');
+
+        $(this).addClass('active border-primary bg-primary text-white');
+        $(this).find('.badge').removeClass('bg-light text-secondary border').addClass('bg-light text-dark');
+        $(this).find('.text-end span').removeClass('text-primary').addClass('text-white');
+
+        selectedAddSaleUomChoice = {
+            name: $(this).data('unit-name'),
+            ratio: parseFloat($(this).data('ratio')) || 1,
+            price: parseFloat($(this).data('price')) || 0
+        };
+    });
+
+    $('#btnConfirmQbAddSaleUomChoice').on('click', function() {
+        if (activeUomAddSaleRowUid && selectedAddSaleUomChoice) {
+            const row = gridRows.find(r => r.uid === activeUomAddSaleRowUid);
+            if (row) {
+                row.uomName = selectedAddSaleUomChoice.name;
+                row.uomRatio = selectedAddSaleUomChoice.ratio;
+                if (selectedAddSaleUomChoice.price > 0) {
+                    row.price = selectedAddSaleUomChoice.price;
+                }
+                renderGrid();
+                syncHiddenInputs();
+                recomputeTotals();
+            }
+        }
+        $('#qbChooseUomModalAddSale').modal('hide');
+    });
+
     // Initial render of Odoo POS order tabs
     renderOrderTabs();
+
+    // Auto-open Accept Return modal if ?return_invoice=xxx is in URL
+    const urlParams = new URLSearchParams(window.location.search);
+    const retInv = urlParams.get('return_invoice');
+    if (retInv) {
+        setTimeout(() => {
+            $('#returnSearchInvoiceNo').val(retInv);
+            $('#modalAcceptReturn').modal('show');
+            setTimeout(() => {
+                $('#btnSearchReturnReceipt').click();
+            }, 300);
+        }, 500);
+    }
 });
 </script>
 @endsection

@@ -312,6 +312,16 @@
                             <i class="fas fa-check-double me-1"></i> Return All
                         </button>
                     </div>
+                    @if(isset($carpenterCommPercent) && $carpenterCommPercent > 0)
+                        <div class="alert alert-warning py-2 px-3 mb-3 d-flex align-items-center justify-content-between" style="border-left: 4px solid #d97706; background-color: #fef3c7; border-radius: 6px;">
+                            <div>
+                                <i class="fas fa-hammer me-2 text-warning"></i>
+                                <strong class="text-dark">Carpenter Commission ({{ number_format($carpenterCommPercent, 1) }}%):</strong>
+                                <span class="text-dark">Return refund prices have been reduced by {{ number_format($carpenterCommPercent, 1) }}% so the carpenter's commission cut is deducted from the customer's refund.</span>
+                            </div>
+                            <span class="badge bg-dark text-white font-monospace px-2 py-1">-{{ number_format($carpenterCommPercent, 1) }}% Deducted</span>
+                        </div>
+                    @endif
                     <div class="table-responsive erp-table-container mb-4">
                         <table class="table table-erp table-hover align-middle">
                             <thead>
@@ -343,6 +353,9 @@
                                         <input type="hidden" name="item_disc[]" class="item_disc"
                                             value="{{ $item['discount'] ?? 0 }}">
                                         <input type="hidden" name="unit[]" value="{{ $item['unit'] ?? 'pc' }}">
+                                        <input type="hidden" name="sale_item_id[]" value="{{ $item['id'] ?? '' }}">
+                                        <input type="hidden" name="uom_name[]" value="{{ $item['uom_name'] ?? '' }}">
+                                        <input type="hidden" name="uom_ratio[]" value="{{ $item['uom_ratio'] ?? 1 }}">
                                         <input type="hidden" name="size_mode[]" class="size-mode"
                                             value="{{ $item['size_mode'] ?? 'by_pieces' }}">
                                         <input type="hidden" name="pieces_per_m2[]" class="pieces-per-m2"
@@ -392,6 +405,11 @@
                                                     Per Pc
                                                 @endif
                                             </small>
+                                            @if(!empty($item['commission_deduction']) && $item['commission_deduction'] > 0)
+                                                <small class="text-danger d-block text-end fw-bold" style="font-size: 0.65rem;" title="Carpenter Commission deduction">
+                                                    -{{ $item['commission_percent'] }}% comm (orig Rs. {{ number_format($item['raw_price'], 2) }})
+                                                </small>
+                                            @endif
                                             @if(($item['discount_amount'] ?? 0) > 0)
                                                 <small class="text-danger d-block text-end" style="font-size: 0.65rem;" title="Discount given during sale">
                                                     Disc: {{ number_format($item['discount_amount'], 2) }}

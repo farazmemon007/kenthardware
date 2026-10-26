@@ -795,9 +795,23 @@ class PurchaseController extends Controller
                     $lQty = $qty;
                 }
 
+                $pColorVal = $request->color[$i] ?? null;
+                $pItemNum = $request->item_number[$i] ?? null;
+                if (empty($pItemNum) && !empty($pColorVal)) {
+                    $b64 = base64_decode($pColorVal, true);
+                    $vData = ($b64 !== false) ? json_decode($b64, true) : json_decode($pColorVal, true);
+                    if (is_array($vData)) {
+                        $pItemNum = $vData['item_number'] ?? ($vData['item_no'] ?? null);
+                    }
+                }
+                if (empty($pItemNum) && $product) {
+                    $pItemNum = $product->item_number ?? null;
+                }
+
                 PurchaseItem::create([
                     'purchase_id' => $purchase->id,
                     'product_id' => $pid,
+                    'item_number' => $pItemNum,
                     'unit' => $unit,
                     'price' => $price,
                     'item_discount' => $discAmount, // Store calculated amount
@@ -1479,9 +1493,23 @@ class PurchaseController extends Controller
                     $lQty = $qty;
                 }
 
+                $pColorVal = $request->color[$i] ?? null;
+                $pItemNum = $request->item_number[$i] ?? null;
+                if (empty($pItemNum) && !empty($pColorVal)) {
+                    $b64 = base64_decode($pColorVal, true);
+                    $vData = ($b64 !== false) ? json_decode($b64, true) : json_decode($pColorVal, true);
+                    if (is_array($vData)) {
+                        $pItemNum = $vData['item_number'] ?? ($vData['item_no'] ?? null);
+                    }
+                }
+                if (empty($pItemNum) && $product) {
+                    $pItemNum = $product->item_number ?? null;
+                }
+
                 PurchaseItem::create([
                     'purchase_id' => $purchase->id,
                     'product_id' => $pid,
+                    'item_number' => $pItemNum,
                     'unit' => $unit,
                     'price' => $price,
                     'item_discount' => $discAmount,

@@ -44,8 +44,18 @@ class SaleReturnController extends Controller
             }
         }
         
+        // Check if sale has carpenter commission
+        $carpenterCommPercent = 0;
+        if (!empty($sale->carpenter_id)) {
+            if ($sale->carpenter_commission_type === 'percentage') {
+                $carpenterCommPercent = (float)$sale->carpenter_commission_rate;
+            } elseif ($sale->total_bill_amount > 0 && (float)$sale->carpenter_commission_amount > 0) {
+                $carpenterCommPercent = round(((float)$sale->carpenter_commission_amount / (float)$sale->total_bill_amount) * 100, 4);
+            }
+        }
+
         // Format sale items with complete product data
-        $sale->items->each(function ($item) use ($returnedQtyMap) {
+        $sale->items->each(function ($item) use ($returnedQtyMap, $carpenterCommPercent) {
             $product = $item->product;
             if ($item->is_manual) {
                 $key = 'MANUAL_' . strtolower(trim($item->product_name));
@@ -158,11 +168,23 @@ class SaleReturnController extends Controller
                 }
             }
             
-            // Quantity calculations
-            $item->qty = $item->total_pieces ?? $item->qty ?? 0;
-            $item->original_qty = $item->qty;
-            $item->returned_qty = $alreadyReturned;
-            $item->max_returnable = max(0, $item->qty - $alreadyReturned);
+            // If item was sold with QuickBooks UOM
+            if (!empty($item->uom_name)) {
+                $item->unit = $item->uom_name;
+            }
+            if (!empty($item->uom_ratio) && (float)$item->uom_ratio > 1) {
+                $ratio = (float) $item->uom_ratio;
+                $item->qty = ($item->total_pieces > 0) ? ($item->total_pieces / $ratio) : ($item->qty ?? 0);
+                $item->original_qty = $item->qty;
+                $item->returned_qty = ($alreadyReturned > 0) ? ($alreadyReturned / $ratio) : 0;
+                $item->max_returnable = max(0, $item->qty - $item->returned_qty);
+            } else {
+                // Quantity calculations
+                $item->qty = $item->total_pieces ?? $item->qty ?? 0;
+                $item->original_qty = $item->qty;
+                $item->returned_qty = $alreadyReturned;
+                $item->max_returnable = max(0, $item->qty - $alreadyReturned);
+            }
 
             // Convert to pieces or grams for display if sold in those units (for weight products)
             if (in_array($item->size_mode, ['by_kg', 'by_gm'])) {
@@ -183,13 +205,24 @@ class SaleReturnController extends Controller
             }
             
             // Pricing: use actual sale price (price_per_piece from POS/Sale), not product master price
-            $item->price = (!empty($item->price_per_piece) && $item->price_per_piece > 0) 
-                ? $item->price_per_piece 
-                : ($item->price ?? $item->per_price ?? 0);
+            $origPrice = (!empty($item->price_per_piece) && $item->price_per_piece > 0) 
+                ? (float)$item->price_per_piece 
+                : (float)($item->price ?? $item->per_price ?? 0);
+            
+            $item->raw_price = $origPrice;
+            if ($carpenterCommPercent > 0) {
+                $deduct = round(($origPrice * $carpenterCommPercent) / 100, 2);
+                $item->price = max(0, round($origPrice - $deduct, 2));
+                $item->commission_deduction = $deduct;
+            } else {
+                $item->price = $origPrice;
+                $item->commission_deduction = 0;
+            }
+            $item->commission_percent = $carpenterCommPercent;
             $item->discount = $item->discount ?? $item->per_discount ?? 0;
         });
         
-        return view('admin_panel.sale.sale_return.create', compact('sale', 'accounts', 'returnedQtyMap'));
+        return view('admin_panel.sale.sale_return.create', compact('sale', 'accounts', 'returnedQtyMap', 'carpenterCommPercent'));
     }
 
     /**
@@ -258,6 +291,15 @@ class SaleReturnController extends Controller
                 throw new \Exception("Please enter a return quantity for at least one item.");
             }
 
+            $sale = $validated['sale_id'] ? Sale::find($validated['sale_id']) : null;
+            $carpenterId = $sale ? $sale->carpenter_id : null;
+            $carpenterRate = 0;
+            if ($sale && !empty($sale->carpenter_id)) {
+                $carpenterRate = $sale->carpenter_commission_type === 'percentage'
+                    ? (float)$sale->carpenter_commission_rate
+                    : ($sale->total_bill_amount > 0 ? round(((float)$sale->carpenter_commission_amount / (float)$sale->total_bill_amount) * 100, 4) : 0);
+            }
+
             // Create Sale Return Header
             $return = SaleReturn::create([
                 'sale_id' => $validated['sale_id'] ?? null,
@@ -267,13 +309,16 @@ class SaleReturnController extends Controller
                 'return_date' => $validated['return_date'],
                 'remarks' => $validated['return_reason'] ?? null,
                 'status' => 'posted',
+                'carpenter_id' => $carpenterId,
+                'carpenter_commission_rate' => $carpenterRate,
+                'carpenter_deduction_amount' => 0,
             ]);
 
-            $sale = $validated['sale_id'] ? Sale::find($validated['sale_id']) : null;
             $now = Carbon::now();
             $movements = [];
             $subtotal = 0;
             $totalItemDiscount = 0;
+            $totalCarpenterDeduction = 0;
 
             // Process Each Return Item
             foreach ($request->product_id as $idx => $productId) {
@@ -282,6 +327,13 @@ class SaleReturnController extends Controller
 
                 $price = (float) $request->price[$idx];
                 $itemDisc = (float) ($request->item_disc[$idx] ?? 0);
+
+                // Calculate carpenter commission deduction on returned items
+                if ($carpenterRate > 0 && $carpenterRate < 100) {
+                    $origItemPrice = round($price / (1 - ($carpenterRate / 100)), 2);
+                    $unitDeduction = max(0, round($origItemPrice - $price, 2));
+                    $totalCarpenterDeduction += round($unitDeduction * $qty, 2);
+                }
                 // Get product for PPB and size_mode calculation
                 $product = Product::find($productId);
                 $sizeMode = $product->size_mode ?? 'by_pieces';
@@ -371,6 +423,20 @@ class SaleReturnController extends Controller
                     $loosePieces = fmod((float)$qty, (float)$ppb);
                 }
 
+                // QuickBooks POS UOM support
+                $uomRatio = floatval($request->uom_ratio[$idx] ?? $request->return_uom_ratio[$idx] ?? 1);
+                $uomName = $request->uom_name[$idx] ?? $request->return_uom_name[$idx] ?? null;
+                if ($uomRatio <= 0) {
+                    $uomRatio = 1;
+                }
+                if ($uomRatio == 1 && !empty($request->sale_item_id[$idx])) {
+                    $origItem = \App\Models\SaleItem::find($request->sale_item_id[$idx]);
+                    if ($origItem && (float)($origItem->uom_ratio ?? 1) > 0) {
+                        $uomRatio = (float) $origItem->uom_ratio;
+                        $uomName = $origItem->uom_name;
+                    }
+                }
+
                 // Create Return Item
                 SaleReturnItem::create([
                     'sale_return_id' => $return->id,
@@ -384,13 +450,13 @@ class SaleReturnController extends Controller
                     'item_discount' => $itemDisc,
                     'unit' => 'pc',
                     'line_total' => $lineTotal,
+                    'uom_name' => $uomName,
+                    'uom_ratio' => $uomRatio,
                 ]);
 
                 // Calculate Stock Qty
-                // Return qty[] is in PCS for carton/size products and in KG for weight products.
-                // In both cases WarehouseStock.total_pieces holds the same unit (pcs OR kg),
-                // so restore directly with $qty. (Previously kg/gm was wrongly multiplied by conv_factor.)
-                $stockQty = $qty;
+                // If UOM ratio is present (e.g. Pipe-16ft has ratio 16), 1 unit returned restores 16 base units to stock!
+                $stockQty = ($uomRatio > 0 && $uomRatio != 1) ? ($qty * $uomRatio) : $qty;
 
                 // Update Stock (INCREMENT - goods coming back)
                 $stock = WarehouseStock::where('warehouse_id', $validated['warehouse_id'])
@@ -503,7 +569,18 @@ class SaleReturnController extends Controller
                 'net_amount' => $netAmount,
                 'paid' => $totalPaid,
                 'balance' => $netAmount - $totalPaid,
+                'carpenter_deduction_amount' => $totalCarpenterDeduction,
             ]);
+
+            // Append return deduction note on Carpenter Commission record if exists
+            if ($totalCarpenterDeduction > 0 && $sale) {
+                $comm = \App\Models\CarpenterCommission::where('sale_id', $sale->id)->first();
+                if ($comm) {
+                    $retNote = "[Return #{$nextInvoice}: Ded. Rs. " . number_format($totalCarpenterDeduction, 2) . "]";
+                    $comm->notes = trim(($comm->notes ?? '') . ' ' . $retNote);
+                    $comm->save();
+                }
+            }
 
             // Update Sale Status (only if it is a full return)
             if ($sale) {

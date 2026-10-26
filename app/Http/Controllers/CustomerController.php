@@ -305,34 +305,58 @@ class CustomerController extends Controller
     {
         if (Auth::check()) {
             
-            $customers = Customer::all();
+            $customers = Customer::orderBy('customer_name', 'asc')->get();
             $ledgerData = collect([]);
             $openingBalance = 0;
             $closingBalance = 0;
+            $selectedCustomer = null;
             
             if ($request->filled('customer_id')) {
                 // Use Balance Service for accurate Statement
                 $balanceService = app(\App\Services\BalanceService::class);
                 
-                $startDate = $request->from_date ?? '2000-01-01';
-                $endDate = $request->to_date ?? date('Y-m-d');
+                $startDate = '2000-01-01';
+                $endDate = date('Y-m-d');
+
+                if ($request->filled('from_date')) {
+                    try {
+                        $startDate = \Carbon\Carbon::parse($request->from_date)->format('Y-m-d');
+                    } catch (\Exception $e) {
+                        $startDate = $request->from_date;
+                    }
+                }
+
+                if ($request->filled('to_date')) {
+                    try {
+                        $endDate = \Carbon\Carbon::parse($request->to_date)->format('Y-m-d');
+                    } catch (\Exception $e) {
+                        $endDate = $request->to_date;
+                    }
+                }
                 
                 $data = $balanceService->getCustomerLedger($request->customer_id, $startDate, $endDate);
                 
-                $openingBalance = $data['opening_balance'];
-                $closingBalance = $data['closing_balance'];
+                $openingBalance = (float) ($data['opening_balance'] ?? 0);
+                $closingBalance = (float) ($data['closing_balance'] ?? 0);
+                $selectedCustomer = $data['customer'] ?? Customer::find($request->customer_id);
                 
                 // transform for view
                 $ledgerData = collect($data['transactions'])->map(function($t) use ($data) {
+                    $debit = (float) ($t['debit'] ?? 0);
+                    $credit = (float) ($t['credit'] ?? 0);
+                    $balance = (float) ($t['balance'] ?? 0);
+
                     return (object) [
+                        'id' => $t['id'] ?? null,
                         'created_at' => \Carbon\Carbon::parse($t['date']),
                         'customer' => $data['customer'],
                         'description' => $t['description'],
-                        'debit' => $t['debit'],
-                        'credit' => $t['credit'],
-                        'closing_balance' => $t['balance'],
-                        // We act as if previous balance is calculated, but views usually use these explicitly now
-                        'previous_balance' => $t['balance'] - ($t['debit'] - $t['credit']) 
+                        'debit' => $debit,
+                        'credit' => $credit,
+                        'closing_balance' => $balance,
+                        'previous_balance' => $balance - ($debit - $credit),
+                        'source_type' => $t['source_type'] ?? null,
+                        'source_id' => $t['source_id'] ?? null,
                     ];
                 });
                 
@@ -343,6 +367,7 @@ class CustomerController extends Controller
                 'customers' => $customers,
                 'opening_balance' => $openingBalance,
                 'closing_balance' => $closingBalance,
+                'selected_customer' => $selectedCustomer,
             ]);
             
         } else {

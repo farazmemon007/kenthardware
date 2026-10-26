@@ -13,6 +13,16 @@ class SystemNotificationController extends Controller
             return response()->json(['count' => 0, 'notifications' => []]);
         }
 
+        // Periodically check for carpenter inactivity (once every 10 minutes)
+        try {
+            \Illuminate\Support\Facades\Cache::remember('carpenter_inactivity_check', 600, function () {
+                \App\Models\Carpenter::checkInactivityAndNotify();
+                return true;
+            });
+        } catch (\Exception $e) {
+            \Log::warning('Carpenter inactivity check failed: ' . $e->getMessage());
+        }
+
         $count = \App\Models\SystemNotification::getUnreadCount($user->id);
         $notifications = \App\Models\SystemNotification::getRecent($user->id, 5); // Latest 5
 

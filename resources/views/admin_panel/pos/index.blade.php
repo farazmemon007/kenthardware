@@ -555,7 +555,7 @@
                 <button type="button" class="btn d-flex align-items-center gap-2 px-4 py-2 fw-bold text-white shadow-sm transition-all" id="btnManualProductModal" data-toggle="modal" data-target="#manualProductModal" style="border-radius: 10px; background: linear-gradient(135deg, #10b981, #059669); border: none;">
                     <i class="fas fa-plus"></i> Manual Product
                 </button>
-                <button type="button" class="btn d-flex align-items-center gap-2 px-4 py-2 fw-bold text-white shadow-sm transition-all" id="btnPOSExchangeHeader" style="border-radius: 10px; background: linear-gradient(135deg, #ef4444, #dc2626); border: none;">
+                <button type="button" class="btn d-none align-items-center gap-2 px-4 py-2 fw-bold text-white shadow-sm transition-all" id="btnPOSExchangeHeader" style="display: none !important;">
                     <i class="fas fa-exchange-alt"></i> Exchange / Return Item
                 </button>
             </div>
@@ -581,6 +581,7 @@
                                  data-id="{{ $product['id'] }}" 
                                  data-name="{{ $product['name'] }}" 
                                  data-sku="{{ $product['sku'] }}" 
+                                 data-item-number="{{ $product['item_number'] ?? '' }}" 
                                  data-price="{{ $product['price'] }}"
                                  data-wholesale-price="{{ $product['wholesale_price'] }}"
                                  data-weight-per-piece="{{ $product['weight_per_piece'] }}"
@@ -589,7 +590,10 @@
                                  data-pieces-per-box="{{ $product['pieces_per_box'] }}"
                                  data-size-mode="{{ $product['size_mode'] }}"
                                  data-has-variants="{{ $hasVariants ? '1' : '0' }}"
-                                 data-variants="{{ json_encode($product['variants']) }}">
+                                 data-variants="{{ json_encode($product['variants']) }}"
+                                 data-uom-units="{{ json_encode($product['uom_units'] ?? []) }}"
+                                 data-uom-sell-unit="{{ $product['uom_sell_unit'] ?? '' }}"
+                                 data-base-unit-name="{{ $product['base_unit_name'] ?? 'Pcs' }}">
                                  
                                 <div class="product-card-image">
                                     @if ($product['image'])
@@ -827,6 +831,34 @@
             </div>
             <div class="modal-footer py-2">
                 <button type="button" class="btn btn-secondary btn-sm" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- QUICKBOOKS DESKTOP POS: CHOOSE UNIT OF MEASURE MODAL -->
+<div class="modal fade" id="qbChooseUomModal" tabindex="-1" aria-labelledby="qbChooseUomModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" style="max-width: 440px;">
+        <div class="modal-content shadow-lg border-0" style="border-radius: 8px;">
+            <div class="modal-header py-2 px-3 bg-light border-bottom d-flex align-items-center justify-content-between">
+                <h6 class="modal-title fw-bold text-dark d-flex align-items-center mb-0" id="qbChooseUomModalLabel" style="font-size: 14px;">
+                    <i class="fas fa-layer-group text-primary me-2"></i> Choose Unit of Measure
+                </h6>
+                <button type="button" class="close text-dark" data-dismiss="modal" data-bs-dismiss="modal" aria-label="Close" style="border: none; background: transparent; font-size: 22px; line-height: 1;">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body p-3">
+                <div class="text-muted small mb-2">
+                    Select the unit of measure to sell <strong id="qbModalProductName" class="text-dark"></strong>:
+                </div>
+                <div class="d-flex flex-column gap-2" id="qbModalUnitsContainer" style="max-height: 320px; overflow-y: auto;">
+                    <!-- Populated dynamically via JS -->
+                </div>
+            </div>
+            <div class="modal-footer py-2 px-3 bg-light border-top d-flex justify-content-end gap-2">
+                <button type="button" class="btn btn-secondary btn-sm px-3" data-dismiss="modal" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary btn-sm px-4 fw-bold" id="btnConfirmQbUomChoice">OK</button>
             </div>
         </div>
     </div>
@@ -1193,18 +1225,90 @@
             $('#walkinNameInput').val('');
         });
 
-        // Filter Grid Products via Search Input
+        // Filter Grid Products via Search Input (supports Name, SKU, and QuickBooks Unit Barcodes/UPCs)
         $('#posSearch').on('input', function() {
-            let term = $(this).val().toLowerCase();
+            let term = $(this).val().toLowerCase().trim();
             $('.product-card').each(function() {
-                let name = $(this).data('name').toLowerCase();
-                let sku = $(this).data('sku').toLowerCase();
-                if (name.includes(term) || sku.includes(term)) {
+                let name = ($(this).data('name') || '').toLowerCase();
+                let sku = ($(this).data('sku') || '').toLowerCase();
+                let itemNum = ($(this).data('item-number') || '').toString().toLowerCase();
+                let variants = $(this).data('variants') || [];
+                let uomUnits = $(this).data('uom-units') || [];
+                let uomMatch = false;
+                if (Array.isArray(uomUnits)) {
+                    uomMatch = uomUnits.some(u => (u.barcode && u.barcode.toLowerCase().includes(term)) || (u.alt_lookup && u.alt_lookup.toLowerCase().includes(term)));
+                }
+                let variantMatch = false;
+                if (Array.isArray(variants)) {
+                    variantMatch = variants.some(v => {
+                        let vNum = (v.item_number || '').toString().toLowerCase();
+                        let vBc = (v.barcode || '').toLowerCase();
+                        let vSn = (v.serial_no || '').toLowerCase();
+                        return vNum.includes(term) || vBc.includes(term) || vSn.includes(term);
+                    });
+                }
+                if (name.includes(term) || sku.includes(term) || itemNum.includes(term) || uomMatch || variantMatch) {
                     $(this).show();
                 } else {
                     $(this).hide();
                 }
             });
+        });
+
+        // Barcode Scanner & Enter Key handler on POS Search
+        $('#posSearch').on('keydown', function(e) {
+            if (e.which === 13 || e.keyCode === 13) {
+                e.preventDefault();
+                let term = $(this).val().toLowerCase().trim();
+                if (!term) return;
+
+                let matchedCard = null;
+                let matchedUnit = null;
+
+                $('.product-card:visible').each(function() {
+                    let sku = ($(this).data('sku') || '').toLowerCase();
+                    let itemNum = ($(this).data('item-number') || '').toString().toLowerCase();
+                    let variants = $(this).data('variants') || [];
+                    let uomUnits = $(this).data('uom-units') || [];
+
+                    if (sku === term || itemNum === term) {
+                        matchedCard = $(this);
+                        return false;
+                    }
+                    if (Array.isArray(variants)) {
+                        let foundV = variants.find(v => {
+                            let vNum = (v.item_number || '').toString().toLowerCase();
+                            let vBc = (v.barcode || '').toLowerCase();
+                            let vSn = (v.serial_no || '').toLowerCase();
+                            return vNum === term || vBc === term || vSn === term;
+                        });
+                        if (foundV) {
+                            matchedCard = $(this);
+                            return false;
+                        }
+                    }
+                    if (Array.isArray(uomUnits)) {
+                        let unit = uomUnits.find(u => (u.barcode && u.barcode.toLowerCase() === term) || (u.alt_lookup && u.alt_lookup.toLowerCase() === term));
+                        if (unit) {
+                            matchedCard = $(this);
+                            matchedUnit = unit;
+                            return false;
+                        }
+                    }
+                });
+
+                if (!matchedCard && $('.product-card:visible').length === 1) {
+                    matchedCard = $('.product-card:visible').first();
+                }
+
+                if (matchedCard) {
+                    if (matchedUnit) {
+                        matchedCard.data('uom-sell-unit', matchedUnit.name);
+                    }
+                    matchedCard.trigger('click');
+                    $(this).val('').trigger('input');
+                }
+            }
         });
 
         // Click on Product Card
@@ -1224,6 +1328,9 @@
                 let sizeMode = $(this).data('size-mode');
                 let piecesPerBox = $(this).data('pieces-per-box') || 1;
                 let idBase = $(this).data('id');
+                let uomUnits = $(this).data('uom-units') || [];
+                let uomSellUnit = $(this).data('uom-sell-unit') || '';
+                let baseUnitName = $(this).data('base-unit-name') || 'Pcs';
                 
                 $('#variantsModalLabel').text(`Select Variant - ${productName}`);
                 let $tbody = $('#variantsModalList');
@@ -1232,6 +1339,9 @@
                 variants.forEach((v) => {
                     let isOut = v.stock_pieces <= 0;
                     let desc = `${v.size_val !== '-' ? v.size_val : ''} ${v.color_val !== '-' ? '(' + v.color_val + ')' : ''}`;
+                    if (v.item_number) {
+                        desc = `<span class="badge bg-primary text-white font-monospace me-1" style="font-size:10.5px;">#${v.item_number}</span> ` + desc;
+                    }
                     if (desc.trim() === '') {
                         desc = 'Standard Variant';
                     }
@@ -1251,7 +1361,10 @@
                             data-stock-pieces="${v.stock_pieces}"
                             data-size-mode="${sizeMode}"
                             data-pieces-per-box="${piecesPerBox}"
-                            data-variant-data="${v.variant_data}">
+                            data-variant-data="${v.variant_data}"
+                            data-uom-units='${JSON.stringify(uomUnits || [])}'
+                            data-uom-sell-unit="${uomSellUnit || ''}"
+                            data-base-unit-name="${baseUnitName || 'Pcs'}">
                             <td class="ps-3 fw-bold" style="font-size: 13px;">${desc}</td>
                             <td class="text-center">
                                 <span class="badge ${isOut ? 'bg-danger' : 'bg-success'}" style="font-size: 11px;">
@@ -1287,11 +1400,14 @@
                 let stockPieces = parseFloat($(this).data('stock-pieces'));
                 let sizeMode = $(this).data('size-mode');
                 let piecesPerBox = parseFloat($(this).data('pieces-per-box')) || 1;
+                let uomUnits = $(this).data('uom-units') || [];
+                let uomSellUnit = $(this).data('uom-sell-unit') || '';
+                let baseUnitName = $(this).data('base-unit-name') || 'Pcs';
                 
                 let activePriceMode = $('input[name="pos_price_mode"]:checked').val() || 'retail';
                 let price = (activePriceMode === 'wholesale' && wholesalePrice > 0) ? wholesalePrice : retailPrice;
                 
-                addToCart(id, name, price, stockPieces, 1, sizeMode, piecesPerBox, '', retailPrice, wholesalePrice, weightPerPiece);
+                addToCart(id, name, price, stockPieces, 1, sizeMode, piecesPerBox, '', retailPrice, wholesalePrice, weightPerPiece, uomUnits, uomSellUnit, baseUnitName);
             }
         });
 
@@ -1333,8 +1449,11 @@
 
             let activePriceMode = $('input[name="pos_price_mode"]:checked').val() || 'retail';
             let price = (activePriceMode === 'wholesale' && wholesalePrice > 0) ? wholesalePrice : retailPrice;
+            let uomUnits = $row.data('uom-units') || [];
+            let uomSellUnit = $row.data('uom-sell-unit') || '';
+            let baseUnitName = $row.data('base-unit-name') || 'Pcs';
 
-            addToCart(id, name, price, stockPieces, qty, sizeMode, piecesPerBox, variantData, retailPrice, wholesalePrice, weightPerPiece);
+            addToCart(id, name, price, stockPieces, qty, sizeMode, piecesPerBox, variantData, retailPrice, wholesalePrice, weightPerPiece, uomUnits, uomSellUnit, baseUnitName);
             
             // Show added feedback
             let $btn = $(this);
@@ -1542,9 +1661,31 @@
             $('#manual_vendor_payment_amount').val(0);
         });
 
-        // Core addToCart Helper
-        function addToCart(id, name, price, stockPieces, qty, sizeMode, piecesPerBox, variantData, retailPrice = 0, wholesalePrice = 0, weightPerPiece = 0) {
+        // Core addToCart Helper with QuickBooks POS UOM support
+        function addToCart(id, name, price, stockPieces, qty, sizeMode, piecesPerBox, variantData, retailPrice = 0, wholesalePrice = 0, weightPerPiece = 0, uomUnits = [], uomSellUnit = '', baseUnitName = 'Pcs') {
             let cartItem = cart.find(item => item.id === id);
+
+            let selectedUnit = baseUnitName || 'Pcs';
+            let uomRatio = 1;
+            let initialPrice = price;
+
+            if (Array.isArray(uomUnits) && uomUnits.length > 0) {
+                let defaultUnit = null;
+                if (uomSellUnit) {
+                    defaultUnit = uomUnits.find(u => u.name && u.name.toLowerCase() === uomSellUnit.toLowerCase());
+                }
+                if (!defaultUnit) {
+                    defaultUnit = uomUnits.find(u => parseFloat(u.ratio) === 1) || uomUnits[0];
+                }
+                if (defaultUnit) {
+                    selectedUnit = defaultUnit.name;
+                    uomRatio = parseFloat(defaultUnit.ratio) || 1;
+                    if (parseFloat(defaultUnit.price) > 0) {
+                        initialPrice = parseFloat(defaultUnit.price);
+                    }
+                }
+            }
+
             if (cartItem) {
                 if (cartItem.qty + qty <= stockPieces) {
                     cartItem.qty += qty;
@@ -1557,21 +1698,24 @@
                     id: id,
                     product_id: id.toString().split('|')[0],
                     name: name,
-                    price: price,
-                    retailPrice: retailPrice || price,
+                    price: initialPrice,
+                    retailPrice: retailPrice || initialPrice,
                     wholesalePrice: wholesalePrice,
                     weightPerPiece: weightPerPiece,
                     qty: qty,
                     stock: stockPieces,
                     sizeMode: sizeMode,
                     piecesPerBox: piecesPerBox,
-                    variantData: variantData
+                    variantData: variantData,
+                    uomUnits: uomUnits,
+                    selectedUnit: selectedUnit,
+                    uomRatio: uomRatio
                 });
             }
             renderCart();
         }
 
-        // Render Cart items list
+        // Render Cart items list with QuickBooks UOM Indicators
         function renderCart() {
             let $list = $('#cartItemsList');
             let $empty = $('#cartEmptyPlaceholder');
@@ -1590,7 +1734,11 @@
             cart.forEach((item, index) => {
                 let factor = parseFloat(item.weightPerPiece) || 0;
                 let totalPieces = item.qty;
-                if (factor > 0) {
+
+                // QuickBooks POS UOM Conversion: totalPieces for inventory deduction
+                if (item.uomRatio && item.uomRatio > 0) {
+                    totalPieces = item.qty * item.uomRatio;
+                } else if (factor > 0) {
                     if (item.sizeMode === 'by_kg') {
                         totalPieces = item.qty * (factor / 1000);
                     } else if (item.sizeMode === 'by_meter') {
@@ -1612,11 +1760,23 @@
                 let isRet = item.is_return === true;
                 let itemBg = isRet ? 'background: #fff5f5; border: 1px solid #feb2b2;' : '';
                 let badge = isRet ? '<span class="badge bg-danger me-1">RETURN</span>' : '';
+                let hasMultiUnits = (item.uomUnits && Array.isArray(item.uomUnits) && item.uomUnits.length > 1);
                 
                 let html = `
                     <div class="cart-item" data-index="${index}" style="${itemBg}">
                         <div class="cart-item-header">
-                            <span class="cart-item-name">${badge}${item.name}</span>
+                            <div>
+                                <span class="cart-item-name">${badge}${item.name}</span>
+                                <div class="cart-item-uom d-flex align-items-center mt-1" style="font-size: 11px;">
+                                    <span class="text-muted me-1">Unit:</span>
+                                    <span class="badge bg-light text-primary border me-1 fw-bold">${item.selectedUnit || 'Pcs'}</span>
+                                    ${hasMultiUnits ? `
+                                        <button type="button" class="btn btn-xs btn-outline-primary py-0 px-1.5 btn-open-choose-uom" data-index="${index}" style="font-size: 10px; height: 20px; line-height: 18px; border-radius: 3px;" title="QuickBooks Choose Unit of Measure">
+                                            <i class="fas fa-layer-group me-1"></i>Units
+                                        </button>
+                                    ` : ''}
+                                </div>
+                            </div>
                             <span class="cart-item-remove remove-cart-item"><i class="fas fa-trash-alt"></i></span>
                         </div>
                         <div class="cart-item-details">
@@ -1647,6 +1807,8 @@
                             <input type="hidden" name="return_color[]" value="${item.variantData}">
                             <input type="hidden" name="return_is_manual[]" value="${item.is_manual ? 1 : 0}">
                             <input type="hidden" name="original_sale_id[]" value="${item.original_sale_id}">
+                            <input type="hidden" name="return_uom_name[]" value="${item.selectedUnit || ''}">
+                            <input type="hidden" name="return_uom_ratio[]" value="${item.uomRatio || 1}">
                         ` : `
                             <input type="hidden" name="product_id[]" value="${item.product_id}">
                             <input type="hidden" name="qty[]" value="${item.qty}">
@@ -1658,6 +1820,8 @@
                             <input type="hidden" name="manual_purchase_price[]" value="${item.purchase_price || 0}">
                             <input type="hidden" name="manual_vendor_payment_amount[]" value="${item.vendor_payment_amount || 0}">
                             <input type="hidden" name="manual_vendor_account_id[]" value="${item.vendor_account_id || ''}">
+                            <input type="hidden" name="uom_name[]" value="${item.selectedUnit || ''}">
+                            <input type="hidden" name="uom_ratio[]" value="${item.uomRatio || 1}">
                         `}
                     </div>
                 `;
@@ -1668,6 +1832,93 @@
             $('#btnPOSSubmit').prop('disabled', false);
             updateBillSummary();
         }
+
+        // =========================================================================
+        // QUICKBOOKS DESKTOP POS: CHOOSE UNIT OF MEASURE MODAL LOGIC
+        // =========================================================================
+        let activeUomCartIndex = null;
+        let selectedUomChoice = null;
+
+        $(document).on('click', '.btn-open-choose-uom', function(e) {
+            e.stopPropagation();
+            let idx = $(this).data('index');
+            let item = cart[idx];
+            if (!item || !item.uomUnits || item.uomUnits.length === 0) return;
+
+            activeUomCartIndex = idx;
+            selectedUomChoice = null;
+
+            $('#qbModalProductName').text(item.name);
+            let $container = $('#qbModalUnitsContainer');
+            $container.empty();
+
+            item.uomUnits.forEach(u => {
+                let isSelected = (item.selectedUnit && item.selectedUnit.toLowerCase() === u.name.toLowerCase());
+                if (isSelected) {
+                    selectedUomChoice = u;
+                }
+                let ratioVal = parseFloat(u.ratio) || 1;
+                let ratioText = (ratioVal === 1) ? 'Base Unit' : `${ratioVal} Base Units`;
+                let priceText = (parseFloat(u.price) > 0) ? `Rs ${parseFloat(u.price).toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}` : 'Default Price';
+
+                let cardHtml = `
+                    <button type="button" class="btn btn-outline-secondary text-start p-2.5 qb-uom-card-btn ${isSelected ? 'active border-primary bg-primary text-white' : ''}" 
+                            data-unit-name="${u.name}" 
+                            data-ratio="${ratioVal}" 
+                            data-price="${u.price || 0}"
+                            style="border-radius: 6px; transition: all 0.15s ease;">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <span class="fw-bold fs-6">${u.name}</span>
+                                <span class="badge ${isSelected ? 'bg-light text-dark' : 'bg-light text-secondary border'} ms-2" style="font-size: 11px;">
+                                    ${ratioText}
+                                </span>
+                            </div>
+                            <div class="text-end">
+                                <span class="fw-bold fs-6 ${isSelected ? 'text-white' : 'text-primary'}">${priceText}</span>
+                                ${u.barcode ? `<div class="${isSelected ? 'text-white-50' : 'text-muted'}" style="font-size: 10px;">UPC: ${u.barcode}</div>` : ''}
+                            </div>
+                        </div>
+                    </button>
+                `;
+                $container.append(cardHtml);
+            });
+
+            $('#qbChooseUomModal').modal('show');
+        });
+
+        // Click on a unit card in the QuickBooks POS modal
+        $(document).on('click', '.qb-uom-card-btn', function() {
+            $('.qb-uom-card-btn').removeClass('active border-primary bg-primary text-white');
+            $('.qb-uom-card-btn .badge').removeClass('bg-light text-dark').addClass('bg-light text-secondary border');
+            $('.qb-uom-card-btn .text-end span').removeClass('text-white').addClass('text-primary');
+            
+            $(this).addClass('active border-primary bg-primary text-white');
+            $(this).find('.badge').removeClass('bg-light text-secondary border').addClass('bg-light text-dark');
+            $(this).find('.text-end span').removeClass('text-primary').addClass('text-white');
+
+            selectedUomChoice = {
+                name: $(this).data('unit-name'),
+                ratio: parseFloat($(this).data('ratio')) || 1,
+                price: parseFloat($(this).data('price')) || 0
+            };
+        });
+
+        // Confirm UOM Choice (OK button)
+        $('#btnConfirmQbUomChoice').on('click', function() {
+            if (activeUomCartIndex !== null && cart[activeUomCartIndex] && selectedUomChoice) {
+                let item = cart[activeUomCartIndex];
+                item.selectedUnit = selectedUomChoice.name;
+                item.uomRatio = selectedUomChoice.ratio;
+                if (selectedUomChoice.price > 0) {
+                    item.price = selectedUomChoice.price;
+                    item.retailPrice = selectedUomChoice.price;
+                }
+                renderCart();
+            }
+
+            $('#qbChooseUomModal').modal('hide');
+        });
 
         // POS Price Mode change handler
         $(document).on('change', 'input[name="pos_price_mode"]', function() {

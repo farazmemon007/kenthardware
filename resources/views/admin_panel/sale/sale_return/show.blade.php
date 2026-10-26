@@ -41,6 +41,15 @@
                                         <td class="fw-bold">Warehouse:</td>
                                         <td>{{ $return->warehouse->warehouse_name ?? 'N/A' }}</td>
                                     </tr>
+                                    @if($return->carpenter || $return->carpenter_commission_rate > 0)
+                                    <tr>
+                                        <td class="fw-bold"><i class="fas fa-hammer text-warning me-1"></i> Carpenter:</td>
+                                        <td>
+                                            <strong>{{ $return->carpenter->name ?? 'Associated Carpenter' }}</strong>
+                                            <span class="badge bg-warning text-dark font-monospace ms-1">-{{ number_format($return->carpenter_commission_rate, 1) }}% Comm.</span>
+                                        </td>
+                                    </tr>
+                                    @endif
                                 </table>
                             </div>
                             <div class="col-md-6">
@@ -50,6 +59,17 @@
                                         <td class="fw-bold">Bill Amount:</td>
                                         <td class="text-end">{{ number_format($return->bill_amount, 2) }}</td>
                                     </tr>
+                                    @if($return->carpenter_deduction_amount > 0 || $return->carpenter_commission_rate > 0)
+                                    <tr class="table-warning">
+                                        <td class="fw-bold text-dark">
+                                            <i class="fas fa-hammer text-warning me-1"></i> Carpenter Comm. Deducted ({{ number_format($return->carpenter_commission_rate, 1) }}%):
+                                            <small class="d-block text-muted" style="font-size: 10px;">Withheld from customer refund</small>
+                                        </td>
+                                        <td class="text-end fw-bold text-danger">
+                                            -{{ number_format($return->carpenter_deduction_amount, 2) }}
+                                        </td>
+                                    </tr>
+                                    @endif
                                     <tr>
                                         <td class="fw-bold">Item Discount:</td>
                                         <td class="text-end text-danger">-{{ number_format($return->item_discount, 2) }}

@@ -30,6 +30,9 @@ class Kernel extends ConsoleKernel
 
         // Check for overdue sales invoices daily at 8 AM
         $schedule->command('sales:check-overdue')->dailyAt('08:00');
+
+        // Check for inactive carpenters daily at 9:30 AM
+        $schedule->command('carpenters:check-inactivity')->dailyAt('09:30');
     }
 
     /**

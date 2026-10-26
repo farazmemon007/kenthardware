@@ -136,19 +136,27 @@
                                         <table class="table table-sm table-borderless mb-0">
                                             <thead class="bg-light text-muted" style="font-size:0.75rem;">
                                                 <tr>
+                                                    <th>Item #</th>
                                                     <th>Variant Name</th>
-                                                    <th>Size/Color</th>
+                                                    <th>Size / Color</th>
                                                     <th>Stock</th>
-                                                    <th>Price</th>
+                                                    <th>Cost / Price</th>
                                                 </tr>
                                             </thead>
                                             <tbody>
                                                 @foreach($pData['variants'] as $v)
                                                 <tr>
+                                                    <td>
+                                                        @if(!empty($v['item_number']))
+                                                            <span class="badge bg-primary text-white font-monospace">{{ $v['item_number'] }}</span>
+                                                        @else
+                                                            <span class="text-muted">-</span>
+                                                        @endif
+                                                    </td>
                                                     <td>{{ $v['name'] }}</td>
-                                                    <td>{{ $v['size'] }} / {{ $v['color'] }}</td>
-                                                    <td>{{ $v['stock'] }}</td>
-                                                    <td>{{ $v['sale_price'] }}</td>
+                                                    <td><span class="badge bg-light text-dark border">{{ $v['size'] }}</span> / {{ $v['color'] }}</td>
+                                                    <td><strong>{{ $v['stock'] }}</strong> <small class="text-muted">{{ $v['unit'] ?? '' }}</small></td>
+                                                    <td>{{ number_format($v['purch_price'] ?? 0, 2) }} / {{ number_format($v['sale_price'] ?? 0, 2) }}</td>
                                                 </tr>
                                                 @endforeach
                                             </tbody>

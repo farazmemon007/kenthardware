@@ -25,6 +25,9 @@ class SaleReturn extends Model
         'balance',
         'remarks',
         'status',
+        'carpenter_id',
+        'carpenter_commission_rate',
+        'carpenter_deduction_amount',
     ];
 
     protected $casts = [
@@ -56,5 +59,10 @@ class SaleReturn extends Model
     public function items()
     {
         return $this->hasMany(SaleReturnItem::class);
+    }
+
+    public function carpenter()
+    {
+        return $this->belongsTo(Carpenter::class, 'carpenter_id');
     }
 }

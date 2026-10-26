@@ -21,7 +21,7 @@ class SaleController extends Controller
 {
     public function index(Request $request)
     {
-        $query = Sale::with(['customer_relation', 'items.product', 'returns'])
+        $query = Sale::with(['customer_relation', 'items.product.warehouseStocks', 'returns'])
             ->whereIn('sale_status', ['draft', 'booked', 'posted', 'returned']);
 
         // Apply Status Filter
@@ -175,6 +175,7 @@ class SaleController extends Controller
         $recentProducts = Product::latest()->take(12)->get();
         $salesOfficers = \App\Models\SalesOfficer::orderBy('name')->get();
         $vendors = \App\Models\Vendor::orderBy('name')->get();
+        $carpenters = \App\Models\Carpenter::active()->orderBy('name')->get();
 
         // Filter accounts (Cash/Bank) for Payment Voucher
         $accounts = \App\Models\Account::whereHas('head', function($q) {
@@ -192,7 +193,7 @@ class SaleController extends Controller
         return view('admin_panel.sale.add_sale222', compact(
             'warehouse', 'customer', 'nextInvoiceNumber', 'accounts', 
             'recentProducts', 'allSeries', 'activePrefix', 'salesOfficers', 'vendors',
-            'defaultCashAccountId', 'defaultBankAccountId', 'defaultGiftAccountId', 'allAccounts'
+            'defaultCashAccountId', 'defaultBankAccountId', 'defaultGiftAccountId', 'allAccounts', 'carpenters'
         ));
     }
 
@@ -210,6 +211,7 @@ class SaleController extends Controller
             ->where(function ($query) use ($q) {
                 $query->where('products.item_name', 'like', "%{$q}%")
                     ->orWhere('products.item_code', 'like', "%{$q}%")
+                    ->orWhere('products.item_number', 'like', "%{$q}%")
                     ->orWhere('products.barcode_path', 'like', "%{$q}%")
                     ->orWhere('products.color', 'like', "%{$q}%");
             })
@@ -229,6 +231,9 @@ class SaleController extends Controller
                     $rotPrice = $product->wholesale_price ?? 0;
                     $product->rot_p_code = PCodeService::encode($rotPrice);
                 }
+                $product->uom_units = $product->getUomUnitsList();
+                $product->uom_sell_unit = $product->getUomSellUnit();
+                $product->base_unit_name = $product->unit ? $product->unit->name : 'Pcs';
                 return $product;
             });
 
@@ -1083,6 +1088,17 @@ class SaleController extends Controller
         return view('admin_panel.sale.saledc_thermal', ['sale' => $sale, 'saleItems' => $items]);
     }
 
+    public function saleMarketSlip(Request $request, $id)
+    {
+        $sale = Sale::with(['customer_relation', 'items.product'])->findOrFail($id);
+        $items = $this->getMarketSlipItems($sale);
+
+        return view('admin_panel.sale.market_slip', [
+            'sale' => $sale,
+            'items' => $items,
+        ]);
+    }
+
     public function salereceipt($id)
     {
         $sale = Sale::with(['customer_relation', 'change_account'])->findOrFail($id);
@@ -1184,10 +1200,12 @@ class SaleController extends Controller
     {
         $isWalkin = $request->input('is_walkin') == '1';
 
+        $hasReturns = is_array($request->input('return_product_id')) && count($request->input('return_product_id')) > 0;
+
         $rules = [
-            'product_id' => 'required|array|min:1',
+            'product_id' => $hasReturns ? 'nullable|array' : 'required|array|min:1',
             'product_id.*' => 'nullable|exists:products,id',
-            'qty' => 'required|array|min:1',
+            'qty' => $hasReturns ? 'nullable|array' : 'required|array|min:1',
             'warehouse_id' => 'nullable|array',
         ];
 
@@ -1295,8 +1313,8 @@ class SaleController extends Controller
                 SaleItem::where('sale_id', $sale->id)->delete();
             }
 
-            $productIds = $request->product_id;
-            $quantities = $request->qty; // Assumed pieces based on previous context, or Box?
+            $productIds = $request->product_id ?? [];
+            $quantities = $request->qty ?? []; // Assumed pieces based on previous context, or Box?
             // User: "qty > 0". Previous code used qty as boxes and total_pieces as real qty.
             // Let's stick to: Frontend sends 'qty' (Boxes) and we calculate total_pieces?
             // Or Frontend sends 'total_pieces'?
@@ -1453,12 +1471,22 @@ class SaleController extends Controller
                 // 'pkr' means fixed PKR amount;  anything else ('percent' or missing) = percentage
                 $discType = $request->discount_type[$index] ?? 'percent';
 
+                // QuickBooks POS UOM Multiplier & Unit Name
+                $uomRatio = isset($request->uom_ratio[$index]) && (float)$request->uom_ratio[$index] > 0 ? (float)$request->uom_ratio[$index] : 1.0;
+                $uomName = $request->uom_name[$index] ?? ($request->unit[$index] ?? null);
+                if ($uomRatio > 1 || !empty($uomName)) {
+                    $totalPieces = $qtyInput * $uomRatio;
+                    $storedQtyBox = $qtyInput;
+                }
+
                 // Calculate Line Gross (before discount)
                 $frontendGross = (float) ($request->gross_amount[$index] ?? 0);
                 $frontendNet   = (float) ($request->total[$index] ?? 0);
 
                 $calculatedGross = 0;
-                if ($sizeMode === 'by_cartons') {
+                if ($uomRatio > 1 || !empty($uomName)) {
+                    $calculatedGross = round($qtyInput * $dbPrice, 2);
+                } elseif ($sizeMode === 'by_cartons') {
                     $subUnit = $request->sub_unit_mode[$index] ?? 'main';
                     if ($subUnit === 'pcs') {
                         $calculatedGross = round($totalPieces * $dbPrice, 2);
@@ -1518,6 +1546,7 @@ class SaleController extends Controller
                 $saleItem = new SaleItem;
                 $saleItem->sale_id = $sale->id;
                 $saleItem->product_id = $isManual ? null : $pid;
+                $saleItem->item_number = $request->item_number[$index] ?? ($vData['item_number'] ?? ($vData['item_no'] ?? ($product->item_number ?? null)));
                 $saleItem->color = $colorVal;
                 $saleItem->warehouse_id = !empty($warehouses[$index]) ? $warehouses[$index] : $defaultWhId;
                 $saleItem->product_name = $productName; // Store name snapshot
@@ -1548,7 +1577,24 @@ class SaleController extends Controller
                 // Meta
                 $saleItem->brand_id = $brandId;
                 $saleItem->unit_id = $unitId;
+                $saleItem->uom_name = $uomName;
+                $saleItem->uom_ratio = $uomRatio;
                 $saleItem->size_mode = $sizeMode;
+
+                // Available stock tracking at sale time
+                $itemAvailStock = isset($request->stock[$index]) && $request->stock[$index] !== '' ? (float)$request->stock[$index] : null;
+                if ($itemAvailStock === null) {
+                    if ($isManual) {
+                        $itemAvailStock = 0;
+                    } elseif ($liveVariant && isset($liveVariant['stock'])) {
+                        $itemAvailStock = (float)$liveVariant['stock'];
+                    } elseif ($pid) {
+                        $itemAvailStock = (float)\App\Models\WarehouseStock::where('product_id', $pid)->sum('total_pieces');
+                    } else {
+                        $itemAvailStock = 0;
+                    }
+                }
+                $saleItem->stock = $itemAvailStock;
 
                 if ($isManual) {
                     $saleItem->is_manual = 1;
@@ -1576,42 +1622,56 @@ class SaleController extends Controller
             // Update Sale Totals
             $sale->total_bill_amount = $total_bill;
             $sale->total_extradiscount = $request->total_extra_cost ?? 0;
-            $sale->total_net = $total_bill - $sale->total_extradiscount;
+            $sale->total_net = max(0, $total_bill - $sale->total_extradiscount);
             $sale->total_items = $total_items;
+
+            // Pre-calculate Return Amount from return rows (if any) to determine true Net Payable
+            $precalcReturnAmount = 0;
+            $rawReturnPids = $request->input('return_product_id');
+            if (is_array($rawReturnPids) && count($rawReturnPids) > 0) {
+                foreach ($rawReturnPids as $rIdx => $rPid) {
+                    $rQty = (float)($request->return_qty[$rIdx] ?? 0);
+                    $rPrice = (float)($request->return_price[$rIdx] ?? 0);
+                    if ($rQty > 0) {
+                        $precalcReturnAmount += ($rQty * $rPrice);
+                    }
+                }
+            }
+            $netPayable = max(0, $sale->total_net - $precalcReturnAmount);
 
             if ($status === 'posted') {
                 $inputCash = (float)($request->cash ?? 0);
                 $inputCard = (float)($request->card ?? 0);
                 $totalPaid = $inputCash + $inputCard;
 
-                // 100% Credit / Ledger (No upfront cash or card)
-                if ($paymentMethod === 'credit' && $totalPaid <= 0.009) {
+                // 100% Credit / Ledger / Account (No upfront cash or card)
+                if (in_array($paymentMethod, ['credit', 'account']) && $totalPaid <= 0.009 && $netPayable > 0) {
                     if ($isWalkin) {
                         throw \Illuminate\Validation\ValidationException::withMessages([
-                            'customer' => 'Credit sale (Udhar) requires a registered customer to record in ledger. Please select or add a customer.'
+                            'customer' => 'Account / Credit sale (Udhar) requires a registered customer to record in ledger. Please select or add a customer.'
                         ]);
                     }
                     $sale->cash = 0;
                     $sale->card = 0;
-                    $sale->change = -$sale->total_net;
+                    $sale->change = -$netPayable;
                 } else {
                     // Cash, Debit, Split, Account, etc.
                     // Fallback for single tender if both inputs are 0
-                    if ($inputCash <= 0.009 && $inputCard <= 0.009 && $paymentMethod !== 'credit') {
+                    if ($inputCash <= 0.009 && $inputCard <= 0.009 && !in_array($paymentMethod, ['credit', 'account'])) {
                         if ($paymentMethod === 'debit' || $paymentMethod === 'check') {
-                            $inputCard = $sale->total_net;
+                            $inputCard = $netPayable;
                         } else {
-                            $inputCash = $sale->total_net;
+                            $inputCash = $netPayable;
                         }
                         $totalPaid = $inputCash + $inputCard;
                     }
 
                     $sale->cash = $inputCash;
                     $sale->card = $inputCard;
-                    $sale->change = round($totalPaid - $sale->total_net, 2);
+                    $sale->change = round($totalPaid - $netPayable, 2);
 
                     // If change is negative, remaining balance is Due on customer ledger
-                    if ($sale->change < -0.05) {
+                    if ($sale->change < -0.05 && $netPayable > 0) {
                         if ($isWalkin) {
                             $unpaidAmt = number_format(abs($sale->change), 2);
                             throw \Illuminate\Validation\ValidationException::withMessages([
@@ -1631,14 +1691,61 @@ class SaleController extends Controller
 
             $sale->save();
 
+            // Process Carpenter Commission
+            $carpenterId = $request->input('carpenter_id');
+            if (!empty($carpenterId) && (int)$carpenterId > 0) {
+                $commType = $request->input('carpenter_commission_type', 'percentage');
+                $commRate = (float) $request->input('carpenter_commission_rate', 0);
+                $netBill = (float) $sale->total_net;
+
+                if ($commType === 'percentage') {
+                    $commAmount = round(($netBill * $commRate) / 100, 2);
+                    $effectivePercent = $commRate;
+                } else {
+                    $commAmount = round($commRate, 2);
+                    $effectivePercent = $netBill > 0 ? round(($commAmount / $netBill) * 100, 4) : 0;
+                }
+
+                $sale->carpenter_id = $carpenterId;
+                $sale->carpenter_commission_type = $commType;
+                $sale->carpenter_commission_rate = $commRate;
+                $sale->carpenter_commission_amount = $commAmount;
+                $sale->save();
+
+                \App\Models\CarpenterCommission::updateOrCreate(
+                    ['sale_id' => $sale->id],
+                    [
+                        'carpenter_id' => $carpenterId,
+                        'commission_type' => $commType,
+                        'commission_rate' => $commRate,
+                        'sale_amount' => $netBill,
+                        'commission_amount' => $commAmount,
+                        'effective_percentage' => $effectivePercent,
+                        'status' => 'pending',
+                    ]
+                );
+            } elseif ($request->has('carpenter_id') && empty($carpenterId)) {
+                $sale->carpenter_id = null;
+                $sale->carpenter_commission_rate = 0;
+                $sale->carpenter_commission_amount = 0;
+                $sale->carpenter_commission_approved = 0;
+                $sale->save();
+                \App\Models\CarpenterCommission::where('sale_id', $sale->id)->delete();
+            }
+
             // Process returned/exchange items (if any)
             $returnProductIds = $request->input('return_product_id');
             $totalReturnAmountForNet = 0;
             if (is_array($returnProductIds) && count($returnProductIds) > 0) {
-                $originalSaleIds = array_filter(array_unique($request->input('original_sale_id') ?? []));
+                $rawOrigSaleIds = $request->input('original_sale_id');
+                $originalSaleIds = is_array($rawOrigSaleIds)
+                    ? array_filter(array_unique($rawOrigSaleIds))
+                    : ($rawOrigSaleIds ? [$rawOrigSaleIds] : []);
                 
                 foreach ($originalSaleIds as $origSaleId) {
-                    $origSale = Sale::with('items')->find($origSaleId);
+                    $origSale = is_numeric($origSaleId)
+                        ? Sale::with('items')->find($origSaleId)
+                        : Sale::with('items')->where('invoice_no', $origSaleId)->first();
                     if (!$origSale) continue;
 
                     $lastReturnId = \App\Models\SaleReturn::max('id') ?? 0;
@@ -1647,28 +1754,47 @@ class SaleController extends Controller
                         $nextInvoice = 'SR-' . str_pad($lastReturnId, 4, '0', STR_PAD_LEFT);
                     } while (\App\Models\SaleReturn::where('return_invoice', $nextInvoice)->exists());
 
+                    $carpenterRate = 0;
+                    if (!empty($origSale->carpenter_id)) {
+                        if ($origSale->carpenter_commission_type === 'percentage') {
+                            $carpenterRate = (float)$origSale->carpenter_commission_rate;
+                        } elseif ($origSale->total_bill_amount > 0 && (float)$origSale->carpenter_commission_amount > 0) {
+                            $carpenterRate = round(((float)$origSale->carpenter_commission_amount / (float)$origSale->total_bill_amount) * 100, 4);
+                        }
+                    }
+
                     $returnHeader = \App\Models\SaleReturn::create([
-                        'sale_id' => $origSaleId,
+                        'sale_id' => $origSale->id,
                         'return_invoice' => $nextInvoice,
-                        'customer_id' => $sale->customer_id ?: null,
+                        'customer_id' => $sale->customer_id ?: ($origSale->customer_id ?: null),
                         'warehouse_id' => 1,
                         'return_date' => now()->format('Y-m-d'),
-                        'remarks' => 'POS Exchange Return (Sales Invoice #' . $sale->invoice_no . ')',
+                        'remarks' => 'QuickBooks Return on Sales Receipt #' . $sale->invoice_no,
                         'status' => 'posted',
+                        'carpenter_id' => $origSale->carpenter_id,
+                        'carpenter_commission_rate' => $carpenterRate,
+                        'carpenter_deduction_amount' => 0,
                     ]);
 
                     $movements = [];
                     $saleReturnTotalAmount = 0;
+                    $totalCarpenterDeduction = 0;
 
                     $manualVendorReturnsForLedger = [];
 
                     foreach ($returnProductIds as $idx => $rPid) {
-                        if ($request->original_sale_id[$idx] == $origSaleId) {
+                        $itemOrigId = is_array($rawOrigSaleIds) ? ($rawOrigSaleIds[$idx] ?? null) : $rawOrigSaleIds;
+                        if ($itemOrigId == $origSaleId || $itemOrigId == $origSale->id || $itemOrigId == $origSale->invoice_no) {
                             $rQty = (float)$request->return_qty[$idx];
                             if ($rQty <= 0) continue;
 
                             $rPrice = (float)$request->return_price[$idx];
                             $rColor = $request->return_color[$idx];
+
+                            if ($carpenterRate > 0) {
+                                $itemCommDeduction = round(($rQty * $rPrice * $carpenterRate) / 100, 2);
+                                $totalCarpenterDeduction += $itemCommDeduction;
+                            }
                             
                             $rIsManual = isset($request->return_is_manual[$idx]) && $request->return_is_manual[$idx] == '1';
                             $rSaleItemId = $request->return_sale_item_id[$idx] ?? null;
@@ -1793,18 +1919,59 @@ class SaleController extends Controller
 
                     // Recalculate true change based on net payable
                     $sale->change = $sale->cash - max(0, $sale->total_net - $totalReturnAmountForNet);
-                    $sale->reference = "Exchange for " . $origSale->invoice_no;
+                    $sale->reference = "Exchange/Return for " . $origSale->invoice_no;
                     $sale->save();
 
-                    // Update Original Sale Header Totals
-                    $allSaleItems = \App\Models\SaleItem::where('sale_id', $origSale->id)->get();
-                    $origSale->total_bill_amount = $allSaleItems->sum('total');
-                    $origSale->total_net = max(0, $origSale->total_bill_amount - ($origSale->total_extradiscount ?? 0));
-                    $origSale->total_items = $allSaleItems->sum('total_pieces');
-                    $origSale->save();
+                    // Update Return Header Totals & Carpenter Deduction
+                    $returnHeader->update([
+                        'bill_amount' => $saleReturnTotalAmount,
+                        'net_amount' => $saleReturnTotalAmount,
+                        'paid' => $saleReturnTotalAmount,
+                        'balance' => 0,
+                        'carpenter_deduction_amount' => $totalCarpenterDeduction,
+                    ]);
 
-                    // Exchange Mode: We DO NOT record the full Sales Return journal entry here.
-                    // The difference will be settled later during Sale posting.
+                    // Automatically Adjust Carpenter Commission (ERP International Standard)
+                    if ($totalCarpenterDeduction > 0 && !empty($origSale->carpenter_id)) {
+                        $commRecord = \App\Models\CarpenterCommission::where('sale_id', $origSale->id)->first();
+                        if ($commRecord) {
+                            if ($commRecord->status === 'paid') {
+                                // Already paid: Create automatic Commission Clawback / Recovery entry
+                                \App\Models\CarpenterCommission::create([
+                                    'carpenter_id' => $origSale->carpenter_id,
+                                    'sale_id' => $origSale->id,
+                                    'commission_type' => 'fixed',
+                                    'commission_rate' => 0,
+                                    'sale_amount' => 0,
+                                    'commission_amount' => -$totalCarpenterDeduction,
+                                    'effective_percentage' => 0,
+                                    'status' => 'approved',
+                                    'notes' => "Commission Clawback for Return #{$nextInvoice} (Original Sale #{$origSale->invoice_no})",
+                                ]);
+                            } else {
+                                // Pending or Approved: Reduce payable commission amount directly
+                                $newCommAmount = max(0, round((float)$commRecord->commission_amount - $totalCarpenterDeduction, 2));
+                                $newSaleAmount = max(0, round((float)$commRecord->sale_amount - $saleReturnTotalAmount, 2));
+                                $commRecord->commission_amount = $newCommAmount;
+                                $commRecord->sale_amount = $newSaleAmount;
+                                $retNote = "[Return #{$nextInvoice}: -Rs. " . number_format($totalCarpenterDeduction, 2) . "]";
+                                $commRecord->notes = trim(($commRecord->notes ?? '') . ' ' . $retNote);
+                                if ($newCommAmount <= 0) {
+                                    $commRecord->status = 'cancelled';
+                                }
+                                $commRecord->save();
+                            }
+                        }
+                    }
+
+                    // Check if all sold pieces are now returned
+                    $totalSold = $origSale->items->sum('total_pieces');
+                    $totalReturned = \App\Models\SaleReturnItem::join('sale_returns', 'sale_returns.id', '=', 'sale_return_items.sale_return_id')
+                        ->where('sale_returns.sale_id', $origSale->id)
+                        ->sum('sale_return_items.qty');
+                    if ($totalReturned >= $totalSold && $totalSold > 0) {
+                        $origSale->update(['sale_status' => 'returned']);
+                    }
 
 
                     // --- MANUAL PRODUCT VENDOR RETURN LEDGER ---
@@ -1939,7 +2106,7 @@ class SaleController extends Controller
                     }
 
                     // Fallback if no receipt amounts explicitly sent, but cash/card was received
-                    if (empty($filteredAccIds) && ($sale->cash > 0.009 || $sale->card > 0.009)) {
+                    if (empty($filteredAccIds) && ($sale->cash > 0.009 || $sale->card > 0.009) && !in_array($paymentMethod, ['credit', 'account'])) {
                         if ($sale->cash > 0.009) {
                             $filteredAccIds[] = (int)$balanceService->getCashAccountId();
                             $filteredAmts[] = (float)$sale->cash;
@@ -2097,12 +2264,17 @@ class SaleController extends Controller
 
             if ($request->ajax() || $request->wantsJson()) {
                 $receiptUrl = route('sales.receipt', $sale->id) . '?from=pos';
+                $hasMarketItems = $this->hasMarketShortageItems($sale);
+                $marketSlipUrl = route('sales.market_slip', $sale->id) . '?from=pos';
+
                 return response()->json([
                     'ok' => true,
                     'booking_id' => $sale->id,
                     'msg' => 'Sale '.$msgStatus.' Successfully',
                     'invoice_url' => $receiptUrl,
                     'receipt_url' => $receiptUrl,
+                    'has_market_items' => $hasMarketItems,
+                    'market_slip_url' => $marketSlipUrl,
                 ]);
             }
 
@@ -2494,8 +2666,10 @@ class SaleController extends Controller
                 'item_name' => $item->is_manual ? ($item->product_name ?? 'Manual Product') . ' (Manual)' : ($item->product_name ?? $item->product->item_name ?? 'Item'),
                 'item_code' => $item->product->item_code ?? '',
                 'brand' => $item->product->brand->name ?? '',
-                'unit' => $item->product->unit->name ?? '', // Access name if relation exists
-                'qty' => (int) $item->total_pieces, // Use Pieces for Return Logic (Matches Price-Per-Piece)
+                'unit' => !empty($item->uom_name) ? $item->uom_name : ($item->product->unit->name ?? ''), // QuickBooks UOM or standard unit
+                'uom_name' => $item->uom_name ?? '',
+                'uom_ratio' => (float)($item->uom_ratio ?? 1),
+                'qty' => (!empty($item->uom_name) && (float)($item->uom_ratio ?? 1) > 1) ? (float)$item->qty : (int) $item->total_pieces,
                 'qty_box' => (float) $item->qty, // Store Box Count separately
                 'total_pieces' => (int) $item->total_pieces,
                 'loose_pieces' => (int) $item->loose_pieces,
@@ -2519,6 +2693,218 @@ class SaleController extends Controller
                 'size_mode' => $item->size_mode ?? $item->product->size_mode ?? 'std',
             ];
         });
+    }
+
+    /**
+     * Get processed items for Local Market Purchase Slip with shortage calculations
+     */
+    public function getMarketSlipItems(Sale $sale)
+    {
+        $sale->loadMissing(['items.product.brand', 'items.product.unit']);
+
+        return $sale->items->map(function ($item) {
+            $isManual = (bool)($item->is_manual || empty($item->product_id));
+            $product = $item->product;
+
+            $itemName = $isManual
+                ? ($item->product_name ?: 'Manual Product') . ' (Manual)'
+                : ($item->product_name ?: ($product->item_name ?? 'Item'));
+
+            $itemCode = $product->item_code ?? '';
+
+            // Extract variant
+            $variant = [];
+            if (!empty($item->color)) {
+                $b64Decoded = base64_decode($item->color, true);
+                if ($b64Decoded !== false) {
+                    $json = json_decode($b64Decoded, true);
+                    if (is_array($json)) {
+                        $variant = $json;
+                    }
+                }
+                if (empty($variant)) {
+                    $json = json_decode($item->color, true);
+                    if (is_array($json)) {
+                        $variant = $json;
+                    } elseif (!empty($item->color)) {
+                        $variant = ['color' => $item->color];
+                    }
+                }
+            }
+
+            // Find live variant from product if available
+            $liveVariant = null;
+            if ($product && !empty($product->color)) {
+                $prodVariants = is_string($product->color) ? json_decode($product->color, true) : $product->color;
+                if (is_array($prodVariants)) {
+                    if (!empty($variant['serial_no'])) {
+                        $liveVariant = collect($prodVariants)->firstWhere('serial_no', $variant['serial_no']);
+                    }
+                    if (!$liveVariant && !empty($variant['barcode'])) {
+                        $liveVariant = collect($prodVariants)->firstWhere('barcode', $variant['barcode']);
+                    }
+                    if (!$liveVariant && !empty($variant['name'])) {
+                        $liveVariant = collect($prodVariants)->first(function($v) use ($variant) {
+                            $n1 = strtolower(trim($v['name'] ?? ''));
+                            $n2 = strtolower(trim($variant['name'] ?? ''));
+                            return $n1 === $n2 || ($n1 && $n2 && (str_contains($n1, $n2) || str_contains($n2, $n1)));
+                        });
+                    }
+                    if (!$liveVariant && !empty($variant['size']) && $variant['size'] !== '-') {
+                        $liveVariant = collect($prodVariants)->first(function($v) use ($variant) {
+                            $s1 = strtolower(trim($v['size'] ?? ''));
+                            $s2 = strtolower(trim($variant['size'] ?? ''));
+                            return $s1 === $s2 || ($s1 && $s2 && (str_starts_with($s1, $s2) || str_starts_with($s2, $s1)));
+                        });
+                    }
+                    if (!$liveVariant && count($prodVariants) === 1) {
+                        $liveVariant = $prodVariants[0];
+                    }
+                }
+            }
+
+            // Pieces per box
+            $ppb = 1;
+            if ($liveVariant && !empty($liveVariant['conv_factor']) && (float)$liveVariant['conv_factor'] > 0) {
+                $ppb = (float)$liveVariant['conv_factor'];
+            } elseif ($liveVariant && !empty($liveVariant['pieces_per_box']) && (float)$liveVariant['pieces_per_box'] > 0) {
+                $ppb = (float)$liveVariant['pieces_per_box'];
+            } elseif ($product && (float)$product->pieces_per_box > 0) {
+                $ppb = (float)$product->pieces_per_box;
+            } elseif (!empty($variant['conv_factor']) && (float)$variant['conv_factor'] > 0) {
+                $ppb = (float)$variant['conv_factor'];
+            } elseif (!empty($variant['pieces_per_box']) && (float)$variant['pieces_per_box'] > 0) {
+                $ppb = (float)$variant['pieces_per_box'];
+            }
+            if ($ppb <= 0) $ppb = 1;
+
+            $soldPieces = (float)($item->total_pieces > 0 ? $item->total_pieces : $item->qty);
+            $sizeMode = $item->size_mode ?? ($product->size_mode ?? 'std');
+
+            // Format Variant Display String
+            $variantParts = [];
+            $vName = $variant['name'] ?? ($liveVariant['name'] ?? '');
+            if (!empty($vName) && strtolower(trim($vName)) !== strtolower(trim($product->item_name ?? ''))) {
+                $variantParts[] = $vName;
+            }
+
+            $sizeStr = '';
+            if (!empty($variant['size']) && $variant['size'] !== '-') {
+                $sizeStr = $variant['size'];
+            } elseif (!empty($item->size_display) && $item->size_display !== '-') {
+                $sizeStr = $item->size_display;
+            } elseif (($sizeMode == 'by_size') && ($product->height ?? 0) > 0 && ($product->width ?? 0) > 0) {
+                $sizeStr = number_format($product->width, 0) . 'x' . number_format($product->height, 0);
+            }
+            if (!empty($sizeStr)) $variantParts[] = 'Size: ' . $sizeStr;
+
+            $colorStr = '';
+            if (!empty($variant['color']) && $variant['color'] !== '-') {
+                $colorStr = $variant['color'];
+            }
+            if (!empty($colorStr)) $variantParts[] = 'Color: ' . $colorStr;
+
+            $variantDisplay = implode(' | ', $variantParts);
+
+            // Determine stock & shortage
+            $recordedStock = $item->stock !== null ? (float)$item->stock : null;
+            $availStock = 0;
+            $isShortage = false;
+            $shortageQty = 0;
+
+            if ($isManual) {
+                $availStock = 0;
+                $isShortage = true;
+                $shortageQty = $soldPieces;
+            } elseif ($recordedStock !== null && $recordedStock > 0) {
+                $availStock = $recordedStock;
+                if ($soldPieces > $availStock) {
+                    $isShortage = true;
+                    $shortageQty = $soldPieces - $availStock;
+                } else {
+                    $isShortage = false;
+                    $shortageQty = 0;
+                }
+            } else {
+                // Check variant stock first if variant exists
+                $variantStock = null;
+                if ($liveVariant && isset($liveVariant['stock'])) {
+                    $variantStock = (float)$liveVariant['stock'];
+                }
+                $whStock = $product ? (float)\App\Models\WarehouseStock::where('product_id', $product->id)->sum('total_pieces') : 0;
+
+                if ($variantStock !== null) {
+                    $availStock = $variantStock;
+                    if ($variantStock <= 0) {
+                        $isShortage = true;
+                        $shortageQty = $soldPieces;
+                    } elseif ($variantStock < $soldPieces) {
+                        $isShortage = true;
+                        $shortageQty = $soldPieces - $variantStock;
+                    }
+                } else {
+                    $availStock = max(0, $whStock);
+                    if ($whStock < 0) {
+                        $isShortage = true;
+                        $shortageQty = min($soldPieces, abs($whStock));
+                        if ($shortageQty <= 0) $shortageQty = $soldPieces;
+                    } elseif ($whStock == 0) {
+                        $isShortage = true;
+                        $shortageQty = $soldPieces;
+                    } elseif ($whStock < $soldPieces) {
+                        $isShortage = true;
+                        $shortageQty = $soldPieces - $whStock;
+                    }
+                }
+            }
+
+            // Unit string
+            $unit = $variant['unit'] ?? ($liveVariant['unit'] ?? ($product->unit->name ?? 'Pcs'));
+
+            // Format Qty strings
+            $formatQtyDisplay = function ($pieces) use ($sizeMode, $ppb, $unit) {
+                $pieces = (float)$pieces;
+                if ($sizeMode === 'by_pieces' || $ppb <= 1) {
+                    return rtrim(rtrim(number_format($pieces, 2), '0'), '.') . ' ' . $unit;
+                }
+                $boxes = floor($pieces / $ppb);
+                $loose = (int)($pieces % $ppb);
+                $cStr = $sizeMode === 'by_cartons' ? 'Crtn' : 'Box';
+                if ($boxes > 0 && $loose > 0) {
+                    return "{$boxes} {$cStr} + {$loose} Pc";
+                } elseif ($boxes > 0) {
+                    return "{$boxes} {$cStr}";
+                } else {
+                    return "{$loose} Pcs";
+                }
+            };
+
+            return (object) [
+                'id' => $item->id,
+                'product_id' => $item->product_id,
+                'is_manual' => $isManual,
+                'item_name' => $itemName,
+                'item_code' => $itemCode,
+                'variant_display' => $variantDisplay,
+                'unit' => $unit,
+                'ppb' => $ppb,
+                'size_mode' => $sizeMode,
+                'sold_pieces' => $soldPieces,
+                'avail_stock' => $availStock,
+                'shortage_qty' => $shortageQty > 0 ? $shortageQty : $soldPieces,
+                'is_shortage' => $isShortage,
+                'sold_display' => $formatQtyDisplay($soldPieces),
+                'shortage_display' => $formatQtyDisplay($shortageQty > 0 ? $shortageQty : $soldPieces),
+            ];
+        });
+    }
+
+    /**
+     * Check if a sale contains items that require local market purchase
+     */
+    public function hasMarketShortageItems(Sale $sale)
+    {
+        return $sale->hasMarketShortage();
     }
 
     /**

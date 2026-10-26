@@ -25,6 +25,9 @@ class SaleReturnItem extends Model
         'item_discount',
         'unit',
         'line_total',
+        'uom_name',
+        'uom_ratio',
+        'item_number',
     ];
 
     protected $casts = [

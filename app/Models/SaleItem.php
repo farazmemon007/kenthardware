@@ -14,6 +14,8 @@ class SaleItem extends Model
         'color', 'total_pieces', 'loose_pieces',
         'price_per_piece', 'price_per_m2',
         'p_code', 'rot_p_code', 'purchase_price', 'retail_price',
+        'stock', 'is_manual', 'product_name', 'vendor_id', 'size_mode',
+        'uom_name', 'uom_ratio', 'item_number',
     ];
 
     public function sale()

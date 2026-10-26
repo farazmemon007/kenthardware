@@ -99,4 +99,103 @@ class VariantSerialService
 
         return $updatedCount;
     }
+
+    /**
+     * Clean and format hardware dimension / size strings.
+     * Automatically fixes Excel auto-converted date corruptions:
+     * - "2026-03-04" -> "3/4\""
+     * - "2026-01-02" -> "1/2\""
+     * - "2002-01-01" -> "1-1/2\""
+     * - "2002-02-01" -> "2-1/2\""
+     * - "2004-01-01" -> "1-1/4\""
+     * - "2026-05-08" -> "5/8\""
+     * - "2026-03-08" -> "3/8\""
+     * - "2026-01-04" -> "1/4\""
+     * - "1932-05-01" -> "5/32\""
+     * - "1964-09-01" -> "9/64\""
+     */
+    public static function cleanHardwareSize(?string $size): string
+    {
+        if ($size === null) return '-';
+        $size = trim($size);
+        if ($size === '' || $size === '.') return '-';
+
+        // Remove escaped quotes e.g. ""10"" AB"" or "10"" AB"
+        if (str_starts_with($size, '"') && str_ends_with($size, '"')) {
+            $size = trim($size, '"');
+        }
+        $size = str_replace('""', '"', $size);
+
+        // Check for Excel auto-converted date format YYYY-MM-DD
+        if (preg_match('/^(\d{4})-(\d{2})-(\d{2})$/', $size, $matches)) {
+            $year  = (int) $matches[1];
+            $month = (int) $matches[2];
+            $day   = (int) $matches[3];
+
+            if ($year === 1964) {
+                return "{$month}/64\"";
+            }
+            if ($year === 1932) {
+                return "{$month}/32\"";
+            }
+            if ($year === 2002 && $month === 1 && $day === 1) {
+                return '1-1/2"';
+            }
+            if ($year === 2002 && $month === 2 && $day === 1) {
+                return '2-1/2"';
+            }
+            if ($year === 2004 && $month === 1 && $day === 1) {
+                return '1-1/4"';
+            }
+            if ($year >= 2020 && $year <= 2035) {
+                return "{$month}/{$day}\"";
+            }
+        }
+
+        // Check for DD-Mon or Mon-DD format e.g. "04-Mar", "08-May", "4-Mar", "Mar-04"
+        $months = [
+            'jan' => 1, 'feb' => 2, 'mar' => 3, 'apr' => 4, 'may' => 5, 'jun' => 6,
+            'jul' => 7, 'aug' => 8, 'sep' => 9, 'oct' => 10, 'nov' => 11, 'dec' => 12
+        ];
+        if (preg_match('/^(\d{1,2})-([A-Za-z]{3})(?:-(\d{2,4}))?$/', $size, $m)) {
+            $monKey = strtolower($m[2]);
+            if (isset($months[$monKey])) {
+                $month = $months[$monKey];
+                $day = (int) $m[1];
+                return "{$month}/{$day}\"";
+            }
+        } elseif (preg_match('/^([A-Za-z]{3})-(\d{1,2})(?:-(\d{2,4}))?$/', $size, $m)) {
+            $monKey = strtolower($m[1]);
+            if (isset($months[$monKey])) {
+                $month = $months[$monKey];
+                $day = (int) $m[2];
+                return "{$month}/{$day}\"";
+            }
+        }
+
+        return $size;
+    }
+
+    /**
+     * Normalize unit of measure string to match system standard units.
+     */
+    public static function normalizeUnit(?string $unit): string
+    {
+        if (empty($unit)) return 'Pcs';
+        $u = strtolower(trim($unit));
+        return match($u) {
+            'qty', 'pcs', 'pc', 'piece', 'pieces' => 'Pcs',
+            'feet', 'ft', 'foot'                  => 'Ft',
+            'grams', 'gram', 'gm', 'g'            => 'Gm',
+            'kg', 'kgs', 'kilogram'               => 'Kg',
+            'set', 'sets'                         => 'Set',
+            'meter', 'mtr', 'm'                   => 'Meter',
+            'carton', 'ctn', 'box'                => 'Carton',
+            'dozen', 'doz'                        => 'Dozen',
+            'roll', 'rolls'                       => 'Roll',
+            'mm'                                  => 'mm',
+            'bundle', 'bdl'                       => 'Bundle',
+            default                               => ucfirst(trim($unit)),
+        };
+    }
 }

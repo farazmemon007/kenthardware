@@ -155,16 +155,27 @@
             font-family: Consolas, monospace;
         }
 
+        /* ==========================================================
+           BOOTSTRAP 4 COMPATIBILITY & HIGH-CONTRAST TYPOGRAPHY POLYFILL
+           ========================================================== */
+        .fw-bold, .font-weight-bold { font-weight: 700 !important; }
+        .fw-bolder { font-weight: 800 !important; }
+        .fw-semibold { font-weight: 600 !important; }
+        .font-monospace, .text-monospace { font-family: 'JetBrains Mono', Consolas, SFMono-Regular, Menlo, Monaco, monospace !important; }
+        .text-end, .text-right { text-align: right !important; }
+        .text-start, .text-left { text-align: left !important; }
+        .text-center { text-align: center !important; }
+
         /* 3. Table Card */
         .qb-table-card {
             background: #ffffff;
-            border: 1px solid #aebfd4;
+            border: 1px solid #94a3b8;
             border-radius: 4px;
             padding: 4px 6px 6px 6px;
             box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
         }
         .table-responsive {
-            border: 1px solid #aebfd4 !important;
+            border: 1px solid #94a3b8 !important;
             border-radius: 3px !important;
             background-color: #ffffff;
             overflow-x: auto;
@@ -172,7 +183,7 @@
         }
         .qb-table {
             margin-bottom: 0 !important;
-            font-size: 11.5px !important;
+            font-size: 12.5px !important;
             width: 100% !important;
             border-collapse: collapse !important;
         }
@@ -180,16 +191,17 @@
         /* Table Headers (Soft Blue-Gray Gradient with Dividers) */
         .qb-table thead th {
             background: linear-gradient(180deg, #f7f9fc 0%, #e2eaf3 100%) !important;
-            color: #193452 !important;
-            font-weight: 700 !important;
+            color: #0f2744 !important;
+            font-weight: 800 !important;
             text-transform: uppercase;
-            font-size: 10.5px !important;
-            letter-spacing: 0.3px;
-            border-bottom: 2px solid #aebfd4 !important;
-            border-right: 1px solid #c9d7e5 !important;
+            font-size: 11px !important;
+            letter-spacing: 0.4px;
+            border-bottom: 2px solid #94a3b8 !important;
+            border-right: 1px solid #cbd5e1 !important;
             border-top: none !important;
-            padding: 6px 8px !important;
+            padding: 7px 9px !important;
             white-space: nowrap !important;
+            vertical-align: middle;
         }
         .qb-table thead th:last-child {
             border-right: none !important;
@@ -221,14 +233,14 @@
             background-image: none !important;
         }
 
-        /* Table Body Cells */
+        /* Table Body Cells - High Contrast & Visible */
         .qb-table tbody td {
             border-bottom: 1px solid #e2e8f0 !important;
             border-right: 1px solid #edf2f7 !important;
             border-top: none !important;
-            padding: 5px 8px !important;
-            font-size: 11.5px !important;
-            color: #1a202c !important;
+            padding: 6px 9px !important;
+            font-size: 12.5px !important;
+            color: #0f172a !important;
             vertical-align: middle;
         }
         .qb-table tbody td:last-child {
@@ -236,7 +248,8 @@
         }
 
         /* ==========================================================
-           ROW CURSOR HOVER: PASTEL MINT GREEN (Exact Sale Screen Replica)
+           ROW CURSOR HOVER: PASTEL MINT GREEN
+           Ensuring All Font Colors Remain 100% Crisp & Visible
            ========================================================== */
         .qb-table tbody tr {
             cursor: pointer;
@@ -245,15 +258,40 @@
         .qb-table tbody tr:hover td,
         .qb-table tbody tr:hover th {
             background-color: #d5eed7 !important;
-            color: #111827 !important;
+            color: #0f172a !important;
         }
         .qb-table tbody tr:hover td small,
         .qb-table tbody tr:hover td .text-muted {
-            color: #2e4a32 !important;
+            color: #1e3a5f !important;
         }
         .qb-table tbody tr.qb-active-row td {
             background-color: #d5eed7 !important;
-            color: #111827 !important;
+            color: #0f172a !important;
+        }
+
+        /* Ensure Balances & Badges Stay High-Contrast on Hover/Selected Rows */
+        .qb-table tbody tr:hover td .acc-balance-dr,
+        .qb-table tbody tr.qb-active-row td .acc-balance-dr {
+            color: #044e32 !important; /* Deep Forest Green for max contrast on #d5eed7 */
+            font-weight: 800 !important;
+        }
+        .qb-table tbody tr:hover td .acc-balance-cr,
+        .qb-table tbody tr.qb-active-row td .acc-balance-cr {
+            color: #7f1d1d !important; /* Deep Crimson Red */
+            font-weight: 800 !important;
+        }
+        .qb-table tbody tr:hover td .acc-badge-code,
+        .qb-table tbody tr.qb-active-row td .acc-badge-code {
+            background: #ffffff !important;
+            border-color: #94a3b8 !important;
+            color: #0f172a !important;
+        }
+        .qb-table tbody tr:hover td .acc-badge-status-active,
+        .qb-table tbody tr.qb-active-row td .acc-badge-status-active {
+            background-color: #bbf7d0 !important;
+            color: #064e3b !important;
+            border-color: #4ade80 !important;
+            font-weight: 800 !important;
         }
 
         .qb-table td.text-nowrap,
@@ -262,16 +300,217 @@
             white-space: nowrap !important;
         }
 
+        /* Dedicated Custom High-Contrast Typography & Badges */
+        .acc-col-num {
+            font-size: 12px !important;
+            font-weight: 700 !important;
+            color: #334155 !important;
+        }
+        .acc-badge-code {
+            font-family: 'JetBrains Mono', Consolas, monospace !important;
+            font-size: 11.5px !important;
+            font-weight: 700 !important;
+            color: #0f172a !important;
+            background-color: #f1f5f9 !important;
+            border: 1px solid #cbd5e1 !important;
+            border-radius: 4px !important;
+            padding: 2px 7px !important;
+            display: inline-block;
+            letter-spacing: 0.3px;
+        }
+        .acc-head-title {
+            font-size: 12.5px !important;
+            font-weight: 700 !important;
+            color: #0f172a !important;
+            line-height: 1.3;
+        }
+        .acc-head-parent {
+            font-size: 10.5px !important;
+            font-weight: 600 !important;
+            color: #475569 !important;
+            display: block;
+            margin-top: 1px;
+        }
+        .acc-title {
+            font-size: 13px !important;
+            font-weight: 700 !important;
+            color: #0f172a !important;
+            line-height: 1.3;
+        }
+        .acc-badge-type-debit {
+            background-color: #e0f2fe !important;
+            color: #0369a1 !important;
+            border: 1px solid #7dd3fc !important;
+            font-size: 11px !important;
+            font-weight: 700 !important;
+            padding: 2px 8px !important;
+            border-radius: 12px;
+            display: inline-block;
+            text-transform: capitalize;
+        }
+        .acc-badge-type-credit {
+            background-color: #fef3c7 !important;
+            color: #92400e !important;
+            border: 1px solid #fde68a !important;
+            font-size: 11px !important;
+            font-weight: 700 !important;
+            padding: 2px 8px !important;
+            border-radius: 12px;
+            display: inline-block;
+            text-transform: capitalize;
+        }
+        .acc-opening-val {
+            font-family: 'JetBrains Mono', Consolas, monospace !important;
+            font-size: 12.5px !important;
+            font-weight: 700 !important;
+            color: #0f172a !important;
+            text-align: right !important;
+        }
+        .acc-balance-dr {
+            font-family: 'JetBrains Mono', Consolas, monospace !important;
+            font-size: 13px !important;
+            font-weight: 800 !important;
+            color: #047857 !important; /* Rich Dark Green */
+            letter-spacing: 0.2px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: flex-end;
+            gap: 4px;
+        }
+        .acc-balance-cr {
+            font-family: 'JetBrains Mono', Consolas, monospace !important;
+            font-size: 13px !important;
+            font-weight: 800 !important;
+            color: #b91c1c !important; /* Rich Dark Red */
+            letter-spacing: 0.2px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: flex-end;
+            gap: 4px;
+        }
+        .acc-bal-flag {
+            font-size: 10px !important;
+            font-weight: 800 !important;
+            padding: 1px 5px !important;
+            border-radius: 3px !important;
+            display: inline-block;
+            line-height: 1.2;
+        }
+        .acc-bal-flag.dr {
+            background-color: #dcfce7 !important;
+            color: #15803d !important;
+            border: 1px solid #86efac !important;
+        }
+        .acc-bal-flag.cr {
+            background-color: #fee2e2 !important;
+            color: #b91c1c !important;
+            border: 1px solid #fca5a5 !important;
+        }
+        .acc-badge-status-active {
+            background-color: #dcfce7 !important;
+            color: #15803d !important;
+            border: 1px solid #86efac !important;
+            font-size: 11px !important;
+            font-weight: 700 !important;
+            padding: 2px 9px !important;
+            border-radius: 12px;
+            display: inline-block;
+        }
+        .acc-badge-status-inactive {
+            background-color: #fee2e2 !important;
+            color: #b91c1c !important;
+            border: 1px solid #fca5a5 !important;
+            font-size: 11px !important;
+            font-weight: 700 !important;
+            padding: 2px 9px !important;
+            border-radius: 12px;
+            display: inline-block;
+        }
+
+        /* ==========================================================
+           SMART CATEGORY / HEAD ROW GROUPING (QuickBooks & Odoo COA)
+           ========================================================== */
+        .qb-group-row {
+            background: linear-gradient(180deg, #edf4fc 0%, #dbe7f5 100%) !important;
+            border-top: 2px solid #8ca4c3 !important;
+            border-bottom: 1.5px solid #b2c5dc !important;
+            cursor: pointer;
+            user-select: none;
+            transition: background 0.15s ease;
+        }
+        .qb-group-row:hover {
+            background: linear-gradient(180deg, #e4effb 0%, #cee0f2 100%) !important;
+        }
+        .qb-group-cell {
+            padding: 4px 10px !important;
+            border-top: none !important;
+            border-bottom: none !important;
+            background: transparent !important;
+        }
+        .qb-group-icon-circle {
+            width: 22px;
+            height: 22px;
+            background: #18385e;
+            color: #ffffff;
+            border-radius: 4px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 11px;
+            flex-shrink: 0;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.15);
+        }
+        .qb-group-title {
+            font-size: 13px !important;
+            font-weight: 800 !important;
+            color: #0f2744 !important;
+            letter-spacing: 0.3px;
+            text-transform: uppercase;
+        }
+        .qb-group-pill {
+            background: #ffffff !important;
+            border: 1px solid #94a3b8 !important;
+            color: #1e3a5f !important;
+            font-size: 10.5px !important;
+            font-weight: 700 !important;
+            padding: 2px 7px !important;
+            border-radius: 12px;
+            box-shadow: 0 1px 1px rgba(0, 0, 0, 0.05);
+        }
+        .qb-group-subtotal-lbl {
+            font-size: 10.5px !important;
+            font-weight: 700 !important;
+            color: #475569 !important;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+        }
+        .qb-group-subtotal-val {
+            font-size: 12.5px !important;
+            font-weight: 800 !important;
+            letter-spacing: 0.2px;
+        }
+        .qb-group-chevron {
+            transition: transform 0.2s ease;
+        }
+        .qb-group-chevron.fa-chevron-right {
+            color: #2563eb !important;
+        }
+
+        /* Subtle indent for account rows under grouped heads */
+        .qb-table tbody tr:not(.qb-group-row) td:first-child {
+            padding-left: 10px !important;
+        }
+
         /* Action View Buttons (Compact Toolbar Buttons) */
         .odoo-action-btn {
             background: linear-gradient(180deg, #ffffff 0%, #edf3fa 100%) !important;
             border: 1px solid #8ca4c3 !important;
-            color: #18385e !important;
+            color: #0f2744 !important;
             font-weight: 700 !important;
             border-radius: 3px !important;
-            height: 22px !important;
-            padding: 0 7px !important;
-            font-size: 10.5px !important;
+            height: 23px !important;
+            padding: 0 8px !important;
+            font-size: 11px !important;
             display: inline-flex !important;
             align-items: center !important;
             justify-content: center !important;
@@ -298,47 +537,52 @@
 
         /* DataTables Controls (Clean QuickBooks Style) */
         .dataTables_wrapper .dataTables_length {
-            font-size: 11px !important;
-            color: #475569 !important;
-            font-weight: 600 !important;
+            font-size: 11.5px !important;
+            color: #1e293b !important;
+            font-weight: 700 !important;
             margin-bottom: 4px !important;
         }
         .dataTables_wrapper .dataTables_length select {
-            height: 22px !important;
+            height: 24px !important;
             border: 1px solid #8ca4c3 !important;
             border-radius: 3px !important;
-            font-size: 10.5px !important;
+            font-size: 11px !important;
             padding: 0 4px !important;
             margin: 0 4px !important;
+            color: #0f172a !important;
+            font-weight: 600 !important;
         }
         .dataTables_wrapper .dataTables_filter {
-            font-size: 11px !important;
-            color: #475569 !important;
-            font-weight: 600 !important;
+            font-size: 11.5px !important;
+            color: #1e293b !important;
+            font-weight: 700 !important;
             margin-bottom: 4px !important;
         }
         .dataTables_wrapper .dataTables_filter input {
-            height: 22px !important;
+            height: 24px !important;
             border: 1px solid #8ca4c3 !important;
             border-radius: 3px !important;
-            font-size: 10.5px !important;
+            font-size: 11px !important;
             padding: 0 6px !important;
             margin-left: 4px !important;
+            color: #0f172a !important;
+            font-weight: 600 !important;
         }
         .dataTables_wrapper .dataTables_info {
-            font-size: 11px !important;
-            color: #475569 !important;
-            padding-top: 4px !important;
-            font-weight: 600 !important;
+            font-size: 11.5px !important;
+            color: #1e293b !important;
+            padding-top: 5px !important;
+            font-weight: 700 !important;
         }
         .dataTables_wrapper .dataTables_paginate {
             padding-top: 4px !important;
         }
         .dataTables_wrapper .dataTables_paginate .page-link {
-            color: #193452 !important;
+            color: #0f2744 !important;
             border: 1px solid #b2c5dc !important;
-            padding: 2px 7px !important;
-            font-size: 11px !important;
+            padding: 3px 8px !important;
+            font-size: 11.5px !important;
+            font-weight: 700 !important;
             border-radius: 3px !important;
             margin: 0 1px !important;
             background: linear-gradient(180deg, #ffffff 0%, #edf3fa 100%);
@@ -612,26 +856,26 @@
                 @endphp
                 <div class="qb-sub-ribbon">
                     <div class="d-flex align-items-center gap-2 flex-wrap">
-                        <span class="fw-bold text-dark font-monospace" style="font-size: 11px;">
-                            <i class="fas fa-list text-muted me-1"></i> Accounts: <strong>{{ $accounts->count() }}</strong>
+                        <span class="font-weight-bold font-monospace" style="font-size: 11.5px; color: #0f172a !important;">
+                            <i class="fas fa-list text-muted mr-1" style="margin-right: 4px;"></i> Accounts: <strong style="color: #0f172a;">{{ $accounts->count() }}</strong>
                         </span>
                         <span class="text-muted">|</span>
-                        <span class="fw-bold text-success font-monospace" style="font-size: 11px;">
-                            <i class="fas fa-check-circle me-1"></i> Active: <strong>{{ $accounts->where('status', 1)->count() }}</strong>
+                        <span class="font-weight-bold font-monospace" style="font-size: 11.5px; color: #047857 !important;">
+                            <i class="fas fa-check-circle mr-1" style="margin-right: 4px;"></i> Active: <strong>{{ $accounts->where('status', 1)->count() }}</strong>
                         </span>
                         <span class="text-muted">|</span>
-                        <span class="fw-bold text-secondary font-monospace" style="font-size: 11px;">
-                            <i class="fas fa-folder me-1"></i> Categories: <strong>{{ $heads->count() }}</strong>
+                        <span class="font-weight-bold font-monospace" style="font-size: 11.5px; color: #334155 !important;">
+                            <i class="fas fa-folder mr-1" style="margin-right: 4px;"></i> Categories: <strong style="color: #0f172a;">{{ $heads->count() }}</strong>
                         </span>
                     </div>
                     <div class="qb-kpi-group">
                         <div class="qb-kpi-chip">
-                            <span class="chip-label text-success">Total Debit (Dr):</span>
-                            <span class="chip-val text-success">Rs {{ number_format($totalDebit, 2) }}</span>
+                            <span class="chip-label" style="color: #047857; font-weight: 700;">Total Debit (Dr):</span>
+                            <span class="chip-val" style="color: #047857; font-weight: 800;">Rs {{ number_format($totalDebit, 2) }}</span>
                         </div>
                         <div class="qb-kpi-chip">
-                            <span class="chip-label text-danger">Total Credit (Cr):</span>
-                            <span class="chip-val text-danger">Rs {{ number_format($totalCredit, 2) }}</span>
+                            <span class="chip-label" style="color: #b91c1c; font-weight: 700;">Total Credit (Cr):</span>
+                            <span class="chip-val" style="color: #b91c1c; font-weight: 800;">Rs {{ number_format($totalCredit, 2) }}</span>
                         </div>
                     </div>
                 </div>
@@ -656,88 +900,102 @@
                 {{-- ══════════════════════════════════════════════════════════════
                      DESKTOP TABLE VIEW (Compact Odoo/QuickBooks POS High Density)
                 ══════════════════════════════════════════════════════════════ --}}
+                @php
+                    $groupedAccounts = $accounts->groupBy(function($acc) {
+                        return $acc->head ? $acc->head->name : 'General / Other Accounts';
+                    });
+                    $globalCounter = 1;
+                @endphp
                 <div class="qb-table-card d-none d-md-block">
                     <div class="table-responsive">
                         <table class="table qb-table datanew" style="width:100%">
                             <thead>
                                 <tr>
                                     <th style="width: 3%; text-align: center;">#</th>
-                                    <th style="width: 9%;">Code</th>
-                                    <th style="width: 15%;">Head / Group</th>
-                                    <th style="width: 22%;">Account Title</th>
-                                    <th style="width: 7%; text-align: center;">Type</th>
-                                    <th style="width: 11%; text-align: right;">Opening</th>
-                                    <th style="width: 13%; text-align: right;">Current Balance</th>
-                                    <th style="width: 6%; text-align: center;">Status</th>
-                                    <th style="width: 14%; text-align: center;">Action</th>
+                                    <th style="width: 10%;">Code</th>
+                                    <th>Head / Group</th>
+                                    <th style="width: 25%;">Account Title</th>
+                                    <th style="width: 8%; text-align: center;">Type</th>
+                                    <th style="width: 12%; text-align: right;">Opening</th>
+                                    <th style="width: 14%; text-align: right;">Current Balance</th>
+                                    <th style="width: 8%; text-align: center;">Status</th>
+                                    <th style="width: 20%; text-align: center;">Action</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                @foreach ($accounts as $acc)
-                                    <tr>
-                                        <td class="text-center font-monospace text-muted fw-bold">{{ $loop->iteration }}</td>
-                                        <td>
-                                            <span class="badge bg-light text-dark border font-monospace px-2 py-0" style="font-size: 10.5px; font-weight: 700;">{{ $acc->account_code ?? 'N/A' }}</span>
-                                        </td>
-                                        <td>
-                                            <span class="fw-bold text-dark">{{ $acc->head->name ?? '-' }}</span>
-                                            @if ($acc->head && $acc->head->parent_id)
-                                                <small class="text-muted d-block" style="font-size: 10px;">({{ $acc->head->parent->name ?? '' }})</small>
-                                            @endif
-                                        </td>
-                                        <td>
-                                            <span class="fw-bold text-dark" style="font-size: 12px;">{{ $acc->title }}</span>
-                                        </td>
-                                        <td class="text-center">
-                                            @if ($acc->type == 'Debit')
-                                                <span class="badge bg-primary-subtle text-primary border border-primary-subtle rounded-pill px-2" style="font-size: 10px; font-weight: 700;">Debit</span>
-                                            @else
-                                                <span class="badge bg-warning-subtle text-warning border border-warning-subtle rounded-pill px-2" style="font-size: 10px; font-weight: 700;">Credit</span>
-                                            @endif
-                                        </td>
-                                        <td class="text-end font-monospace text-secondary" style="font-size: 11.5px;">
-                                            {{ number_format($acc->opening_balance, 2) }}
-                                        </td>
-                                        <td class="text-end">
-                                            <span class="font-monospace fw-bold {{ $acc->current_balance < 0 ? 'text-danger' : 'text-success' }}" style="font-size: 12px;">
-                                                {{ number_format(abs($acc->current_balance), 2) }}
-                                                <small class="fw-bold ms-1" style="font-size: 10px;">{{ $acc->current_balance >= 0 ? 'Dr' : 'Cr' }}</small>
-                                            </span>
-                                        </td>
-                                        <td class="text-center">
-                                            @if ($acc->status)
-                                                <span class="badge bg-success-subtle text-success border border-success-subtle rounded-pill px-2" style="font-size: 10px;">Active</span>
-                                            @else
-                                                <span class="badge bg-danger-subtle text-danger border border-danger-subtle rounded-pill px-2" style="font-size: 10px;">Inactive</span>
-                                            @endif
-                                        </td>
-                                        <td class="text-center">
-                                            <div class="d-inline-flex align-items-center justify-content-center" style="gap: 3px;">
-                                                {{-- Ledger Button --}}
-                                                <a href="{{ route('accounts.ledger', $acc->id) }}" class="odoo-action-btn" title="View Ledger">
-                                                    <i class="fas fa-book" style="margin-right: 3px;"></i> Ledger
-                                                </a>
+                                @foreach ($groupedAccounts as $headName => $accList)
+                                    @php
+                                        $groupTotal = $accList->sum('current_balance');
+                                        $groupCount = $accList->count();
+                                        $headIcon = (stripos($headName, 'bank') !== false) ? 'fa-university' : ((stripos($headName, 'cash') !== false) ? 'fa-wallet' : 'fa-folder-open');
+                                        $isDr = $groupTotal >= 0;
+                                        $formattedTotal = number_format(abs($groupTotal), 2) . ' ' . ($isDr ? 'Dr' : 'Cr');
+                                    @endphp
+                                    @foreach ($accList as $acc)
+                                        <tr data-group-name="{{ $headName }}"
+                                            data-group-count="{{ $groupCount }} {{ $groupCount == 1 ? 'Account' : 'Accounts' }}"
+                                            data-group-total="{{ $formattedTotal }}"
+                                            data-group-is-dr="{{ $isDr ? '1' : '0' }}"
+                                            data-group-icon="{{ $headIcon }}">
+                                            <td class="text-center font-monospace acc-col-num">{{ $globalCounter++ }}</td>
+                                            <td>
+                                                <span class="acc-badge-code">{{ $acc->account_code ?? 'N/A' }}</span>
+                                            </td>
+                                            <td>{{ $headName }}</td>
+                                            <td>
+                                                <span class="acc-title">{{ $acc->title }}</span>
+                                            </td>
+                                            <td class="text-center">
+                                                @if ($acc->type == 'Debit')
+                                                    <span class="acc-badge-type-debit">Debit</span>
+                                                @else
+                                                    <span class="acc-badge-type-credit">Credit</span>
+                                                @endif
+                                            </td>
+                                            <td class="text-right acc-opening-val">
+                                                {{ number_format($acc->opening_balance, 2) }}
+                                            </td>
+                                            <td class="text-right">
+                                                <span class="{{ $acc->current_balance < 0 ? 'acc-balance-cr' : 'acc-balance-dr' }}">
+                                                    {{ number_format(abs($acc->current_balance), 2) }}
+                                                    <span class="acc-bal-flag {{ $acc->current_balance >= 0 ? 'dr' : 'cr' }}">{{ $acc->current_balance >= 0 ? 'Dr' : 'Cr' }}</span>
+                                                </span>
+                                            </td>
+                                            <td class="text-center">
+                                                @if ($acc->status)
+                                                    <span class="acc-badge-status-active">Active</span>
+                                                @else
+                                                    <span class="acc-badge-status-inactive">Inactive</span>
+                                                @endif
+                                            </td>
+                                            <td class="text-center">
+                                                <div class="d-inline-flex align-items-center justify-content-center" style="gap: 3px;">
+                                                    {{-- Ledger Button --}}
+                                                    <a href="{{ route('accounts.ledger', $acc->id) }}" class="odoo-action-btn" title="View Ledger">
+                                                        <i class="fas fa-book" style="margin-right: 3px;"></i> Ledger
+                                                    </a>
 
-                                                {{-- Edit Account Button --}}
-                                                <button type="button" class="odoo-action-btn odoo-btn-edit" data-toggle="modal" data-target="#editAccountModal{{ $acc->id }}" title="Edit Account / Ledger Balance">
-                                                    <i class="fas fa-edit" style="margin-right: 3px;"></i> Edit
-                                                </button>
-
-                                                {{-- Audit History Button --}}
-                                                <button type="button" class="odoo-action-btn odoo-btn-hist" data-toggle="modal" data-target="#historyAccountModal{{ $acc->id }}" title="View Edit History">
-                                                    <i class="fas fa-history" style="margin-right: 3px;"></i> {{ $acc->histories->count() }}
-                                                </button>
-
-                                                {{-- Toggle Status Form --}}
-                                                <form action="{{ route('accounts.toggleStatus', $acc->id) }}" method="POST" style="display:inline-block; margin: 0;">
-                                                    @csrf
-                                                    <button type="button" onclick="this.closest('form').submit()" class="odoo-action-btn {{ $acc->status ? 'text-danger' : 'text-success' }}" style="width: 22px; padding: 0;" title="{{ $acc->status ? 'Deactivate' : 'Activate' }}">
-                                                        <i class="fas {{ $acc->status ? 'fa-ban' : 'fa-check' }}"></i>
+                                                    {{-- Edit Account Button --}}
+                                                    <button type="button" class="odoo-action-btn odoo-btn-edit" data-toggle="modal" data-target="#editAccountModal{{ $acc->id }}" title="Edit Account / Ledger Balance">
+                                                        <i class="fas fa-edit" style="margin-right: 3px;"></i> Edit
                                                     </button>
-                                                </form>
-                                            </div>
-                                        </td>
-                                    </tr>
+
+                                                    {{-- Audit History Button --}}
+                                                    <button type="button" class="odoo-action-btn odoo-btn-hist" data-toggle="modal" data-target="#historyAccountModal{{ $acc->id }}" title="View Edit History">
+                                                        <i class="fas fa-history" style="margin-right: 3px;"></i> {{ $acc->histories->count() }}
+                                                    </button>
+
+                                                    {{-- Toggle Status Form --}}
+                                                    <form action="{{ route('accounts.toggleStatus', $acc->id) }}" method="POST" style="display:inline-block; margin: 0;">
+                                                        @csrf
+                                                        <button type="button" onclick="this.closest('form').submit()" class="odoo-action-btn {{ $acc->status ? 'text-danger' : 'text-success' }}" style="width: 22px; padding: 0;" title="{{ $acc->status ? 'Deactivate' : 'Activate' }}">
+                                                            <i class="fas {{ $acc->status ? 'fa-ban' : 'fa-check' }}"></i>
+                                                        </button>
+                                                    </form>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    @endforeach
                                 @endforeach
                             </tbody>
                         </table>
@@ -748,74 +1006,93 @@
                      MOBILE CARDS VIEW (Clean 2x2 grid with balanced spacing)
                 ══════════════════════════════════════════════════════════════ --}}
                 <div class="d-block d-md-none">
-                    @foreach ($accounts as $acc)
-                        <div class="card border shadow-sm rounded-3 mb-2" style="background: #ffffff; border-color: #cbd5e1 !important;">
-                            <div class="card-body p-2">
-                                
-                                {{-- Code & Status Header --}}
-                                <div class="d-flex justify-content-between align-items-center mb-1">
-                                    <span class="fw-bold text-dark font-monospace" style="font-size: 11.5px;">{{ $acc->account_code ?? 'N/A' }}</span>
-                                    @if ($acc->status)
-                                        <span class="badge bg-success-subtle text-success border border-success-subtle rounded-pill px-2 py-0" style="font-size: .70rem;">Active</span>
-                                    @else
-                                        <span class="badge bg-danger-subtle text-danger border border-danger-subtle rounded-pill px-2 py-0" style="font-size: .70rem;">Inactive</span>
-                                    @endif
-                                </div>
+                    @foreach ($groupedAccounts as $headName => $accList)
+                        @php
+                            $groupTotal = $accList->sum('current_balance');
+                            $groupCount = $accList->count();
+                            $headIcon = (stripos($headName, 'bank') !== false) ? 'fa-university' : ((stripos($headName, 'cash') !== false) ? 'fa-wallet' : 'fa-folder-open');
+                            $isDr = $groupTotal >= 0;
+                            $formattedTotal = number_format(abs($groupTotal), 2) . ' ' . ($isDr ? 'Dr' : 'Cr');
+                        @endphp
 
-                                {{-- Head Category & Account Title --}}
-                                <div class="text-muted small mb-0" style="font-size: .78rem;">{{ $acc->head->name ?? '-' }}</div>
-                                <div class="fw-bold text-dark mb-2" style="font-size: 13px;">{{ $acc->title }}</div>
-
-                                {{-- Type & Opening Grid --}}
-                                <div class="row g-1 mb-2 text-start" style="font-size: .80rem;">
-                                    <div class="col-6">
-                                        <div class="text-muted small">Type</div>
-                                        <div class="fw-bold text-dark">{{ $acc->type }}</div>
-                                    </div>
-                                    <div class="col-6">
-                                        <div class="text-muted small">Opening</div>
-                                        <div class="fw-bold text-dark font-monospace">{{ number_format($acc->opening_balance, 2) }}</div>
-                                    </div>
-                                </div>
-
-                                {{-- Current Balance --}}
-                                <div class="d-flex justify-content-between align-items-center mb-2 pt-1 border-top">
-                                    <span class="text-muted small">Current Balance</span>
-                                    <span class="fw-bold font-monospace {{ $acc->current_balance < 0 ? 'text-danger' : 'text-success' }}" style="font-size: 13px;">
-                                        {{ number_format(abs($acc->current_balance), 2) }}
-                                        <small class="fw-normal text-secondary ms-1">{{ $acc->current_balance >= 0 ? 'Dr' : 'Cr' }}</small>
-                                    </span>
-                                </div>
-
-                                {{-- Action Button Grid --}}
-                                <div class="row g-1">
-                                    <div class="col-6">
-                                        <a href="{{ route('accounts.ledger', $acc->id) }}" class="btn btn-outline-primary btn-sm w-100 fw-bold d-flex align-items-center justify-content-center" style="height: 28px; font-size: .75rem; border-radius: 4px;">
-                                            <i class="fas fa-book me-1"></i> Ledger
-                                        </a>
-                                    </div>
-                                    <div class="col-6">
-                                        <button type="button" class="btn btn-outline-primary btn-sm w-100 fw-bold d-flex align-items-center justify-content-center" data-toggle="modal" data-target="#editAccountModal{{ $acc->id }}" style="height: 28px; font-size: .75rem; border-radius: 4px;">
-                                            <i class="fas fa-edit me-1"></i> Edit
-                                        </button>
-                                    </div>
-                                    <div class="col-6">
-                                        <button type="button" class="btn btn-outline-secondary btn-sm w-100 fw-bold d-flex align-items-center justify-content-center" data-toggle="modal" data-target="#historyAccountModal{{ $acc->id }}" style="height: 28px; font-size: .75rem; border-radius: 4px;">
-                                            <i class="fas fa-history me-1"></i> History ({{ $acc->histories->count() }})
-                                        </button>
-                                    </div>
-                                    <div class="col-6">
-                                        <form action="{{ route('accounts.toggleStatus', $acc->id) }}" method="POST">
-                                            @csrf
-                                            <button type="button" onclick="this.closest('form').submit()" class="btn {{ $acc->status ? 'btn-outline-danger' : 'btn-outline-success' }} btn-sm w-100 fw-bold d-flex align-items-center justify-content-center" style="height: 28px; font-size: .75rem; border-radius: 4px;">
-                                                <i class="fas {{ $acc->status ? 'fa-ban' : 'fa-check' }}"></i>
-                                            </button>
-                                        </form>
-                                    </div>
-                                </div>
-
+                        {{-- Mobile Head Category Header Banner --}}
+                        <div class="p-2 mb-2 mt-3 rounded d-flex justify-content-between align-items-center" style="background: linear-gradient(180deg, #edf4fc 0%, #dbe7f5 100%); border: 1.5px solid #8ca4c3;">
+                            <div class="d-flex align-items-center gap-2">
+                                <span class="qb-group-icon-circle" style="width: 22px; height: 22px; font-size: 10px;"><i class="fas {{ $headIcon }}"></i></span>
+                                <span class="fw-bold text-dark" style="font-size: 12.5px; text-transform: uppercase;">{{ $headName }}</span>
+                                <span class="badge badge-light border text-dark font-weight-bold" style="font-size: 10px;">{{ $groupCount }} {{ $groupCount == 1 ? 'Account' : 'Accounts' }}</span>
+                            </div>
+                            <div>
+                                <span class="font-monospace fw-bold {{ $isDr ? 'text-success' : 'text-danger' }}" style="font-size: 11.5px;">Rs {{ $formattedTotal }}</span>
                             </div>
                         </div>
+
+                        @foreach ($accList as $acc)
+                            <div class="card border shadow-sm rounded-3 mb-2" style="background: #ffffff; border-color: #cbd5e1 !important;">
+                                <div class="card-body p-2">
+                                    {{-- Code & Status Header --}}
+                                    <div class="d-flex justify-content-between align-items-center mb-1">
+                                        <span class="acc-badge-code">{{ $acc->account_code ?? 'N/A' }}</span>
+                                        @if ($acc->status)
+                                            <span class="acc-badge-status-active">Active</span>
+                                        @else
+                                            <span class="acc-badge-status-inactive">Inactive</span>
+                                        @endif
+                                    </div>
+
+                                    <div class="acc-title mb-2">{{ $acc->title }}</div>
+
+                                    {{-- Type & Opening Grid --}}
+                                    <div class="row g-1 mb-2 text-left" style="font-size: 11px;">
+                                        <div class="col-6">
+                                            <div class="text-muted font-weight-bold" style="font-size: 10px;">TYPE</div>
+                                            <div class="font-weight-bold" style="color: #0f172a;">{{ $acc->type }}</div>
+                                        </div>
+                                        <div class="col-6">
+                                            <div class="text-muted font-weight-bold" style="font-size: 10px;">OPENING</div>
+                                            <div class="font-weight-bold font-monospace" style="color: #0f172a;">{{ number_format($acc->opening_balance, 2) }}</div>
+                                        </div>
+                                    </div>
+
+                                    {{-- Current Balance --}}
+                                    <div class="d-flex justify-content-between align-items-center mb-2 pt-1 border-top">
+                                        <span class="font-weight-bold text-muted" style="font-size: 11px;">Current Balance:</span>
+                                        <span class="{{ $acc->current_balance < 0 ? 'acc-balance-cr' : 'acc-balance-dr' }}">
+                                            {{ number_format(abs($acc->current_balance), 2) }}
+                                            <span class="acc-bal-flag {{ $acc->current_balance >= 0 ? 'dr' : 'cr' }}">{{ $acc->current_balance >= 0 ? 'Dr' : 'Cr' }}</span>
+                                        </span>
+                                    </div>
+
+                                    {{-- Action Button Grid --}}
+                                    <div class="row g-1">
+                                        <div class="col-6">
+                                            <a href="{{ route('accounts.ledger', $acc->id) }}" class="btn btn-outline-primary btn-sm w-100 font-weight-bold d-flex align-items-center justify-content-center" style="height: 28px; font-size: 11px; border-radius: 4px;">
+                                                <i class="fas fa-book mr-1" style="margin-right: 4px;"></i> Ledger
+                                            </a>
+                                        </div>
+                                        <div class="col-6">
+                                            <button type="button" class="btn btn-outline-primary btn-sm w-100 font-weight-bold d-flex align-items-center justify-content-center" data-toggle="modal" data-target="#editAccountModal{{ $acc->id }}" style="height: 28px; font-size: 11px; border-radius: 4px;">
+                                                <i class="fas fa-edit mr-1" style="margin-right: 4px;"></i> Edit
+                                            </button>
+                                        </div>
+                                        <div class="col-6">
+                                            <button type="button" class="btn btn-outline-secondary btn-sm w-100 font-weight-bold d-flex align-items-center justify-content-center" data-toggle="modal" data-target="#historyAccountModal{{ $acc->id }}" style="height: 28px; font-size: 11px; border-radius: 4px;">
+                                                <i class="fas fa-history mr-1" style="margin-right: 4px;"></i> History ({{ $acc->histories->count() }})
+                                            </button>
+                                        </div>
+                                        <div class="col-6">
+                                            <form action="{{ route('accounts.toggleStatus', $acc->id) }}" method="POST">
+                                                @csrf
+                                                <button type="button" onclick="this.closest('form').submit()" class="btn {{ $acc->status ? 'btn-outline-danger' : 'btn-outline-success' }} btn-sm w-100 font-weight-bold d-flex align-items-center justify-content-center" style="height: 28px; font-size: 11px; border-radius: 4px;">
+                                                    <i class="fas {{ $acc->status ? 'fa-ban' : 'fa-check' }}"></i>
+                                                </button>
+                                            </form>
+                                        </div>
+                                    </div>
+
+                                </div>
+                            </div>
+                        @endforeach
                     @endforeach
                 </div>
 
@@ -1167,12 +1444,65 @@
                 $('.datanew').DataTable().destroy();
             }
             $('.datanew').DataTable({
-                "pageLength": 10,
+                "pageLength": 25,
                 "aaSorting": [],
+                "orderFixed": [[2, 'asc']],
+                "columnDefs": [
+                    { "visible": false, "targets": 2 }
+                ],
+                "drawCallback": function (settings) {
+                    var api = this.api();
+                    var rows = api.rows({ page: 'current' }).nodes();
+                    var last = null;
+
+                    // Remove previously injected dynamic group rows before re-drawing
+                    $(api.table().body()).find('.qb-group-row').remove();
+
+                    api.column(2, { page: 'current' }).data().each(function (groupVal, i) {
+                        var $row = $(rows).eq(i);
+                        var groupName = $row.attr('data-group-name') || groupVal;
+
+                        if (last !== groupName) {
+                            var groupCount = $row.attr('data-group-count') || '1 Account';
+                            var groupTotal = $row.attr('data-group-total') || '';
+                            var isDr = $row.attr('data-group-is-dr') === '1';
+                            var groupIcon = $row.attr('data-group-icon') || 'fa-folder-open';
+                            var totalColor = isDr ? '#047857' : '#b91c1c';
+
+                            $row.before(
+                                '<tr class="qb-group-row" data-group-target="' + groupName + '" title="Click to collapse / expand accounts">' +
+                                    '<td colspan="8" class="qb-group-cell">' +
+                                        '<div class="d-flex align-items-center justify-content-between flex-wrap" style="padding: 3px 6px;">' +
+                                            '<div class="d-flex align-items-center" style="gap: 8px;">' +
+                                                '<i class="fas fa-chevron-down qb-group-chevron text-secondary" style="font-size: 10px;"></i>' +
+                                                '<span class="qb-group-icon-circle"><i class="fas ' + groupIcon + '"></i></span>' +
+                                                '<span class="qb-group-title">' + groupName + '</span>' +
+                                                '<span class="badge qb-group-pill">' + groupCount + '</span>' +
+                                            '</div>' +
+                                            '<div class="d-flex align-items-center" style="gap: 6px;">' +
+                                                '<span class="qb-group-subtotal-lbl">Total Head Balance:</span>' +
+                                                '<span class="qb-group-subtotal-val font-monospace" style="color: ' + totalColor + ' !important;">Rs ' + groupTotal + '</span>' +
+                                            '</div>' +
+                                        '</div>' +
+                                    '</td>' +
+                                '</tr>'
+                            );
+                            last = groupName;
+                        }
+                    });
+                },
                 "language": {
                     "search": "_INPUT_",
                     "searchPlaceholder": "Search accounts..."
                 }
+            });
+
+            // Expand / Collapse group rows on clicking the group header
+            $(document).on('click', '.qb-group-row', function() {
+                var groupName = $(this).attr('data-group-target');
+                var $targetRows = $(this).closest('tbody').find('tr[data-group-name="' + groupName + '"]');
+                $targetRows.toggle();
+                $(this).find('.qb-group-chevron').toggleClass('fa-chevron-down fa-chevron-right');
             });
         });
     </script>

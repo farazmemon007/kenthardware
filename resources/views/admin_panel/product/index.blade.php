@@ -2760,7 +2760,8 @@
                     </button>
                     <ul class="dropdown-menu dropdown-menu-end shadow-sm" style="border-radius:8px; font-size:12.5px;">
                         <li><a class="dropdown-item" href="{{ route('opening_stock.index') }}"><i class="fas fa-cubes text-primary me-2"></i> Opening Stock</a></li>
-                        <li><a class="dropdown-item" href="{{ route('products.template') }}"><i class="fas fa-file-csv text-secondary me-2"></i> Template CSV</a></li>
+                        <li><a class="dropdown-item" href="{{ route('products.template.quickbooks') }}"><i class="fas fa-file-excel text-success me-2"></i> Client Template (QuickBooks / Item #)</a></li>
+                        <li><a class="dropdown-item" href="{{ route('products.template') }}"><i class="fas fa-file-csv text-secondary me-2"></i> Full ERP Template CSV</a></li>
                         <li><a class="dropdown-item" href="{{ route('products.export') }}"><i class="fas fa-file-download text-success me-2"></i> Export to CSV</a></li>
                         <li><a class="dropdown-item" href="javascript:void(0)" id="openImportModalBtn"><i class="fas fa-file-upload text-warning me-2"></i> Import CSV</a></li>
                     </ul>
@@ -2852,7 +2853,12 @@
                             <tr id="product-row-{{ $product->id }}" class="{{ $product->is_active ? '' : 'row-inactive' }}">
                                 <td class="text-center"><input type="checkbox" class="selectProduct row-check" value="{{ $product->id }}"></td>
                                 <td class="text-center text-muted" style="font-size:11px;">{{ $products->firstItem() + $key }}</td>
-                                <td class="text-center"><span class="item-code">{{ $product->item_code }}</span></td>
+                                <td class="text-center">
+                                    @if(!empty($product->item_number))
+                                        <div class="mb-1"><span class="badge bg-primary text-white font-monospace" style="font-size:10px;">#{{ $product->item_number }}</span></div>
+                                    @endif
+                                    <span class="item-code">{{ $product->item_code }}</span>
+                                </td>
                                 <td class="text-center">
                                     @if ($product->image)
                                         <img src="{{ asset('uploads/products/' . $product->image) }}"
@@ -3156,6 +3162,9 @@
                                 @endif
                             </div>
                             <div class="item-meta mt-1">
+                                @if(!empty($product->item_number))
+                                    <span class="badge bg-primary text-white font-monospace me-1" style="font-size:10px;">#{{ $product->item_number }}</span>
+                                @endif
                                 <span class="item-code">{{ $product->item_code }}</span>
                                 @if($product->category_relation)
                                     <span class="meta-chip"><i class="fas fa-list"></i> {{ $product->category_relation->name }}</span>
@@ -3318,11 +3327,12 @@
                     <div class="alert alert-info d-flex gap-2 align-items-start mb-4" style="font-size:.85rem;">
                         <i class="fas fa-info-circle fs-5 mt-1 flex-shrink-0"></i>
                         <div>
-                            <strong>How to use:</strong><br>
-                            1. Download the <a href="{{ route('products.template') }}" class="alert-link">CSV Template</a> first.<br>
-                            2. Fill in your data in Excel and save as <strong>CSV</strong>.<br>
-                            3. Upload here to validate and preview the changes.<br>
-                            4. Confirm the preview to actually import the data.
+                            <strong>How to use (ERP &amp; QuickBooks Support):</strong><br>
+                            1. Download your preferred template:<br>
+                            &bull; <a href="{{ route('products.template.quickbooks') }}" class="fw-bold text-primary text-decoration-underline"><i class="fas fa-file-excel me-1"></i> Client / QuickBooks Template (Item #, Size, Cost, Location, etc.)</a><br>
+                            &bull; <a href="{{ route('products.template') }}" class="text-secondary text-decoration-underline"><i class="fas fa-file-csv me-1"></i> Standard Full ERP Template</a><br>
+                            2. Fill in data &amp; save as <strong>CSV</strong>.<br>
+                            3. Upload below. Variants under the same <em>Item Name</em> will automatically group together, and corrupted sizes (e.g., dates) will be auto-restored!
                         </div>
                     </div>
                     <div class="form-group mb-3">

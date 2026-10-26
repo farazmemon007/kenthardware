@@ -198,6 +198,9 @@
 
     <div class="print-controls no-print">
         <a href="javascript:window.print()" class="btn btn-primary">🖨️ Print DC</a>
+        @if ($sale->hasMarketShortage())
+            <a href="{{ route('sales.market_slip', $sale->id) }}" class="btn btn-warning" style="background:#d97706; color:#fff;" title="Local Market Purchase Slip">🛒 Market Slip</a>
+        @endif
         <a href="javascript:void(0)" onclick="handleGoBack()" class="btn btn-secondary">← Back</a>
     </div>
 

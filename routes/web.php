@@ -37,6 +37,7 @@ use App\Http\Controllers\CycleCountController;
 use App\Http\Controllers\ZoneController;
 use App\Http\Controllers\PCodeController;
 use App\Http\Controllers\OpeningStockController;
+use App\Http\Controllers\PriceApprovalController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -177,6 +178,8 @@ Route::middleware('auth')->group(function () {
         ->middleware('permission:products.view')->name('products.export');
     Route::get('/products/template', [App\Http\Controllers\ProductImportExportController::class, 'template'])
         ->middleware('permission:products.view')->name('products.template');
+    Route::get('/products/template/quickbooks', [App\Http\Controllers\ProductImportExportController::class, 'templateQuickBooks'])
+        ->middleware('permission:products.view')->name('products.template.quickbooks');
         
     // Import process
     Route::post('/products/import/validate',  [App\Http\Controllers\ProductImportExportController::class, 'importValidate'])
@@ -397,6 +400,23 @@ Route::middleware('auth')->group(function () {
     Route::post('/sales/store', [SaleController::class, 'store'])->middleware('permission:sales.create')->name('sales.store');
     Route::post('/sales/post-final', [SaleController::class, 'postFinal'])->middleware('permission:sales.create')->name('sales.post_final');
 
+    // Carpenter & Commission Routes
+    Route::get('/carpenters', [App\Http\Controllers\CarpenterController::class, 'index'])->name('carpenters.index');
+    Route::post('/carpenters', [App\Http\Controllers\CarpenterController::class, 'store'])->name('carpenters.store');
+    Route::put('/carpenters/{id}', [App\Http\Controllers\CarpenterController::class, 'update'])->name('carpenters.update');
+    Route::delete('/carpenters/{id}', [App\Http\Controllers\CarpenterController::class, 'destroy'])->name('carpenters.destroy');
+    Route::get('/carpenters/ajax-list', [App\Http\Controllers\CarpenterController::class, 'ajaxList'])->name('carpenters.ajax_list');
+    Route::post('/carpenters/ajax-store', [App\Http\Controllers\CarpenterController::class, 'ajaxStore'])->name('carpenters.ajax_store');
+    Route::post('/carpenters/settings/inactivity', [App\Http\Controllers\CarpenterController::class, 'updateInactivitySettings'])->name('carpenters.settings.inactivity');
+
+    Route::get('/carpenter-commissions', [App\Http\Controllers\CarpenterController::class, 'commissionsIndex'])->name('carpenter_commissions.index');
+    Route::post('/carpenter-commissions/{id}/approve', [App\Http\Controllers\CarpenterController::class, 'approveCommission'])->name('carpenter_commissions.approve');
+    Route::post('/carpenter-commissions/batch-approve', [App\Http\Controllers\CarpenterController::class, 'batchApprove'])->name('carpenter_commissions.batch_approve');
+    Route::post('/carpenter-commissions/{id}/pay', [App\Http\Controllers\CarpenterController::class, 'payCommission'])->name('carpenter_commissions.pay');
+    Route::post('/carpenter-commissions/{id}/cancel', [App\Http\Controllers\CarpenterController::class, 'cancelCommission'])->name('carpenter_commissions.cancel');
+    Route::get('/carpenter-commissions/{id}/receipt', [App\Http\Controllers\CarpenterController::class, 'commissionReceipt'])->name('carpenter_commissions.receipt');
+    Route::get('/carpenter-commissions/{id}/thermal', [App\Http\Controllers\CarpenterController::class, 'commissionThermal'])->name('carpenter_commissions.thermal');
+
     // Sale Return Routes - NEW SYSTEM
     Route::get('sale/return', [App\Http\Controllers\SaleReturnController::class, 'saleReturnIndex'])->middleware('permission:sales.view')->name('sale.return.index');
     Route::get('sale/return/{id}/view', [App\Http\Controllers\SaleReturnController::class, 'viewReturn'])->middleware('permission:sales.view')->name('sale.return.view');
@@ -408,6 +428,7 @@ Route::middleware('auth')->group(function () {
     Route::put('/sales/{id}', [SaleController::class, 'updatesale'])->middleware('permission:sales.edit')->name('sales.update');
     Route::get('/sales/{id}/dc', [SaleController::class, 'saledc'])->middleware('permission:sales.view')->name('sales.dc');
     Route::get('/sales/{id}/dc-thermal', [SaleController::class, 'saledcThermal'])->middleware('permission:sales.view')->name('sales.dc_thermal');
+    Route::get('/sales/{id}/market-slip', [SaleController::class, 'saleMarketSlip'])->middleware('permission:sales.view')->name('sales.market_slip');
     Route::get('/sales/{id}/recepit', [SaleController::class, 'salereceipt'])->middleware('permission:sales.view')->name('sales.receipt');
 
     // booking system
@@ -608,6 +629,14 @@ Route::middleware('auth')->group(function () {
     Route::post('/day-closing/close', [\App\Http\Controllers\CheckbookController::class, 'closeDay'])->name('day-closing.close');
     Route::post('/drawer-transaction/store', [\App\Http\Controllers\CheckbookController::class, 'storeDrawerTransaction'])->name('drawer-transaction.store');
     Route::post('/drawer-transaction/{id}/return', [\App\Http\Controllers\CheckbookController::class, 'returnDrawerTransaction'])->name('drawer-transaction.return');
+
+    // Price Approval Workflow (Below Root Price Authorization)
+    Route::post('/price-approval/request', [PriceApprovalController::class, 'requestApproval'])->name('price_approval.request');
+    Route::get('/price-approval/check-status/{id}', [PriceApprovalController::class, 'checkStatus'])->name('price_approval.check_status');
+    Route::get('/price-approval/details/{id}', [PriceApprovalController::class, 'getRequestDetails'])->name('price_approval.details');
+    Route::post('/price-approval/cancel/{id}', [PriceApprovalController::class, 'cancelRequest'])->name('price_approval.cancel');
+    Route::get('/price-approval/pending', [PriceApprovalController::class, 'getPendingForAdmin'])->name('price_approval.pending');
+    Route::post('/price-approval/respond/{id}', [PriceApprovalController::class, 'respondApproval'])->name('price_approval.respond');
 
 });
 // Temporary debug route to inspect authenticated user's roles & permissions (remove after use)

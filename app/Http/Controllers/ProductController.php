@@ -99,7 +99,7 @@ class ProductController extends Controller
         $productId = $request->get('product_id');
 
         $query = Product::query()
-            ->select('id', 'item_name', 'item_code', 'barcode_path', 'size_mode', 'unit_id', 'height', 'width', 'pieces_per_box', 'purchase_price_per_box', 'purchase_price_per_m2', 'purchase_price_per_piece', 'pieces_per_m2', 'purchase_discount_percent', 'sale_discount_percent', 'color', 'sale_price_per_piece', 'wholesale_price', 'p_code', 'rot_p_code')
+            ->select('id', 'item_name', 'item_code', 'item_number', 'barcode_path', 'size_mode', 'unit_id', 'height', 'width', 'pieces_per_box', 'purchase_price_per_box', 'purchase_price_per_m2', 'purchase_price_per_piece', 'pieces_per_m2', 'purchase_discount_percent', 'sale_discount_percent', 'color', 'sale_price_per_piece', 'wholesale_price', 'p_code', 'rot_p_code', 'uom_data')
             ->with(['unit'])
             ->withSum('warehouseStocks', 'total_pieces') /* Sum PIECES, not boxes */
             ->where('is_active', true); /* Only active products */
@@ -110,6 +110,7 @@ class ProductController extends Controller
             $query->where(function ($q) use ($term) {
                 $q->where('item_name', 'like', "%{$term}%")
                     ->orWhere('item_code', 'like', "%{$term}%")
+                    ->orWhere('item_number', 'like', "%{$term}%")
                     ->orWhere('barcode_path', 'like', "%{$term}%")
                     ->orWhere('color', 'like', "%{$term}%");
             });
@@ -366,18 +367,24 @@ class ProductController extends Controller
                     }
 
                     $vSerial = $v['serial_no'] ?? '';
+                    $vItemNumber = trim((string)($v['item_number'] ?? ($v['item_no'] ?? '')));
                     $serialBadge = !empty($vSerial) ? "[{$vSerial}] " : '';
+                    $itemNumBadge = !empty($vItemNumber) ? "[#{$vItemNumber}] " : (!empty($p->item_number) ? "[#{$p->item_number}] " : '');
 
                     // If a search term was entered and product_id is not specified, check if this variant matches
                     if (!empty($term) && empty($productId)) {
                         $termLower = strtolower(trim($term));
                         $vBarcode = strtolower($v['barcode'] ?? '');
                         $vSerialLower = strtolower($vSerial);
+                        $vItemNumLower = strtolower($vItemNumber);
                         $vNameLower = strtolower($vName);
                         $pNameLower = strtolower($p->item_name);
                         $pCodeLower = strtolower($p->item_code ?? '');
+                        $pItemNumLower = strtolower((string)($p->item_number ?? ''));
                         
-                        $isMatch = str_contains($vSerialLower, $termLower)
+                        $isMatch = ($vItemNumLower !== '' && ($vItemNumLower === $termLower || str_contains($vItemNumLower, $termLower)))
+                                || ($pItemNumLower !== '' && ($pItemNumLower === $termLower || str_contains($pItemNumLower, $termLower)))
+                                || str_contains($vSerialLower, $termLower)
                                 || str_contains($vBarcode, $termLower)
                                 || str_contains($vNameLower, $termLower)
                                 || str_contains($pNameLower, $termLower)
@@ -393,7 +400,9 @@ class ProductController extends Controller
 
                     $expanded[] = [
                         'id' => $p->id . '|variant|' . base64_encode($variantJson),
-                        'text' => "{$serialBadge}{$vSalesDesc} (SKU: {$p->item_code})",
+                        'product_id' => $p->id,
+                        'text' => "{$itemNumBadge}{$serialBadge}{$vSalesDesc} (SKU: {$p->item_code})",
+                        'item_number' => $vItemNumber ?: ($p->item_number ?? ''),
                         'serial_no' => $vSerial,
                         'sku' => !empty($v['sku']) ? $v['sku'] : ($p->item_code ?? ''),
                         'stock' => $vStockDisplay,
@@ -422,6 +431,9 @@ class ProductController extends Controller
                         'p_code' => !empty($v['sky_p_code']) ? $v['sky_p_code'] : (!empty($v['p_code']) ? $v['p_code'] : PCodeService::encode($v['sale_price'] ?? 0)),
                         'sky_p_code' => !empty($v['sky_p_code']) ? $v['sky_p_code'] : (!empty($v['p_code']) ? $v['p_code'] : PCodeService::encode($v['sale_price'] ?? 0)),
                         'rot_p_code' => !empty($v['rot_p_code']) ? $v['rot_p_code'] : PCodeService::encode($v['wholesale_price'] ?? 0),
+                        'uom_units' => $p->getUomUnitsList(),
+                        'uom_sell_unit' => $p->getUomSellUnit(),
+                        'base_unit_name' => $unitName,
                     ];
                 }
                 return $expanded;
@@ -429,7 +441,8 @@ class ProductController extends Controller
 
             return [[
                 'id' => $p->id,
-                'text' => $p->item_name." (SKU: {$p->item_code})",
+                'text' => ($p->item_number ? "[#{$p->item_number}] " : "") . $p->item_name." (SKU: {$p->item_code})",
+                'item_number' => $p->item_number ?? '',
                 'sku' => $p->item_code ?? '',
                 'stock' => $stockDisplay,
                 'stock_pieces' => $stockPieces,
@@ -450,8 +463,24 @@ class ProductController extends Controller
                 'p_code' => !empty($p->p_code) ? $p->p_code : PCodeService::encode($p->sale_price_per_piece ?? 0),
                 'sky_p_code' => !empty($p->p_code) ? $p->p_code : PCodeService::encode($p->sale_price_per_piece ?? 0),
                 'rot_p_code' => !empty($p->rot_p_code) ? $p->rot_p_code : PCodeService::encode($p->wholesale_price ?? 0),
+                'uom_units' => $p->getUomUnitsList(),
+                'uom_sell_unit' => $p->getUomSellUnit(),
+                'base_unit_name' => $unitName,
             ]];
         });
+
+        // Exact match sorting: Place exact Item # and SKU matches at the very top
+        if (!empty($term)) {
+            $termLower = strtolower(trim($term));
+            $results = $results->sortByDesc(function ($item) use ($termLower) {
+                $itemNum = strtolower($item['item_number'] ?? '');
+                if ($itemNum === $termLower) return 1000;
+                if (strtolower($item['serial_no'] ?? '') === $termLower) return 900;
+                if (strtolower($item['sku'] ?? '') === $termLower) return 800;
+                if ($itemNum !== '' && str_starts_with($itemNum, $termLower)) return 500;
+                return 100;
+            })->values();
+        }
 
         return response()->json([
             'results' => $results,
@@ -470,6 +499,8 @@ class ProductController extends Controller
             ->when($term, function ($query) use ($term) {
                 $query->where('item_name', 'like', "%{$term}%")
                     ->orWhere('item_code', 'like', "%{$term}%")
+                    ->orWhere('item_number', 'like', "%{$term}%")
+                    ->orWhere('color', 'like', "%{$term}%")
                     ->orWhereHas('category_relation', fn ($q) => $q->where('name', 'like', "%{$term}%"))
                     ->orWhereHas('sub_category_relation', fn ($q) => $q->where('name', 'like', "%{$term}%"))
                     ->orWhereHas('brand', fn ($q) => $q->where('name', 'like', "%{$term}%"));
@@ -493,6 +524,7 @@ class ProductController extends Controller
             return [
                 'id' => $p->id,
                 'item_code' => $p->item_code,
+                'item_number' => $p->item_number ?? '',
                 'item_name' => $p->item_name,
                 'image' => $p->image ? asset('uploads/products/'.$p->image) : null,
                 'category_name' => $p->category_relation->name ?? '-',
@@ -508,6 +540,9 @@ class ProductController extends Controller
                 'total_price' => number_format($p->total_price ?? 0, 2),
                 'brand_name' => $p->brand->name ?? '-',
                 'p_code' => !empty($p->p_code) ? $p->p_code : PCodeService::encode($p->purchase_price_per_piece ?? 0),
+                'uom_units' => $p->getUomUnitsList(),
+                'uom_sell_unit' => $p->getUomSellUnit(),
+                'base_unit_name' => $p->unit->name ?? 'Pcs',
             ];
         }));
     }
@@ -527,7 +562,9 @@ class ProductController extends Controller
             $s = $request->search;
             $query->where(function ($q) use ($s) {
                 $q->where('item_name', 'like', "%$s%")
-                  ->orWhere('item_code', 'like', "%$s%");
+                  ->orWhere('item_code', 'like', "%$s%")
+                  ->orWhere('item_number', 'like', "%$s%")
+                  ->orWhere('color', 'like', "%$s%");
             });
         }
 
@@ -996,6 +1033,7 @@ class ProductController extends Controller
                 $refs = $request->variant_ref;
                 $locations = $request->variant_location ?? [];
                 $serial_nos = $request->variant_serial_no ?? [];
+                $item_numbers = $request->variant_item_number ?? [];
                 $variant_pcodes = $request->variant_p_code ?? [];
                 $variant_sky_pcodes = $request->variant_sky_pcode ?? ($request->variant_p_code ?? []);
                 $variant_rot_pcodes = $request->variant_rot_pcode ?? [];
@@ -1073,12 +1111,14 @@ class ProductController extends Controller
                         }
 
                         $vSerial = !empty($serial_nos[$i]) ? $serial_nos[$i] : sprintf('%s-%04d', $prefix, count($variants) + 1);
+                        $vItemNumber = !empty($item_numbers[$i]) ? trim((string)$item_numbers[$i]) : '';
 
                         $vSkyPCode = PCodeService::encode($vSalePrice);
                         $vRotPCode = PCodeService::encode($vWholesalePrice);
 
                         $variants[] = [
                             'name' => $names[$i],
+                            'item_number' => $vItemNumber,
                             'size' => $sizes[$i] ?? '-',
                             'color' => $colors[$i] ?? '-',
                             'stock' => $vStock,
@@ -1129,6 +1169,7 @@ class ProductController extends Controller
                     'category_id' => $request->category_id,
                     'sub_category_id' => $request->sub_category_id,
                     'item_code' => !empty($request->reference) ? $request->reference : (!empty($request->item_code) ? $request->item_code : $nextCode),
+                    'item_number' => !empty($request->item_number) ? trim($request->item_number) : (!empty($variants[0]['item_number']) ? $variants[0]['item_number'] : null),
                     'item_name' => $request->product_name,
                     'barcode_path' => $request->barcode ?? $request->barcode_path ?? rand(100000000000, 999999999999),
                     'p_code' => $productSkyPCode,
@@ -1140,6 +1181,7 @@ class ProductController extends Controller
                 'model' => $request->model,
                 'image' => $imagePath,
                 'color' => count($variants) > 0 ? json_encode($variants) : ($request->color ? json_encode($request->color) : null),
+                'uom_data' => $request->filled('uom_data') ? (is_array($request->uom_data) ? json_encode($request->uom_data) : $request->uom_data) : null,
                 'purchase_discount_percent' => $request->purchase_discount_percent ?? 0,
                 'sale_discount_percent' => $request->sale_discount_percent ?? 0,
                 'alert_quantity' => $request->alert_quantity,
@@ -1461,6 +1503,7 @@ class ProductController extends Controller
                 $refs = $request->variant_ref;
                 $locations = $request->variant_location ?? [];
                 $serial_nos = $request->variant_serial_no ?? [];
+                $item_numbers = $request->variant_item_number ?? [];
                 $variant_pcodes = $request->variant_p_code ?? [];
                 $variant_sky_pcodes = $request->variant_sky_pcode ?? ($request->variant_p_code ?? []);
                 $variant_rot_pcodes = $request->variant_rot_pcode ?? [];
@@ -1538,12 +1581,14 @@ class ProductController extends Controller
                         }
 
                         $vSerial = !empty($serial_nos[$i]) ? $serial_nos[$i] : sprintf('%s-%04d', $prefix, count($variants) + 1);
+                        $vItemNumber = !empty($item_numbers[$i]) ? trim((string)$item_numbers[$i]) : '';
 
                         $vSkyPCode = PCodeService::encode($vSalePrice);
                         $vRotPCode = PCodeService::encode($vWholesalePrice);
 
                         $variants[] = [
                             'name' => $names[$i],
+                            'item_number' => $vItemNumber,
                             'size' => $sizes[$i] ?? '-',
                             'color' => $colors[$i] ?? '-',
                             'stock' => $vStock,
@@ -1604,6 +1649,7 @@ class ProductController extends Controller
                     'category_id' => $request->category_id,
                     'sub_category_id' => $request->sub_category_id,
                     'item_code' => $request->item_code ?? Product::where('id', $id)->value('item_code'),
+                    'item_number' => !empty($request->item_number) ? trim($request->item_number) : (!empty($variants[0]['item_number']) ? $variants[0]['item_number'] : Product::where('id', $id)->value('item_number')),
                     'item_name' => $request->product_name,
                     'barcode_path' => $request->barcode_path ?? rand(100000000000, 999999999999),
                     'p_code' => $productSkyPCode,
@@ -1615,6 +1661,7 @@ class ProductController extends Controller
                 'model' => $request->model,
                 'image' => $imagePath,
                 'color' => $final_color,
+                'uom_data' => $request->filled('uom_data') ? (is_array($request->uom_data) ? json_encode($request->uom_data) : $request->uom_data) : Product::where('id', $id)->value('uom_data'),
                 'purchase_discount_percent' => $request->purchase_discount_percent ?? 0,
                 'sale_discount_percent' => $request->sale_discount_percent ?? 0,
                 'alert_quantity' => $request->alert_quantity,

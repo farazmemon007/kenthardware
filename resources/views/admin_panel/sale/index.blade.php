@@ -24,8 +24,24 @@
         footer {
             display: none !important;
         }
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap');
+
+        html, body,
+        .odoo-page-wrapper,
+        .qb-table,
+        .qb-table thead th,
+        .qb-table tbody td,
+        .qb-win-header,
+        .qb-filter-bar,
+        .qb-table-card,
+        .dataTables_wrapper,
+        input, button, select, textarea {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif !important;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
         .odoo-page-wrapper {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif !important;
             padding: 0 4px !important;
         }
 
@@ -363,7 +379,7 @@
             color: #0f172a !important;
         }
 
-        /* 4. Table Card (Exact Replica of Image 1 Grid Table) */
+        /* 4. Table Card (Exact Replica of QuickBooks Grid Table) */
         .qb-table-card {
             background: #ffffff;
             border: 1px solid #aebfd4;
@@ -380,23 +396,23 @@
         }
         .qb-table {
             margin-bottom: 0 !important;
-            font-size: 11.5px !important;
+            font-size: 13px !important;
             width: 100% !important;
             border-collapse: collapse !important;
         }
 
-        /* Table Headers (Exact Image 1 Replica: Light Blue-Gray Gradient with Dividers) */
+        /* Table Headers (Exact QuickBooks Replica: Light Blue-Gray Gradient with Dividers) */
         .qb-table thead th {
             background: linear-gradient(180deg, #f7f9fc 0%, #e2eaf3 100%) !important;
             color: #193452 !important;
             font-weight: 700 !important;
             text-transform: uppercase;
-            font-size: 10.5px !important;
+            font-size: 11px !important;
             letter-spacing: 0.3px;
             border-bottom: 2px solid #aebfd4 !important;
             border-right: 1px solid #c9d7e5 !important;
             border-top: none !important;
-            padding: 6px 8px !important;
+            padding: 7px 10px !important;
             white-space: nowrap !important;
         }
         .qb-table thead th:last-child {
@@ -434,10 +450,11 @@
             border-bottom: 1px solid #e2e8f0 !important;
             border-right: 1px solid #edf2f7 !important;
             border-top: none !important;
-            padding: 4px 8px !important;
-            font-size: 11.5px !important;
+            padding: 7px 10px !important;
+            font-size: 13px !important;
             color: #1a202c !important;
-            vertical-align: middle;
+            vertical-align: middle !important;
+            font-variant-numeric: tabular-nums;
         }
         .qb-table tbody td:last-child {
             border-right: none !important;
@@ -465,25 +482,30 @@
         }
 
         .qb-table td.text-nowrap,
-        .qb-table th.text-nowrap,
-        .qb-table .font-monospace {
+        .qb-table th.text-nowrap {
             white-space: nowrap !important;
         }
 
-        /* Actions Button (Mini Tool Button) */
+        .font-monospace,
+        .qb-mono {
+            font-family: 'JetBrains Mono', 'Consolas', 'SFMono-Regular', Menlo, monospace !important;
+        }
+
+        /* Actions Button (Glossy QuickBooks Tool Button) */
         .odoo-action-btn, .btn-premium-action {
             background: linear-gradient(180deg, #ffffff 0%, #edf3fa 100%) !important;
-            border: 1px solid #8ca4c3 !important;
-            color: #18385e !important;
+            border: 1.5px solid #64748b !important;
+            color: #0f172a !important;
             font-weight: 700 !important;
-            border-radius: 3px !important;
-            height: 22px !important;
-            padding: 0 6px !important;
-            font-size: 10.5px !important;
+            border-radius: 4px !important;
+            height: 26px !important;
+            padding: 0 8px !important;
+            font-size: 11.5px !important;
             display: inline-flex !important;
             align-items: center !important;
             justify-content: center !important;
-            box-shadow: 0 1px 1px rgba(0, 0, 0, 0.08);
+            gap: 4px !important;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.08);
             transition: all 0.12s ease;
         }
         .odoo-action-btn:hover,
@@ -497,11 +519,18 @@
 
         /* Customer Initials Avatar */
         .avatar-circle {
-            width: 22px !important;
-            height: 22px !important;
-            font-size: 10px !important;
+            width: 26px !important;
+            height: 26px !important;
+            min-width: 26px !important;
+            min-height: 26px !important;
+            font-size: 11px !important;
             font-weight: 700 !important;
             border-radius: 50% !important;
+            margin-right: 8px !important;
+            display: inline-flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            flex-shrink: 0 !important;
         }
 
         /* Dropdown Menu in Grid */
@@ -536,12 +565,13 @@
             font-weight: 600 !important;
         }
         .dataTables_wrapper .dataTables_length select {
-            height: 22px !important;
+            height: 24px !important;
             border: 1px solid #8ca4c3 !important;
             border-radius: 3px !important;
-            font-size: 10.5px !important;
+            font-size: 11px !important;
             padding: 0 4px !important;
             margin: 0 4px !important;
+            background: #ffffff;
         }
         .dataTables_wrapper .dataTables_filter {
             font-size: 11px !important;
@@ -549,12 +579,13 @@
             font-weight: 600 !important;
         }
         .dataTables_wrapper .dataTables_filter input {
-            height: 22px !important;
+            height: 24px !important;
             border: 1px solid #8ca4c3 !important;
             border-radius: 3px !important;
-            font-size: 10.5px !important;
+            font-size: 11.5px !important;
             padding: 0 6px !important;
             margin-left: 4px !important;
+            background: #ffffff;
         }
         .dataTables_wrapper .dataTables_info {
             font-size: 11px !important;
@@ -573,6 +604,7 @@
             border-radius: 3px !important;
             margin: 0 1px !important;
             background: linear-gradient(180deg, #ffffff 0%, #edf3fa 100%);
+            font-weight: 600 !important;
         }
         .dataTables_wrapper .dataTables_paginate .page-item.active .page-link {
             background: linear-gradient(180deg, #5ea5ee 0%, #3077c1 48%, #2061a9 52%, #195293 100%) !important;

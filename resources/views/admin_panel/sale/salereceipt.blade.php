@@ -356,7 +356,10 @@
                         $weightGrams = (float)($item['weight_per_piece'] ?? (is_array($item['color'] ?? null) ? ($item['color']['weight_per_piece'] ?? 0) : 0));
 
                         $qtyDisplay = $totalPieces . ' Pcs';
-                        if ($variantUnit === 'pcs' || $variantUnit === 'piece' || $variantUnit === 'pieces') {
+                        if (!empty($item['uom_name'])) {
+                            $qtyVal = (float)$item['qty'];
+                            $qtyDisplay = ($qtyVal == (int)$qtyVal ? (int)$qtyVal : number_format($qtyVal, 2)) . ' ' . $item['uom_name'];
+                        } elseif ($variantUnit === 'pcs' || $variantUnit === 'piece' || $variantUnit === 'pieces') {
                             $qtyDisplay = $totalPieces . ' Pcs';
                             if ($weightGrams > 0) {
                                 $qtyDisplay .= ' (' . ($weightGrams == (int)$weightGrams ? (int)$weightGrams : $weightGrams) . 'g)';
