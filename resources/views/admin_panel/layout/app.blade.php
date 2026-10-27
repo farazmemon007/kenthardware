@@ -348,6 +348,9 @@
     <!-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css"> -->
     <link rel="stylesheet" href="{{ asset('assets/css/flatpickr.min.css') }}">
 
+    {{-- ✅ Universal Responsive CSS - All screens covered --}}
+    <link rel="stylesheet" href="{{ asset('assets/css/responsive.css') }}">
+
     <style>
         .dropdown-toggle::after,
         .nav-link::after,

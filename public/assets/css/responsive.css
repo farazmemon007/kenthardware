@@ -1,0 +1,1566 @@
+/* =============================================================================
+   KENT HARDWARE ERP - UNIVERSAL RESPONSIVE CSS
+   Covers: All screens from 320px mobile to 4K desktop
+   Breakpoints:
+     xs  : < 480px   (small phones)
+     sm  : 480–767px (large phones)
+     md  : 768–991px (tablets)
+     lg  : 992–1199px (small laptops)
+     xl  : 1200–1399px (laptops / desktops)
+     xxl : >= 1400px  (large desktops / 4K)
+============================================================================= */
+
+/* ============================================================
+   1. BASE RESET & BOX MODEL
+============================================================ */
+*, *::before, *::after {
+    box-sizing: border-box;
+}
+
+html {
+    scroll-behavior: smooth;
+    -webkit-text-size-adjust: 100%;
+}
+
+html, body {
+    width: 100% !important;
+    min-height: 100vh !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    overflow-x: hidden !important;
+}
+
+img, video, iframe, embed, object {
+    max-width: 100%;
+    height: auto;
+}
+
+/* ============================================================
+   2. CONTAINER / LAYOUT FIXES
+============================================================ */
+.container,
+.container-fluid {
+    width: 100% !important;
+    max-width: 100% !important;
+    padding-left: 12px !important;
+    padding-right: 12px !important;
+    box-sizing: border-box !important;
+}
+
+.container-scroller {
+    width: 100% !important;
+    min-height: 100vh !important;
+    display: flex !important;
+    flex-direction: column !important;
+}
+
+.app-page-body {
+    width: 100% !important;
+    max-width: 100% !important;
+    box-sizing: border-box !important;
+    flex: 1 1 auto !important;
+}
+
+.main-content,
+.main-content-inner {
+    width: 100% !important;
+    max-width: 100% !important;
+    box-sizing: border-box !important;
+}
+
+footer {
+    display: none !important;
+}
+
+/* ============================================================
+   3. NAVIGATION - TOP BAR
+============================================================ */
+.rt_nav_header.horizontal-layout .top_nav {
+    height: 66px;
+    min-height: 66px;
+}
+
+/* Prevent header content overflow */
+.rt_nav_header .container-fluid {
+    overflow: visible !important;
+}
+
+/* ============================================================
+   4. TABLES - RESPONSIVE
+============================================================ */
+
+/* All tables: make them responsive by default */
+.table-responsive-wrap {
+    width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
+/* DataTables: always fill available width */
+.dataTables_wrapper {
+    width: 100% !important;
+    overflow-x: auto !important;
+}
+
+table.dataTable {
+    width: 100% !important;
+}
+
+/* Make plain tables scrollable on small screens */
+.table {
+    width: 100% !important;
+    min-width: 600px; /* prevent too-narrow tables */
+}
+
+/* Wrap every table in a scroll container automatically */
+.main-content .table,
+.main-content-inner .table,
+.app-page-body .table,
+.card-body .table,
+.erp-card .table,
+.premium-card .table,
+.qb-table-card .table {
+    display: block;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
+/* But thead/tbody/tr remain table display for proper layout */
+.main-content .table thead,
+.main-content .table tbody,
+.main-content .table tfoot,
+.main-content .table tr {
+    display: table;
+    width: 100%;
+    table-layout: fixed;
+}
+
+/* Better approach: wrap tables */
+.table-wrap {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    width: 100%;
+    border-radius: 8px;
+}
+
+/* ============================================================
+   5. CARDS - RESPONSIVE
+============================================================ */
+.card,
+.premium-card,
+.erp-card,
+.stat-card,
+.qb-table-card {
+    width: 100% !important;
+    box-sizing: border-box !important;
+    overflow: hidden !important;
+}
+
+.card-body {
+    padding: 16px !important;
+    overflow: auto;
+}
+
+/* ============================================================
+   6. FORMS - RESPONSIVE
+============================================================ */
+.form-control,
+.form-select,
+.select2-container {
+    width: 100% !important;
+    max-width: 100% !important;
+    box-sizing: border-box !important;
+}
+
+/* Select2 responsive */
+.select2-container--default .select2-selection--single,
+.select2-container--default .select2-selection--multiple {
+    width: 100% !important;
+}
+
+/* Input groups on small screens */
+.input-group {
+    flex-wrap: wrap;
+}
+
+/* ============================================================
+   7. BUTTONS - RESPONSIVE
+============================================================ */
+.btn {
+    white-space: nowrap;
+    max-width: 100%;
+}
+
+/* Button groups wrapping on small screens */
+.btn-group,
+.btn-toolbar,
+.erp-hdr-actions,
+.qb-filter-bar .d-flex {
+    flex-wrap: wrap !important;
+    gap: 6px !important;
+}
+
+/* ============================================================
+   8. MODALS - RESPONSIVE
+============================================================ */
+.modal-dialog {
+    max-width: 95vw !important;
+    margin: 10px auto !important;
+}
+
+.modal-body {
+    max-height: 80vh;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
+/* ============================================================
+   9. DROPDOWNS - RESPONSIVE
+============================================================ */
+.dropdown-menu {
+    max-height: 80vh;
+    overflow-y: auto;
+}
+
+/* ============================================================
+   10. STAT / KPI CARDS GRID
+============================================================ */
+.db-kpi-grid,
+.stats-grid,
+.kpi-row {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 16px;
+    width: 100%;
+}
+
+/* ============================================================
+   11. DASHBOARD RESPONSIVE
+============================================================ */
+.db-wrap {
+    padding: 1rem !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+    overflow-x: hidden !important;
+}
+
+.db-header {
+    flex-wrap: wrap;
+    gap: 12px;
+}
+
+.db-nav-pills {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    padding-bottom: 8px;
+}
+
+/* ============================================================
+   12. POS PAGE RESPONSIVE
+============================================================ */
+.pos-wrapper {
+    flex-wrap: wrap;
+}
+
+/* ============================================================
+   13. CHARTS RESPONSIVE
+============================================================ */
+canvas,
+.chart-container,
+.chart-wrap {
+    max-width: 100% !important;
+    height: auto !important;
+}
+
+/* Morris / C3 charts */
+.morris-charts,
+.c3 {
+    max-width: 100% !important;
+    overflow-x: auto;
+}
+
+/* ============================================================
+   14. SCROLLBAR STYLING (Global)
+============================================================ */
+::-webkit-scrollbar {
+    width: 5px;
+    height: 5px;
+}
+::-webkit-scrollbar-track {
+    background: #f1f5f9;
+}
+::-webkit-scrollbar-thumb {
+    background: #94a3b8;
+    border-radius: 10px;
+}
+::-webkit-scrollbar-thumb:hover {
+    background: #64748b;
+}
+
+/* ============================================================
+   15. UTILITY - TEXT & OVERFLOW
+============================================================ */
+.text-truncate-responsive {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 150px;
+}
+
+/* Prevent long text from breaking layout */
+td, th {
+    word-break: break-word;
+    overflow-wrap: break-word;
+}
+
+/* ============================================================
+   ██████  BREAKPOINT: EXTRA LARGE (≥ 1400px)
+============================================================ */
+@media (min-width: 1400px) {
+    .container-fluid {
+        padding-left: 20px !important;
+        padding-right: 20px !important;
+    }
+
+    .db-wrap {
+        padding: 1.75rem 2rem 3rem !important;
+    }
+
+    .card-body {
+        padding: 24px !important;
+    }
+
+    /* Stat cards - 4 columns on very wide screens */
+    .db-kpi-grid {
+        grid-template-columns: repeat(4, 1fr) !important;
+    }
+
+    /* DataTable: slightly larger font */
+    table.dataTable th,
+    table.dataTable td {
+        font-size: 13.5px;
+    }
+}
+
+/* ============================================================
+   ██████  BREAKPOINT: LARGE (992px - 1399px)
+============================================================ */
+@media (min-width: 992px) and (max-width: 1399px) {
+    .container-fluid {
+        padding-left: 16px !important;
+        padding-right: 16px !important;
+    }
+
+    .db-wrap {
+        padding: 1.25rem 1.5rem 2rem !important;
+    }
+
+    .db-kpi-grid {
+        grid-template-columns: repeat(4, 1fr) !important;
+    }
+
+    .card-body {
+        padding: 20px !important;
+    }
+
+    /* Header nav link sizes */
+    .page-navigation > .nav-item > .nav-link {
+        padding: 4px 8px !important;
+        font-size: 12px !important;
+    }
+
+    /* Stat cards */
+    .stat-card .stat-value {
+        font-size: 1.2rem !important;
+    }
+}
+
+/* ============================================================
+   ██████  BREAKPOINT: MEDIUM / TABLET (768px - 991px)
+============================================================ */
+@media (min-width: 768px) and (max-width: 991px) {
+    /* App Page Body: accommodate for top navigation offset */
+    .app-page-body {
+        padding-top: 20px !important;
+    }
+
+    .main-content {
+        padding-top: 16px !important;
+    }
+
+    .db-wrap {
+        padding: 1rem 1rem 2rem !important;
+    }
+
+    /* KPI Cards: 2 columns */
+    .db-kpi-grid,
+    .stats-grid {
+        grid-template-columns: repeat(2, 1fr) !important;
+    }
+
+    /* Card body padding reduced */
+    .card-body {
+        padding: 16px !important;
+    }
+
+    /* Tables: enable horizontal scroll on tablet */
+    .table-responsive,
+    .dataTables_wrapper {
+        overflow-x: scroll !important;
+    }
+
+    /* Forms: stack columns */
+    .form-row > .col,
+    .form-row > [class*="col-"] {
+        margin-bottom: 12px !important;
+    }
+
+    /* Buttons in action bars: wrap */
+    .erp-hdr-actions,
+    .page-header .d-flex,
+    .filter-panel .row .col-md-2,
+    .filter-panel .row .col-md-3 {
+        flex-wrap: wrap !important;
+        gap: 8px !important;
+    }
+
+    /* DataTable length and filter */
+    .dataTables_length,
+    .dataTables_filter {
+        text-align: left !important;
+        margin-bottom: 8px !important;
+    }
+
+    /* Modal */
+    .modal-dialog {
+        max-width: 90vw !important;
+        margin: 20px auto !important;
+    }
+
+    /* Stat cards sizing */
+    .stat-card {
+        padding: 12px 14px !important;
+    }
+    .stat-card .stat-value {
+        font-size: 1.15rem !important;
+    }
+
+    /* POS: stack panels on tablet */
+    .pos-wrapper {
+        flex-direction: column !important;
+        height: auto !important;
+        overflow: visible !important;
+    }
+    .pos-products-panel,
+    .pos-cart-panel {
+        width: 100% !important;
+        min-height: 350px !important;
+    }
+
+    /* Report filter form: stack */
+    .report-filter-form .row > [class*="col-"] {
+        margin-bottom: 10px !important;
+    }
+
+    /* Header: hide phone and support on tablet */
+    .header-support-btn {
+        display: none !important;
+    }
+
+    /* Nav pills for dashboard: smaller */
+    .db-pill {
+        padding: 5px 12px !important;
+        font-size: 11.5px !important;
+    }
+
+    /* Quick action buttons smaller */
+    .db-btn-sync {
+        padding: 0.4rem 1rem !important;
+        font-size: 0.8rem !important;
+    }
+}
+
+/* ============================================================
+   ██████  BREAKPOINT: SMALL MOBILE (480px - 767px)
+============================================================ */
+@media (min-width: 480px) and (max-width: 767px) {
+    /* App layout adjustments */
+    .app-page-body {
+        padding-top: 16px !important;
+    }
+
+    .main-content {
+        padding-top: 12px !important;
+    }
+
+    .db-wrap {
+        padding: 0.75rem 0.75rem 1.5rem !important;
+    }
+
+    /* KPI Cards: 2 columns on small mobile */
+    .db-kpi-grid,
+    .stats-grid {
+        grid-template-columns: repeat(2, 1fr) !important;
+        gap: 10px !important;
+    }
+
+    .stat-card {
+        padding: 10px 12px !important;
+        gap: 10px !important;
+    }
+    .stat-icon {
+        width: 36px !important;
+        height: 36px !important;
+        font-size: 15px !important;
+    }
+    .stat-card .stat-value {
+        font-size: 1rem !important;
+    }
+    .stat-card .stat-label {
+        font-size: 0.65rem !important;
+    }
+
+    /* Card body */
+    .card-body {
+        padding: 12px !important;
+    }
+
+    /* Tables: horizontal scroll */
+    .table-responsive,
+    .dataTables_wrapper {
+        overflow-x: scroll !important;
+    }
+
+    /* DataTable smaller font */
+    table.dataTable th,
+    table.dataTable td {
+        font-size: 12px !important;
+        padding: 6px 8px !important;
+    }
+
+    /* DataTable controls stacking */
+    .dataTables_length,
+    .dataTables_filter {
+        display: block !important;
+        width: 100% !important;
+        text-align: left !important;
+        margin-bottom: 8px !important;
+    }
+    .dataTables_filter input {
+        width: 100% !important;
+        max-width: 100% !important;
+    }
+
+    /* Buttons: smaller */
+    .btn {
+        font-size: 12px !important;
+        padding: 5px 10px !important;
+    }
+    .btn-sm {
+        font-size: 11px !important;
+        padding: 3px 7px !important;
+    }
+
+    /* Forms: full-width */
+    .form-control,
+    .form-select,
+    .select2-container {
+        font-size: 13px !important;
+    }
+
+    /* Page headers: stack */
+    .page-header,
+    .erp-card-header,
+    .qb-win-header {
+        flex-direction: column !important;
+        align-items: flex-start !important;
+        gap: 8px !important;
+    }
+
+    .erp-hdr-actions {
+        width: 100% !important;
+        justify-content: flex-start !important;
+    }
+
+    /* Modals */
+    .modal-dialog {
+        max-width: 98vw !important;
+        margin: 8px auto !important;
+    }
+    .modal-content {
+        border-radius: 10px !important;
+    }
+    .modal-header,
+    .modal-body,
+    .modal-footer {
+        padding: 12px !important;
+    }
+
+    /* POS stacked */
+    .pos-wrapper {
+        flex-direction: column !important;
+        height: auto !important;
+        overflow: visible !important;
+    }
+
+    /* Hide non-essential header items */
+    .header-company-pill,
+    .header-support-btn {
+        display: none !important;
+    }
+    .header-online-pill span.d-none.d-sm-inline {
+        display: none !important;
+    }
+
+    /* Dashboard header stack */
+    .db-header {
+        flex-direction: column !important;
+        align-items: flex-start !important;
+    }
+    .db-header-left h1 {
+        font-size: 1.2rem !important;
+    }
+
+    /* Nav pills: scroll horizontally */
+    .db-nav-pills {
+        flex-wrap: nowrap;
+        overflow-x: auto;
+    }
+    .db-pill {
+        padding: 4px 10px !important;
+        font-size: 11px !important;
+        white-space: nowrap !important;
+    }
+
+    /* Sale/Purchase table actions */
+    .action-btn-group {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 4px;
+    }
+
+    /* Filter rows: full width */
+    .filter-panel .row > [class*="col-"] {
+        flex: 0 0 100% !important;
+        max-width: 100% !important;
+        margin-bottom: 8px !important;
+    }
+
+    /* Chart containers */
+    .chart-area,
+    .morris-charts {
+        overflow-x: auto !important;
+    }
+
+    /* Row cols adjust */
+    .row > .col-md-6,
+    .row > .col-md-4,
+    .row > .col-md-3 {
+        flex: 0 0 50% !important;
+        max-width: 50% !important;
+    }
+    .row > .col-md-8,
+    .row > .col-md-9,
+    .row > .col-md-12 {
+        flex: 0 0 100% !important;
+        max-width: 100% !important;
+    }
+}
+
+/* ============================================================
+   ██████  BREAKPOINT: XS MOBILE (< 480px)
+============================================================ */
+@media (max-width: 479px) {
+    /* App layout */
+    .app-page-body {
+        padding-top: 12px !important;
+        padding-left: 6px !important;
+        padding-right: 6px !important;
+    }
+
+    .container-fluid {
+        padding-left: 8px !important;
+        padding-right: 8px !important;
+    }
+
+    .db-wrap {
+        padding: 0.5rem 0.5rem 1rem !important;
+    }
+
+    /* KPI Cards: 1 column on very small screens */
+    .db-kpi-grid,
+    .stats-grid {
+        grid-template-columns: repeat(1, 1fr) !important;
+        gap: 8px !important;
+    }
+
+    /* OR 2 columns if there's enough room */
+    @supports (display: grid) {
+        .db-kpi-grid,
+        .stats-grid {
+            grid-template-columns: repeat(2, 1fr) !important;
+        }
+    }
+
+    .stat-card {
+        padding: 10px !important;
+        gap: 8px !important;
+    }
+    .stat-icon {
+        width: 32px !important;
+        height: 32px !important;
+        font-size: 13px !important;
+    }
+    .stat-card .stat-value {
+        font-size: 0.9rem !important;
+    }
+
+    /* Card body */
+    .card-body {
+        padding: 10px !important;
+    }
+
+    /* Tables */
+    .dataTables_wrapper {
+        overflow-x: auto !important;
+    }
+    table.dataTable th,
+    table.dataTable td {
+        font-size: 11.5px !important;
+        padding: 5px 6px !important;
+        white-space: nowrap;
+    }
+
+    /* Buttons */
+    .btn {
+        font-size: 11.5px !important;
+        padding: 4px 8px !important;
+    }
+    .btn-sm {
+        font-size: 10.5px !important;
+        padding: 3px 6px !important;
+    }
+
+    /* Forms */
+    .form-control,
+    input[type="text"],
+    input[type="number"],
+    input[type="email"],
+    input[type="date"],
+    select,
+    textarea {
+        font-size: 13px !important;
+        height: 36px !important;
+    }
+    textarea {
+        height: auto !important;
+    }
+
+    /* Modals: almost full screen */
+    .modal-dialog {
+        max-width: 98vw !important;
+        width: 98vw !important;
+        margin: 5px auto !important;
+    }
+    .modal-header {
+        padding: 10px 12px !important;
+    }
+    .modal-body {
+        padding: 10px 12px !important;
+        max-height: 75vh !important;
+    }
+    .modal-footer {
+        padding: 8px 12px !important;
+    }
+
+    /* Page headers: compact */
+    h3, .page-title, .qb-win-header {
+        font-size: 14px !important;
+    }
+    h4 {
+        font-size: 13px !important;
+    }
+    h5 {
+        font-size: 12px !important;
+    }
+
+    .erp-card-header {
+        flex-direction: column !important;
+        align-items: flex-start !important;
+        padding: 10px 12px !important;
+        gap: 8px !important;
+    }
+
+    .erp-hdr-actions {
+        width: 100% !important;
+        flex-wrap: wrap !important;
+        gap: 6px !important;
+    }
+
+    /* Dashboard header */
+    .db-header {
+        flex-direction: column !important;
+        margin-bottom: 1rem !important;
+    }
+    .db-header-left h1 {
+        font-size: 1.1rem !important;
+    }
+    .db-header-left p {
+        font-size: 0.78rem !important;
+    }
+
+    /* Nav pills */
+    .db-nav-pills {
+        gap: 4px !important;
+    }
+    .db-pill {
+        padding: 4px 10px !important;
+        font-size: 10.5px !important;
+        white-space: nowrap !important;
+    }
+
+    /* All columns stack */
+    .row > [class*="col-"] {
+        flex: 0 0 100% !important;
+        max-width: 100% !important;
+        margin-bottom: 8px !important;
+    }
+
+    /* Except 2-column grids that make sense */
+    .row > .col-6,
+    .row > .col-sm-6 {
+        flex: 0 0 50% !important;
+        max-width: 50% !important;
+    }
+
+    /* POS */
+    .pos-wrapper {
+        flex-direction: column !important;
+        height: auto !important;
+        overflow: visible !important;
+        gap: 10px !important;
+    }
+    .pos-products-panel,
+    .pos-cart-panel {
+        width: 100% !important;
+        height: 300px !important;
+    }
+
+    /* Header: hide all non-critical items */
+    .header-company-pill,
+    .header-support-btn,
+    .header-online-pill {
+        display: none !important;
+    }
+
+    /* Profile / bell smaller */
+    .header-profile-avatar,
+    .header-icon-btn {
+        width: 28px !important;
+        height: 28px !important;
+        font-size: 13px !important;
+    }
+
+    /* Filter panels: stack */
+    .filter-panel .row > [class*="col-"] {
+        flex: 0 0 100% !important;
+        max-width: 100% !important;
+    }
+
+    /* QB Win Header: adjust */
+    .qb-win-header {
+        flex-wrap: wrap !important;
+        height: auto !important;
+        min-height: 36px !important;
+        padding: 6px 8px !important;
+    }
+
+    /* Sale page buttons */
+    .qb-filter-bar {
+        flex-direction: column !important;
+        align-items: flex-start !important;
+        gap: 8px !important;
+    }
+
+    /* Notification dropdown: full width */
+    .dropdown-menu.preview-list {
+        width: calc(100vw - 20px) !important;
+        max-width: calc(100vw - 20px) !important;
+        left: 10px !important;
+        right: 10px !important;
+    }
+}
+
+/* ============================================================
+   16. SPECIFIC PAGE FIXES
+============================================================ */
+
+/* --- Customers Index --- */
+.main-content .container {
+    padding-left: 12px !important;
+    padding-right: 12px !important;
+}
+
+/* --- Sale / Purchase Pages --- */
+.odoo-page-wrapper {
+    padding: 0 8px !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+}
+
+/* Sale page: action buttons on table rows */
+.qb-table tbody td .btn-group {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 2px;
+}
+
+/* --- Product Page (ERP Card Style) --- */
+.erp-page {
+    width: 100% !important;
+    box-sizing: border-box !important;
+    overflow-x: hidden !important;
+}
+.erp-page .erp-card {
+    width: 100% !important;
+}
+
+/* --- Checkbook / Cashbook --- */
+.checkbook-table-wrap {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
+/* --- Reports --- */
+.report-page-container,
+.sale-report-container {
+    width: 100% !important;
+    box-sizing: border-box !important;
+    overflow-x: hidden !important;
+}
+
+/* --- Accounts / Ledger --- */
+.ledger-table-wrap {
+    overflow-x: auto;
+    width: 100%;
+}
+
+/* --- Settings Page --- */
+.settings-card {
+    width: 100% !important;
+}
+
+/* --- HR / Users --- */
+.hr-card,
+.user-card {
+    width: 100% !important;
+}
+
+/* ============================================================
+   17. DATATABLE SPECIFIC RESPONSIVE
+============================================================ */
+
+/* DT info and pagination: stack on small screens */
+@media (max-width: 767px) {
+    .dataTables_wrapper .row {
+        flex-direction: column !important;
+    }
+    .dataTables_wrapper .col-sm-12,
+    .dataTables_wrapper .col-md-6 {
+        width: 100% !important;
+        max-width: 100% !important;
+        flex: 0 0 100% !important;
+    }
+
+    .dataTables_length select {
+        width: auto !important;
+    }
+
+    .dataTables_paginate .paginate_button {
+        padding: 3px 7px !important;
+        font-size: 11px !important;
+    }
+
+    table.dataTable.dtr-inline.collapsed > tbody > tr > td:first-child::before,
+    table.dataTable.dtr-inline.collapsed > tbody > tr > th:first-child::before {
+        width: 14px !important;
+        height: 14px !important;
+        line-height: 14px !important;
+        font-size: 11px !important;
+    }
+}
+
+/* ============================================================
+   18. SELECT2 RESPONSIVE
+============================================================ */
+.select2-container {
+    width: 100% !important;
+}
+
+.select2-container .select2-selection--single {
+    height: 38px !important;
+}
+
+.select2-container .select2-selection--single .select2-selection__rendered {
+    line-height: 36px !important;
+}
+
+.select2-container .select2-selection--single .select2-selection__arrow {
+    height: 36px !important;
+}
+
+/* Dropdown width */
+.select2-dropdown {
+    max-width: 100vw !important;
+    z-index: 99999 !important;
+}
+
+/* ============================================================
+   19. SWEETALERT2 RESPONSIVE
+============================================================ */
+.swal2-popup {
+    max-width: 90vw !important;
+    font-size: 14px !important;
+}
+
+@media (max-width: 480px) {
+    .swal2-popup {
+        width: 95vw !important;
+        font-size: 13px !important;
+        padding: 16px !important;
+    }
+    .swal2-title {
+        font-size: 1.1em !important;
+    }
+    .swal2-actions {
+        flex-wrap: wrap !important;
+        gap: 8px !important;
+    }
+    .swal2-confirm,
+    .swal2-cancel {
+        width: 100% !important;
+    }
+}
+
+/* ============================================================
+   20. PRINT MEDIA
+============================================================ */
+@media print {
+    .rt_nav_header,
+    footer,
+    .btn,
+    .btn-group,
+    .erp-hdr-actions,
+    .qb-filter-bar,
+    .db-nav-pills,
+    .no-print {
+        display: none !important;
+    }
+
+    body, html, .container-fluid, .app-page-body {
+        overflow: visible !important;
+        width: 100% !important;
+        padding: 0 !important;
+        margin: 0 !important;
+    }
+
+    table {
+        width: 100% !important;
+        page-break-inside: avoid;
+    }
+
+    tr {
+        page-break-inside: avoid;
+        page-break-after: auto;
+    }
+
+    thead {
+        display: table-header-group;
+    }
+
+    tfoot {
+        display: table-footer-group;
+    }
+
+    .card,
+    .erp-card,
+    .premium-card {
+        box-shadow: none !important;
+        border: 1px solid #ddd !important;
+        page-break-inside: avoid;
+    }
+}
+
+/* ============================================================
+   21. FIX OVERFLOW ISSUES
+============================================================ */
+
+/* Prevent any element from exceeding viewport width */
+body > * {
+    max-width: 100vw;
+}
+
+/* Common overflow fixes */
+.row {
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+    overflow-x: hidden;
+}
+
+/* Fix horizontal scrollbar due to BS4 negative margins */
+.container-scroller > .container,
+.container-scroller > .container-fluid {
+    overflow-x: hidden;
+}
+
+/* ============================================================
+   22. FLATPICKR DATE PICKER RESPONSIVE
+============================================================ */
+.flatpickr-calendar {
+    max-width: 100vw !important;
+}
+
+@media (max-width: 480px) {
+    .flatpickr-calendar {
+        width: 100% !important;
+        left: 0 !important;
+        right: 0 !important;
+    }
+}
+
+/* ============================================================
+   23. BADGE / TAG RESPONSIVE
+============================================================ */
+.badge {
+    white-space: nowrap;
+    font-size: 10px;
+}
+
+/* ============================================================
+   24. ALERT RESPONSIVE
+============================================================ */
+.alert {
+    word-break: break-word;
+    overflow-wrap: break-word;
+}
+
+/* ============================================================
+   25. MOBILE NAVIGATION ENHANCEMENTS
+============================================================ */
+
+/* When mobile nav is open, prevent body scroll */
+body.mobile-nav-open {
+    overflow: hidden !important;
+}
+
+/* Mobile menu backdrop */
+.mobile-nav-backdrop {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 99990;
+}
+
+body.mobile-nav-open .mobile-nav-backdrop {
+    display: block;
+}
+
+/* ============================================================
+   26. HR MODULE RESPONSIVE
+============================================================ */
+@media (max-width: 767px) {
+    .hr-module-card,
+    .hr-stats-row {
+        flex-direction: column !important;
+    }
+    .hr-module-card .card {
+        width: 100% !important;
+    }
+}
+
+/* ============================================================
+   27. BOOKING / RECEIPT RESPONSIVE
+============================================================ */
+@media (max-width: 767px) {
+    .booking-receipt,
+    .thermal-receipt {
+        width: 100% !important;
+        max-width: 100% !important;
+        margin: 0 !important;
+        padding: 10px !important;
+    }
+}
+
+/* ============================================================
+   28. INWARD / PURCHASE POS RESPONSIVE
+============================================================ */
+@media (max-width: 991px) {
+    .purchase-pos-layout {
+        flex-direction: column !important;
+    }
+    .purchase-pos-left,
+    .purchase-pos-right {
+        width: 100% !important;
+    }
+}
+
+/* ============================================================
+   29. CHART OF ACCOUNTS RESPONSIVE
+============================================================ */
+.chart-accounts-tree {
+    overflow-x: auto;
+    width: 100%;
+}
+
+/* ============================================================
+   30. NOTIFICATION DROPDOWN MOBILE FIX
+============================================================ */
+@media (max-width: 480px) {
+    #notificationLi .dropdown-menu,
+    .dropdown .dropdown-menu.preview-list {
+        position: fixed !important;
+        top: 66px !important;
+        left: 8px !important;
+        right: 8px !important;
+        width: calc(100vw - 16px) !important;
+        max-width: calc(100vw - 16px) !important;
+        z-index: 99999 !important;
+    }
+}
+
+/* ============================================================
+   31. SALE PAGE (QB STYLE) RESPONSIVE
+============================================================ */
+@media (max-width: 767px) {
+    .odoo-page-wrapper {
+        padding: 0 !important;
+    }
+
+    .qb-win-header {
+        flex-wrap: wrap !important;
+        height: auto !important;
+        min-height: 36px !important;
+        padding: 6px 8px !important;
+        gap: 6px !important;
+    }
+
+    .qb-win-title {
+        font-size: 12px !important;
+    }
+
+    .qb-filter-bar {
+        flex-wrap: wrap !important;
+        gap: 6px !important;
+        padding: 8px !important;
+    }
+
+    .qb-table-card {
+        border-radius: 0 !important;
+    }
+
+    .qb-table thead th {
+        font-size: 11px !important;
+        padding: 6px 6px !important;
+        white-space: nowrap;
+    }
+
+    .qb-table tbody td {
+        font-size: 11.5px !important;
+        padding: 6px 6px !important;
+    }
+
+    /* Action buttons in table row */
+    .qb-table .btn-group {
+        flex-wrap: nowrap !important;
+        gap: 2px !important;
+    }
+
+    .qb-btn-green,
+    .qb-btn-blue,
+    .qb-btn-red,
+    .qb-btn-gray {
+        font-size: 10.5px !important;
+        padding: 2px 6px !important;
+        height: 24px !important;
+    }
+}
+
+@media (max-width: 480px) {
+    .qb-win-header {
+        flex-direction: column !important;
+        align-items: flex-start !important;
+    }
+
+    .qb-filter-bar .row > [class*="col-"] {
+        flex: 0 0 100% !important;
+        max-width: 100% !important;
+    }
+
+    /* Make the table horizontally scrollable */
+    .qb-table-card > .table-responsive,
+    .qb-table-card {
+        overflow-x: auto !important;
+        -webkit-overflow-scrolling: touch !important;
+    }
+}
+
+/* ============================================================
+   32. INWARD / PURCHASE POS RESPONSIVE
+============================================================ */
+@media (max-width: 767px) {
+    .inward-form-wrap .row > [class*="col-"] {
+        flex: 0 0 100% !important;
+        max-width: 100% !important;
+        margin-bottom: 8px !important;
+    }
+
+    .purchase-header-bar {
+        flex-wrap: wrap !important;
+        gap: 8px !important;
+    }
+}
+
+/* ============================================================
+   33. REPORTING PAGES RESPONSIVE
+============================================================ */
+@media (max-width: 767px) {
+    .report-filter-wrap .row > [class*="col-"] {
+        flex: 0 0 100% !important;
+        max-width: 100% !important;
+        margin-bottom: 8px !important;
+    }
+
+    .report-summary-cards {
+        flex-direction: column !important;
+    }
+
+    .report-summary-cards > div {
+        width: 100% !important;
+    }
+
+    /* Report tables: scroll */
+    .report-table-wrap,
+    .report-page-container > .table-responsive {
+        overflow-x: auto !important;
+        -webkit-overflow-scrolling: touch !important;
+    }
+}
+
+/* ============================================================
+   34. ACCOUNTS / LEDGER RESPONSIVE
+============================================================ */
+@media (max-width: 767px) {
+    .ledger-filter-row .row > [class*="col-"] {
+        flex: 0 0 50% !important;
+        max-width: 50% !important;
+    }
+
+    .voucher-card {
+        width: 100% !important;
+    }
+
+    .accounts-table-wrap {
+        overflow-x: auto !important;
+    }
+}
+
+@media (max-width: 480px) {
+    .ledger-filter-row .row > [class*="col-"] {
+        flex: 0 0 100% !important;
+        max-width: 100% !important;
+    }
+}
+
+/* ============================================================
+   35. BOOKING PAGE RESPONSIVE
+============================================================ */
+@media (max-width: 767px) {
+    .booking-form-wrap .row > [class*="col-md-"] {
+        flex: 0 0 100% !important;
+        max-width: 100% !important;
+        margin-bottom: 10px !important;
+    }
+
+    .booking-summary {
+        width: 100% !important;
+    }
+}
+
+/* ============================================================
+   36. CARPENTERS PAGE RESPONSIVE
+============================================================ */
+@media (max-width: 767px) {
+    .carpenter-card {
+        width: 100% !important;
+    }
+
+    .carpenter-commission-table {
+        overflow-x: auto !important;
+        -webkit-overflow-scrolling: touch !important;
+    }
+}
+
+/* ============================================================
+   37. CHECKBOOK / CASHBOOK RESPONSIVE
+============================================================ */
+@media (max-width: 767px) {
+    .checkbook-summary-row {
+        flex-direction: column !important;
+    }
+
+    .checkbook-balance-card {
+        width: 100% !important;
+        margin-bottom: 10px !important;
+    }
+}
+
+/* ============================================================
+   38. SETTINGS PAGE RESPONSIVE
+============================================================ */
+@media (max-width: 767px) {
+    .settings-section {
+        width: 100% !important;
+    }
+
+    .settings-form .row > [class*="col-md-"] {
+        flex: 0 0 100% !important;
+        max-width: 100% !important;
+        margin-bottom: 12px !important;
+    }
+}
+
+/* ============================================================
+   39. USERS / ROLES / PERMISSIONS RESPONSIVE
+============================================================ */
+@media (max-width: 767px) {
+    .users-table-wrap,
+    .roles-table-wrap,
+    .permissions-table-wrap {
+        overflow-x: auto !important;
+        -webkit-overflow-scrolling: touch !important;
+    }
+
+    .page-header .d-flex {
+        flex-wrap: wrap !important;
+        gap: 8px !important;
+    }
+
+    .user-stat-card {
+        width: 100% !important;
+    }
+}
+
+/* ============================================================
+   40. POS MOBILE SPECIFIC
+============================================================ */
+@media (max-width: 480px) {
+    .pos-wrapper {
+        gap: 10px !important;
+    }
+
+    .pos-products-panel {
+        padding: 10px !important;
+        min-height: 350px !important;
+    }
+
+    .pos-cart-panel {
+        min-height: 450px !important;
+    }
+
+    .pos-grid {
+        grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)) !important;
+        gap: 8px !important;
+    }
+
+    .product-card-image {
+        height: 65px !important;
+    }
+
+    .pos-cart-header h5 {
+        font-size: 12px !important;
+    }
+
+    /* POS search */
+    .pos-search-box input {
+        padding: 10px 35px 10px 15px !important;
+        font-size: 13px !important;
+    }
+}
+
+/* ============================================================
+   41. CONCLUSION CARD (DASHBOARD) - RESPONSIVE FIX
+============================================================ */
+@media (max-width: 768px) {
+    .db-conclusion-grid {
+        flex-direction: column !important;
+        gap: 1rem !important;
+    }
+
+    .conclusion-right {
+        text-align: left !important;
+        min-width: unset !important;
+        width: 100% !important;
+    }
+
+    .conclusion-divider {
+        width: 100% !important;
+        height: 1px !important;
+        align-self: auto !important;
+    }
+
+    .conclusion-total-val {
+        font-size: 1.5rem !important;
+    }
+}
+
+/* ============================================================
+   42. GLOBAL TABLE DISPLAY FIX
+   Override aggressive block display set earlier — 
+   keep tables as proper table layout but inside scroll container
+============================================================ */
+
+/* Revert: Don't force block on table elements — it breaks layout */
+.main-content .table,
+.main-content-inner .table,
+.app-page-body .table,
+.card-body .table,
+.erp-card .table,
+.premium-card .table,
+.qb-table-card .table {
+    display: table !important; /* Reset to proper table */
+    overflow-x: visible !important;
+}
+
+/* Instead: wrap parent divs handle the scrolling */
+.main-content .table-responsive,
+.table-responsive-wrap,
+.brand-table-wrap,
+.customers-table-wrap,
+.checkbook-table-wrap,
+.ledger-table-wrap,
+.dataTables_scroll,
+.dataTables_scrollBody {
+    overflow-x: auto !important;
+    -webkit-overflow-scrolling: touch !important;
+    width: 100% !important;
+}
+
+/* Ensure minimum table width so content doesn't squish */
+.main-content .table,
+.main-content-inner .table {
+    min-width: 500px !important;
+}
+
+/* DataTables managed tables: let DT handle it */
+table.dataTable {
+    width: 100% !important;
+    display: table !important;
+}
+
+/* ============================================================
+   END OF RESPONSIVE.CSS
+   Kent Hardware ERP — All screens covered
+   Total: 42 sections covering every module
+============================================================ */
