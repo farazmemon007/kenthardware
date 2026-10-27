@@ -146,28 +146,16 @@
             }
         }
 
-        /* Mobile / Tablet Responsive Navigation (< 992px) */
+        /* Mobile / Tablet: Desktop Navbar is completely hidden in favor of Native App Bar */
         @media (max-width: 991.98px) {
-            .rt_nav_header.horizontal-layout .nav-bottom {
-                display: none;
-                position: fixed !important;
-                top: 66px !important;
-                left: 0 !important;
-                right: 0 !important;
-                bottom: 0 !important;
-                width: 100vw !important;
-                height: calc(100vh - 66px) !important;
-                max-height: calc(100vh - 66px) !important;
-                overflow-y: auto !important;
-                -webkit-overflow-scrolling: touch;
-                background: #ffffff !important;
-                z-index: 99999 !important;
-                box-shadow: 0 10px 30px rgba(0,0,0,0.2) !important;
-                padding: 10px 16px 80px 16px !important;
-            }
-
-            .rt_nav_header.horizontal-layout .nav-bottom.header-toggled {
-                display: block !important;
+            .rt_nav_header.horizontal-layout,
+            .rt_nav_header.horizontal-layout .nav-bottom,
+            .nav-bottom,
+            .product-nav-inline {
+                display: none !important;
+                height: 0 !important;
+                overflow: hidden !important;
+                visibility: hidden !important;
             }
 
             .rt_nav_header.horizontal-layout .nav-bottom .page-navigation {
@@ -466,21 +454,23 @@
             }
         }
 
-        /* Fix Navigation Overlapping Page Content Universally */
-        .rt_nav_header.horizontal-layout {
-            position: relative !important;
-            z-index: 1020 !important;
-            margin-bottom: 0 !important;
-            width: 100% !important;
-        }
-        .rt_nav_header.horizontal-layout .nav-bottom,
-        .rt_nav_header.horizontal-layout.fixed-on-scroll .nav-bottom {
-            position: relative !important;
-            top: auto !important;
-            left: auto !important;
-            right: auto !important;
-            z-index: 1020 !important;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05) !important;
+        /* Fix Navigation Overlapping Page Content Universally (Desktop) */
+        @media (min-width: 992px) {
+            .rt_nav_header.horizontal-layout {
+                position: relative !important;
+                z-index: 1020 !important;
+                margin-bottom: 0 !important;
+                width: 100% !important;
+            }
+            .rt_nav_header.horizontal-layout .nav-bottom,
+            .rt_nav_header.horizontal-layout.fixed-on-scroll .nav-bottom {
+                position: relative !important;
+                top: auto !important;
+                left: auto !important;
+                right: auto !important;
+                z-index: 1020 !important;
+                box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05) !important;
+            }
         }
 
         /* =========================================================
@@ -572,14 +562,13 @@
             position: relative;
         }
         @media (max-width: 991px) {
-            .rt_nav_header.horizontal-layout {
-                position: relative !important;
-            }
             .app-page-body {
-                padding-top: 35px !important;
+                padding-top: 60px !important;
+                padding-bottom: 76px !important;
             }
             .main-content {
-                padding-top: 15px !important;
+                padding-top: 8px !important;
+                padding-bottom: 8px !important;
             }
         }
 
@@ -844,9 +833,18 @@
             }
         }
 
-        body.product-page-body .app-page-body {
-            padding-top: 0px !important;
-            min-height: calc(100vh - 56px) !important;
+        @media (min-width: 992px) {
+            body.product-page-body .app-page-body {
+                padding-top: 0px !important;
+                min-height: calc(100vh - 56px) !important;
+            }
+        }
+        @media (max-width: 991.98px) {
+            body.product-page-body .app-page-body {
+                padding-top: 60px !important;
+                padding-bottom: 76px !important;
+                min-height: calc(100vh - 60px) !important;
+            }
         }
     </style>
 
@@ -941,14 +939,19 @@
          Page Container
 *===========================-->
     <div class="container-scroller">
+        {{-- ✅ Mobile Native App Navigation (Visible on < 992px) --}}
+        @include('admin_panel.layout.partials.mobile_app_header')
+        @include('admin_panel.layout.partials.mobile_app_drawer')
+        @include('admin_panel.layout.partials.mobile_app_bottom_bar')
+
         <!--=========================*
-              Navigation
+              Navigation (Desktop >= 992px)
     *===========================-->
         @if($isProductPage)
             <!--=========================*
                   Navigation: Product Page Single Compact Dark Strip Mode
             *===========================-->
-            <nav class="rt_nav_header horizontal-layout col-lg-12 col-12 p-0 product-navbar-mode">
+            <nav class="rt_nav_header horizontal-layout col-lg-12 col-12 p-0 product-navbar-mode d-none d-lg-block">
                 <div class="top_nav flex-grow-1" style="background: #090e1a !important;">
                     <div class="container-fluid px-2 px-md-3 px-xl-4 d-flex flex-row h-100 align-items-center justify-content-between position-relative">
                         
@@ -1057,9 +1060,9 @@
             </nav>
         @else
             <!--=========================*
-                  Navigation: Standard Global ERP Layout (All other pages)
+                  Navigation: Standard Global ERP Layout (All other pages - Desktop >= 992px)
             *===========================-->
-            <nav class="rt_nav_header horizontal-layout col-lg-12 col-12 p-0">
+            <nav class="rt_nav_header horizontal-layout col-lg-12 col-12 p-0 d-none d-lg-block">
                 <div class="top_nav flex-grow-1" style="background: #090e1a !important;">
                     <div class="container-fluid px-3 px-md-4 d-flex flex-row h-100 align-items-center justify-content-between">
                         
@@ -1311,7 +1314,7 @@
                                         </a>`;
                                     });
                                 }
-                                $('#notificationList').html(html);
+                                $('#notificationList, #mobileNotificationList').html(html);
 
                                 $('.snooze-btn').off('click').on('click', function(e) {
                                     e.preventDefault();
@@ -1556,73 +1559,52 @@
             });
         });
     </script>
-    {{-- Mobile Navigation Handler Script --}}
+    {{-- Mobile Native App Navigation & Drawer Handler Script --}}
     <script>
         $(document).ready(function() {
-            // 1. Toggle mobile menu container
-            $(document).on('click', '#mobileMenuToggler, .navbar-toggler', function(e) {
+            // ── 1. Native Mobile App Drawer Controller ──
+            function openMobileAppDrawer() {
+                $('body').addClass('drawer-open');
+                $('#mobileAppDrawerBackdrop').fadeIn(200);
+            }
+
+            function closeMobileAppDrawer() {
+                $('body').removeClass('drawer-open');
+                $('#mobileAppDrawerBackdrop').fadeOut(200);
+            }
+
+            // Open from Topbar Hamburger or Bottom Bar "Menu" button
+            $(document).on('click', '#mobileDrawerOpenBtn, #bottomDrawerTriggerBtn', function(e) {
                 e.preventDefault();
                 e.stopPropagation();
-                var $navBottom = $('.rt_nav_header.horizontal-layout .nav-bottom');
-                $navBottom.toggleClass('header-toggled');
-
-                var isToggled = $navBottom.hasClass('header-toggled');
-                var $icon = $('#mobileMenuIcon');
-                if ($icon.length === 0) {
-                    $icon = $(this).find('i');
-                }
-
-                if (isToggled) {
-                    $icon.removeClass('fa-bars').addClass('fa-times');
-                    $('body').css('overflow', 'hidden'); // Prevent background scrolling
-                } else {
-                    $icon.removeClass('fa-times').addClass('fa-bars');
-                    $('body').css('overflow', '');
-                }
+                openMobileAppDrawer();
             });
 
-            // 2. Mobile Submenu Accordion
-            $(document).on('click', '.page-navigation > .nav-item > .nav-link', function(e) {
-                if (window.innerWidth <= 991) {
-                    var $parent = $(this).closest('.nav-item');
-                    var $submenu = $parent.find('.submenu');
-
-                    // If has submenu, prevent navigation and toggle accordion
-                    if ($submenu.length > 0) {
-                        e.preventDefault();
-                        e.stopPropagation();
-
-                        // Close all other open submenus
-                        $('.page-navigation > .nav-item').not($parent).removeClass('show-submenu');
-
-                        // Toggle this submenu
-                        $parent.toggleClass('show-submenu');
-                    } else {
-                        // If direct link (e.g. Dashboard), close mobile menu
-                        $('.rt_nav_header.horizontal-layout .nav-bottom').removeClass('header-toggled');
-                        $('#mobileMenuIcon, .navbar-toggler i').removeClass('fa-times').addClass('fa-bars');
-                        $('body').css('overflow', '');
-                    }
-                }
+            // Close from Close Button or Backdrop Click
+            $(document).on('click', '#mobileDrawerCloseBtn, #mobileAppDrawerBackdrop', function(e) {
+                e.preventDefault();
+                closeMobileAppDrawer();
             });
 
-            // 3. Close mobile menu when any inner link is tapped
-            $(document).on('click', '.page-navigation .submenu a', function() {
-                if (window.innerWidth <= 991) {
-                    $('.rt_nav_header.horizontal-layout .nav-bottom').removeClass('header-toggled');
-                    $('#mobileMenuIcon, .navbar-toggler i').removeClass('fa-times').addClass('fa-bars');
-                    $('body').css('overflow', '');
-                }
+            // Drawer Accordion Submenu Toggle
+            $(document).on('click', '.drawer-accordion-toggle', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                var $item = $(this).closest('.app-drawer-item');
+                // Close other open accordions for clean single-accordion mobile view
+                $('.app-drawer-item').not($item).removeClass('submenu-open');
+                $item.toggleClass('submenu-open');
             });
 
-            // 4. Close mobile menu if clicked outside
-            $(document).on('click', function(e) {
-                if (window.innerWidth <= 991) {
-                    if (!$(e.target).closest('.rt_nav_header').length) {
-                        $('.rt_nav_header.horizontal-layout .nav-bottom').removeClass('header-toggled');
-                        $('#mobileMenuIcon, .navbar-toggler i').removeClass('fa-times').addClass('fa-bars');
-                        $('body').css('overflow', '');
-                    }
+            // Close drawer when any sublink is clicked
+            $(document).on('click', '.app-drawer-sublink, .app-drawer-link:not(.drawer-accordion-toggle), .app-drawer-quick-btn', function() {
+                closeMobileAppDrawer();
+            });
+
+            // Close drawer on Escape key
+            $(document).on('keydown', function(e) {
+                if (e.key === 'Escape') {
+                    closeMobileAppDrawer();
                 }
             });
         });

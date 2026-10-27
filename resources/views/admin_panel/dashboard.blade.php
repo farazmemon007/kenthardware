@@ -737,7 +737,7 @@
     }
     @media (max-width: 768px) {
         .spark-grid { grid-template-columns: 1fr !important; gap: 0.75rem; }
-        .kpi-grid { grid-template-columns: 1fr !important; gap: 0.75rem; }
+        .kpi-grid { grid-template-columns: repeat(2, 1fr) !important; gap: 0.65rem; }
     }
     @media (max-width: 576px) {
         .db-wrap { padding: 0.75rem 0.5rem 2rem; }
