@@ -297,11 +297,26 @@ class ProductImportExportController extends Controller
         $rawRows = [];
         if (in_array($extension, ['xlsx', 'xls'])) {
             try {
-                $spreadsheet = \PhpOffice\PhpSpreadsheet\IOFactory::load($file->getRealPath());
-                $sheet = $spreadsheet->getActiveSheet();
-                $rawRows = $sheet->toArray(null, true, true, false);
+                $hasPhpSpreadsheet = false;
+                try {
+                    $hasPhpSpreadsheet = class_exists(\PhpOffice\PhpSpreadsheet\IOFactory::class);
+                } catch (\Throwable $t) {
+                    $hasPhpSpreadsheet = false;
+                }
+
+                if ($hasPhpSpreadsheet) {
+                    $spreadsheet = \PhpOffice\PhpSpreadsheet\IOFactory::load($file->getRealPath());
+                    $sheet = $spreadsheet->getActiveSheet();
+                    $rawRows = $sheet->toArray(null, true, true, false);
+                } else {
+                    $rawRows = $this->parseXlsxWithoutDependencies($file->getRealPath());
+                }
             } catch (\Throwable $e) {
-                return redirect()->back()->with('error', 'Could not parse Excel file: ' . $e->getMessage());
+                try {
+                    $rawRows = $this->parseXlsxWithoutDependencies($file->getRealPath());
+                } catch (\Throwable $ex2) {
+                    return redirect()->back()->with('error', 'Could not parse Excel file: ' . $ex2->getMessage());
+                }
             }
         } else {
             $handle = fopen($file->getRealPath(), 'r');
@@ -399,6 +414,11 @@ class ProductImportExportController extends Controller
             }
 
             if (empty($prodName)) {
+                // Skip footer / total summary rows often exported by QuickBooks (e.g. ,,,,,,,869256.56,,,)
+                $hasIdentifierData = !empty($get($row, ['barcode', 'category', 'brand', 'size', 'department']));
+                if (!$hasIdentifierData) {
+                    continue;
+                }
                 $errors[] = ["row" => $rowNum, "msg" => "Product / Item Name is required."];
                 continue;
             }
@@ -1120,6 +1140,119 @@ class ProductImportExportController extends Controller
             'Variant Is Base',       // variant_is_base[]: 1=base row 0=child
             'Variant Stock',         // variant_stock[] (initial stock in base unit)
         ];
+    }
+
+    /**
+     * Standalone zero-dependency XLSX parser using PHP's native ZipArchive and SimpleXML.
+     * Prevents hosting failures when PhpSpreadsheet composer package is missing.
+     *
+     * @param string $filePath
+     * @return array
+     * @throws \Exception
+     */
+    protected function parseXlsxWithoutDependencies(string $filePath): array
+    {
+        if (!class_exists('ZipArchive')) {
+            throw new \Exception('PHP ZipArchive extension is required on the server to read Excel files.');
+        }
+
+        $zip = new \ZipArchive();
+        if ($zip->open($filePath) !== true) {
+            throw new \Exception('Unable to open Excel archive.');
+        }
+
+        // 1. Read shared strings
+        $sharedStrings = [];
+        $sharedStringsXml = $zip->getFromName('xl/sharedStrings.xml');
+        if ($sharedStringsXml !== false) {
+            $xml = @simplexml_load_string($sharedStringsXml);
+            if ($xml) {
+                foreach ($xml->si as $si) {
+                    $str = '';
+                    if (isset($si->t)) {
+                        $str = (string)$si->t;
+                    } elseif (isset($si->r)) {
+                        foreach ($si->r as $r) {
+                            $str .= (string)$r->t;
+                        }
+                    }
+                    $sharedStrings[] = $str;
+                }
+            }
+        }
+
+        // 2. Locate first worksheet
+        $sheetXmlContent = $zip->getFromName('xl/worksheets/sheet1.xml');
+        if ($sheetXmlContent === false) {
+            for ($i = 0; $i < $zip->numFiles; $i++) {
+                $name = $zip->getNameIndex($i);
+                if (preg_match('#xl/worksheets/sheet\d+\.xml#i', $name)) {
+                    $sheetXmlContent = $zip->getFromName($name);
+                    break;
+                }
+            }
+        }
+
+        $zip->close();
+
+        if ($sheetXmlContent === false) {
+            throw new \Exception('No worksheet found in Excel file.');
+        }
+
+        $sheetXml = @simplexml_load_string($sheetXmlContent);
+        if (!$sheetXml || !isset($sheetXml->sheetData)) {
+            throw new \Exception('Invalid worksheet structure in Excel file.');
+        }
+
+        $rows = [];
+        $colLetterToIndex = function ($letters) {
+            $letters = strtoupper($letters);
+            $len = strlen($letters);
+            $idx = 0;
+            for ($i = 0; $i < $len; $i++) {
+                $idx = $idx * 26 + (ord($letters[$i]) - 64);
+            }
+            return $idx - 1;
+        };
+
+        foreach ($sheetXml->sheetData->row as $rowNode) {
+            $currentRow = [];
+            $maxCol = 0;
+
+            foreach ($rowNode->c as $cell) {
+                $cellRef = (string)$cell['r'];
+                preg_match('/^([A-Z]+)(\d+)$/i', $cellRef, $matches);
+                $colIdx = isset($matches[1]) ? $colLetterToIndex($matches[1]) : count($currentRow);
+
+                $type = (string)$cell['t'];
+                $val = '';
+
+                if ($type === 's') {
+                    $sIdx = (int)$cell->v;
+                    $val = isset($sharedStrings[$sIdx]) ? $sharedStrings[$sIdx] : '';
+                } elseif ($type === 'inlineStr' && isset($cell->is->t)) {
+                    $val = (string)$cell->is->t;
+                } elseif ($type === 'b') {
+                    $val = ((string)$cell->v === '1') ? '1' : '0';
+                } elseif (isset($cell->v)) {
+                    $val = (string)$cell->v;
+                }
+
+                $currentRow[$colIdx] = $val;
+                if ($colIdx > $maxCol) {
+                    $maxCol = $colIdx;
+                }
+            }
+
+            $normalizedRow = [];
+            for ($c = 0; $c <= $maxCol; $c++) {
+                $normalizedRow[$c] = isset($currentRow[$c]) ? $currentRow[$c] : '';
+            }
+
+            $rows[] = $normalizedRow;
+        }
+
+        return $rows;
     }
 }
 

@@ -4672,6 +4672,12 @@
 @endsection
 
 @section('js')
+<script src="{{ asset('assets/js/xlsx.full.min.js') }}"></script>
+<script>
+if (typeof XLSX === 'undefined') {
+    document.write('<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"><\/script>');
+}
+</script>
 <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.5/dist/JsBarcode.all.min.js"></script>
 <script>
 function escapeHtml(text) {
@@ -4749,7 +4755,75 @@ $(document).ready(function () {
         function handleFile(file) {
             if (!file) return;
             var ext = file.name.split('.').pop().toLowerCase();
-            if (fileNameEl) fileNameEl.textContent = file.name;
+
+            // If an Excel spreadsheet (.xlsx, .xls) is selected, automatically convert to CSV in the browser!
+            if ((ext === 'xlsx' || ext === 'xls') && typeof XLSX !== 'undefined') {
+                if (promptEl) promptEl.classList.add('d-none');
+                if (previewEl) {
+                    previewEl.classList.remove('d-none');
+                    previewEl.classList.add('d-flex');
+                }
+                if (fileIconEl) fileIconEl.innerHTML = '<i class="fas fa-spinner fa-spin text-primary fs-5"></i>';
+                if (fileNameEl) {
+                    fileNameEl.innerHTML = '<span class="text-muted">' + escapeHtml(file.name) + '</span> ' +
+                        '<span class="badge bg-warning text-dark ms-1" style="font-size:10px;"><i class="fas fa-magic"></i> Converting to CSV...</span>';
+                }
+                if (submitBtn) {
+                    submitBtn.disabled = true;
+                    submitBtn.innerHTML = '<i class="fas fa-cog fa-spin me-1.5"></i> Converting Excel to CSV...';
+                }
+
+                var reader = new FileReader();
+                reader.onload = function(e) {
+                    try {
+                        var data = new Uint8Array(e.target.result);
+                        var workbook = XLSX.read(data, {type: 'array', cellDates: true});
+                        var firstSheetName = workbook.SheetNames[0];
+                        var worksheet = workbook.Sheets[firstSheetName];
+                        var csvString = XLSX.utils.sheet_to_csv(worksheet, {FS: ',', RS: '\n'});
+
+                        // Clean out trailing empty rows / pure commas if any
+                        csvString = csvString.replace(/(?:[\r\n]+(?:\s*,)*\s*)+$/, '');
+
+                        var newFileName = file.name.replace(/\.(xlsx|xls)$/i, '') + '.csv';
+                        var csvBlob = new Blob([csvString], {type: 'text/csv;charset=utf-8;'});
+                        var csvFile = new File([csvBlob], newFileName, {type: 'text/csv'});
+
+                        // Replace file input's files with the newly converted CSV File
+                        if (window.DataTransfer) {
+                            var dt = new DataTransfer();
+                            dt.items.add(csvFile);
+                            fileInput.files = dt.files;
+                        }
+
+                        renderFileState(csvFile, true, file.name);
+                    } catch (err) {
+                        console.warn('Browser XLSX-to-CSV conversion failed, falling back to original file:', err);
+                        renderFileState(file, false);
+                    } finally {
+                        if (submitBtn) {
+                            submitBtn.disabled = false;
+                            submitBtn.innerHTML = '<i class="fas fa-check-double me-1.5"></i> Validate &amp; Preview Import';
+                        }
+                    }
+                };
+                reader.readAsArrayBuffer(file);
+                return;
+            }
+
+            renderFileState(file, false);
+        }
+
+        function renderFileState(file, wasConverted, originalName) {
+            var ext = file.name.split('.').pop().toLowerCase();
+            if (fileNameEl) {
+                if (wasConverted) {
+                    fileNameEl.innerHTML = '<span class="fw-bold text-dark">' + escapeHtml(file.name) + '</span> ' +
+                        '<span class="badge bg-success-subtle text-success border border-success-subtle ms-1" style="font-size:10px;"><i class="fas fa-check-circle me-1"></i> Auto-Converted to CSV</span>';
+                } else {
+                    fileNameEl.textContent = file.name;
+                }
+            }
 
             var sizeKb = (file.size / 1024).toFixed(1);
             if (fileSizeEl) {
@@ -4761,10 +4835,10 @@ $(document).ready(function () {
             }
 
             if (fileIconEl) {
-                if (ext === 'xlsx' || ext === 'xls') {
+                if (wasConverted || ext === 'csv') {
+                    fileIconEl.innerHTML = '<i class="fas fa-file-csv text-success fs-5"></i>';
+                } else if (ext === 'xlsx' || ext === 'xls') {
                     fileIconEl.innerHTML = '<i class="fas fa-file-excel text-success fs-5"></i>';
-                } else if (ext === 'csv') {
-                    fileIconEl.innerHTML = '<i class="fas fa-file-csv text-primary fs-5"></i>';
                 } else {
                     fileIconEl.innerHTML = '<i class="fas fa-file-alt text-secondary fs-5"></i>';
                 }
@@ -4776,7 +4850,6 @@ $(document).ready(function () {
                 previewEl.classList.add('d-flex');
             }
 
-            // Lower input z-index behind preview so "Change File" button is easily clicked
             fileInput.style.zIndex = '1';
         }
 
