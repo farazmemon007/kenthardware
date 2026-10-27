@@ -717,6 +717,7 @@ class ProductImportExportController extends Controller
                     'name'        => $v['name'] ?? $p['name'],
                     'parent_name' => $p['name'],
                     'ref'         => $ref,
+                    'parent_ref'  => $ref,
                     'category'    => $p['category'] ?? '-',
                     'brand'       => $p['brand'] ?? '-',
                     'attribute'   => $v['color'] ?? '-',

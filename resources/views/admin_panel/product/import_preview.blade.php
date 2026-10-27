@@ -671,9 +671,6 @@ $(document).ready(function () {
         currentPage = 1;
         renderTable();
     });
-        currentPage = 1;
-        renderTable();
-    });
 
     // ── Instant Live Search Filter ──
     let searchTimeout = null;
@@ -740,7 +737,7 @@ $(document).ready(function () {
             let contentDiv = drawer.find('.drawer-content');
             if (contentDiv.is(':empty') || contentDiv.text().trim() === '') {
                 let prodName = contentDiv.data('name') || ref;
-                let pVars = allItems.filter(function (it) { return it.parent_ref === ref; });
+                let pVars = allItems.filter(function (it) { return it.parent_ref === ref || it.ref === ref; });
                 
                 let subRows = '';
                 pVars.forEach(function (v) {
@@ -805,10 +802,44 @@ $(document).ready(function () {
         btn.prop('disabled', true).html('<i class="fas fa-spinner fa-spin me-1.5"></i> Starting...');
         
         // Show Animated Modal
-        $('#importProgressModal').modal('show');
+        showProgressModal();
         
         processImportChunk(0);
     });
+
+    function showProgressModal() {
+        var el = document.getElementById('importProgressModal');
+        if (typeof bootstrap !== 'undefined' && bootstrap.Modal) {
+            try {
+                var modal = bootstrap.Modal.getInstance(el) || new bootstrap.Modal(el, {backdrop: 'static', keyboard: false});
+                modal.show();
+                return;
+            } catch(e) {}
+        }
+        try {
+            $('#importProgressModal').modal({backdrop: 'static', keyboard: false, show: true});
+        } catch(e) {
+            $('#importProgressModal').show();
+        }
+    }
+
+    function hideProgressModal() {
+        var el = document.getElementById('importProgressModal');
+        if (typeof bootstrap !== 'undefined' && bootstrap.Modal) {
+            try {
+                var modal = bootstrap.Modal.getInstance(el);
+                if (modal) {
+                    modal.hide();
+                    return;
+                }
+            } catch(e) {}
+        }
+        try {
+            $('#importProgressModal').modal('hide');
+        } catch(e) {
+            $('#importProgressModal').hide();
+        }
+    }
 
     function processImportChunk(offset) {
         $.ajax({
@@ -839,14 +870,14 @@ $(document).ready(function () {
                     
                     processImportChunk(res.next_offset);
                 } else {
-                    $('#importProgressModal').modal('hide');
+                    hideProgressModal();
                     alert('Import failed: ' + (res.message || 'Unknown error occurred.'));
                     $('#btnConfirmImport').prop('disabled', false).html('<i class="fas fa-cloud-upload-alt me-1.5"></i> Retry Import');
                 }
             },
             error: function (err) {
                 console.error(err);
-                $('#importProgressModal').modal('hide');
+                hideProgressModal();
                 alert('A network error occurred during import. Please check your network or try again.');
                 $('#btnConfirmImport').prop('disabled', false).html('<i class="fas fa-cloud-upload-alt me-1.5"></i> Retry Import');
             }
