@@ -176,6 +176,24 @@
     };
 
     /**
+     * Format Sky and Rot P-Codes into standard combined format: 'GIII-GGII'
+     */
+    window.formatCombinedPCode = function(skyCode, rotCode) {
+        skyCode = (skyCode || '').toString().trim();
+        rotCode = (rotCode || '').toString().trim();
+        if (skyCode === '---' || skyCode === '-') skyCode = '';
+        if (rotCode === '---' || rotCode === '-') rotCode = '';
+
+        if (skyCode && rotCode) {
+            if (skyCode.indexOf(rotCode) !== -1) {
+                return skyCode.replace(/\s*-\s*/g, '-');
+            }
+            return `${skyCode}-${rotCode}`;
+        }
+        return skyCode || rotCode || '';
+    };
+
+    /**
      * Decode a P-Code string back to numbers.
      */
     window.decodePCode = function(pcode) {

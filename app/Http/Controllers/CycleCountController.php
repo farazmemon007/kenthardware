@@ -298,6 +298,7 @@ class CycleCountController extends Controller
 
         $locName  = strtolower(trim($location->name));
         $locCode  = $location->code ? strtolower(trim($location->code)) : '';
+        $cleanLocCode = (str_starts_with($locCode, 'r-') || str_starts_with($locCode, 's-')) ? substr($locCode, 2) : $locCode;
 
         $itemsToCreate = [];
         $capturedProductIds = [];
@@ -315,7 +316,18 @@ class CycleCountController extends Controller
                 if (is_array($variants)) {
                     foreach ($variants as $v) {
                         $vl = strtolower(trim($v['location'] ?? ''));
-                        if ($vl && ($vl === $locName || ($locCode && $vl === $locCode) || str_contains($vl, $locName) || ($locCode && str_contains($vl, $locCode)))) {
+                        $vlTokens = preg_split('/[\/\-,\;\s]+/', preg_replace('/\b([A-Za-z]+)\s+(\d+)\b/', '$1$2', $vl));
+                        $vlTokens = array_filter(array_map('trim', $vlTokens));
+                        $isTokenMatch = $vl && (
+                            $vl === $locName ||
+                            ($locCode && $vl === $locCode) ||
+                            ($cleanLocCode && $vl === $cleanLocCode) ||
+                            in_array($locName, $vlTokens, true) ||
+                            ($locCode && in_array($locCode, $vlTokens, true)) ||
+                            ($cleanLocCode && in_array($cleanLocCode, $vlTokens, true))
+                        );
+
+                        if ($isTokenMatch) {
                             $capturedProductIds[] = $prod->id;
                             $vStock = (float)($v['stock'] ?? $v['current_stock'] ?? 0);
                             $vCost  = (float)($v['purch_price'] ?? $cost);
@@ -358,7 +370,16 @@ class CycleCountController extends Controller
                         $isLocMatch = true;
                     } elseif ($location->warehouse_id && $ws->warehouse_id == $location->warehouse_id) {
                         $rem = strtolower(trim($ws->remarks ?? ''));
-                        if ($rem && ($rem === $locName || ($locCode && $rem === $locCode) || str_contains($rem, $locName) || ($locCode && str_contains($rem, $locCode)))) {
+                        $remTokens = preg_split('/[\/\-,\;\s]+/', preg_replace('/\b([A-Za-z]+)\s+(\d+)\b/', '$1$2', $rem));
+                        $remTokens = array_filter(array_map('trim', $remTokens));
+                        if ($rem && (
+                            $rem === $locName ||
+                            ($locCode && $rem === $locCode) ||
+                            ($cleanLocCode && $rem === $cleanLocCode) ||
+                            in_array($locName, $remTokens, true) ||
+                            ($locCode && in_array($locCode, $remTokens, true)) ||
+                            ($cleanLocCode && in_array($cleanLocCode, $remTokens, true))
+                        )) {
                             $isLocMatch = true;
                         }
                     }

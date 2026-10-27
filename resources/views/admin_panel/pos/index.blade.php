@@ -912,7 +912,7 @@
             </div>
             <div class="modal-body p-3">
                 <div class="input-group mb-3">
-                    <input type="text" id="exchangeInvoiceNo" class="form-control" placeholder="Enter Invoice Number or Invoice ID (e.g. INV-0010)...">
+                    <input type="text" id="exchangeInvoiceNo" class="form-control" placeholder="Enter Invoice Number (e.g. 7 or INV-0007)...">
                     <button class="btn btn-danger" type="button" id="btnSearchExchangeInvoice"><i class="fas fa-search"></i> Search</button>
                 </div>
                 
@@ -2329,6 +2329,13 @@
             $('#posExchangeModal').modal('show');
         });
 
+        $('#exchangeInvoiceNo').on('keydown', function(e) {
+            if (e.which === 13 || e.keyCode === 13) {
+                e.preventDefault();
+                $('#btnSearchExchangeInvoice').click();
+            }
+        });
+
         // Search Invoice handler
         $('#btnSearchExchangeInvoice').on('click', function() {
             let invNo = $('#exchangeInvoiceNo').val().trim();
@@ -2349,6 +2356,9 @@
                 },
                 success: function(res) {
                     $btn.prop('disabled', false).html('<i class="fas fa-search"></i> Search');
+                    if (res.invoice_no) {
+                        $('#exchangeInvoiceNo').val(res.invoice_no);
+                    }
                     $('#exchangeInvoiceVal').text(res.invoice_no);
                     $('#exchangeCustomerVal').text(res.customer_name);
                     $('#exchangeInvoiceDetails').removeClass('d-none');

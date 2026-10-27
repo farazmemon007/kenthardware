@@ -6,6 +6,9 @@ use App\Models\Carpenter;
 use App\Models\CarpenterCommission;
 use App\Models\Sale;
 use App\Models\Account;
+use App\Models\AccountHead;
+use App\Models\AccountHistory;
+use App\Models\VoucherMaster;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
@@ -220,12 +223,16 @@ class CarpenterController extends Controller
         $commissions = $query->orderByDesc('id')->paginate(20);
 
         $carpenters = Carpenter::orderBy('name')->get();
-        $accounts = Account::whereHas('head', function ($q) {
-            $q->whereIn('name', ['Cash', 'Bank']);
-        })->where('status', 1)->orderBy('title')->get();
+        $accounts = Account::with('head')
+            ->whereHas('head', function ($q) {
+                $q->whereIn('name', ['Cash', 'Bank']);
+            })
+            ->where('status', 1)
+            ->orderBy('title')
+            ->get();
 
         if ($accounts->isEmpty()) {
-            $accounts = Account::where('status', 1)->orderBy('title')->get();
+            $accounts = Account::with('head')->where('status', 1)->orderBy('title')->get();
         }
 
         return view('admin_panel.carpenters.commissions', compact(
@@ -244,40 +251,288 @@ class CarpenterController extends Controller
     }
 
     /**
-     * Approve Carpenter Commission.
+     * Internal helper to execute carpenter commission payment, deduct account balance,
+     * settle any pending customer return dues for this carpenter, record posted payment voucher,
+     * and log account audit history.
      */
-    public function approveCommission(Request $request, $id)
-    {
-        $commission = CarpenterCommission::findOrFail($id);
+    protected function executeCommissionPayment(
+        CarpenterCommission $commission,
+        int $accountId,
+        ?float $paidAmount = null,
+        ?string $paymentDate = null,
+        ?string $notes = null,
+        ?string $referenceNo = null,
+        bool $markApproved = true
+    ) {
+        $now = now();
+        $userId = auth()->id() ?? 1;
+        $payDate = !empty($paymentDate) ? Carbon::parse($paymentDate)->format('Y-m-d') : $now->format('Y-m-d');
 
-        if ($commission->status === 'paid') {
-            return response()->json(['success' => false, 'message' => 'Commission is already paid.'], 400);
+        // 1. Calculate return deductions due for this carpenter
+        $unsettledReturns = $commission->getPendingReturnDeductions();
+        $totalReturnDues = 0;
+        foreach ($unsettledReturns as $r) {
+            $unsettled = (float)$r->carpenter_deduction_amount - (float)($r->carpenter_deduction_settled_amount ?? 0);
+            $totalReturnDues += max(0, $unsettled);
+        }
+        $totalReturnDues = round($totalReturnDues, 2);
+
+        $grossCommission = (float)$commission->commission_amount;
+        $deductionToApply = min($grossCommission, $totalReturnDues);
+        $calculatedNetPayable = max(0, round($grossCommission - $deductionToApply, 2));
+
+        // If user submitted an explicit paid amount, use that (capped at calculatedNetPayable); otherwise default to net payable
+        if ($paidAmount !== null && $paidAmount >= 0) {
+            $actualPaidAmount = min((float)$paidAmount, $calculatedNetPayable);
+        } else {
+            $actualPaidAmount = $calculatedNetPayable;
         }
 
-        $commission->status = 'approved';
-        $commission->approved_by = auth()->id();
-        $commission->approved_at = now();
+        $account = Account::lockForUpdate()->findOrFail($accountId);
+        $oldBalance = (float)$account->current_balance;
+
+        // 2. Settle the pending returns up to deductionToApply
+        $remainingToSettle = $deductionToApply;
+        $settledReturnInvoices = [];
+
+        foreach ($unsettledReturns as $ret) {
+            if ($remainingToSettle <= 0) break;
+            $unsettledThis = (float)$ret->carpenter_deduction_amount - (float)($ret->carpenter_deduction_settled_amount ?? 0);
+            if ($unsettledThis <= 0) continue;
+
+            $settleAmount = min($unsettledThis, $remainingToSettle);
+            $ret->carpenter_deduction_settled_amount = (float)($ret->carpenter_deduction_settled_amount ?? 0) + $settleAmount;
+            if ($ret->carpenter_deduction_settled_amount >= ((float)$ret->carpenter_deduction_amount - 0.01)) {
+                $ret->carpenter_deduction_settled = 1;
+            }
+            $ret->carpenter_settled_commission_id = $commission->id;
+            $ret->carpenter_settled_at = $now;
+            $ret->save();
+
+            $settledReturnInvoices[] = $ret->return_invoice ?: "SR-{$ret->id}";
+            $remainingToSettle -= $settleAmount;
+        }
+
+        // 3. Update commission record
+        $commission->status = 'paid';
+        $commission->paid_by = $userId;
+        $commission->paid_at = $now;
+        $commission->payment_account_id = $accountId;
+        $commission->return_deduction_amount = $deductionToApply;
+        $commission->net_payable_amount = $actualPaidAmount;
+
+        if ($markApproved) {
+            $commission->approved_by = $commission->approved_by ?? $userId;
+            $commission->approved_at = $commission->approved_at ?? $now;
+        }
+
+        $notesList = [];
+        if (!empty($commission->notes)) $notesList[] = $commission->notes;
+        if (!empty($notes)) $notesList[] = $notes;
+        if (!empty($referenceNo)) $notesList[] = "Ref: {$referenceNo}";
+        if ($deductionToApply > 0) {
+            $notesList[] = "[Adjusted Return Dues: Rs. " . number_format($deductionToApply, 2) . " (" . implode(', ', $settledReturnInvoices) . ")]";
+        }
+        $commission->notes = implode(' | ', $notesList);
         $commission->save();
 
-        // Also mark on Sale model
+        // 4. Mark on Sale model
         if ($commission->sale) {
             $commission->sale->carpenter_commission_approved = 1;
             $commission->sale->save();
         }
 
-        if ($request->ajax() || $request->wantsJson()) {
-            return response()->json([
-                'success' => true,
-                'message' => "Commission #{$commission->id} approved successfully.",
-                'commission' => $commission,
+        // 5. Accounting: If actualPaidAmount > 0, create Payment Voucher and deduct from account
+        $voucher = null;
+        if ($actualPaidAmount > 0) {
+            $expenseAccount = Account::where('title', 'Carpenter Commission Expense')
+                ->orWhere('title', 'Commission Expense')
+                ->first();
+
+            if (!$expenseAccount) {
+                $expenseHead = AccountHead::where('name', 'like', '%Expense%')->first();
+                $expenseAccount = Account::create([
+                    'title' => 'Carpenter Commission Expense',
+                    'account_code' => 'EXP-COMM',
+                    'head_id' => $expenseHead ? $expenseHead->id : null,
+                    'type' => 'Debit',
+                    'opening_balance' => 0,
+                    'current_balance' => 0,
+                    'status' => 1,
+                ]);
+            }
+
+            $voucherService = app(\App\Services\VoucherService::class);
+            $carpenterName = $commission->carpenter ? $commission->carpenter->name : 'Carpenter';
+            $invoiceNo = $commission->sale ? $commission->sale->invoice_no : 'N/A';
+
+            $voucherRemarks = "Carpenter Commission Paid: {$carpenterName} (Sale #{$invoiceNo})";
+            if ($deductionToApply > 0) {
+                $voucherRemarks .= " [Gross: Rs. " . number_format($grossCommission, 2) . ", Less Returns: -Rs. " . number_format($deductionToApply, 2) . ", Net Paid: Rs. " . number_format($actualPaidAmount, 2) . "]";
+            }
+            if (!empty($referenceNo)) {
+                $voucherRemarks .= " [Ref: {$referenceNo}]";
+            }
+
+            $voucherData = [
+                'voucher_type' => VoucherMaster::TYPE_PAYMENT,
+                'date' => $payDate,
+                'status' => VoucherMaster::STATUS_POSTED,
+                'remarks' => $voucherRemarks,
+            ];
+
+            $lines = [
+                [
+                    'account_id' => $expenseAccount->id,
+                    'debit' => $actualPaidAmount,
+                    'credit' => 0,
+                    'narration' => "Commission expense for carpenter {$carpenterName}" . ($deductionToApply > 0 ? " (Net after Rs. " . number_format($deductionToApply, 2) . " return deduction)" : ""),
+                ],
+                [
+                    'account_id' => $account->id,
+                    'debit' => 0,
+                    'credit' => $actualPaidAmount,
+                    'narration' => "Commission payout to {$carpenterName} from {$account->title}" . (!empty($referenceNo) ? " (Ref: {$referenceNo})" : ""),
+                ],
+            ];
+
+            $voucher = $voucherService->createVoucher($voucherData, $lines, $userId);
+
+            // Ensure account balance is correctly reduced
+            $account->refresh();
+            $expectedNewBalance = $oldBalance - $actualPaidAmount;
+            if (abs((float)$account->current_balance - $expectedNewBalance) > 0.01) {
+                $account->current_balance = $expectedNewBalance;
+                $account->save();
+            }
+
+            // Record AccountHistory
+            AccountHistory::create([
+                'account_id' => $account->id,
+                'old_balance' => $oldBalance,
+                'new_balance' => (float)$account->current_balance,
+                'user_id' => $userId,
+                'user_name' => auth()->user()->name ?? 'User',
+                'note' => "Commission Paid: {$carpenterName} | Sale #{$invoiceNo} | Net: Rs. " . number_format($actualPaidAmount, 2) . ($deductionToApply > 0 ? " (Gross: " . number_format($grossCommission, 2) . " - Due: " . number_format($deductionToApply, 2) . ")" : "") . (!empty($referenceNo) ? " | Ref: {$referenceNo}" : "") . " (Voucher: {$voucher->voucher_no})",
             ]);
         }
 
-        return redirect()->back()->with('success', "Commission for {$commission->carpenter->name} approved successfully.");
+        $newBalance = (float)$account->fresh()->current_balance;
+
+        return [
+            'commission' => $commission,
+            'voucher' => $voucher,
+            'account' => $account,
+            'old_balance' => $oldBalance,
+            'new_balance' => $newBalance,
+            'paid_amount' => $actualPaidAmount,
+            'deduction_amount' => $deductionToApply,
+            'gross_amount' => $grossCommission,
+        ];
     }
 
     /**
-     * Batch Approve Commissions.
+     * Approve Carpenter Commission (supports Approve Only OR Approve & Pay Now).
+     */
+    public function approveCommission(Request $request, $id)
+    {
+        $commission = CarpenterCommission::with(['carpenter', 'sale'])->findOrFail($id);
+
+        if ($commission->status === 'paid') {
+            return response()->json(['success' => false, 'message' => 'Commission is already paid.'], 400);
+        }
+
+        $actionType = $request->input('action_type', 'approve_and_pay');
+
+        // Case A: Approve only (Pay later)
+        if ($actionType === 'approve_only' || !$request->filled('payment_account_id')) {
+            $commission->status = 'approved';
+            $commission->approved_by = auth()->id() ?? 1;
+            $commission->approved_at = now();
+            $commission->save();
+
+            // Also mark on Sale model
+            if ($commission->sale) {
+                $commission->sale->carpenter_commission_approved = 1;
+                $commission->sale->save();
+            }
+
+            $carpenterName = $commission->carpenter ? $commission->carpenter->name : 'Carpenter';
+
+            if ($request->ajax() || $request->wantsJson()) {
+                return response()->json([
+                    'success' => true,
+                    'message' => "Commission #{$commission->id} for {$carpenterName} approved successfully (Pending Payment).",
+                    'commission' => $commission,
+                ]);
+            }
+
+            return redirect()->back()->with('success', "Commission for {$carpenterName} approved successfully.");
+        }
+
+        // Case B: Approve & Pay Now
+        $request->validate([
+            'payment_account_id' => 'required|exists:accounts,id',
+            'paid_amount' => 'nullable|numeric|min:0',
+            'payment_date' => 'nullable|date',
+            'reference_no' => 'nullable|string|max:100',
+            'notes' => 'nullable|string|max:500',
+        ]);
+
+        $paidAmount = $request->filled('paid_amount') ? (float)$request->paid_amount : null;
+
+        DB::beginTransaction();
+        try {
+            $res = $this->executeCommissionPayment(
+                $commission,
+                (int)$request->payment_account_id,
+                $paidAmount,
+                $request->payment_date,
+                $request->notes,
+                $request->reference_no,
+                true // markApproved
+            );
+
+            DB::commit();
+
+            $accountTitle = $res['account']->title;
+            $newBalFormatted = number_format($res['new_balance'], 2);
+            $paidFormatted = number_format($res['paid_amount'], 2);
+            $grossFormatted = number_format($res['gross_amount'], 2);
+
+            $msg = "Commission of Gross Rs. {$grossFormatted}";
+            if ($res['deduction_amount'] > 0) {
+                $msg .= " (Less Return Dues: -Rs. " . number_format($res['deduction_amount'], 2) . ")";
+            }
+            $msg .= " approved & Net Rs. {$paidFormatted} paid from {$accountTitle}. Account balance deducted (New balance: Rs. {$newBalFormatted}).";
+
+            if ($request->ajax() || $request->wantsJson()) {
+                return response()->json([
+                    'success' => true,
+                    'message' => $msg,
+                    'commission' => $res['commission'],
+                    'voucher_no' => $res['voucher']->voucher_no ?? null,
+                    'new_balance' => $res['new_balance'],
+                    'account_title' => $accountTitle,
+                    'gross_amount' => $res['gross_amount'],
+                    'deduction_amount' => $res['deduction_amount'],
+                    'paid_amount' => $res['paid_amount'],
+                ]);
+            }
+
+            return redirect()->back()->with('success', $msg);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            \Log::error("Approve & pay commission error: " . $e->getMessage());
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to process commission approval and payment: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
+     * Batch Approve Commissions (supports Approve & Pay All OR Approve All Only).
      */
     public function batchApprove(Request $request)
     {
@@ -286,24 +541,97 @@ class CarpenterController extends Controller
             return response()->json(['success' => false, 'message' => 'No commissions selected.'], 400);
         }
 
-        $now = now();
-        $userId = auth()->id();
+        $actionType = $request->input('action_type', 'approve_and_pay');
+        $payNow = ($actionType === 'approve_and_pay' && $request->filled('payment_account_id'));
 
-        $updated = CarpenterCommission::whereIn('id', $ids)
-            ->where('status', 'pending')
-            ->update([
-                'status' => 'approved',
-                'approved_by' => $userId,
-                'approved_at' => $now,
-            ]);
+        DB::beginTransaction();
+        try {
+            $commissions = CarpenterCommission::with(['carpenter', 'sale'])
+                ->whereIn('id', $ids)
+                ->whereIn('status', ['pending', 'approved'])
+                ->get();
 
-        $saleIds = CarpenterCommission::whereIn('id', $ids)->pluck('sale_id');
-        Sale::whereIn('id', $saleIds)->update(['carpenter_commission_approved' => 1]);
+            if ($commissions->isEmpty()) {
+                return response()->json(['success' => false, 'message' => 'No eligible commissions found for approval.'], 400);
+            }
 
-        return response()->json([
-            'success' => true,
-            'message' => "{$updated} commissions approved successfully.",
-        ]);
+            $now = now();
+            $userId = auth()->id() ?? 1;
+
+            if ($payNow) {
+                $accountId = (int)$request->payment_account_id;
+                $account = Account::lockForUpdate()->findOrFail($accountId);
+
+                $totalGross = 0;
+                $totalPaid = 0;
+                $totalDeductions = 0;
+                $processedCount = 0;
+
+                foreach ($commissions as $comm) {
+                    if ($comm->status === 'paid') continue;
+
+                    $res = $this->executeCommissionPayment(
+                        $comm,
+                        $accountId,
+                        null, // auto calculate net payable
+                        $request->payment_date,
+                        $request->notes,
+                        $request->reference_no,
+                        true
+                    );
+                    $totalGross += $res['gross_amount'];
+                    $totalPaid += $res['paid_amount'];
+                    $totalDeductions += $res['deduction_amount'];
+                    $processedCount++;
+                }
+
+                DB::commit();
+
+                $account->refresh();
+                $newBalFormatted = number_format($account->current_balance, 2);
+                $totalPaidFormatted = number_format($totalPaid, 2);
+                $totalGrossFormatted = number_format($totalGross, 2);
+
+                $msg = "{$processedCount} commissions totaling Gross Rs. {$totalGrossFormatted}";
+                if ($totalDeductions > 0) {
+                    $msg .= " (Less Return Dues: -Rs. " . number_format($totalDeductions, 2) . ")";
+                }
+                $msg .= " approved & Net Rs. {$totalPaidFormatted} paid from {$account->title}. Account balance deducted (New balance: Rs. {$newBalFormatted}).";
+
+                return response()->json([
+                    'success' => true,
+                    'message' => $msg,
+                    'new_balance' => $account->current_balance,
+                    'account_title' => $account->title,
+                    'total_gross' => $totalGross,
+                    'total_paid' => $totalPaid,
+                    'total_deductions' => $totalDeductions,
+                ]);
+            } else {
+                // Batch Approve only (Pay later)
+                $updated = CarpenterCommission::whereIn('id', $ids)
+                    ->where('status', 'pending')
+                    ->update([
+                        'status' => 'approved',
+                        'approved_by' => $userId,
+                        'approved_at' => $now,
+                    ]);
+
+                $saleIds = CarpenterCommission::whereIn('id', $ids)->pluck('sale_id');
+                Sale::whereIn('id', $saleIds)->update(['carpenter_commission_approved' => 1]);
+
+                DB::commit();
+
+                return response()->json([
+                    'success' => true,
+                    'message' => "{$updated} commissions approved successfully (Pending Payment).",
+                ]);
+            }
+        } catch (\Exception $e) {
+            DB::rollBack();
+            \Log::error("Batch approve error: " . $e->getMessage());
+            return response()->json(['success' => false, 'message' => 'Failed to process batch approval: ' . $e->getMessage()], 500);
+        }
     }
 
     /**
@@ -313,8 +641,10 @@ class CarpenterController extends Controller
     {
         $request->validate([
             'payment_account_id' => 'required|exists:accounts,id',
-            'paid_amount' => 'nullable|numeric|min:0.01',
-            'notes' => 'nullable|string',
+            'paid_amount' => 'nullable|numeric|min:0',
+            'payment_date' => 'nullable|date',
+            'reference_no' => 'nullable|string|max:100',
+            'notes' => 'nullable|string|max:500',
         ]);
 
         $commission = CarpenterCommission::with(['carpenter', 'sale'])->findOrFail($id);
@@ -323,70 +653,51 @@ class CarpenterController extends Controller
             return response()->json(['success' => false, 'message' => 'Commission is already paid.'], 400);
         }
 
-        $paidAmount = $request->filled('paid_amount') ? (float)$request->paid_amount : (float)$commission->commission_amount;
-        $accountId = $request->payment_account_id;
+        $paidAmount = $request->filled('paid_amount') ? (float)$request->paid_amount : null;
 
         DB::beginTransaction();
         try {
-            $commission->status = 'paid';
-            $commission->paid_by = auth()->id();
-            $commission->paid_at = now();
-            $commission->payment_account_id = $accountId;
-            if ($request->filled('notes')) {
-                $commission->notes = trim($commission->notes . ' ' . $request->notes);
-            }
-            $commission->save();
-
-            // Try to record Payment Voucher / Expense entry for accounting integrity
-            try {
-                $voucherService = app(\App\Services\VoucherService::class);
-                $balanceService = app(\App\Services\BalanceService::class);
-                
-                // Expense account: look for Commission Expense or Sales Revenue/Expense
-                $expenseAccount = Account::where('title', 'like', '%Commission%')
-                    ->orWhere('title', 'like', '%Expense%')
-                    ->first();
-                $expenseAccountId = $expenseAccount ? $expenseAccount->id : $balanceService->getSalesRevenueId();
-
-                $voucherData = [
-                    'voucher_type' => \App\Models\VoucherMaster::TYPE_PAYMENT,
-                    'date' => now()->format('Y-m-d'),
-                    'status' => \App\Models\VoucherMaster::STATUS_POSTED,
-                    'remarks' => "Carpenter Commission Paid: {$commission->carpenter->name} (Sale #{$commission->sale->invoice_no})",
-                ];
-
-                $lines = [
-                    [
-                        'account_id' => $expenseAccountId,
-                        'debit' => $paidAmount,
-                        'credit' => 0,
-                        'narration' => "Commission to Carpenter {$commission->carpenter->name}",
-                    ],
-                    [
-                        'account_id' => $accountId,
-                        'debit' => 0,
-                        'credit' => $paidAmount,
-                        'narration' => "Cash/Bank Payment for Carpenter Commission",
-                    ],
-                ];
-
-                $voucherService->createVoucher($voucherData, $lines, auth()->id());
-            } catch (\Exception $e) {
-                \Log::warning("Carpenter commission payment voucher skipped: " . $e->getMessage());
-            }
+            $res = $this->executeCommissionPayment(
+                $commission,
+                (int)$request->payment_account_id,
+                $paidAmount,
+                $request->payment_date,
+                $request->notes,
+                $request->reference_no,
+                true
+            );
 
             DB::commit();
+
+            $accountTitle = $res['account']->title;
+            $newBalFormatted = number_format($res['new_balance'], 2);
+            $paidFormatted = number_format($res['paid_amount'], 2);
+            $grossFormatted = number_format($res['gross_amount'], 2);
+
+            $msg = "Commission payment of Gross Rs. {$grossFormatted}";
+            if ($res['deduction_amount'] > 0) {
+                $msg .= " (Less Return Dues: -Rs. " . number_format($res['deduction_amount'], 2) . ")";
+            }
+            $msg .= " recorded & Net Rs. {$paidFormatted} paid from {$accountTitle}. Account balance deducted (New balance: Rs. {$newBalFormatted}).";
 
             if ($request->ajax() || $request->wantsJson()) {
                 return response()->json([
                     'success' => true,
-                    'message' => "Commission payment of Rs. " . number_format($paidAmount, 2) . " recorded successfully.",
+                    'message' => $msg,
+                    'commission' => $res['commission'],
+                    'voucher_no' => $res['voucher']->voucher_no ?? null,
+                    'new_balance' => $res['new_balance'],
+                    'account_title' => $accountTitle,
+                    'gross_amount' => $res['gross_amount'],
+                    'deduction_amount' => $res['deduction_amount'],
+                    'paid_amount' => $res['paid_amount'],
                 ]);
             }
 
-            return redirect()->back()->with('success', 'Commission payment recorded successfully.');
+            return redirect()->back()->with('success', $msg);
         } catch (\Exception $e) {
             DB::rollBack();
+            \Log::error("Pay commission error: " . $e->getMessage());
             return response()->json(['success' => false, 'message' => 'Failed to pay commission: ' . $e->getMessage()], 500);
         }
     }
@@ -397,6 +708,14 @@ class CarpenterController extends Controller
     public function cancelCommission(Request $request, $id)
     {
         $commission = CarpenterCommission::findOrFail($id);
+
+        if ($commission->status === 'paid') {
+            return response()->json([
+                'success' => false,
+                'message' => 'Paid commissions cannot be cancelled directly. Please reverse or void the payment voucher first.'
+            ], 400);
+        }
+
         $commission->status = 'cancelled';
         $commission->notes = trim($commission->notes . ' [Cancelled: ' . $request->input('reason', 'Cancelled by user') . ']');
         $commission->save();

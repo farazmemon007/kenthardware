@@ -98,6 +98,37 @@ class PCodeService
     }
 
     /**
+     * Format Sky and Rot P-Codes into standard combined format: 'GIII-GGII'
+     */
+    public static function formatCombined(?string $skyCode, ?string $rotCode): string
+    {
+        $skyCode = trim((string)$skyCode);
+        $rotCode = trim((string)$rotCode);
+
+        if ($skyCode === '---' || $skyCode === '-') $skyCode = '';
+        if ($rotCode === '---' || $rotCode === '-') $rotCode = '';
+
+        if (!empty($skyCode) && !empty($rotCode)) {
+            if (str_contains($skyCode, $rotCode)) {
+                return preg_replace('/\s*-\s*/', '-', $skyCode);
+            }
+            return "{$skyCode}-{$rotCode}";
+        }
+
+        return $skyCode ?: $rotCode;
+    }
+
+    /**
+     * Encode sale price and wholesale price into combined P-Code: 'GIII-GGII'
+     */
+    public static function encodeCombined($salePrice, $wholesalePrice): string
+    {
+        $sky = self::encode($salePrice);
+        $rot = self::encode($wholesalePrice);
+        return self::formatCombined($sky, $rot);
+    }
+
+    /**
      * Re-calculate and synchronize P-Codes for all existing products and variants
      * according to the active P-Code cipher mapping.
      */

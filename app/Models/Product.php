@@ -14,7 +14,26 @@ class Product extends Model
 
     protected $casts = [
         'uom_data' => 'array',
+        'attributes_data' => 'array',
     ];
+
+    public function getImageUrlAttribute()
+    {
+        $img = $this->image ?: $this->web_main_image;
+        if (empty($img)) {
+            return null;
+        }
+        if (str_starts_with($img, 'http://') || str_starts_with($img, 'https://')) {
+            return $img;
+        }
+        if (file_exists(public_path('uploads/products/' . $img))) {
+            return asset('uploads/products/' . $img);
+        }
+        if (file_exists(public_path($img))) {
+            return asset($img);
+        }
+        return asset('uploads/products/' . $img);
+    }
 
     public function getUomUnitsList()
     {
@@ -24,8 +43,16 @@ class Product extends Model
 
         $uom = is_string($this->uom_data) ? json_decode($this->uom_data, true) : $this->uom_data;
 
+        // Fallback to unit's uom_data if product has no custom uom_data
         if (!is_array($uom) || empty($uom)) {
-            return [
+            if ($this->unit && !empty($this->unit->uom_data)) {
+                $uom = is_string($this->unit->uom_data) ? json_decode($this->unit->uom_data, true) : $this->unit->uom_data;
+            }
+        }
+
+        // If still no uom data defined, check if product has pieces_per_box > 1 (Carton / Box pack)
+        if (!is_array($uom) || empty($uom)) {
+            $list = [
                 [
                     'name' => $baseName,
                     'ratio' => 1.0,
@@ -33,16 +60,55 @@ class Product extends Model
                     'price' => $basePrice,
                     'cost' => $baseCost,
                     'upc' => $this->item_code ?? '',
-                    'alu' => ''
+                    'barcode' => $this->item_code ?? '',
+                    'alu' => '',
+                    'alt_lookup' => '',
+                    'unit_index' => 0
                 ]
             ];
+
+            if ($this->pieces_per_box > 1) {
+                $ppb = (float)$this->pieces_per_box;
+                $cartonName = !empty($this->packing_name) ? $this->packing_name : (($this->size_mode === 'by_cartons') ? 'Carton' : 'Box');
+                $cartonPrice = (float)($this->sale_price_per_box > 0 ? $this->sale_price_per_box : ($basePrice * $ppb));
+                $cartonCost = (float)($this->purchase_price_per_box > 0 ? $this->purchase_price_per_box : ($baseCost * $ppb));
+
+                $list[] = [
+                    'name' => $cartonName,
+                    'ratio' => $ppb,
+                    'is_base' => false,
+                    'price' => $cartonPrice,
+                    'cost' => $cartonCost,
+                    'upc' => ($this->item_code ? $this->item_code . '-CTN' : ''),
+                    'barcode' => ($this->item_code ? $this->item_code . '-CTN' : ''),
+                    'alu' => '',
+                    'alt_lookup' => '',
+                    'unit_index' => 1
+                ];
+            }
+
+            return $list;
         }
 
-        $actualBaseName = !empty($uom['base_unit']['name']) ? $uom['base_unit']['name'] : (!empty($uom['base_unit_name']) ? $uom['base_unit_name'] : null);
-        $actualBasePrice = isset($uom['base_unit']['price']) && (float)$uom['base_unit']['price'] > 0 ? (float)$uom['base_unit']['price'] : $basePrice;
-        $actualBaseCost = isset($uom['base_unit']['cost']) && (float)$uom['base_unit']['cost'] > 0 ? (float)$uom['base_unit']['cost'] : $baseCost;
-        $baseUpc = $uom['base_unit']['upc'] ?? ($uom['base_unit']['barcode'] ?? null);
-        $baseAlu = $uom['base_unit']['alu'] ?? ($uom['base_unit']['alt_lookup'] ?? null);
+        $actualBaseName = is_array($uom['base_unit'] ?? null) 
+            ? ($uom['base_unit']['name'] ?? null) 
+            : ($uom['base_unit_name'] ?? (is_string($uom['base_unit'] ?? null) ? $uom['base_unit'] : null));
+
+        $actualBasePrice = (is_array($uom['base_unit'] ?? null) && isset($uom['base_unit']['price']) && (float)$uom['base_unit']['price'] > 0) 
+            ? (float)$uom['base_unit']['price'] 
+            : $basePrice;
+
+        $actualBaseCost = (is_array($uom['base_unit'] ?? null) && isset($uom['base_unit']['cost']) && (float)$uom['base_unit']['cost'] > 0) 
+            ? (float)$uom['base_unit']['cost'] 
+            : $baseCost;
+
+        $baseUpc = is_array($uom['base_unit'] ?? null) 
+            ? ($uom['base_unit']['upc'] ?? ($uom['base_unit']['barcode'] ?? null)) 
+            : null;
+
+        $baseAlu = is_array($uom['base_unit'] ?? null) 
+            ? ($uom['base_unit']['alu'] ?? ($uom['base_unit']['alt_lookup'] ?? null)) 
+            : null;
 
         // If not explicit in base_unit, inspect units array for the base unit definition
         if (!empty($uom['units']) && is_array($uom['units'])) {
@@ -78,6 +144,7 @@ class Product extends Model
                 'barcode' => $baseUpc,
                 'alu' => $baseAlu,
                 'alt_lookup' => $baseAlu,
+                'unit_index' => 0
             ]
         ];
 
@@ -112,6 +179,11 @@ class Product extends Model
     public function getUomSellUnit()
     {
         $uom = is_string($this->uom_data) ? json_decode($this->uom_data, true) : $this->uom_data;
+        if (!is_array($uom) || empty($uom)) {
+            if ($this->unit && !empty($this->unit->uom_data)) {
+                $uom = is_string($this->unit->uom_data) ? json_decode($this->unit->uom_data, true) : $this->unit->uom_data;
+            }
+        }
         if (is_array($uom) && (!empty($uom['sell_unit']) || !empty($uom['sell_by']))) {
             return $uom['sell_unit'] ?? $uom['sell_by'];
         }
@@ -121,6 +193,11 @@ class Product extends Model
     public function getUomOrderUnit()
     {
         $uom = is_string($this->uom_data) ? json_decode($this->uom_data, true) : $this->uom_data;
+        if (!is_array($uom) || empty($uom)) {
+            if ($this->unit && !empty($this->unit->uom_data)) {
+                $uom = is_string($this->unit->uom_data) ? json_decode($this->unit->uom_data, true) : $this->unit->uom_data;
+            }
+        }
         if (is_array($uom) && (!empty($uom['order_unit']) || !empty($uom['order_by']))) {
             return $uom['order_unit'] ?? $uom['order_by'];
         }

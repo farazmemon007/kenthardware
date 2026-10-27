@@ -133,6 +133,7 @@ Route::middleware('auth')->group(function () {
     route::post('/Brand/store', [BrandController::class, 'store'])->middleware('permission:brands.create|brands.edit')->name('store.Brand');
 
     route::get('/Unit', [UnitController::class, 'index'])->middleware('permission:units.view')->name('Unit.home');
+    Route::get('/Unit/show/{id}', [UnitController::class, 'show'])->middleware('permission:units.view')->name('show.Unit');
     Route::get('/Unit/delete/{id}', [UnitController::class, 'delete'])->middleware('permission:units.delete')->name('delete.Unit');
     route::post('/Unit/store', [UnitController::class, 'store'])->middleware('permission:units.create|units.edit')->name('store.Unit');
     Route::post('/package-type/store', [ProductController::class, 'storePackageType'])->name('store.package_type');
@@ -172,6 +173,14 @@ Route::middleware('auth')->group(function () {
     Route::get('/products/{id}/edit', [ProductController::class, 'edit'])->middleware('permission:products.edit')->name('products.edit');
     Route::get('/product/{id}/edit', [ProductController::class, 'edit'])->middleware('permission:products.edit')->name('product.edit');
     Route::get('/generate-barcode-image', [ProductController::class, 'generateBarcode'])->name('generate-barcode-image');
+
+    // Product Attributes Master Management Routes
+    Route::get('/product-attributes', [App\Http\Controllers\ProductAttributeController::class, 'index'])->name('product.attributes.index');
+    Route::post('/product-attributes', [App\Http\Controllers\ProductAttributeController::class, 'store'])->name('product.attributes.store');
+    Route::match(['put', 'post'], '/product-attributes/{id}', [App\Http\Controllers\ProductAttributeController::class, 'update'])->name('product.attributes.update');
+    Route::delete('/product-attributes/{id}', [App\Http\Controllers\ProductAttributeController::class, 'destroy'])->name('product.attributes.destroy');
+    Route::post('/product-attributes/{id}/delete', [App\Http\Controllers\ProductAttributeController::class, 'destroy']);
+    Route::post('/product-attributes/{id}/values', [App\Http\Controllers\ProductAttributeController::class, 'addValue'])->name('product.attributes.add_value');
 
     // ── Product Import / Export ──
     Route::get('/products/export',   [App\Http\Controllers\ProductImportExportController::class, 'export'])

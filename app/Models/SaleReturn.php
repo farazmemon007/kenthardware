@@ -28,6 +28,10 @@ class SaleReturn extends Model
         'carpenter_id',
         'carpenter_commission_rate',
         'carpenter_deduction_amount',
+        'carpenter_deduction_settled',
+        'carpenter_deduction_settled_amount',
+        'carpenter_settled_commission_id',
+        'carpenter_settled_at',
     ];
 
     protected $casts = [

@@ -2685,6 +2685,270 @@
             gap: 4px;
         }
     }
+
+    /* ==============================================================
+       QUICKBOOKS & ODOO ERP PRODUCT IMPORT MODAL DESIGN SYSTEM (V2)
+       ============================================================== */
+    #importModal .qb-modal-content {
+        border-radius: 10px !important;
+        overflow: hidden !important;
+        border: 1px solid #0f2744 !important;
+        box-shadow: 0 20px 45px -10px rgba(15, 39, 68, 0.45) !important;
+        background: #ffffff !important;
+        max-height: calc(100vh - 40px) !important;
+        display: flex !important;
+        flex-direction: column !important;
+    }
+
+    #importModal .qb-modal-header {
+        background: linear-gradient(180deg, #18385e 0%, #0f2744 100%) !important;
+        border-bottom: 2px solid #0077c5 !important;
+        padding: 12px 18px !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: space-between !important;
+        color: #ffffff !important;
+        flex-shrink: 0 !important;
+    }
+
+    #importModal .qb-modal-icon-badge {
+        width: 36px;
+        height: 36px;
+        background: rgba(255, 255, 255, 0.12);
+        border: 1px solid rgba(255, 255, 255, 0.25);
+        border-radius: 8px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        color: #38bdf8;
+        font-size: 16px;
+        flex-shrink: 0;
+    }
+
+    #importModal .qb-modal-title {
+        font-size: 15px !important;
+        font-weight: 800 !important;
+        color: #ffffff !important;
+        letter-spacing: 0.2px !important;
+        line-height: 1.3 !important;
+        margin: 0 !important;
+    }
+
+    #importModal .qb-modal-subtitle {
+        font-size: 11.5px !important;
+        font-weight: 500 !important;
+        color: #93c5fd !important;
+        line-height: 1.3 !important;
+        margin-top: 2px !important;
+        display: block !important;
+    }
+
+    #importModal .qb-modal-close {
+        background: transparent !important;
+        border: none !important;
+        color: #ffffff !important;
+        font-size: 18px !important;
+        line-height: 1 !important;
+        opacity: 0.8 !important;
+        cursor: pointer !important;
+        padding: 6px 10px !important;
+        border-radius: 4px !important;
+        transition: all 0.15s ease !important;
+    }
+    #importModal .qb-modal-close:hover {
+        opacity: 1 !important;
+        background: rgba(255, 255, 255, 0.18) !important;
+        color: #ffffff !important;
+    }
+
+    /* Template Action Cards (Structured & Clean) */
+    .qb-template-card-box {
+        background: #ffffff;
+        border: 1.5px solid #cbd5e1;
+        border-radius: 8px;
+        padding: 12px 14px;
+        transition: all 0.18s ease;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        height: 100%;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.03);
+    }
+    .qb-template-card-box:hover {
+        border-color: #2563eb;
+        box-shadow: 0 4px 12px rgba(37,99,235,0.12);
+        transform: translateY(-1px);
+    }
+    .qb-template-card-box.qb-card-excel:hover {
+        border-color: #16a34a;
+        box-shadow: 0 4px 12px rgba(22,163,74,0.14);
+    }
+
+    .qb-template-icon-square {
+        width: 36px;
+        height: 36px;
+        border-radius: 7px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 18px;
+        flex-shrink: 0;
+    }
+    .qb-template-icon-excel {
+        background: #ecfdf5;
+        color: #16a34a;
+        border: 1px solid #bbf7d0;
+    }
+    .qb-template-icon-csv {
+        background: #eff6ff;
+        color: #2563eb;
+        border: 1px solid #bfdbfe;
+    }
+
+    .qb-template-card-title {
+        font-size: 13px;
+        font-weight: 700;
+        color: #0f172a;
+        line-height: 1.3;
+        margin: 0;
+    }
+    .qb-template-card-desc {
+        font-size: 11px;
+        color: #64748b;
+        line-height: 1.4;
+        margin: 6px 0 10px 0;
+        display: block;
+    }
+
+    /* Engine Safeguard Pills */
+    .qb-feat-pill {
+        background: #ffffff;
+        border: 1px solid #cbd5e1;
+        border-radius: 6px;
+        padding: 6px 10px;
+        display: flex;
+        align-items: flex-start;
+        gap: 8px;
+        height: 100%;
+        font-size: 11px;
+        line-height: 1.35;
+    }
+    .qb-feat-pill i {
+        font-size: 14px;
+        margin-top: 2px;
+        flex-shrink: 0;
+    }
+    .qb-feat-pill strong {
+        display: block;
+        color: #1e293b;
+        font-size: 11px;
+        margin-bottom: 1px;
+    }
+    .qb-feat-pill span {
+        color: #64748b;
+        font-size: 10.5px;
+    }
+
+    /* Modern Dropzone */
+    .qb-dropzone {
+        border: 2px dashed #93c5fd;
+        border-radius: 8px;
+        background: #ffffff;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        position: relative;
+        padding: 14px 16px;
+    }
+    .qb-dropzone:hover, .qb-dropzone.dragover {
+        border-color: #2563eb;
+        background: #eff6ff;
+    }
+    .qb-dropzone-icon {
+        font-size: 28px;
+        color: #2563eb;
+        line-height: 1;
+        margin-bottom: 6px;
+    }
+    .qb-dropzone-title {
+        font-size: 12.5px;
+        color: #1e293b;
+        font-weight: 500;
+        line-height: 1.3;
+        margin-bottom: 2px;
+    }
+    .qb-dropzone-preview {
+        background: #f8fafc;
+        border-radius: 6px;
+        padding: 8px 12px;
+        border: 1px solid #e2e8f0;
+    }
+    .qb-file-badge-icon {
+        width: 34px;
+        height: 34px;
+        background: #ffffff;
+        border: 1px solid #cbd5e1;
+        border-radius: 6px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 17px;
+        flex-shrink: 0;
+    }
+
+    /* Modal Footer */
+    #importModal .qb-modal-footer {
+        background: linear-gradient(180deg, #edf3fa 0%, #dbe5f1 100%) !important;
+        border-top: 1px solid #b2c5dc !important;
+        padding: 10px 20px !important;
+        display: flex !important;
+        justify-content: space-between !important;
+        align-items: center !important;
+        gap: 8px !important;
+        flex-shrink: 0 !important;
+    }
+    #importModal .qb-modal-btn-cancel {
+        background: linear-gradient(180deg, #ffffff 0%, #f1f5f9 100%) !important;
+        border: 1px solid #8ca4c3 !important;
+        color: #334155 !important;
+        font-weight: 700 !important;
+        font-size: 11.5px !important;
+        height: 32px !important;
+        padding: 0 16px !important;
+        border-radius: 4px !important;
+        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05) !important;
+        cursor: pointer !important;
+        display: inline-flex !important;
+        align-items: center !important;
+        gap: 5px !important;
+        text-decoration: none !important;
+        transition: all 0.12s ease !important;
+    }
+    #importModal .qb-modal-btn-cancel:hover {
+        background: #e2e8f0 !important;
+        color: #0f172a !important;
+        border-color: #64748b !important;
+    }
+    #importModal .qb-modal-btn-save {
+        background: linear-gradient(180deg, #5ea5ee 0%, #3077c1 48%, #2061a9 52%, #195293 100%) !important;
+        border: 1px solid #15457a !important;
+        color: #ffffff !important;
+        font-weight: 800 !important;
+        font-size: 12px !important;
+        height: 32px !important;
+        padding: 0 18px !important;
+        border-radius: 4px !important;
+        box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.45), 0 1px 2px rgba(0, 0, 0, 0.2) !important;
+        cursor: pointer !important;
+        display: inline-flex !important;
+        align-items: center !important;
+        gap: 6px !important;
+        text-decoration: none !important;
+        transition: filter 0.1s ease !important;
+    }
+    #importModal .qb-modal-btn-save:hover {
+        filter: brightness(1.1) !important;
+        color: #ffffff !important;
+    }
 </style>
 
 <div class="main-content">
@@ -2763,7 +3027,7 @@
                         <li><a class="dropdown-item" href="{{ route('products.template.quickbooks') }}"><i class="fas fa-file-excel text-success me-2"></i> Client Template (QuickBooks / Item #)</a></li>
                         <li><a class="dropdown-item" href="{{ route('products.template') }}"><i class="fas fa-file-csv text-secondary me-2"></i> Full ERP Template CSV</a></li>
                         <li><a class="dropdown-item" href="{{ route('products.export') }}"><i class="fas fa-file-download text-success me-2"></i> Export to CSV</a></li>
-                        <li><a class="dropdown-item" href="javascript:void(0)" id="openImportModalBtn"><i class="fas fa-file-upload text-warning me-2"></i> Import CSV</a></li>
+                        <li><a class="dropdown-item" href="javascript:void(0)" id="openImportModalBtn"><i class="fas fa-file-upload text-warning me-2"></i> Import Excel / CSV</a></li>
                     </ul>
                 </div>
             </div>
@@ -2792,12 +3056,35 @@
         </div>
         @endif
 
-        {{-- ── Success Alert ── --}}
+        {{-- ── Success & Error Alerts ── --}}
         @if (session()->has('success'))
         <div class="mx-4 mt-3 alert d-flex align-items-center gap-2" style="background:#ecfdf5; border:1px solid #a7f3d0; border-radius:8px; color:#065f46; font-size:.85rem; padding:10px 14px;">
             <i class="fas fa-check-circle" style="color:#059669; font-size:16px;"></i>
             {{ session('success') }}
             <button type="button" class="btn-close ms-auto" data-bs-dismiss="alert" style="font-size:.6rem;"></button>
+        </div>
+        @endif
+
+        @if (session()->has('error'))
+        <div class="mx-4 mt-3 alert alert-danger d-flex align-items-center gap-2" style="border-radius:8px; font-size:.85rem; padding:10px 14px;">
+            <i class="fas fa-exclamation-circle text-danger" style="font-size:16px;"></i>
+            <span>{{ session('error') }}</span>
+            <button type="button" class="btn-close ms-auto" data-bs-dismiss="alert" style="font-size:.6rem;"></button>
+        </div>
+        @endif
+
+        @if ($errors->any())
+        <div class="mx-4 mt-3 alert alert-danger" style="border-radius:8px; font-size:.85rem; padding:10px 14px;">
+            <div class="d-flex align-items-center gap-2 mb-1">
+                <i class="fas fa-exclamation-triangle text-danger" style="font-size:16px;"></i>
+                <strong>Import / Validation Errors:</strong>
+                <button type="button" class="btn-close ms-auto" data-bs-dismiss="alert" style="font-size:.6rem;"></button>
+            </div>
+            <ul class="mb-0 ps-3">
+                @foreach($errors->all() as $err)
+                    <li>{{ $err }}</li>
+                @endforeach
+            </ul>
         </div>
         @endif
 
@@ -3017,6 +3304,7 @@
                             <div class="qb-data-row"><span class="qb-data-label">Type</span><span class="qb-data-val" id="qbValType">Inventory Part</span></div>
                             <div class="qb-data-row"><span class="qb-data-label">Department</span><span class="qb-data-val" id="qbValDepartment">—</span></div>
                             <div class="qb-data-row qb-price-row" style="display:none;"><span class="qb-data-label">Regular Price</span><span class="qb-data-val qb-price-regular" id="qbValRegularPrice">Rs. 0.00</span></div>
+                            <div class="qb-data-row"><span class="qb-data-label">P-Code</span><span class="qb-data-val"><span class="qb-code-pill fw-bold" id="qbValCombinedPCode" style="background:#fef3c7; color:#92400e; border:1px solid #fde68a;">—</span></span></div>
                             <div class="qb-data-row"><span class="qb-data-label">Sky P-Code</span><span class="qb-data-val"><span class="qb-code-pill" id="qbValSkyPCode">—</span></span></div>
                             <div class="qb-data-row qb-price-row" style="display:none;"><span class="qb-data-label">Wholesale Price</span><span class="qb-data-val qb-price-wholesale" id="qbValWholesalePrice">Rs. 0.00</span></div>
                             <div class="qb-data-row"><span class="qb-data-label">Rot P-Code</span><span class="qb-data-val"><span class="qb-code-pill" id="qbValRotPCode">—</span></span></div>
@@ -3304,62 +3592,272 @@
 {{-- ══════════════════════════════════════════════════════════════
      IMPORT MODAL
 ══════════════════════════════════════════════════════════════ --}}
-<div class="modal fade" id="importModal" tabindex="-1" role="dialog" aria-labelledby="importModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
-        <div class="modal-content border-0 shadow-lg" style="border-radius:16px; overflow:hidden;">
-            <div class="modal-header" style="background: linear-gradient(135deg,#4f46e5,#7c3aed); color:#fff; border-bottom: none;">
-                <div>
-                    <h5 class="modal-title fw-bold" id="importModalLabel">
-                        <i class="fas fa-file-upload me-2"></i>Import Products from CSV
-                    </h5>
-                    <small style="color: rgba(255,255,255,0.85);">New products will be created. Existing ones (matched by Barcode or Item Code) will be updated.</small>
-                </div>
-                <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close" style="opacity:.8; text-shadow:none;">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-            <div class="modal-body p-4" style="background:#f8fafc;">
-                <form action="{{ route('products.import.validate') }}" method="POST" enctype="multipart/form-data">
-                    @csrf
-                    @if(session('error'))
-                        <div class="alert alert-danger mb-4"><i class="fas fa-exclamation-circle me-2"></i>{{ session('error') }}</div>
-                    @endif
-                    <div class="alert alert-info d-flex gap-2 align-items-start mb-4" style="font-size:.85rem;">
-                        <i class="fas fa-info-circle fs-5 mt-1 flex-shrink-0"></i>
+<div class="modal fade" id="importModal" tabindex="-1" role="dialog" aria-labelledby="importModalLabel" aria-hidden="true" style="z-index: 1060;">
+    <div class="modal-dialog modal-dialog-centered modal-lg" style="max-width: 820px; margin: 1.5rem auto;" role="document">
+        <div class="modal-content qb-modal-content border-0 shadow-lg" style="max-height: calc(100vh - 40px); display: flex; flex-direction: column; overflow: hidden; border-radius: 10px;">
+            <form action="{{ route('products.import.validate') }}" method="POST" enctype="multipart/form-data" id="qbImportForm" style="display: flex; flex-direction: column; flex-grow: 1; min-height: 0; margin: 0;">
+                @csrf
+
+                {{-- QuickBooks & Odoo Modal Header --}}
+                <div class="qb-modal-header flex-shrink-0" style="padding: 12px 18px;">
+                    <div class="d-flex align-items-center gap-3">
+                        <div class="qb-modal-icon-badge">
+                            <i class="fas fa-file-import"></i>
+                        </div>
                         <div>
-                            <strong>How to use (ERP &amp; QuickBooks Support):</strong><br>
-                            1. Download your preferred template:<br>
-                            &bull; <a href="{{ route('products.template.quickbooks') }}" class="fw-bold text-primary text-decoration-underline"><i class="fas fa-file-excel me-1"></i> Client / QuickBooks Template (Item #, Size, Cost, Location, etc.)</a><br>
-                            &bull; <a href="{{ route('products.template') }}" class="text-secondary text-decoration-underline"><i class="fas fa-file-csv me-1"></i> Standard Full ERP Template</a><br>
-                            2. Fill in data &amp; save as <strong>CSV</strong>.<br>
-                            3. Upload below. Variants under the same <em>Item Name</em> will automatically group together, and corrupted sizes (e.g., dates) will be auto-restored!
+                            <div class="d-flex align-items-center gap-2">
+                                <h5 class="qb-modal-title mb-0" id="importModalLabel">Import Products (Excel / CSV)</h5>
+                                <span class="badge" style="background: rgba(34, 197, 94, 0.2); border: 1px solid rgba(34, 197, 94, 0.45); color: #86efac; font-size: 9.5px; font-weight: 700; letter-spacing: 0.4px;">
+                                    <i class="fas fa-check-circle me-1"></i> SMART PARSER
+                                </span>
+                            </div>
+                            <span class="qb-modal-subtitle">QuickBooks Desktop POS &amp; Odoo ERP Data Migration Engine</span>
                         </div>
                     </div>
-                    <div class="form-group mb-3">
-                        <label class="fw-bold">Import Mode</label>
-                        <select name="import_mode" class="form-select form-control" required>
-                            <option value="create">Create (Add new products &amp; variants)</option>
-                            <option value="update_only">Update Only (Update existing variants only)</option>
-                        </select>
-                    </div>
-                    <div class="form-group mb-3">
-                        <div class="form-check form-switch">
-                            <input class="form-check-input" type="checkbox" id="autoCreate" name="auto_create" value="1" checked>
-                            <label class="form-check-label fw-bold ms-2" for="autoCreate">Auto-create missing Category &amp; Brand</label>
+                    <button type="button" class="qb-modal-close" data-dismiss="modal" data-bs-dismiss="modal" aria-label="Close" title="Close dialog">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+
+                {{-- Modal Body (Scrollable if screen is compact) --}}
+                <div class="modal-body flex-grow-1" style="overflow-y: auto; padding: 16px 20px; background: #f8fafc;">
+                    @if(session('error'))
+                        <div class="alert alert-danger py-2 px-3 mb-3 d-flex align-items-center gap-2" style="font-size: 12px; border-radius: 6px;">
+                            <i class="fas fa-exclamation-circle fs-5 flex-shrink-0"></i>
+                            <div>{{ session('error') }}</div>
                         </div>
-                        <small class="text-muted ms-4 d-block">If disabled, missing master data will throw validation errors.</small>
+                    @endif
+
+                    @if($errors->any())
+                        <div class="alert alert-danger py-2.5 px-3 mb-3" style="font-size: 12px; border-radius: 6px;">
+                            <div class="fw-bold mb-1 d-flex align-items-center gap-2">
+                                <i class="fas fa-exclamation-triangle"></i>
+                                <span>Please resolve the following before proceeding:</span>
+                            </div>
+                            <ul class="mb-0 ps-3">
+                                @foreach($errors->all() as $err)
+                                    <li>{{ $err }}</li>
+                                @endforeach
+                            </ul>
+                        </div>
+                    @endif
+
+                    {{-- ── STEP 1: Download Templates ── --}}
+                    <div class="mb-3">
+                        <div class="d-flex align-items-center justify-content-between mb-2">
+                            <span class="fw-bold text-dark" style="font-size: 12px; letter-spacing: 0.3px;">
+                                <i class="fas fa-cloud-download-alt text-primary me-1.5"></i> STEP 1: Download Official Template
+                            </span>
+                            <span class="text-muted" style="font-size: 11px;">Recommended for seamless mapping</span>
+                        </div>
+
+                        <div class="row g-2.5">
+                            <!-- QuickBooks POS Template -->
+                            <div class="col-md-6">
+                                <div class="qb-template-card-box qb-card-excel">
+                                    <div>
+                                        <div class="d-flex align-items-center justify-content-between mb-1.5">
+                                            <div class="d-flex align-items-center gap-2">
+                                                <div class="qb-template-icon-square qb-template-icon-excel">
+                                                    <i class="fas fa-file-excel"></i>
+                                                </div>
+                                                <div>
+                                                    <h6 class="qb-template-card-title">QuickBooks POS Template</h6>
+                                                    <span class="text-muted" style="font-size: 10.5px;">Best for POS Item # inventory</span>
+                                                </div>
+                                            </div>
+                                            <span class="badge bg-success-subtle text-success border border-success-subtle px-1.5 py-0.5" style="font-size: 9.5px; font-weight: 700;">.XLSX</span>
+                                        </div>
+                                        <span class="qb-template-card-desc">
+                                            Includes: <strong>Item #, Style, Attribute (Size), Cost, Price, Location &amp; Barcode</strong>.
+                                        </span>
+                                    </div>
+                                    <a href="{{ route('products.template.quickbooks') }}" class="btn btn-sm btn-outline-success fw-bold d-flex align-items-center justify-content-center gap-1.5 w-100" style="height: 30px; font-size: 11.5px; border-radius: 5px; text-decoration: none;">
+                                        <i class="fas fa-download"></i> Download Excel (.xlsx)
+                                    </a>
+                                </div>
+                            </div>
+
+                            <!-- Standard Full ERP Template -->
+                            <div class="col-md-6">
+                                <div class="qb-template-card-box qb-card-csv">
+                                    <div>
+                                        <div class="d-flex align-items-center justify-content-between mb-1.5">
+                                            <div class="d-flex align-items-center gap-2">
+                                                <div class="qb-template-icon-square qb-template-icon-csv">
+                                                    <i class="fas fa-file-csv"></i>
+                                                </div>
+                                                <div>
+                                                    <h6 class="qb-template-card-title">Standard Full ERP Template</h6>
+                                                    <span class="text-muted" style="font-size: 10.5px;">All columns &amp; multi-warehouses</span>
+                                                </div>
+                                            </div>
+                                            <span class="badge bg-primary-subtle text-primary border border-primary-subtle px-1.5 py-0.5" style="font-size: 9.5px; font-weight: 700;">.CSV</span>
+                                        </div>
+                                        <span class="qb-template-card-desc">
+                                            Includes: <strong>Categories, Brands, Suppliers, Multi-Units, Tax Rates &amp; Variations</strong>.
+                                        </span>
+                                    </div>
+                                    <a href="{{ route('products.template') }}" class="btn btn-sm btn-outline-primary fw-bold d-flex align-items-center justify-content-center gap-1.5 w-100" style="height: 30px; font-size: 11.5px; border-radius: 5px; text-decoration: none;">
+                                        <i class="fas fa-download"></i> Download CSV (.csv)
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+
+                        {{-- QuickBooks & Odoo Smart Engine Safeguards --}}
+                        <div class="p-2.5 mt-2.5" style="background: #edf3fa; border: 1px solid #b2c5dc; border-radius: 6px;">
+                            <div class="d-flex align-items-center gap-1.5 mb-2" style="font-size: 11px; font-weight: 700; color: #1e3a5f;">
+                                <i class="fas fa-wand-magic-sparkles text-primary"></i>
+                                <span>QuickBooks &amp; Odoo Engine Safeguards (Active):</span>
+                            </div>
+                            <div class="row g-2">
+                                <div class="col-md-4">
+                                    <div class="qb-feat-pill">
+                                        <i class="fas fa-object-group text-primary"></i>
+                                        <div>
+                                            <strong>Auto-Group Styles</strong>
+                                            <span>Variants grouped by Item Name</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="qb-feat-pill">
+                                        <i class="fas fa-wrench text-warning"></i>
+                                        <div>
+                                            <strong>Auto-Fix Dates</strong>
+                                            <span>Restores <code>04-Mar</code> &rarr; <code>3/4"</code></span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="qb-feat-pill">
+                                        <i class="fas fa-barcode text-success"></i>
+                                        <div>
+                                            <strong>Preserve Item #</strong>
+                                            <span>Saves QB POS 1-4 digit codes</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
-                    <div class="form-group mb-4">
-                        <label class="fw-bold">Upload CSV File</label>
-                        <input type="file" name="csv_file" class="form-control p-1" accept=".csv,.txt" required>
-                        <small class="text-muted">Max 5 MB</small>
+
+                    {{-- ── STEP 2: Drag & Drop File Upload ── --}}
+                    <div class="mb-3">
+                        <div class="d-flex align-items-center justify-content-between mb-1.5">
+                            <label class="form-label fw-bold mb-0 text-dark" style="font-size: 12px; letter-spacing: 0.3px;">
+                                <i class="fas fa-cloud-arrow-up text-primary me-1.5"></i> STEP 2: Upload Excel or CSV File <span class="text-danger">*</span>
+                            </label>
+                            <span class="text-muted" style="font-size: 11px;">Supported: .xlsx, .xls, .csv (Max 20 MB)</span>
+                        </div>
+
+                        <div class="qb-dropzone position-relative" id="qbImportDropzone" style="min-height: 96px;">
+                            {{-- Transparent Full-Cover File Input (Native clicks & drag-and-drop directly work) --}}
+                            <input type="file" name="csv_file" id="qbImportFileInput" accept=".xlsx,.xls,.csv,.txt" required
+                                style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; opacity: 0; cursor: pointer; z-index: 5;">
+
+                            {{-- Empty State --}}
+                            <div id="qbDropzonePrompt" class="qb-dropzone-prompt text-center py-2 px-2" style="pointer-events: none;">
+                                <div class="qb-dropzone-icon">
+                                    <i class="fas fa-cloud-arrow-up"></i>
+                                </div>
+                                <div class="qb-dropzone-title">
+                                    <span class="text-primary fw-bold text-decoration-underline">Click to browse</span> or drag and drop spreadsheet here
+                                </div>
+                                <div class="text-muted" style="font-size: 11px;">
+                                    Supports: <strong>Excel (.xlsx, .xls)</strong> or <strong>CSV (.csv)</strong> &bull; Max size: <strong>20 MB</strong>
+                                </div>
+                            </div>
+
+                            {{-- File Selected State (Hidden initially) --}}
+                            <div id="qbDropzoneFilePreview" class="qb-dropzone-preview d-none align-items-center justify-content-between position-relative" style="z-index: 6;">
+                                <div class="d-flex align-items-center gap-2.5 min-w-0">
+                                    <div class="qb-file-badge-icon" id="qbFileIcon">
+                                        <i class="fas fa-file-excel text-success"></i>
+                                    </div>
+                                    <div class="text-truncate">
+                                        <div class="fw-bold text-dark text-truncate" id="qbFileName" style="font-size: 12.5px; font-family: monospace;">filename.xlsx</div>
+                                        <div class="d-flex align-items-center gap-2 text-muted" style="font-size: 11px;">
+                                            <span id="qbFileSize">0 KB</span>
+                                            &bull;
+                                            <span class="text-success fw-semibold"><i class="fas fa-check-circle me-1"></i> Ready for Validation</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <button type="button" class="btn btn-sm btn-outline-danger py-1 px-2.5 position-relative" id="qbFileRemoveBtn" style="font-size: 11px; z-index: 10;" title="Remove & select another file">
+                                    <i class="fas fa-times me-1"></i> Change File
+                                </button>
+                            </div>
+                        </div>
                     </div>
-                    <div class="d-flex justify-content-end gap-2 mt-4">
-                        <button type="button" class="btn btn-light" data-dismiss="modal">Cancel</button>
-                        <button type="submit" class="btn btn-primary px-4"><i class="fas fa-arrow-right me-1"></i> Next: Validate &amp; Preview</button>
+
+                    {{-- ── STEP 3: Configuration & Mode ── --}}
+                    <div class="mb-2">
+                        <div class="d-flex align-items-center justify-content-between mb-1.5">
+                            <span class="fw-bold text-dark" style="font-size: 12px; letter-spacing: 0.3px;">
+                                <i class="fas fa-sliders-h text-primary me-1.5"></i> STEP 3: Import Settings
+                            </span>
+                        </div>
+
+                        <div class="row g-2">
+                            <!-- Import Mode Select -->
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold mb-1" style="font-size: 11.5px; color: #1e293b;">
+                                    Import Action Mode
+                                </label>
+                                <div class="input-group input-group-sm">
+                                    <span class="input-group-text bg-light text-primary border-end-0" style="border-color: #cbd5e1; height: 34px;"><i class="fas fa-layer-group"></i></span>
+                                    <select name="import_mode" class="form-select form-select-sm" style="height: 34px; font-size: 11.5px; border-color: #cbd5e1; font-weight: 600;" required>
+                                        <option value="create" selected>Create &amp; Update (Add new + update existing)</option>
+                                        <option value="update_only">Update Only (Existing variants only)</option>
+                                    </select>
+                                </div>
+                                <span class="text-muted d-block mt-1" style="font-size: 10px;">
+                                    Auto-matches existing products by Barcode or Item Code.
+                                </span>
+                            </div>
+
+                            <!-- Auto-Create Missing Category & Brand -->
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold mb-1" style="font-size: 11.5px; color: #1e293b;">
+                                    Master Records
+                                </label>
+                                <div class="p-2 d-flex align-items-center justify-content-between" style="background: #ffffff; border: 1px solid #cbd5e1; border-radius: 6px; height: 34px;">
+                                    <div class="d-flex align-items-center min-w-0">
+                                        <label for="autoCreate" class="form-check-label fw-semibold text-dark mb-0 text-truncate" style="font-size: 11.5px; cursor: pointer;">
+                                            Auto-create Categories &amp; Brands
+                                        </label>
+                                    </div>
+                                    <div class="form-check form-switch m-0 flex-shrink-0">
+                                        <input class="form-check-input" type="checkbox" id="autoCreate" name="auto_create" value="1" checked style="cursor: pointer; width: 34px; height: 18px;">
+                                    </div>
+                                </div>
+                                <span class="text-muted d-block mt-1" style="font-size: 10px;">
+                                    Creates missing categories or brands found in the uploaded file.
+                                </span>
+                            </div>
+                        </div>
                     </div>
-                </form>
-            </div>
+                </div>
+
+                {{-- ── Modal Footer (Pinned firmly at bottom, never cut off) ── --}}
+                <div class="qb-modal-footer flex-shrink-0">
+                    <div class="d-flex align-items-center gap-1.5 text-secondary d-none d-sm-flex" style="font-size: 11px;">
+                        <span class="badge rounded-pill bg-success p-1" style="width: 8px; height: 8px; display: inline-block;"></span>
+                        <span class="fw-semibold text-dark">QuickBooks &amp; Odoo Engine Active</span>
+                        <span class="text-muted">&bull; Pre-Import Preview &amp; Verification Step next</span>
+                    </div>
+                    <div class="d-flex align-items-center gap-2 ms-auto">
+                        <button type="button" class="qb-modal-btn-cancel" data-dismiss="modal" data-bs-dismiss="modal">
+                            <i class="fas fa-times me-1"></i> Cancel
+                        </button>
+                        <button type="submit" class="qb-modal-btn-save" id="qbImportSubmitBtn">
+                            <i class="fas fa-arrow-right me-1"></i> Next: Validate &amp; Preview
+                        </button>
+                    </div>
+                </div>
+            </form>
         </div>
     </div>
 </div>
@@ -4193,6 +4691,125 @@ $(document).ready(function () {
     $('#openImportModalBtn').on('click', function () {
         $('#importModal').modal('show');
     });
+
+    @if($errors->any() || session('error'))
+        $('#importModal').modal('show');
+    @endif
+
+    // ── QuickBooks & Odoo Import Modal Dropzone & File Handling ──
+    (function () {
+        var dropzone   = document.getElementById('qbImportDropzone');
+        var fileInput  = document.getElementById('qbImportFileInput');
+        var promptEl   = document.getElementById('qbDropzonePrompt');
+        var previewEl  = document.getElementById('qbDropzoneFilePreview');
+        var fileNameEl = document.getElementById('qbFileName');
+        var fileSizeEl = document.getElementById('qbFileSize');
+        var fileIconEl = document.getElementById('qbFileIcon');
+        var removeBtn  = document.getElementById('qbFileRemoveBtn');
+        var form       = document.getElementById('qbImportForm');
+        var submitBtn  = document.getElementById('qbImportSubmitBtn');
+
+        if (!dropzone || !fileInput) return;
+
+        // Visual Drag & Drop indicators
+        ['dragenter', 'dragover'].forEach(function (eventName) {
+            dropzone.addEventListener(eventName, function (e) {
+                e.preventDefault();
+                e.stopPropagation();
+                dropzone.classList.add('dragover');
+            }, false);
+        });
+
+        ['dragleave', 'dragend', 'drop'].forEach(function (eventName) {
+            dropzone.addEventListener(eventName, function (e) {
+                e.preventDefault();
+                e.stopPropagation();
+                dropzone.classList.remove('dragover');
+            }, false);
+        });
+
+        // Drop handling (native input also catches drop, but this ensures DataTransfer files map properly)
+        dropzone.addEventListener('drop', function (e) {
+            var dt = e.dataTransfer;
+            if (dt && dt.files && dt.files.length) {
+                try {
+                    fileInput.files = dt.files;
+                } catch (err) {}
+                handleFile(dt.files[0]);
+            }
+        }, false);
+
+        // Native Change event on file input
+        fileInput.addEventListener('change', function () {
+            if (this.files && this.files.length) {
+                handleFile(this.files[0]);
+            }
+        });
+
+        function handleFile(file) {
+            if (!file) return;
+            var ext = file.name.split('.').pop().toLowerCase();
+            if (fileNameEl) fileNameEl.textContent = file.name;
+
+            var sizeKb = (file.size / 1024).toFixed(1);
+            if (fileSizeEl) {
+                if (file.size > 1024 * 1024) {
+                    fileSizeEl.textContent = (file.size / (1024 * 1024)).toFixed(2) + ' MB';
+                } else {
+                    fileSizeEl.textContent = sizeKb + ' KB';
+                }
+            }
+
+            if (fileIconEl) {
+                if (ext === 'xlsx' || ext === 'xls') {
+                    fileIconEl.innerHTML = '<i class="fas fa-file-excel text-success fs-5"></i>';
+                } else if (ext === 'csv') {
+                    fileIconEl.innerHTML = '<i class="fas fa-file-csv text-primary fs-5"></i>';
+                } else {
+                    fileIconEl.innerHTML = '<i class="fas fa-file-alt text-secondary fs-5"></i>';
+                }
+            }
+
+            if (promptEl) promptEl.classList.add('d-none');
+            if (previewEl) {
+                previewEl.classList.remove('d-none');
+                previewEl.classList.add('d-flex');
+            }
+
+            // Lower input z-index behind preview so "Change File" button is easily clicked
+            fileInput.style.zIndex = '1';
+        }
+
+        if (removeBtn) {
+            removeBtn.addEventListener('click', function (e) {
+                e.preventDefault();
+                e.stopPropagation();
+                fileInput.value = '';
+                if (promptEl) promptEl.classList.remove('d-none');
+                if (previewEl) {
+                    previewEl.classList.add('d-none');
+                    previewEl.classList.remove('d-flex');
+                }
+                fileInput.style.zIndex = '5';
+            });
+        }
+
+        // Form Submit Validation & Loading Indicator
+        if (form) {
+            form.addEventListener('submit', function (e) {
+                if (!fileInput.files || !fileInput.files.length) {
+                    e.preventDefault();
+                    alert('Please select an Excel (.xlsx, .xls) or CSV (.csv) file first.');
+                    return false;
+                }
+                if (submitBtn) {
+                    submitBtn.disabled = true;
+                    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-1.5"></i> Uploading &amp; Validating...';
+                }
+                return true;
+            });
+        }
+    })();
 
     // ── Select All ──
     $('#selectAll').click(function() {
@@ -5655,7 +6272,7 @@ $(document).ready(function () {
         const hasSky = skyCode && skyCode !== '---';
         const hasRot = rotCode && rotCode !== '---';
         if (hasSky && hasRot) {
-            line2 = `${skyCode} - ${rotCode}`;
+            line2 = window.formatCombinedPCode ? window.formatCombinedPCode(skyCode, rotCode) : `${skyCode}-${rotCode}`;
         } else if (hasSky) {
             line2 = skyCode;
         } else if (hasRot) {
@@ -6069,7 +6686,8 @@ $(document).ready(function () {
                 $('#qbDrawerStyleMeta').text(`${product.category_relation?.name || 'Uncategorized'} • ${product.brand?.name || 'No Brand'}`);
 
                 if (product.image) {
-                    $('#qbDrawerImgWrap').html(`<img src="/uploads/products/${product.image}" style="width:100%; height:100%; object-fit:cover;">`);
+                    const drawerImgSrc = (String(product.image).startsWith('http') || String(product.image).startsWith('/')) ? product.image : ('{{ asset("uploads/products") }}/' + product.image);
+                    $('#qbDrawerImgWrap').html(`<img src="${drawerImgSrc}" style="width:100%; height:100%; object-fit:cover;">`);
                 } else {
                     $('#qbDrawerImgWrap').html('<i class="fas fa-image text-muted fs-4"></i>');
                 }
@@ -6083,6 +6701,8 @@ $(document).ready(function () {
 
                 $('#qbValRegularPrice').text('Rs. ' + parseFloat(regularPrice).toFixed(2));
                 $('#qbHeroPrice').text('Rs. ' + parseFloat(regularPrice).toFixed(2));
+                const qbComb = window.formatCombinedPCode ? window.formatCombinedPCode(product.p_code, product.rot_p_code) : (product.p_code && product.rot_p_code ? `${product.p_code}-${product.rot_p_code}` : (product.p_code || product.rot_p_code || '---'));
+                $('#qbValCombinedPCode').text(qbComb || '---');
                 $('#qbValSkyPCode').text(product.p_code || '---');
                 $('#qbValWholesalePrice').text('Rs. ' + parseFloat(wholesalePrice).toFixed(2));
                 $('#qbValRotPCode').text(product.rot_p_code || '---');
@@ -7507,7 +8127,7 @@ $(document).ready(function () {
             // Image cell (matching Image 2)
             let imgHtml = '';
             if (item.image) {
-                imgHtml = `<img src="/uploads/products/${escapeHtml(item.image)}" alt="${escapeHtml(item.base_item_name || item.item_name)}" class="product-img" onerror="this.onerror=null;this.parentElement.innerHTML='<div class=\\'no-img-badge\\'><i class=\\'fas fa-image\\'></i></div>';">`;
+                imgHtml = `<img src="${(String(item.image).startsWith('http') || String(item.image).startsWith('/')) ? escapeHtml(item.image) : ('{{ asset("uploads/products") }}/' + escapeHtml(item.image))}" alt="${escapeHtml(item.base_item_name || item.item_name)}" class="product-img" onerror="this.onerror=null;this.parentElement.innerHTML='<div class=\\'no-img-badge\\'><i class=\\'fas fa-image\\'></i></div>';">`;
             } else {
                 imgHtml = '<div class="no-img-badge"><i class="fas fa-image"></i></div>';
             }

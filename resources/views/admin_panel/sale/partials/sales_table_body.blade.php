@@ -93,7 +93,9 @@
         </td>
         <td class="font-monospace text-dark fw-bold text-nowrap" style="font-size: 13px;">{{ $sale->reference ?: '—' }}</td>
         @php
-            $itemPCodes = $sale->items ? $sale->items->pluck('p_code')->filter()->unique()->implode(', ') : '';
+            $itemPCodes = $sale->items ? $sale->items->map(function($it) {
+                return \App\Services\PCodeService::formatCombined($it->p_code, $it->rot_p_code);
+            })->filter()->unique()->implode(', ') : '';
         @endphp
         <td title="{{ $pNames }}" style="font-size: 13px; max-width: 220px;">
             <div class="fw-bold text-dark" style="line-height: 1.3;">{{ \Illuminate\Support\Str::limit($pNames, 45) }}</div>

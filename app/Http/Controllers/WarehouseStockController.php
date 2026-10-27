@@ -95,23 +95,30 @@ class WarehouseStockController extends Controller
             foreach ($colors as $c) {
                 $locStr = trim($c['location'] ?? '');
                 $qty = (float) ($c['stock'] ?? $c['stock_quantity'] ?? 0);
-                $matchedLocId = null;
+                $matchedLocIds = [];
 
                 if ($locStr !== '') {
-                    $locLower = strtolower($locStr);
+                    // Normalize letter-number spacing e.g. "A 18" -> "A18", "SJ 0" -> "SJ0"
+                    $cleanLoc = preg_replace('/\b([A-Za-z]+)\s+(\d+)\b/', '$1$2', $locStr);
+                    $cleanLoc = trim($cleanLoc, " /-");
+                    $tokens = preg_split('/[\/\-,\;\s]+/', strtolower($cleanLoc));
+                    $tokens = array_filter(array_map('trim', $tokens));
+
                     foreach ($storageLocations as $loc) {
                         $nameLower = strtolower(trim($loc->name));
                         $codeLower = $loc->code ? strtolower(trim($loc->code)) : '';
-                        $comboLower = $codeLower ? "{$nameLower} ({$codeLower})" : $nameLower;
+                        $cleanCodeLower = (str_starts_with($codeLower, 'r-') || str_starts_with($codeLower, 's-'))
+                            ? substr($codeLower, 2)
+                            : $codeLower;
 
-                        if ($locLower === $nameLower ||
-                            ($codeLower && $locLower === $codeLower) ||
-                            $locLower === $comboLower ||
-                            str_contains($locLower, $nameLower)) {
-                            $matchedLocId = $loc->id;
-                            break;
+                        foreach ($tokens as $token) {
+                            if ($token === $nameLower || $token === $codeLower || ($cleanCodeLower && $token === $cleanCodeLower)) {
+                                $matchedLocIds[] = $loc->id;
+                                break;
+                            }
                         }
                     }
+                    $matchedLocIds = array_unique($matchedLocIds);
                 }
 
                 $boxCount = 0;
@@ -139,12 +146,16 @@ class WarehouseStockController extends Controller
                     'location_str' => $locStr,
                 ];
 
-                if ($matchedLocId && isset($locationsData[$matchedLocId])) {
-                    $locationsData[$matchedLocId]['items'][] = $itemData;
-                    $locationsData[$matchedLocId]['total_pieces'] += $qty;
-                    $locationsData[$matchedLocId]['total_boxes'] += $boxCount;
+                if (!empty($matchedLocIds)) {
+                    foreach ($matchedLocIds as $mId) {
+                        if (isset($locationsData[$mId])) {
+                            $locationsData[$mId]['items'][] = $itemData;
+                            $locationsData[$mId]['total_pieces'] += $qty;
+                            $locationsData[$mId]['total_boxes'] += $boxCount;
+                        }
+                    }
                 } elseif ($locStr !== '' || $qty > 0) {
-                    if (stripos($locStr, 'shelf') !== false) {
+                    if (stripos($locStr, 'shelf') !== false || preg_match('/^s[a-z0-9]/i', $locStr)) {
                         $unassignedShopItems[] = $itemData;
                     } else {
                         $unassignedWarehouseItems[] = $itemData;

@@ -90,6 +90,10 @@
                 position: static !important;
             }
 
+            .rt_nav_header.horizontal-layout .nav-bottom .page-navigation {
+                flex-wrap: nowrap !important;
+            }
+
             .mega-menu .submenu {
                 position: absolute !important;
                 top: 100% !important;
@@ -476,42 +480,81 @@
             box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05) !important;
         }
 
-        /* Universal App Page Body - Generous Top Clearance */
+        /* =========================================================
+           UNIVERSAL 100% FULL-WIDTH & CLEAN SCREEN FIT FOR ALL PAGES
+           ========================================================= */
+        html, body {
+            width: 100% !important;
+            min-height: 100vh !important;
+            margin: 0 !important;
+            padding: 0 !important;
+        }
+
+        .container-scroller {
+            width: 100% !important;
+            min-height: 100vh !important;
+            display: flex !important;
+            flex-direction: column !important;
+        }
+
+        /* Force 100% Screen Full-Width across All Pages & Data Tables (Eliminates 1140px boxed limits) */
+        .container, .container-fluid {
+            width: 100% !important;
+            max-width: 100% !important;
+            padding-left: 12px !important;
+            padding-right: 12px !important;
+            box-sizing: border-box !important;
+        }
+
+        /* Universal App Page Body - 100% Clean Fit with No Dead Space */
         .app-page-body {
             position: relative;
-            width: 100%;
-            min-height: calc(100vh - 140px);
-            padding-top: 55px !important;
-            padding-bottom: 60px !important;
+            width: 100% !important;
+            max-width: 100% !important;
+            min-height: calc(100vh - 65px);
+            padding-top: 4px !important;
+            padding-bottom: 10px !important;
             box-sizing: border-box;
+            flex: 1 1 auto;
         }
 
         .main-content {
             position: relative !important;
             width: 100% !important;
-            padding-top: 15px !important;
-            padding-bottom: 40px !important;
+            max-width: 100% !important;
+            padding-top: 4px !important;
+            padding-bottom: 10px !important;
             min-height: auto !important;
         }
+
         .main-content-inner {
-            padding: 10px 0 30px 0 !important;
+            width: 100% !important;
+            max-width: 100% !important;
+            padding: 0 !important;
         }
+
+        footer {
+            display: none !important;
+        }
+
         .sale-report-container,
         .report-page-container,
         .cat-page,
         .brand-page,
         .erp-page {
-            padding-top: 15px !important;
+            padding-top: 6px !important;
         }
+
         .app-page-body > .card:first-child,
         .app-page-body > .container:first-child,
         .app-page-body > .container-fluid:first-child,
         .app-page-body > form:first-child {
-            margin-top: 10px;
+            margin-top: 4px;
         }
+
         .page-header {
-            margin-top: 5px !important;
-            margin-bottom: 25px !important;
+            margin-top: 2px !important;
+            margin-bottom: 12px !important;
         }
 
         /* Modal & Backdrop Stacking Fix */
@@ -621,7 +664,9 @@
                 align-items: center !important;
                 justify-content: center !important;
                 flex: 1 1 auto !important;
+                min-width: 0 !important;
                 height: 100% !important;
+                overflow: visible !important;
             }
             body.product-page-body .rt_nav_header.product-navbar-mode .top_nav .product-nav-inline .container-fluid {
                 padding: 0 !important;
@@ -630,19 +675,22 @@
                 justify-content: center !important;
                 height: 100% !important;
                 width: 100% !important;
+                min-width: 0 !important;
             }
             body.product-page-body .rt_nav_header.product-navbar-mode .top_nav .product-nav-inline .page-navigation {
                 display: flex !important;
                 flex-direction: row !important;
+                flex-wrap: nowrap !important;
                 align-items: center !important;
                 justify-content: center !important;
                 list-style: none !important;
                 padding: 0 !important;
                 margin: 0 !important;
-                gap: 2px !important;
+                gap: 1px !important;
                 border: none !important;
                 background: transparent !important;
                 height: 100% !important;
+                width: auto !important;
             }
             body.product-page-body .rt_nav_header.product-navbar-mode .top_nav .product-nav-inline .page-navigation > .nav-item {
                 position: relative !important;
@@ -652,34 +700,38 @@
                 padding: 0 !important;
                 margin: 0 !important;
                 height: 100% !important;
+                flex-shrink: 0 !important;
             }
             body.product-page-body .rt_nav_header.product-navbar-mode .top_nav .product-nav-inline .page-navigation > .nav-item > .nav-link {
                 display: inline-flex !important;
                 align-items: center !important;
-                padding: 6px 11px !important;
+                padding: 4px 6px !important;
                 border-radius: 6px !important;
                 color: #94a3b8 !important;
-                font-size: 13px !important;
+                font-size: 11.5px !important;
                 font-weight: 500 !important;
                 transition: all 0.15s ease !important;
                 text-decoration: none !important;
                 white-space: nowrap !important;
-                height: 36px !important;
+                height: 32px !important;
             }
             body.product-page-body .rt_nav_header.product-navbar-mode .top_nav .product-nav-inline .page-navigation > .nav-item > .nav-link i.menu_icon {
-                font-size: 13px !important;
-                margin-right: 7px !important;
+                font-size: 11.5px !important;
+                margin-right: 4px !important;
                 color: #64748b !important;
                 transition: color 0.15s ease !important;
+                flex-shrink: 0 !important;
             }
             body.product-page-body .rt_nav_header.product-navbar-mode .top_nav .product-nav-inline .page-navigation > .nav-item > .nav-link .menu-title {
-                font-size: 13px !important;
+                font-size: 11.5px !important;
                 line-height: 1 !important;
+                white-space: nowrap !important;
             }
             body.product-page-body .rt_nav_header.product-navbar-mode .top_nav .product-nav-inline .page-navigation > .nav-item > .nav-link .menu-arrow {
-                font-size: 10px !important;
-                margin-left: 5px !important;
+                font-size: 8.5px !important;
+                margin-left: 3px !important;
                 opacity: 0.6 !important;
+                flex-shrink: 0 !important;
             }
             body.product-page-body .rt_nav_header.product-navbar-mode .top_nav .product-nav-inline .page-navigation > .nav-item:hover > .nav-link,
             body.product-page-body .rt_nav_header.product-navbar-mode .top_nav .product-nav-inline .page-navigation > .nav-item.active > .nav-link {
@@ -694,6 +746,10 @@
                 top: calc(100% + 2px) !important;
                 z-index: 999999 !important;
             }
+            body.product-page-body .rt_nav_header.product-navbar-mode .top_nav .product-nav-inline .page-navigation > .nav-item:nth-last-child(-n+3):not(.mega-menu) .submenu {
+                left: auto !important;
+                right: 0 !important;
+            }
             /* Product Navbar Mega Menu: Must be static so submenu centers relative to the full header bar instead of the single button */
             body.product-page-body .rt_nav_header.product-navbar-mode .top_nav .product-nav-inline .page-navigation > .nav-item.mega-menu {
                 position: static !important;
@@ -707,6 +763,52 @@
                 width: max-content !important;
                 max-width: 96vw !important;
                 z-index: 999999 !important;
+            }
+        }
+
+        /* Large screens (>= 1300px): Comfortable padding & clear sizing */
+        @media (min-width: 1300px) {
+            body.product-page-body .rt_nav_header.product-navbar-mode .top_nav .product-nav-inline .page-navigation {
+                gap: 2px !important;
+            }
+            body.product-page-body .rt_nav_header.product-navbar-mode .top_nav .product-nav-inline .page-navigation > .nav-item > .nav-link {
+                padding: 5px 8px !important;
+                font-size: 12.5px !important;
+                height: 34px !important;
+            }
+            body.product-page-body .rt_nav_header.product-navbar-mode .top_nav .product-nav-inline .page-navigation > .nav-item > .nav-link i.menu_icon {
+                font-size: 12px !important;
+                margin-right: 5px !important;
+            }
+            body.product-page-body .rt_nav_header.product-navbar-mode .top_nav .product-nav-inline .page-navigation > .nav-item > .nav-link .menu-title {
+                font-size: 12.5px !important;
+            }
+            body.product-page-body .rt_nav_header.product-navbar-mode .top_nav .product-nav-inline .page-navigation > .nav-item > .nav-link .menu-arrow {
+                font-size: 9px !important;
+                margin-left: 4px !important;
+            }
+        }
+
+        /* Extra Large screens (>= 1550px): Full spacious styling */
+        @media (min-width: 1550px) {
+            body.product-page-body .rt_nav_header.product-navbar-mode .top_nav .product-nav-inline .page-navigation {
+                gap: 4px !important;
+            }
+            body.product-page-body .rt_nav_header.product-navbar-mode .top_nav .product-nav-inline .page-navigation > .nav-item > .nav-link {
+                padding: 6px 11px !important;
+                font-size: 13px !important;
+                height: 36px !important;
+            }
+            body.product-page-body .rt_nav_header.product-navbar-mode .top_nav .product-nav-inline .page-navigation > .nav-item > .nav-link i.menu_icon {
+                font-size: 13px !important;
+                margin-right: 7px !important;
+            }
+            body.product-page-body .rt_nav_header.product-navbar-mode .top_nav .product-nav-inline .page-navigation > .nav-item > .nav-link .menu-title {
+                font-size: 13px !important;
+            }
+            body.product-page-body .rt_nav_header.product-navbar-mode .top_nav .product-nav-inline .page-navigation > .nav-item > .nav-link .menu-arrow {
+                font-size: 10px !important;
+                margin-left: 5px !important;
             }
         }
 

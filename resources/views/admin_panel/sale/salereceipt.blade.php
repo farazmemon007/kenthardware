@@ -335,6 +335,7 @@
 
         <div class="divider"></div>
 
+        @if(count($saleItems) > 0)
         <!-- Items Table -->
         <table class="items-table">
             <thead>
@@ -416,21 +417,30 @@
                 @endforeach
             </tbody>
         </table>
+        @endif
 
         @php
-            $exchangeReturn = \App\Models\SaleReturn::with('items.product')->where('remarks', 'LIKE', '%Invoice #'.$sale->invoice_no.'%')->first();
+            $exchangeReturns = \App\Models\SaleReturn::with('items.product')
+                ->where(function($q) use ($sale) {
+                    $q->where('remarks', 'LIKE', '%'.$sale->invoice_no.'%');
+                })
+                ->get();
             $exchangeReturnedAmount = 0;
-            if ($exchangeReturn) {
-                $exchangeReturnedAmount = $exchangeReturn->items->sum('line_total');
+            $allReturnItems = collect();
+            foreach ($exchangeReturns as $exRet) {
+                if ($exRet->items) {
+                    $exchangeReturnedAmount += (float)$exRet->items->sum('line_total');
+                    $allReturnItems = $allReturnItems->concat($exRet->items);
+                }
             }
         @endphp
 
-        @if($exchangeReturn && $exchangeReturn->items->count() > 0)
+        @if($allReturnItems->count() > 0)
         <div class="divider" style="border-top: 1px dashed #000; margin: 4px 0;"></div>
         <div style="font-weight: bold; font-size: 11px; margin-bottom: 2px; color: #000;">Returned Items:</div>
         <table class="items-table" style="margin-bottom: 4px;">
             <tbody>
-                @foreach ($exchangeReturn->items as $retItem)
+                @foreach ($allReturnItems as $retItem)
                     <tr>
                         <td style="width: 6%;">{{ $loop->iteration }}</td>
                         <td style="width: 53%;">
@@ -512,6 +522,8 @@
         <!-- Ledger & Payment Breakdown -->
         <div class="balance-section">
             @php
+                $isRefundSlip = ($finalPayable < 0);
+                $refundDue = abs($finalPayable);
                 $actualPaid = 0;
                 if (isset($tenderPayments) && count($tenderPayments) > 0) {
                     $actualPaid = (float) $totalPaidAmount;
@@ -519,9 +531,16 @@
                     $actualPaid = (float)($sale->cash ?? 0) + (float)($sale->card ?? 0);
                 }
                 $changeGiven = max(0, (float)($sale->change ?? 0));
-                $netPaidTowardsBill = max(0, $actualPaid - $changeGiven);
-                $dueOnThisBill = max(0, $finalPayable - $actualPaid);
-                $finalBalance = $previousBalance + $finalPayable - $netPaidTowardsBill;
+                
+                if ($isRefundSlip) {
+                    $refundPaidOut = min($refundDue, $actualPaid);
+                    $refundCreditedToKhata = max(0, $refundDue - $refundPaidOut);
+                    $finalBalance = $previousBalance - $refundCreditedToKhata;
+                } else {
+                    $netPaidTowardsBill = max(0, $actualPaid - $changeGiven);
+                    $dueOnThisBill = max(0, $finalPayable - $actualPaid);
+                    $finalBalance = $previousBalance + $finalPayable - $netPaidTowardsBill;
+                }
             @endphp
 
             @if(!$isWalkin)
@@ -533,7 +552,7 @@
 
             @if(isset($tenderPayments) && count($tenderPayments) > 0)
                 <div style="border-top: 1px dotted #888; margin: 3px 0 2px 0;"></div>
-                <div style="font-weight: 600; font-size: 10px; margin-bottom: 2px; text-transform: uppercase;">Payment Details:</div>
+                <div style="font-weight: 600; font-size: 10px; margin-bottom: 2px; text-transform: uppercase;">{{ $isRefundSlip ? 'Refund Payment Details:' : 'Payment Details:' }}</div>
                 @foreach($tenderPayments as $tender)
                 <div class="tot-row" style="font-size: 11px; padding-left: 6px;">
                     <span style="color: #333;">• {{ $tender['account_title'] }}:</span>
@@ -541,14 +560,16 @@
                 </div>
                 @endforeach
                 <div class="tot-row" style="font-weight: 600; border-top: 1px dashed #ccc; margin-top: 2px; padding-top: 2px;">
-                    <span>Total Paid:</span>
+                    <span>{{ $isRefundSlip ? 'Total Refund Paid:' : 'Total Paid:' }}</span>
                     <span>Rs. {{ number_format($actualPaid, 0) }}</span>
                 </div>
             @else
+                @if($actualPaid > 0)
                 <div class="tot-row">
-                    <span>Paid Amount:</span>
+                    <span>{{ $isRefundSlip ? 'Refund Paid:' : 'Paid Amount:' }}</span>
                     <span>Rs. {{ number_format($actualPaid, 0) }}</span>
                 </div>
+                @endif
             @endif
 
             @if($sale->change > 0)
@@ -559,10 +580,16 @@
             @endif
 
             @if(!$isWalkin)
-                @if($dueOnThisBill > 0)
+                @if(!$isRefundSlip && $dueOnThisBill > 0)
                 <div class="tot-row" style="color: #c0392b; font-weight: 600;">
                     <span>Due on Khata:</span>
                     <span>Rs. {{ number_format($dueOnThisBill, 0) }}</span>
+                </div>
+                @endif
+                @if($isRefundSlip && $refundCreditedToKhata > 0)
+                <div class="tot-row" style="color: #27ae60; font-weight: 600;">
+                    <span>Credited to Khata:</span>
+                    <span>Rs. {{ number_format($refundCreditedToKhata, 0) }}</span>
                 </div>
                 @endif
                 <div class="tot-row closing-bal">

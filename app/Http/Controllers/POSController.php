@@ -462,13 +462,7 @@ class POSController extends Controller
             return response()->json(['error' => 'Please enter an invoice number.'], 422);
         }
 
-        $sale = \App\Models\Sale::with(['items.product'])
-            ->where(function($q) use ($term) {
-                $q->where('invoice_no', $term)
-                  ->orWhere('id', $term);
-            })
-            ->whereIn('sale_status', ['posted', 'returned'])
-            ->first();
+        $sale = \App\Models\Sale::findByInvoiceTerm($term);
 
         if (!$sale) {
             return response()->json(['error' => 'Invoice not found or is not posted.'], 404);
@@ -557,9 +551,12 @@ class POSController extends Controller
                 $finalReturnPrice = max(0, round($rawNetUnitPrice - $commDeductionPerPiece, 2));
             }
 
+            $prodImg = ($item->product && $item->product->image) ? asset('uploads/products/' . $item->product->image) : null;
+
             $items[] = [
                 'id' => $item->id,
                 'product_id' => $item->product_id,
+                'image' => $prodImg,
                 'is_manual' => $item->is_manual ? 1 : 0,
                 'product_name' => $item->product_name,
                 'sku' => $item->product->item_code ?? '',
@@ -578,11 +575,29 @@ class POSController extends Controller
             ];
         }
 
+        $customerObj = null;
+        if (!empty($sale->customer_id)) {
+            $c = $sale->customer_relation ?: Customer::find($sale->customer_id);
+            if ($c) {
+                $customerObj = [
+                    'id' => $c->id,
+                    'customer_id' => $c->customer_id ?? $c->id,
+                    'customer_name' => $c->customer_name,
+                    'mobile' => $c->customer_phone ?: ($c->phone ?: ($c->mobile ?: '')),
+                    'address' => $c->address ?: '',
+                    'previous_balance' => (float)($c->previous_balance ?? 0),
+                    'balance_range' => (float)($c->balance_range ?? 0),
+                    'sales_officer_id' => $c->sales_officer_id ?? null,
+                ];
+            }
+        }
+
         return response()->json([
             'sale_id' => $sale->id,
             'invoice_no' => $sale->invoice_no,
             'customer_name' => $sale->walkin_name ?: ($sale->customer_relation->customer_name ?? 'Walking Customer'),
             'customer_id' => $sale->customer_id,
+            'customer' => $customerObj,
             'carpenter_name' => $carpenterName,
             'carpenter_commission_percent' => $carpenterCommPercent,
             'items' => $items

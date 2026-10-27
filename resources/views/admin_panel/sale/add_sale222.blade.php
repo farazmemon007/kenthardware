@@ -387,6 +387,122 @@
         background-color: #eaf2fc;
     }
 
+    /* Multi-Column Product Autocomplete Dropdown (QuickBooks Style) */
+    #qbItemSearchResults.qb-item-autocomplete-dropdown {
+        position: absolute;
+        top: calc(100% + 2px);
+        left: 0;
+        right: auto;
+        width: 1040px;
+        max-width: calc(100vw - 140px);
+        min-width: 720px;
+        max-height: 460px;
+        background: #ffffff;
+        border: 1.5px solid #64748b;
+        border-radius: 4px;
+        box-shadow: 0 14px 36px rgba(15, 23, 42, 0.32), 0 3px 10px rgba(15, 23, 42, 0.15);
+        z-index: 2500;
+        display: none;
+        overflow: hidden;
+        padding: 0;
+    }
+
+    .qb-dropdown-header {
+        height: 28px;
+        flex: 0 0 28px;
+        user-select: none;
+    }
+
+    .qb-dropdown-table-wrap {
+        max-height: 400px;
+        overflow-y: auto;
+        overflow-x: auto;
+        background: #ffffff;
+    }
+
+    .qb-dropdown-table {
+        width: 100%;
+        min-width: 980px;
+        border-collapse: collapse;
+        table-layout: auto;
+        margin-bottom: 0;
+    }
+
+    .qb-dropdown-table thead th {
+        background: linear-gradient(180deg, #edf2f7 0%, #cbd5e1 100%);
+        border-bottom: 2px solid #64748b;
+        border-right: 1px solid #94a3b8;
+        color: #0f172a !important;
+        font-size: 11.5px;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 0.3px;
+        padding: 7px 10px;
+        text-align: left;
+        white-space: nowrap;
+        user-select: none;
+        position: sticky;
+        top: 0;
+        z-index: 5;
+    }
+
+    .qb-dropdown-table thead th:last-child {
+        border-right: none;
+    }
+
+    .qb-dropdown-table tbody td {
+        padding: 6px 10px;
+        border-bottom: 1px solid #cbd5e1;
+        border-right: 1px solid #e2e8f0;
+        font-size: 12px;
+        color: #0f172a !important;
+        vertical-align: middle;
+        white-space: nowrap;
+    }
+
+    .qb-dropdown-table tbody td:last-child {
+        border-right: none;
+    }
+
+    .qb-dropdown-table tbody tr.qb-product-search-item {
+        cursor: pointer;
+        transition: background-color 0.1s ease;
+    }
+
+    /* Strip background (Zebra Striping) */
+    .qb-dropdown-table tbody tr.qb-product-search-item:nth-child(odd) {
+        background-color: #ffffff !important;
+    }
+    .qb-dropdown-table tbody tr.qb-product-search-item:nth-child(odd) td {
+        background-color: #ffffff;
+    }
+
+    .qb-dropdown-table tbody tr.qb-product-search-item:nth-child(even) {
+        background-color: #edf4fc !important;
+    }
+    .qb-dropdown-table tbody tr.qb-product-search-item:nth-child(even) td {
+        background-color: #edf4fc;
+    }
+
+    /* Hover */
+    .qb-dropdown-table tbody tr.qb-product-search-item:hover,
+    .qb-dropdown-table tbody tr.qb-product-search-item:hover td {
+        background-color: #dbeafe !important;
+    }
+
+    /* Selected Row */
+    .qb-dropdown-table tbody tr.qb-product-search-item.selected,
+    .qb-dropdown-table tbody tr.qb-product-search-item.selected td {
+        background-color: #bfdbfe !important;
+        color: #0f172a;
+    }
+
+    tr.qb-autocomplete-item {
+        display: table-row !important;
+        padding: 0 !important;
+        border-bottom: none !important;
+    }
+
     /* Odoo Style Customer Picker Modal & Cards */
     .modal-odoo-customer-dialog {
         max-width: 1120px;
@@ -664,14 +780,108 @@
 
     /* Column Width Proportions & Alignments */
     .qb-grid-table th.col-item-no, .qb-grid-table td.col-item-no { width: 7%; min-width: 70px; }
-    .qb-grid-table th.col-item-name, .qb-grid-table td.col-item-name { width: 18%; min-width: 130px; font-weight: 700; }
-    .qb-grid-table th.col-vendor-desc, .qb-grid-table td.col-vendor-desc { width: 18%; min-width: 130px; }
-    .qb-grid-table th.col-attribute, .qb-grid-table td.col-attribute { width: 10%; min-width: 85px; }
+    .qb-grid-table th.col-image, .qb-grid-table td.col-image { width: 44px; min-width: 44px; max-width: 48px; text-align: center; padding: 2px 4px !important; }
+    .qb-grid-table th.col-item-name, .qb-grid-table td.col-item-name { width: 17%; min-width: 125px; font-weight: 700; }
+    .qb-grid-table th.col-vendor-desc, .qb-grid-table td.col-vendor-desc { width: 16%; min-width: 120px; }
+    .qb-grid-table th.col-attribute, .qb-grid-table td.col-attribute { width: 9%; min-width: 80px; }
     .qb-grid-table th.col-size, .qb-grid-table td.col-size { width: 9%; min-width: 80px; }
     .qb-grid-table th.col-qty, .qb-grid-table td.col-qty { width: 6%; min-width: 60px; text-align: right; }
-    .qb-grid-table th.col-price, .qb-grid-table td.col-price { width: 8%; min-width: 80px; text-align: right; }
+    .qb-grid-table th.col-price, .qb-grid-table td.col-price { width: 9%; min-width: 85px; text-align: right; }
+    .qb-grid-table td.col-price {
+        padding: 2px 4px !important;
+        position: relative;
+    }
+    .qb-price-inline-wrap {
+        display: inline-flex;
+        align-items: center;
+        justify-content: flex-end;
+        width: 100%;
+        gap: 3px;
+    }
+    .qb-price-inline-input {
+        width: 100%;
+        min-width: 60px;
+        max-width: 85px;
+        height: 25px;
+        padding: 1px 5px;
+        font-size: 12px;
+        font-weight: 600;
+        text-align: right;
+        color: inherit;
+        background: transparent;
+        border: 1px solid transparent;
+        border-radius: 3px;
+        transition: all 0.12s ease;
+        cursor: pointer;
+        font-family: inherit;
+        line-height: 1.2;
+    }
+    .qb-price-inline-input:hover {
+        border-color: #94a3b8;
+        background-color: rgba(255, 255, 255, 0.75);
+        cursor: text;
+    }
+    .qb-price-inline-input:focus {
+        border-color: #2563eb !important;
+        background-color: #ffffff !important;
+        color: #0f172a !important;
+        outline: none !important;
+        box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.25) !important;
+        cursor: text;
+    }
+    .qb-price-inline-input::-webkit-outer-spin-button,
+    .qb-price-inline-input::-webkit-inner-spin-button {
+        -webkit-appearance: none;
+        margin: 0;
+    }
+    .qb-price-inline-input[type=number] {
+        -moz-appearance: textfield;
+    }
     .qb-grid-table th.col-ext-price, .qb-grid-table td.col-ext-price { width: 9%; min-width: 90px; text-align: right; font-weight: 700; }
-    .qb-grid-table th.col-sales-desc, .qb-grid-table td.col-sales-desc { width: 15%; min-width: 120px; }
+    .qb-grid-table th.col-sales-desc, .qb-grid-table td.col-sales-desc { width: 14%; min-width: 110px; }
+
+    /* Product Thumbnail Cell Styles */
+    .qb-row-thumb {
+        width: 32px;
+        height: 32px;
+        object-fit: cover;
+        border-radius: 4px;
+        border: 1px solid #cbd5e1;
+        background: #ffffff;
+        cursor: pointer;
+        display: inline-block;
+        vertical-align: middle;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+        transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease;
+    }
+    .qb-row-thumb:hover {
+        transform: scale(1.25);
+        box-shadow: 0 3px 8px rgba(0,0,0,0.22);
+        border-color: #3b82f6;
+        z-index: 5;
+        position: relative;
+    }
+    .qb-no-image-thumb {
+        width: 32px;
+        height: 32px;
+        border-radius: 4px;
+        background: #f1f5f9;
+        border: 1px dashed #cbd5e1;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 13px;
+        color: #94a3b8;
+        cursor: pointer;
+        vertical-align: middle;
+        margin: 0 auto;
+        transition: background-color 0.15s ease, border-color 0.15s ease;
+    }
+    .qb-no-image-thumb:hover {
+        background: #e2e8f0;
+        border-color: #94a3b8;
+        color: #64748b;
+    }
 
     /* Active Row Highlight: Pastel Mint Green */
     .qb-grid-table tr.qb-active-row td {
@@ -886,6 +1096,22 @@
         color: #cc0000;
     }
 
+    .qb-amount-due-banner.qb-banner-refund-mode {
+        background: linear-gradient(135deg, #7f1d1d 0%, #991b1b 100%) !important;
+        border: 2px solid #ef4444 !important;
+        border-radius: 6px !important;
+        padding: 2px 14px !important;
+        box-shadow: 0 0 12px rgba(239, 68, 68, 0.45) !important;
+    }
+    .qb-amount-due-banner.qb-banner-refund-mode .qb-due-label {
+        color: #fef08a !important;
+        font-size: 16px !important;
+    }
+    .qb-amount-due-banner.qb-banner-refund-mode .qb-due-value {
+        color: #ffffff !important;
+        font-size: 24px !important;
+    }
+
     /* 7. Bottom Dark Slate Command Bar */
     .qb-command-bar {
         height: 42px !important;
@@ -936,6 +1162,10 @@
         cursor: not-allowed;
     }
 
+    :root {
+        --qb-catalog-width: clamp(540px, 60vw, 95vw);
+    }
+
     /* ==========================================================
        CATALOG SIDE PANEL (SLIDE-IN RIGHT DRAWER - IMAGE 1)
        ========================================================== */
@@ -944,8 +1174,8 @@
         top: 0 !important;
         right: 0 !important;
         bottom: 0 !important;
-        width: 450px !important;
-        max-width: 92vw !important;
+        width: var(--qb-catalog-width, 60vw) !important;
+        max-width: 95vw !important;
         height: 100vh !important;
         background: #f8fafc !important; /* Odoo Clean POS Canvas */
         z-index: 1060 !important;
@@ -1092,7 +1322,7 @@
         color: #ffffff;
     }
     body.catalog-open .qb-floating-catalog-handle {
-        right: 450px !important;
+        right: var(--qb-catalog-width, 60vw) !important;
         transform: translateY(-50%) translateX(0) !important;
         background: linear-gradient(180deg, #dc2626 0%, #991b1b 100%) !important;
         border-color: #7f1d1d !important;
@@ -1139,7 +1369,7 @@
     }
     .qb-cat-tiles-grid {
         display: grid;
-        grid-template-columns: repeat(4, 1fr);
+        grid-template-columns: repeat(auto-fill, minmax(105px, 1fr));
         gap: 6px;
     }
     .qb-cat-tile {
@@ -1297,30 +1527,79 @@
         flex: 1 1 0%;
         min-height: 0;
         overflow-y: auto;
-        padding: 10px;
+        padding: 10px 8px;
         display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 10px;
+        grid-template-columns: repeat(3, 1fr); /* At least 3 products in a row on desktop */
+        gap: 8px;
         align-content: start;
         background: #f8fafc;
+    }
+    @media (min-width: 1550px) {
+        .qb-prod-grid {
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+        }
+    }
+    @media (max-width: 991px) {
+        :root {
+            --qb-catalog-width: 82vw;
+        }
+    }
+    @media (max-width: 850px) {
+        .qb-prod-grid {
+            grid-template-columns: repeat(2, 1fr);
+        }
+    }
+    @media (max-width: 768px) {
+        :root {
+            --qb-catalog-width: 92vw;
+        }
+    }
+    @media (max-width: 520px) {
+        :root {
+            --qb-catalog-width: 100vw;
+        }
+        .qb-prod-grid {
+            grid-template-columns: 1fr;
+        }
     }
     .qb-prod-card {
         background: #ffffff !important;
         border: 1.5px solid #cbd5e1 !important;
         border-radius: 8px !important;
-        padding: 9px 10px !important;
+        padding: 8px 9px !important;
         cursor: pointer !important;
         transition: all 0.15s ease !important;
         display: flex !important;
         flex-direction: column !important;
-        min-height: 116px !important;
+        min-height: 110px !important;
         position: relative !important;
+        overflow: hidden !important;
         box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05) !important;
     }
     .qb-prod-card:hover {
         border-color: #714b67 !important;
         transform: translateY(-2px) !important;
         box-shadow: 0 6px 14px rgba(113, 75, 103, 0.15) !important;
+    }
+    .qb-prod-card-bg {
+        position: absolute !important;
+        inset: 0 !important;
+        background-size: cover !important;
+        background-position: center !important;
+        background-repeat: no-repeat !important;
+        z-index: 0 !important;
+        pointer-events: none !important;
+        transition: transform 0.25s ease !important;
+    }
+    .qb-prod-card-overlay {
+        position: absolute !important;
+        inset: 0 !important;
+        background: rgba(255, 255, 255, 0.82) !important;
+        z-index: 1 !important;
+        pointer-events: none !important;
+    }
+    .qb-prod-card:hover .qb-prod-card-bg {
+        transform: scale(1.05) !important;
     }
     .qb-card-top-badge {
         font-size: 10.5px !important;
@@ -1332,6 +1611,8 @@
         width: fit-content !important;
         margin-bottom: 0 !important;
         white-space: nowrap !important;
+        position: relative !important;
+        z-index: 2 !important;
     }
     .qb-card-top-badge.in-stock {
         background: #dcfce7 !important;
@@ -1346,9 +1627,9 @@
     .qb-card-title {
         font-weight: 800 !important;
         color: #000000 !important; /* Pure solid black for maximum visibility */
-        font-size: 15.5px !important;
+        font-size: 14px !important;
         line-height: 1.25 !important;
-        margin: 5px 0 6px 0 !important;
+        margin: 4px 0 5px 0 !important;
         display: block !important;
         max-height: 42px !important;
         overflow: hidden !important;
@@ -1356,6 +1637,9 @@
         word-break: break-word !important;
         flex: 0 0 auto !important;
         letter-spacing: -0.2px !important;
+        position: relative !important;
+        z-index: 2 !important;
+        text-shadow: 0 1px 2px rgba(255, 255, 255, 0.9) !important;
     }
     .qb-card-sku {
         font-family: SFMono-Regular, Menlo, Monaco, Consolas, monospace !important;
@@ -1365,6 +1649,8 @@
         white-space: nowrap !important;
         overflow: hidden !important;
         text-overflow: ellipsis !important;
+        position: relative !important;
+        z-index: 2 !important;
     }
     .qb-card-pcode {
         font-family: SFMono-Regular, Menlo, Monaco, Consolas, monospace !important;
@@ -1377,6 +1663,8 @@
         border-radius: 4px !important;
         letter-spacing: 0.3px !important;
         white-space: nowrap !important;
+        position: relative !important;
+        z-index: 2 !important;
     }
     .qb-card-price {
         font-weight: 800 !important;
@@ -1384,6 +1672,39 @@
         font-size: 13.5px !important;
         font-family: SFMono-Regular, Menlo, Monaco, Consolas, monospace !important;
         margin-top: 2px !important;
+        position: relative !important;
+        z-index: 2 !important;
+    }
+
+    /* ==========================================================
+       QUICKBOOKS / ODOO STYLE UOM MODAL (IMAGE & ERP STYLE)
+       ========================================================== */
+    .qb-uom-card-item {
+        background: #ffffff;
+        border: 1.5px solid #cbd5e1;
+        border-radius: 6px;
+        padding: 9px 12px;
+        cursor: pointer;
+        transition: all 0.15s ease-in-out;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        user-select: none;
+    }
+    .qb-uom-card-item:hover {
+        border-color: #3b82f6;
+        background: #f8fafc;
+        transform: translateY(-1px);
+        box-shadow: 0 2px 6px rgba(0,0,0,0.06);
+    }
+    .qb-uom-card-item.active {
+        background: #eff6ff !important;
+        border-color: #2563eb !important;
+        border-width: 2px !important;
+        box-shadow: 0 0 0 3px rgba(37,99,235,0.15) !important;
+    }
+    .qb-uom-card-item.active .qb-uom-unit-name {
+        color: #1e40af !important;
     }
 
     /* ==========================================================
@@ -2013,7 +2334,7 @@
         <div class="qb-search-box-wrap">
             <input type="text" id="qbItemSearchInput" class="qb-search-input" placeholder="Scan or enter item information" autocomplete="off">
             <i class="fas fa-caret-down qb-input-caret" id="btnToggleItemDropdown" title="Show Products"></i>
-            <div id="qbItemSearchResults" class="qb-autocomplete-dropdown"></div>
+            <div id="qbItemSearchResults" class="qb-autocomplete-dropdown qb-item-autocomplete-dropdown"></div>
         </div>
 
         {{-- Input 2: Enter customer name or phone with direct Odoo Screen access --}}
@@ -2039,7 +2360,7 @@
         <div class="d-flex align-items-center gap-2">
             <div id="qbCustomerAvatarBadge" style="width: 24px; height: 24px; border-radius: 50%; background: #d97706; color: #fff; font-size: 10px; font-weight: bold; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">WK</div>
             <div>
-                <span id="qbCustomerStatusLabel" class="fw-bold text-dark">Chase up, Walk-in</span>
+                <span id="qbCustomerStatusLabel" class="fw-bold text-dark">Walk-in Customer</span>
                 <span id="qbCustomerDetailsText" class="text-secondary fw-semibold ms-2" style="font-size: 12px;"><span class="badge bg-warning-subtle text-dark border border-warning-subtle font-monospace">Walk-in</span></span>
             </div>
             <button type="button" class="btn btn-xs btn-outline-warning text-dark py-0 px-1 ms-1" id="qbBtnResetCustomerBanner" title="Edit Walk-in Details (F3)" onclick="openQuickWalkinModal()" style="font-size: 10px; border-radius: 3px;">
@@ -2122,6 +2443,7 @@
                         <thead>
                             <tr title="Right-click table header anytime to customize columns">
                                 <th class="col-item-no">Item #</th>
+                                <th class="col-image text-center">Image</th>
                                 <th class="col-item-name">Item Name</th>
                                 <th class="col-vendor-desc">Vendor Description</th>
                                 <th class="col-attribute">Attribute</th>
@@ -2465,7 +2787,7 @@
             <div class="modal-body p-3">
                 <div class="input-group input-group-sm mb-3">
                     <span class="input-group-text bg-white fw-bold">Receipt / Invoice #</span>
-                    <input type="text" id="returnSearchInvoiceNo" class="form-control fw-bold" placeholder="e.g. 1883 or INV-000045">
+                    <input type="text" id="returnSearchInvoiceNo" class="form-control fw-bold" placeholder="e.g. 7 or INV-0007">
                     <button class="btn btn-primary px-3 fw-bold" type="button" id="btnSearchReturnReceipt"><i class="fas fa-search me-1"></i> Find Receipt</button>
                 </div>
 
@@ -2716,15 +3038,18 @@
                     @if(isset($recentProducts) && count($recentProducts) > 0)
                         @foreach($recentProducts as $prod)
                             @php
-                                $cost = $prod->purchase_price_per_piece > 0 ? $prod->purchase_price_per_piece : ($prod->purchase_price_per_box > 0 ? $prod->purchase_price_per_box : ($prod->sale_price_per_piece ?? 0));
-                                $qPCode = $prod->p_code ?: \App\Services\PCodeService::encode($cost);
+                                $saleCost = $prod->sale_price_per_piece > 0 ? $prod->sale_price_per_piece : ($prod->sale_price_per_box > 0 ? $prod->sale_price_per_box : ($prod->purchase_price_per_piece ?? 0));
+                                $whCost = $prod->wholesale_price ?? ($prod->purchase_price_per_piece > 0 ? $prod->purchase_price_per_piece : 0);
+                                $qSky = $prod->p_code ?: \App\Services\PCodeService::encode($saleCost);
+                                $qRot = $prod->rot_p_code ?: \App\Services\PCodeService::encode($whCost);
+                                $qCombined = \App\Services\PCodeService::formatCombined($qSky, $qRot);
                             @endphp
-                            <div class="col-sm-6 col-md-4 col-lg-3 quick-pick-card-item" data-search="{{ strtolower($prod->item_name . ' ' . $prod->item_code . ' ' . $qPCode) }}">
+                            <div class="col-sm-6 col-md-4 col-lg-3 quick-pick-card-item" data-search="{{ strtolower($prod->item_name . ' ' . $prod->item_code . ' ' . $qCombined . ' ' . $qSky . ' ' . $qRot) }}">
                                 <div class="card h-100 border shadow-sm p-2 cursor-pointer btn-add-direct-catalog" data-product-id="{{ $prod->id }}" style="cursor: pointer; transition: all 0.15s ease;">
                                     <div class="d-flex justify-content-between align-items-start mb-1">
                                         <span class="badge bg-secondary-subtle text-dark font-monospace small">#{{ $prod->item_code }}</span>
-                                        @if(!empty($qPCode))
-                                            <span class="badge bg-warning-subtle text-dark border border-warning-subtle font-monospace small" title="P-Code: {{ $qPCode }}">P: {{ $qPCode }}</span>
+                                        @if(!empty($qCombined))
+                                            <span class="badge bg-warning-subtle text-dark border border-warning-subtle font-monospace small" title="P-Code: {{ $qCombined }}">P: {{ $qCombined }}</span>
                                         @endif
                                     </div>
                                     <div class="fw-bold text-dark text-truncate" style="font-size: 13px;" title="{{ $prod->item_name }}">{{ $prod->item_name }}</div>
@@ -2975,10 +3300,10 @@
                 <form id="formQuickWalkinCustomer" autocomplete="off" onsubmit="return false;">
                     <div class="mb-3">
                         <label class="form-label small fw-bold text-dark d-flex justify-content-between align-items-center mb-1">
-                            <span><i class="fas fa-user me-1 text-primary"></i> Customer Name <small class="text-muted fw-normal">(Optional)</small></span>
+                            <span><i class="fas fa-user me-1 text-primary"></i> Customer Name <small class="text-danger fw-bold">*Required</small></span>
                             <span class="text-muted" style="font-size: 11px;">Default: Walk-in Customer</span>
                         </label>
-                        <input type="text" id="walkinModalName" class="form-control form-control-sm fs-6 fw-bold text-dark" placeholder="Walk-in Customer" value="Walk-in Customer">
+                        <input type="text" id="walkinModalName" class="form-control form-control-sm fs-6 fw-bold text-dark" placeholder="Customer Name daalen..." value="Walk-in Customer" required>
                         <div class="d-flex gap-1 mt-1">
                             <button type="button" class="btn btn-xs btn-outline-secondary py-0 px-2 walkin-quick-preset" data-name="Walk-in Customer" style="font-size: 10.5px;">Default Walk-in</button>
                             <button type="button" class="btn btn-xs btn-outline-secondary py-0 px-2 walkin-quick-preset" data-name="Cash Counter" style="font-size: 10.5px;">Cash Counter</button>
@@ -3289,6 +3614,7 @@
                     @php
                         $salesCols = [
                             ['key' => 'col-item-no',     'label' => 'Item #'],
+                            ['key' => 'col-image',       'label' => 'Image'],
                             ['key' => 'col-item-name',   'label' => 'Item Name'],
                             ['key' => 'col-vendor-desc', 'label' => 'Vendor Description'],
                             ['key' => 'col-attribute',   'label' => 'Attribute'],
@@ -3322,29 +3648,175 @@
     </div>
 </div>
 
-<!-- QUICKBOOKS DESKTOP POS: CHOOSE UNIT OF MEASURE MODAL (ADD SALE) -->
-<div class="modal fade" id="qbChooseUomModalAddSale" tabindex="-1" aria-labelledby="qbChooseUomModalAddSaleLabel" aria-hidden="true" style="z-index: 1080;">
-    <div class="modal-dialog modal-dialog-centered" style="max-width: 440px;">
-        <div class="modal-content shadow-lg border-0" style="border-radius: 8px;">
-            <div class="modal-header py-2 px-3 bg-light border-bottom d-flex align-items-center justify-content-between">
-                <h6 class="modal-title fw-bold text-dark d-flex align-items-center mb-0" id="qbChooseUomModalAddSaleLabel" style="font-size: 14px;">
-                    <i class="fas fa-layer-group text-primary me-2"></i> Choose Unit of Measure
-                </h6>
-                <button type="button" class="close text-dark" data-dismiss="modal" data-bs-dismiss="modal" aria-label="Close" style="border: none; background: transparent; font-size: 22px; line-height: 1;">
-                    <span aria-hidden="true">&times;</span>
+{{-- Modal: Product Image Preview & Details (QuickBooks / Odoo Clean Style) --}}
+<div class="modal fade" id="modalItemImagePreview" tabindex="-1" aria-hidden="true" style="z-index: 1085;">
+    <div class="modal-dialog modal-dialog-centered" style="max-width: 860px;">
+        <div class="modal-content border-0 shadow-lg" style="border-radius: 6px; overflow: hidden; border: 1.5px solid #1e3a5f;">
+            {{-- QuickBooks POS / Odoo Clean Header --}}
+            <div class="qb-zero-price-header d-flex justify-content-between align-items-center" style="background: linear-gradient(180deg, #1e3a5f 0%, #152942 100%); padding: 9px 16px;">
+                <div class="d-flex align-items-center gap-2">
+                    <i class="fas fa-box-open text-warning" style="font-size: 17px;"></i>
+                    <div>
+                        <div class="d-flex align-items-center gap-2">
+                            <span class="fw-bold text-white" id="itemPreviewModalTitle" style="font-size: 16px;">Item Image &amp; Details</span>
+                            <span class="badge bg-light text-dark font-monospace" style="font-size: 11px; padding: 2px 7px;">Product Quick View</span>
+                        </div>
+                        <span class="text-white-50 d-block" id="itemPreviewModalSubtitle" style="font-size: 12px; line-height: 1.2;">Preview item details, specifications, and live cipher codes</span>
+                    </div>
+                </div>
+                <button type="button" class="btn btn-link text-white p-0 text-decoration-none shadow-none" data-dismiss="modal" data-bs-dismiss="modal" onclick="$('#modalItemImagePreview').modal('hide')" aria-label="Close" style="font-size: 20px; line-height: 1; opacity: 0.85; cursor: pointer;">
+                    <i class="fas fa-times"></i>
                 </button>
             </div>
-            <div class="modal-body p-3">
-                <div class="text-muted small mb-2">
-                    Select the unit of measure to sell <strong id="qbAddSaleModalProductName" class="text-dark"></strong>:
+
+            <div class="modal-body p-3" style="background: #eef2f8;">
+                <div class="row g-3 align-items-stretch">
+                    {{-- Left Column: Product Image Showcase (Odoo / QuickBooks Canvas) --}}
+                    <div class="col-md-5 col-12 d-flex flex-column">
+                        <div class="card h-100 border-0 shadow-sm p-3 d-flex flex-column justify-content-between" style="background: #ffffff; border: 1.5px solid #cbd5e1 !important; border-radius: 6px;">
+                            <div class="d-flex align-items-center justify-content-center p-2 rounded" style="height: 250px; background: #fafafa; border: 1px solid #e2e8f0; position: relative; overflow: hidden;">
+                                <img id="itemPreviewModalImg" src="" alt="Product Image" style="max-width: 100%; max-height: 235px; object-fit: contain; border-radius: 4px; display: none;">
+                                <div id="itemPreviewModalNoImg" class="text-center text-muted py-4" style="display: none;">
+                                    <i class="fas fa-image fa-3x mb-2 text-secondary" style="opacity: 0.35;"></i>
+                                    <div class="fw-bold text-secondary" style="font-size: 14px;">No Image Available</div>
+                                    <div class="small text-muted" style="font-size: 12px;">Upload in product catalog</div>
+                                </div>
+                            </div>
+                            
+                            <div class="mt-2 pt-2 border-top border-light-subtle d-flex align-items-center justify-content-between gap-2">
+                                <a id="itemPreviewOpenNewTab" href="#" target="_blank" class="btn btn-outline-primary btn-sm flex-grow-1 text-truncate py-1.5" style="font-size: 12.5px; font-weight: 600; display: none;">
+                                    <i class="fas fa-external-link-alt me-1.5"></i> Full Size View
+                                </a>
+                                <div class="badge bg-light text-secondary border font-monospace py-1.5 px-2.5" style="font-size: 12px;" title="Current Stock on Hand">
+                                    <i class="fas fa-warehouse text-primary me-1"></i> Stock: <strong id="itemPreviewStockVal" class="text-dark">0</strong>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    {{-- Right Column: Product Identity & Specifications Grid --}}
+                    <div class="col-md-7 col-12 d-flex flex-column">
+                        <div class="card h-100 border-0 shadow-sm p-3 d-flex flex-column justify-content-between" style="background: #ffffff; border: 1.5px solid #cbd5e1 !important; border-radius: 6px;">
+                            {{-- Header Title Row (Increased font sizes) --}}
+                            <div>
+                                <div class="d-flex align-items-start justify-content-between gap-2 mb-2 pb-1 border-bottom">
+                                    <div class="flex-grow-1 overflow-hidden pe-2">
+                                        <div class="text-muted text-uppercase fw-bold" style="font-size: 11px; letter-spacing: 0.5px;">Product Name</div>
+                                        <h4 class="fw-bold text-dark mb-0 text-truncate" id="itemPreviewName" style="font-size: 20px; color: #0f172a !important; line-height: 1.25;">-</h4>
+                                        <div class="text-secondary small text-truncate mt-0.5" id="itemPreviewSalesDesc" style="font-size: 13.5px; font-weight: 500;">-</div>
+                                    </div>
+                                    <div class="text-end flex-shrink-0">
+                                        <span class="badge bg-primary text-white font-monospace px-3 py-1.5" style="font-size: 13px; font-weight: 700;" id="itemPreviewItemNo">-</span>
+                                        <div class="mt-1" id="itemPreviewUnitBadge"></div>
+                                    </div>
+                                </div>
+
+                                {{-- Specification Table (QuickBooks qb-modal-spec-table with larger fonts) --}}
+                                <div class="qb-zero-price-box my-1" style="border: 1.5px solid #cbd5e1; border-radius: 6px; padding: 10px 14px; background: #f8fafc;">
+                                    <table class="qb-modal-spec-table" style="width: 100%;">
+                                        <tr>
+                                            <td class="spec-label" style="width: 32%; font-size: 15px !important; font-weight: 600 !important; color: #475569 !important; padding: 6px 14px 6px 4px !important;">Attribute</td>
+                                            <td class="spec-value" style="font-size: 16px !important; font-weight: 700 !important; color: #0f172a !important; padding: 6px 4px !important;" id="itemPreviewAttribute">-</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="spec-label" style="width: 32%; font-size: 15px !important; font-weight: 600 !important; color: #475569 !important; padding: 6px 14px 6px 4px !important;">Size</td>
+                                            <td class="spec-value" style="font-size: 16px !important; font-weight: 700 !important; color: #0f172a !important; padding: 6px 4px !important;" id="itemPreviewSize">-</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="spec-label" style="width: 32%; font-size: 15px !important; font-weight: 600 !important; color: #475569 !important; padding: 6px 14px 6px 4px !important;">Vendor / Dept</td>
+                                            <td class="spec-value" style="font-size: 16px !important; font-weight: 700 !important; color: #0f172a !important; padding: 6px 4px !important;" id="itemPreviewVendor">-</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="spec-label" style="width: 32%; font-size: 15px !important; font-weight: 600 !important; color: #475569 !important; padding: 6px 14px 6px 4px !important;">P-Code</td>
+                                            <td class="spec-value font-monospace" style="padding: 6px 4px !important;">
+                                                <div class="d-inline-flex align-items-center gap-1.5 flex-wrap font-monospace" id="itemPreviewPCodeWrap">
+                                                    <span class="badge bg-warning-subtle text-dark border border-warning-subtle font-monospace px-2.5 py-1 fw-bold" style="font-size: 13.5px;" title="Combined P-Code">
+                                                        P-Code: <span id="itemPreviewCombinedVal">-</span>
+                                                    </span>
+                                                    <span class="badge text-white font-monospace px-2.5 py-1" style="background: #1e40af; font-size: 12px; font-weight: 700; border-radius: 4px;" title="Sky P-Code">
+                                                        Sky: <span id="itemPreviewSkyVal">-</span>
+                                                    </span>
+                                                    <span class="badge text-white font-monospace px-2.5 py-1" style="background: #0f172a; font-size: 12px; font-weight: 700; border-radius: 4px;" title="Root P-Code">
+                                                        Root: <span id="itemPreviewRotVal">-</span>
+                                                    </span>
+                                                    <span id="itemPreviewPCode" class="d-none">-</span>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-                <div class="d-flex flex-column gap-2" id="qbAddSaleModalUnitsContainer" style="max-height: 320px; overflow-y: auto;">
+            </div>
+
+            <div class="modal-footer py-2 px-3 d-flex justify-content-between align-items-center" style="background: #e2e8f0; border-top: 1.5px solid #cbd5e1;">
+                <span class="text-muted small" style="font-size: 12px;">
+                    <i class="fas fa-info-circle text-primary me-1"></i> Press <kbd style="font-size: 10.5px; padding: 1px 5px;">Esc</kbd> or click Close to return
+                </span>
+                <button type="button" class="btn btn-secondary btn-sm px-4 fw-bold" data-bs-dismiss="modal" data-dismiss="modal" onclick="$('#modalItemImagePreview').modal('hide')" style="font-size: 13px;">
+                    Close
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- QUICKBOOKS DESKTOP POS & ODOO ERP: CHOOSE UNIT OF MEASURE MODAL (ADD SALE) -->
+<div class="modal fade" id="qbChooseUomModalAddSale" tabindex="-1" data-bs-backdrop="static" data-bs-keyboard="false" aria-hidden="true" style="z-index: 1080;">
+    <div class="modal-dialog modal-dialog-centered" style="max-width: 460px;">
+        <div class="modal-content border-0 shadow-lg" style="border-radius: 6px; overflow: hidden; border: 1.5px solid #1e3a5f;">
+            <div class="qb-zero-price-header d-flex justify-content-between align-items-center" style="background: linear-gradient(180deg, #1e3a5f 0%, #152942 100%); padding: 8px 14px;">
+                <span class="fw-bold d-flex align-items-center" style="font-size: 13.5px; color: #fff;">
+                    <i class="fas fa-layer-group me-2 text-warning"></i> Select Unit of Measure (UoM)
+                </span>
+                <button type="button" class="btn btn-link text-white p-0 text-decoration-none shadow-none" id="btnUomModalClose" style="font-size: 18px; line-height: 1; opacity: 0.85; cursor: pointer;">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body p-3" style="background: #eef2f8;">
+                <div class="qb-zero-price-box mb-2.5">
+                    <table class="qb-modal-spec-table">
+                        <tr>
+                            <td class="spec-label" style="width: 32%;">Item Name</td>
+                            <td class="spec-value fw-bold text-primary" id="qbAddSaleModalProductName">-</td>
+                        </tr>
+                        <tr id="qbAddSaleModalSkuRow">
+                            <td class="spec-label">Item # / SKU</td>
+                            <td class="spec-value font-monospace" id="qbAddSaleModalProductSku">-</td>
+                        </tr>
+                        <tr id="qbAddSaleModalVariantRow">
+                            <td class="spec-label">Variant / Size</td>
+                            <td class="spec-value" id="qbAddSaleModalProductVariant">-</td>
+                        </tr>
+                        <tr>
+                            <td class="spec-label">Stock on Hand</td>
+                            <td class="spec-value text-success fw-bold" id="qbAddSaleModalProductStock">-</td>
+                        </tr>
+                    </table>
+                </div>
+
+                <div class="d-flex justify-content-between align-items-center mb-2 px-1">
+                    <span class="text-dark fw-bold" style="font-size: 12px;">
+                        <i class="fas fa-boxes me-1 text-primary"></i> Choose Unit to Sell:
+                    </span>
+                    <span class="text-muted" style="font-size: 10.5px;">
+                        <kbd>↑</kbd> <kbd>↓</kbd> / Double-Click
+                    </span>
+                </div>
+
+                <div class="d-flex flex-column gap-2" id="qbAddSaleModalUnitsContainer" style="max-height: 290px; overflow-y: auto;">
                     <!-- Populated dynamically via JS -->
                 </div>
             </div>
-            <div class="modal-footer py-2 px-3 bg-light border-top d-flex justify-content-end gap-2">
-                <button type="button" class="btn btn-secondary btn-sm px-3" data-dismiss="modal" data-bs-dismiss="modal">Cancel</button>
-                <button type="button" class="btn btn-primary btn-sm px-4 fw-bold" id="btnConfirmQbAddSaleUomChoice">OK</button>
+            <div class="modal-footer py-2 px-3 bg-light border-top d-flex justify-content-between align-items-center">
+                <button type="button" class="btn btn-outline-secondary btn-sm px-3" id="btnCancelQbAddSaleUom">
+                    <i class="fas fa-times me-1"></i> Cancel
+                </button>
+                <button type="button" class="btn btn-primary btn-sm px-4 fw-bold" id="btnConfirmQbAddSaleUomChoice" style="background: #1e40af; border-color: #1e40af;">
+                    <i class="fas fa-arrow-right me-1"></i> Continue to Price
+                </button>
             </div>
         </div>
     </div>
@@ -3397,8 +3869,9 @@
                         <tr>
                             <td class="spec-label">P-Code</td>
                             <td class="spec-value font-monospace" id="zpPCode">
-                                <span class="badge text-white font-monospace" style="background: #1e40af; font-size: 12px; font-weight: 700; padding: 2px 7px; border-radius: 4px;">Sky: <span id="zpSkyVal">-</span></span>
-                                <span class="badge text-white font-monospace ms-1" style="background: #0f172a; font-size: 12px; font-weight: 700; padding: 2px 7px; border-radius: 4px;">Root: <span id="zpRotVal">-</span></span>
+                                <span class="badge bg-warning-subtle text-dark border border-warning-subtle font-monospace fw-bold me-1" style="font-size: 12px;" title="Combined P-Code">P-Code: <span id="zpCombinedVal">-</span></span>
+                                <span class="badge text-white font-monospace" style="background: #1e40af; font-size: 11px; font-weight: 700; padding: 2px 6px; border-radius: 4px;">Sky: <span id="zpSkyVal">-</span></span>
+                                <span class="badge text-white font-monospace ms-1" style="background: #0f172a; font-size: 11px; font-weight: 700; padding: 2px 6px; border-radius: 4px;">Root: <span id="zpRotVal">-</span></span>
                             </td>
                         </tr>
                     </table>
@@ -3497,8 +3970,9 @@
                         <tr>
                             <td class="spec-label">P-Code</td>
                             <td class="spec-value font-monospace" id="qePCode">
-                                <span class="badge text-white font-monospace" style="background: #1e40af; font-size: 12px; font-weight: 700; padding: 2px 7px; border-radius: 4px;">Sky: <span id="qeSkyVal">-</span></span>
-                                <span class="badge text-white font-monospace ms-1" style="background: #0f172a; font-size: 12px; font-weight: 700; padding: 2px 7px; border-radius: 4px;">Root: <span id="qeRotVal">-</span></span>
+                                <span class="badge bg-warning-subtle text-dark border border-warning-subtle font-monospace fw-bold me-1" style="font-size: 12px;" title="Combined P-Code">P-Code: <span id="qeCombinedVal">-</span></span>
+                                <span class="badge text-white font-monospace" style="background: #1e40af; font-size: 11px; font-weight: 700; padding: 2px 6px; border-radius: 4px;">Sky: <span id="qeSkyVal">-</span></span>
+                                <span class="badge text-white font-monospace ms-1" style="background: #0f172a; font-size: 11px; font-weight: 700; padding: 2px 6px; border-radius: 4px;">Root: <span id="qeRotVal">-</span></span>
                             </td>
                         </tr>
                     </table>
@@ -3782,6 +4256,7 @@ window.addEventListener('keydown', function(e) {
 // ==============================================================
 window.SALES_GRID_COLUMNS = [
     { key: 'col-item-no',     label: 'Item #',             default: true },
+    { key: 'col-image',       label: 'Image',              default: true },
     { key: 'col-item-name',   label: 'Item Name',          default: true },
     { key: 'col-vendor-desc', label: 'Vendor Description', default: true },
     { key: 'col-attribute',   label: 'Attribute',          default: true },
@@ -3791,7 +4266,7 @@ window.SALES_GRID_COLUMNS = [
     { key: 'col-ext-price',   label: 'Ext Price',          default: true },
     { key: 'col-sales-desc',  label: 'Sales Description',  default: true }
 ];
-window.SALES_GRID_COL_STORAGE_KEY = 'kent_sales_grid_columns_v2';
+window.SALES_GRID_COL_STORAGE_KEY = 'kent_sales_grid_columns_v3';
 
 window.getSalesGridColPrefs = function() {
     const defaults = {};
@@ -3907,6 +4382,98 @@ window.openCustomizeSalesColumnsModal = function(e) {
     $('#modalCustomizeSalesColumns').modal('show');
 };
 
+window.productImageCache = window.productImageCache || {};
+
+window.openItemImageModal = function(uid, e) {
+    if (e) {
+        e.preventDefault();
+        e.stopPropagation();
+    }
+    const row = (typeof window.getGridRowByUid === 'function') 
+        ? window.getGridRowByUid(uid) 
+        : (typeof gridRows !== 'undefined' ? gridRows.find(r => r.uid === uid) : null);
+    if (!row) return;
+
+    $('#itemPreviewModalTitle').text(row.itemName || 'Item Preview');
+    $('#itemPreviewModalSubtitle').text((row.itemNumber ? '#' + row.itemNumber + ' • ' : '') + (row.salesDesc || row.itemName || ''));
+    $('#itemPreviewName').text(row.itemName || '-');
+    $('#itemPreviewSalesDesc').text(row.salesDesc || '-');
+    $('#itemPreviewItemNo').text(row.itemNumber || '-');
+    $('#itemPreviewAttribute').text(row.attribute || '-');
+    $('#itemPreviewSize').text(row.size || '-');
+    
+    // Sky and Root P-Codes
+    let skyVal = row.pCode || '';
+    if (!skyVal && row.price && typeof window.encodeToPCode === 'function') {
+        skyVal = window.encodeToPCode(row.price);
+    }
+    let rotVal = row.rotCode || '';
+    if (!rotVal && row.rootPrice && typeof window.encodeToPCode === 'function') {
+        rotVal = window.encodeToPCode(row.rootPrice);
+    }
+    if (!rotVal && row.colorJson) {
+        try {
+            const vData = (typeof row.colorJson === 'string') ? JSON.parse(row.colorJson) : row.colorJson;
+            if (vData) {
+                rotVal = vData.rot_p_code || '';
+                if (!rotVal && (vData.wholesale_price || vData.rot_price) && typeof window.encodeToPCode === 'function') {
+                    rotVal = window.encodeToPCode(vData.wholesale_price || vData.rot_price);
+                }
+            }
+        } catch (e) {}
+    }
+
+    const combVal = (window.formatCombinedPCode ? window.formatCombinedPCode(skyVal, rotVal) : (skyVal && rotVal ? `${skyVal}-${rotVal}` : (skyVal || rotVal))) || '---';
+    $('#itemPreviewSkyVal').text(skyVal || '---');
+    $('#itemPreviewRotVal').text(rotVal || '---');
+    $('#itemPreviewCombinedVal').text(combVal);
+    $('#itemPreviewPCode').text(combVal);
+
+    $('#itemPreviewVendor').text(row.vendorDesc || '-');
+    const numericPrice = parseFloat(row.price || 0);
+    $('#itemPreviewPrice').text('Rs. ' + numericPrice.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }));
+    $('#itemPreviewUnitBadge').html(`<span class="badge bg-light text-primary border font-monospace px-2.5 py-1" style="font-size: 13px; font-weight: 700;">${row.uomName || row.unit || 'Pcs'}</span>`);
+    
+    // Stock on Hand
+    const stockQty = (row.stock !== undefined) ? row.stock : 0;
+    $('#itemPreviewStockVal').text(stockQty);
+
+    let imgUrl = row.image || '';
+    if (!imgUrl && row.productId && window.productImageCache && window.productImageCache[row.productId]) {
+        imgUrl = window.productImageCache[row.productId];
+    }
+
+    if (imgUrl) {
+        $('#itemPreviewModalImg').attr('src', imgUrl).show();
+        $('#itemPreviewModalNoImg').hide();
+        $('#itemPreviewOpenNewTab').attr('href', imgUrl).css('display', 'inline-flex');
+    } else {
+        if (row.productId) {
+            $.ajax({
+                url: '{{ route('products.ajax.search', [], false) }}',
+                data: { product_id: row.productId },
+                dataType: 'json',
+                success: function(res) {
+                    if (res && res.results && res.results.length && res.results[0].image) {
+                        const foundImg = res.results[0].image;
+                        row.image = foundImg;
+                        if (window.productImageCache) window.productImageCache[row.productId] = foundImg;
+                        $('#itemPreviewModalImg').attr('src', foundImg).show();
+                        $('#itemPreviewModalNoImg').hide();
+                        $('#itemPreviewOpenNewTab').attr('href', foundImg).css('display', 'inline-flex');
+                        if (typeof renderGrid === 'function') renderGrid();
+                    }
+                }
+            });
+        }
+        $('#itemPreviewModalImg').hide();
+        $('#itemPreviewModalNoImg').show();
+        $('#itemPreviewOpenNewTab').hide();
+    }
+
+    $('#modalItemImagePreview').modal('show');
+};
+
 // Immediate application on parse so columns do not flicker
 window.applySalesGridColVisibility();
 window.isUserAdmin = {{ auth()->check() && auth()->user()->isSuperAdmin() ? 'true' : 'false' }};
@@ -3964,7 +4531,7 @@ $(document).ready(function() {
                 tel: '',
                 previousBalance: '0',
                 rangeBalance: '0',
-                statusLabel: 'Chase up,',
+                statusLabel: 'Walk-in Customer',
                 detailsText: '',
                 salesOfficerId: ''
             },
@@ -3996,7 +4563,7 @@ $(document).ready(function() {
             tel: $('#tel').val() || '',
             previousBalance: $('#previousBalance').val() || '0',
             rangeBalance: $('#rangeBalance').val() || '0',
-            statusLabel: $('#qbCustomerStatusLabel').text() || 'Chase up,',
+            statusLabel: $('#qbCustomerStatusLabel').text() || 'Walk-in Customer',
             detailsText: $('#qbCustomerDetailsText').text() || '',
             salesOfficerId: $('#salesOfficerId').val() || ''
         };
@@ -4227,9 +4794,19 @@ $(document).ready(function() {
     // ==============================================================
     // 1. AUTOCOMPLETE & DROPDOWN HELPER FUNCTIONS
     // ==============================================================
+    function escapeHtml(text) {
+        if (text === null || text === undefined) return '';
+        return String(text)
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;')
+            .replace(/'/g, '&#039;');
+    }
+
     function navigateDropdown($container, direction) {
         if (!$container.is(':visible')) return;
-        const items = $container.find('.qb-autocomplete-item');
+        const items = $container.find('.qb-product-search-item, .qb-customer-search-item, .qb-autocomplete-item');
         if (!items.length) return;
         let index = items.index(items.filter('.selected'));
         index += direction;
@@ -4243,16 +4820,19 @@ $(document).ready(function() {
     }
 
     // ==============================================================
-    // 2. AUTOCOMPLETE: SCAN OR ENTER ITEM INFORMATION
+    // 2. AUTOCOMPLETE: SCAN OR ENTER ITEM INFORMATION (QUICKBOOKS STYLE)
     // ==============================================================
     let itemSearchTimeout = null;
+    window._qbCurrentItemResults = [];
     const $itemInput = $('#qbItemSearchInput');
     const $itemResults = $('#qbItemSearchResults');
 
     function renderItemDropdown(results) {
+        window._qbCurrentItemResults = results || [];
+
         if (!results || !results.length) {
             $itemResults.html(`
-                <div class="p-3 text-muted text-center" style="font-size:12px;">
+                <div class="p-4 text-muted text-center" style="font-size:12px;">
                     <i class="fas fa-box-open fa-2x text-secondary mb-2 d-block"></i>
                     No products found
                 </div>
@@ -4261,42 +4841,126 @@ $(document).ready(function() {
         }
 
         let html = `
-            <div class="px-2 py-1 bg-light border-bottom text-muted d-flex justify-content-between align-items-center" style="font-size: 10.5px; font-weight: 600;">
-                <span><i class="fas fa-boxes me-1 text-primary"></i> PRODUCTS (${results.length})</span>
-                <span class="text-secondary">Click or Enter to select</span>
+            <div class="qb-dropdown-header px-2 py-1 bg-light border-bottom text-muted d-flex justify-content-between align-items-center" style="font-size: 11px; font-weight: 600; background: linear-gradient(180deg, #f8fafc 0%, #edf2f7 100%);">
+                <div class="d-flex align-items-center gap-2">
+                    <span class="text-dark"><i class="fas fa-boxes me-1 text-primary"></i> <strong>PRODUCTS (${results.length})</strong></span>
+                    <span class="badge bg-primary-subtle text-primary border border-primary-subtle font-monospace" style="font-size: 10px;">QuickBooks POS View</span>
+                </div>
+                <div class="text-secondary small d-flex align-items-center gap-2" style="font-size: 10.5px;">
+                    <span><kbd style="font-size: 9.5px; padding: 1px 4px; background: #e2e8f0; color: #1e293b; border: 1px solid #cbd5e1; border-radius: 3px;">↑</kbd> <kbd style="font-size: 9.5px; padding: 1px 4px; background: #e2e8f0; color: #1e293b; border: 1px solid #cbd5e1; border-radius: 3px;">↓</kbd> navigate</span>
+                    <span>&bull;</span>
+                    <span><kbd style="font-size: 9.5px; padding: 1px 4px; background: #e2e8f0; color: #1e293b; border: 1px solid #cbd5e1; border-radius: 3px;">Enter</kbd> / Click to select</span>
+                    <span>&bull;</span>
+                    <span><kbd style="font-size: 9.5px; padding: 1px 4px; background: #e2e8f0; color: #1e293b; border: 1px solid #cbd5e1; border-radius: 3px;">Esc</kbd> close</span>
+                </div>
             </div>
-            <div style="max-height: 270px; overflow-y: auto;">
+            <div class="qb-dropdown-table-wrap">
+                <table class="qb-dropdown-table">
+                    <thead>
+                        <tr>
+                            <th class="col-qb-item-no" style="text-align: center; white-space: nowrap;">Item #</th>
+                            <th class="col-qb-item-name" style="text-align: left; white-space: nowrap;">Item Name</th>
+                            <th class="col-qb-desc" style="text-align: left; white-space: nowrap;">Description</th>
+                            <th class="col-qb-attr" style="text-align: center; white-space: nowrap;">Attribute</th>
+                            <th class="col-qb-size" style="text-align: center; white-space: nowrap;">Size</th>
+                            <th class="col-qb-stock" style="text-align: center; white-space: nowrap;">Stock</th>
+                            <th class="col-qb-price" style="text-align: right; white-space: nowrap;">Price</th>
+                            <th class="col-qb-pcode" style="text-align: center; white-space: nowrap; padding-right: 14px;">P-Code</th>
+                        </tr>
+                    </thead>
+                    <tbody>
         `;
 
         results.forEach((item, index) => {
-            const sku = item.sku || item.item_code || item.serial_no || '-';
-            const itemNumberBadge = item.item_number ? `<span class="badge bg-primary text-white font-monospace ms-1" style="font-size:10.5px;">Item #: ${item.item_number}</span>` : '';
-            const pCodeBadge = item.p_code ? `<span class="badge bg-warning-subtle text-dark border border-warning-subtle font-monospace ms-1" style="font-size:10px;">P: ${item.p_code}</span>` : '';
-            const stockQty = item.stock || item.stock_pieces || 0;
-            const stockBadge = stockQty > 0 
-                ? `<span class="badge bg-success-subtle text-success border border-success-subtle px-1">Stock: ${stockQty}</span>`
-                : `<span class="badge bg-danger-subtle text-danger border border-danger-subtle px-1">Out of stock</span>`;
-            const price = parseFloat(item.price || item.retail_price || item.sale_price || 0).toFixed(2);
-            const desc = item.sales_desc || item.name || item.text || '';
+            const parsed = (typeof window.parseItemDetailsClean === 'function') 
+                ? window.parseItemDetailsClean(item) 
+                : {
+                    itemName: item.name || item.item_name || 'Item',
+                    salesDesc: item.sales_desc || item.name || '',
+                    attribute: item.attribute || item.color || '-',
+                    size: item.size || '-'
+                };
+
+            const itemName = parsed.itemName || item.name || item.item_name || 'Item';
+            const desc = parsed.salesDesc || item.sales_desc || item.variant_name || item.name || item.text || '';
+            const attr = parsed.attribute || item.attribute || item.color || '-';
+            const size = parsed.size || item.size || '-';
+            const sku = item.sku || item.item_code || item.serial_no || '';
+            const itemNumber = item.item_number ? String(item.item_number).trim() : '';
+
+            // Item # / SKU presentation (Dark high-contrast)
+            let itemNoHtml = '<span style="color: #64748b; font-weight: 700;">-</span>';
+            if (itemNumber) {
+                itemNoHtml = `<span class="badge" style="background: #1e3a8a; color: #ffffff !important; font-weight: 800; font-size: 11px; padding: 3px 7px; font-family: monospace;">#${escapeHtml(itemNumber)}</span>`;
+                if (sku && sku !== itemNumber && sku !== '-') {
+                    itemNoHtml += `<div class="font-monospace" style="font-size: 10px; font-weight: 800; color: #0f172a !important; margin-top: 1px;" title="SKU: ${escapeHtml(sku)}">${escapeHtml(sku)}</div>`;
+                }
+            } else if (sku && sku !== '-') {
+                itemNoHtml = `<span class="badge font-monospace" style="background: #e2e8f0; color: #0f172a !important; border: 1.5px solid #94a3b8; font-size: 11px; font-weight: 800; padding: 2px 7px;">${escapeHtml(sku)}</span>`;
+            }
+
+            // P-Codes (Dark amber high-contrast badge)
+            const itemSky = item.sky_p_code || item.p_code || (window.encodeToPCode ? window.encodeToPCode(item.price || item.retail_price || item.sale_price || 0) : '');
+            const itemRot = item.rot_p_code || (window.encodeToPCode ? window.encodeToPCode(item.wholesale_price || item.rootPrice || 0) : '');
+            const combPCode = window.formatCombinedPCode ? window.formatCombinedPCode(itemSky, itemRot) : (itemSky && itemRot ? `${itemSky}-${itemRot}` : (itemSky || itemRot));
+            const pCodeBadge = combPCode 
+                ? `<span class="badge font-monospace" style="background: #fef3c7; color: #78350f !important; border: 1.5px solid #d97706; font-size: 11.5px; font-weight: 800; padding: 3px 8px; border-radius: 4px;" title="P-Code: ${escapeHtml(combPCode)}">${escapeHtml(combPCode)}</span>` 
+                : '<span style="color: #64748b; font-weight: 700;">-</span>';
+
+            // Stock (High contrast badges)
+            const stockQty = parseFloat(item.stock_pieces !== undefined ? item.stock_pieces : (item.stock || 0));
+            const unitName = item.unit_name || item.unit || 'Pcs';
+            let stockHtml = '';
+            if (stockQty > 0) {
+                stockHtml = `<span class="badge font-monospace" style="background: #dcfce7; color: #14532d !important; border: 1.5px solid #16a34a; font-size: 11.5px; font-weight: 800; padding: 3px 8px; border-radius: 4px;"><i class="fas fa-check-circle me-1" style="font-size: 9.5px; color: #15803d;"></i>${stockQty} <small style="font-size: 10px;">${escapeHtml(unitName)}</small></span>`;
+            } else {
+                stockHtml = `<span class="badge font-monospace" style="background: #fee2e2; color: #991b1b !important; border: 1.5px solid #dc2626; font-size: 11px; font-weight: 800; padding: 3px 8px; border-radius: 4px;"><i class="fas fa-times-circle me-1" style="font-size: 9.5px; color: #b91c1c;"></i>Out of stock</span>`;
+            }
+
+            // Price (Bold dark font)
+            const rawPrice = parseFloat(item.price !== undefined ? item.price : (item.retail_price !== undefined ? item.retail_price : (item.sale_price || 0))) || 0;
+            const priceFormatted = rawPrice > 0 
+                ? rawPrice.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) 
+                : '0.00';
+
+            // Attribute badge (Dark text, crisp border)
+            const attrHtml = (attr && attr !== '-') 
+                ? `<span class="badge font-monospace" style="background: #f1f5f9; color: #0f172a !important; border: 1.5px solid #94a3b8; font-size: 11px; font-weight: 800; padding: 3px 8px; border-radius: 4px;">${escapeHtml(attr)}</span>` 
+                : '<span style="color: #64748b; font-weight: 700;">-</span>';
+
+            // Size badge (Dark text, crisp border)
+            const sizeHtml = (size && size !== '-') 
+                ? `<span class="badge font-monospace" style="background: #f1f5f9; color: #0f172a !important; border: 1.5px solid #94a3b8; font-size: 11px; font-weight: 800; padding: 3px 8px; border-radius: 4px;">${escapeHtml(size)}</span>` 
+                : '<span style="color: #64748b; font-weight: 700;">-</span>';
 
             html += `
-            <div class="qb-autocomplete-item qb-product-search-item ${index === 0 ? 'selected' : ''}" data-json='${JSON.stringify(item).replace(/'/g, "&apos;")}'>
-                <div style="flex: 1; min-width: 0; padding-right: 8px;">
-                    <div class="text-truncate">
-                        <strong class="text-primary" style="font-size: 13.5px; font-weight: 700;">${desc}</strong> 
-                        ${itemNumberBadge}
-                        <span class="badge bg-secondary-subtle text-dark border border-secondary-subtle font-monospace ms-1" style="font-size: 10.5px;">#${sku}</span>
-                        ${pCodeBadge}
-                    </div>
-                    ${item.color || item.size ? `<small class="text-muted" style="font-size:10.5px;">Var: ${item.color || ''} ${item.size ? '/ ' + item.size : ''}</small>` : ''}
-                </div>
-                <div class="text-end flex-shrink-0">
-                    ${stockBadge}
-                </div>
-            </div>`;
+            <tr class="qb-autocomplete-item qb-product-search-item ${index === 0 ? 'selected' : ''}" data-index="${index}" data-json='${JSON.stringify(item).replace(/'/g, "&apos;")}'>
+                <td style="text-align: center; vertical-align: middle; white-space: nowrap;">${itemNoHtml}</td>
+                <td style="vertical-align: middle; white-space: nowrap;" title="${escapeHtml(itemName)}">
+                    <strong style="font-size: 13px; font-weight: 800; color: #1e40af !important;">${escapeHtml(itemName)}</strong>
+                </td>
+                <td style="vertical-align: middle; white-space: nowrap;" title="${escapeHtml(desc)}">
+                    <span style="font-size: 12.5px; font-weight: 700; color: #0f172a !important;">${escapeHtml(desc)}</span>
+                </td>
+                <td style="text-align: center; vertical-align: middle; white-space: nowrap;">${attrHtml}</td>
+                <td style="text-align: center; vertical-align: middle; white-space: nowrap;">${sizeHtml}</td>
+                <td style="text-align: center; vertical-align: middle; white-space: nowrap;">${stockHtml}</td>
+                <td style="text-align: right; vertical-align: middle; white-space: nowrap;">
+                    <span class="font-monospace" style="font-size: 13px; font-weight: 900; color: #0f172a !important;">${priceFormatted}</span>
+                </td>
+                <td style="text-align: center; vertical-align: middle; white-space: nowrap; padding-right: 14px;">${pCodeBadge}</td>
+            </tr>`;
         });
 
-        html += `</div>`;
+        html += `
+                    </tbody>
+                </table>
+            </div>
+            <div class="qb-dropdown-footer px-2 py-1 bg-light border-top text-muted d-flex justify-content-between align-items-center" style="font-size: 10.5px; background: #f8fafc;">
+                <span class="text-secondary"><i class="fas fa-info-circle me-1 text-info"></i> Total <strong>${results.length}</strong> matching item(s)</span>
+                <span class="text-secondary fst-italic">Press Enter or click row to select</span>
+            </div>
+        `;
         $itemResults.html(html).show();
     }
 
@@ -4392,12 +5056,24 @@ $(document).ready(function() {
     // Click strictly on Item Result Entry (Never overlaps with Customer Selection)
     $(document).on('click', '#qbItemSearchResults .qb-product-search-item', function(e) {
         e.stopPropagation();
-        const item = $(this).data('json');
+        const index = $(this).data('index');
+        let item = null;
+        if (typeof index !== 'undefined' && window._qbCurrentItemResults && window._qbCurrentItemResults[index]) {
+            item = window._qbCurrentItemResults[index];
+        } else {
+            item = $(this).data('json');
+        }
         if (item) {
             $itemInput.val('').focus();
             $itemResults.hide().empty();
             proceedToAddItem(item);
         }
+    });
+
+    // Mouse hover highlights row
+    $(document).on('mouseenter', '#qbItemSearchResults .qb-product-search-item', function() {
+        $('#qbItemSearchResults .qb-product-search-item').removeClass('selected');
+        $(this).addClass('selected');
     });
 
     // Close autocompletes on click outside
@@ -4698,6 +5374,9 @@ $(document).ready(function() {
         $('#walkinModalCnic').val(currentCnic);
         $('#walkinModalRemarks').val(currentRemarks);
 
+        // Clear any previous validation error
+        $('#walkinModalName').removeClass('is-invalid').next('.invalid-feedback').remove();
+
         $('#modalQuickWalkinCustomer').modal('show');
         setTimeout(() => {
             $('#walkinModalName').focus().select();
@@ -4720,7 +5399,18 @@ $(document).ready(function() {
 
     // Submit Walk-in Details to Bill
     function submitWalkinModal() {
-        const name = $('#walkinModalName').val().trim() || 'Walk-in Customer';
+        const name = $('#walkinModalName').val().trim();
+
+        // Name required check
+        if (!name) {
+            $('#walkinModalName').addClass('is-invalid').focus();
+            if (!$('#walkinModalName').next('.invalid-feedback').length) {
+                $('#walkinModalName').after('<div class="invalid-feedback">Customer ka naam zaroor daalen.</div>');
+            }
+            return;
+        }
+        $('#walkinModalName').removeClass('is-invalid').next('.invalid-feedback').remove();
+
         const phone = $('#walkinModalPhone').val().trim();
         const address = $('#walkinModalAddress').val().trim();
         const cnic = $('#walkinModalCnic').val().trim();
@@ -5032,11 +5722,61 @@ $(document).ready(function() {
         const vendorDesc = item.vendor_desc || item.category || item.brand || item.product_name || 'Khunty';
         const attribute = parsed.attribute;
         const size = parsed.size;
-        const pCode = item.p_code || '';
+
+        let vData = null;
+        if (item.variant_data) {
+            try { vData = JSON.parse(atob(item.variant_data)); } catch(e) {
+                try { vData = typeof item.variant_data === 'object' ? item.variant_data : JSON.parse(item.variant_data); } catch(e2) {}
+            }
+        }
+        if (item.colorJson && !vData) {
+            try { vData = typeof item.colorJson === 'object' ? item.colorJson : JSON.parse(item.colorJson); } catch(e) {}
+        }
+        if (item.variantData && !vData) {
+            vData = (typeof item.variantData === 'object') ? item.variantData : null;
+            if (!vData && typeof item.variantData === 'string') {
+                try { vData = JSON.parse(item.variantData); } catch(e) {}
+            }
+        }
+
+        let rootPrice = 0;
+        if (item.rootPrice !== undefined && parseFloat(item.rootPrice) > 0) {
+            rootPrice = parseFloat(item.rootPrice);
+        } else if (item.wholesale_price !== undefined && parseFloat(item.wholesale_price) > 0) {
+            rootPrice = parseFloat(item.wholesale_price);
+        } else if (item.rot_price !== undefined && parseFloat(item.rot_price) > 0) {
+            rootPrice = parseFloat(item.rot_price);
+        } else if (vData) {
+            if (vData.wholesale_price !== undefined && parseFloat(vData.wholesale_price) > 0) {
+                rootPrice = parseFloat(vData.wholesale_price);
+            } else if (vData.rot_price !== undefined && parseFloat(vData.rot_price) > 0) {
+                rootPrice = parseFloat(vData.rot_price);
+            }
+        }
+
+        let pCode = item.sky_p_code || item.p_code || item.pCode || (vData && (vData.sky_p_code || vData.p_code)) || '';
+        if (!pCode && rawPrice > 0 && typeof window.encodeToPCode === 'function') {
+            pCode = window.encodeToPCode(rawPrice);
+        }
+        let rotCode = item.rot_p_code || item.rotCode || (vData && vData.rot_p_code) || '';
+        if (!rotCode && rootPrice > 0 && typeof window.encodeToPCode === 'function') {
+            rotCode = window.encodeToPCode(rootPrice);
+        }
         const salesDesc = parsed.salesDesc;
-        const rootPrice = parseFloat(item.wholesale_price !== undefined ? item.wholesale_price : (item.rot_price !== undefined ? item.rot_price : (item.rootPrice || 0)));
         const adminApproved = !!item.admin_approved;
         const approvedPrice = item.admin_approved ? rawPrice : null;
+
+        let itemImg = item.image || item.image_url || (item.raw && (item.raw.image || item.raw.image_url)) || '';
+        if (itemImg && typeof itemImg === 'string' && !itemImg.startsWith('http') && !itemImg.startsWith('/') && !itemImg.startsWith('data:')) {
+            itemImg = '/uploads/products/' + itemImg;
+        }
+        if (!itemImg && pId && window.productImageCache && window.productImageCache[pId]) {
+            itemImg = window.productImageCache[pId];
+        }
+        if (pId && itemImg) {
+            window.productImageCache = window.productImageCache || {};
+            window.productImageCache[pId] = itemImg;
+        }
 
         const uid = generateUid();
         const rowData = {
@@ -5047,6 +5787,7 @@ $(document).ready(function() {
             originalSaleId: origSaleId || item.original_sale_id || item.sale_id || null,
             isManual: !!item.is_manual,
             productId: pId,
+            image: itemImg,
             itemNumber: itemNumber,
             itemName: itemName,
             vendorDesc: vendorDesc,
@@ -5054,12 +5795,15 @@ $(document).ready(function() {
             size: size,
             qty: isReturn ? -Math.abs(parseFloat(item.returnQty || item.qty || 1)) : Math.abs(parseFloat(item.qty || 1)),
             price: rawPrice,
+            basePrice: item.basePrice || rawPrice,
             rootPrice: rootPrice,
+            baseRootPrice: item.baseRootPrice || rootPrice,
             adminApproved: adminApproved,
             approvedPrice: approvedPrice,
             approvalId: item.approval_id || null,
             discount: parseFloat(item.discount || 0),
             pCode: pCode,
+            rotCode: rotCode,
             salesDesc: salesDesc,
             stock: (item.stock !== undefined ? parseFloat(item.stock) : (item.stock_pieces !== undefined ? parseFloat(item.stock_pieces) : 0)),
             colorJson: item.variantData ? (typeof item.variantData === 'string' ? item.variantData : JSON.stringify(item.variantData)) : '',
@@ -5117,7 +5861,10 @@ $(document).ready(function() {
             const isSelected = (row.uid === selectedRowUid);
             const rowClass = (isRet ? 'qb-return-row ' : '') + (isSelected ? 'qb-active-row' : '');
 
-            const pCodeHtml = row.pCode ? `<div class="qb-row-subtext qb-pcode-text">P-Code: ${row.pCode}</div>` : '';
+            let rSky = row.pCode || (window.encodeToPCode && row.price > 0 ? window.encodeToPCode(row.price) : '');
+            let rRot = row.rotCode || (window.encodeToPCode && row.rootPrice > 0 ? window.encodeToPCode(row.rootPrice) : '');
+            const combinedPCode = window.formatCombinedPCode ? window.formatCombinedPCode(rSky, rRot) : (rSky && rRot ? `${rSky}-${rRot}` : (rSky || rRot || ''));
+            const pCodeHtml = combinedPCode ? `<div class="qb-row-subtext qb-pcode-text">P-Code: ${escapeHtml(combinedPCode)}</div>` : '';
             const returnBadgeHtml = isRet ? `<div class="qb-row-subtext qb-return-badge">Return Item - Receipt# ${row.receiptNo || '1883'}</div>` : '';
 
             const trHtml = `
@@ -5126,10 +5873,20 @@ $(document).ready(function() {
                     <strong>${row.itemNumber}</strong>
                     ${returnBadgeHtml}
                 </td>
+                <td class="col-image text-center align-middle" style="padding: 2px 4px;">
+                    ${row.image ? `
+                        <img src="${row.image}" alt="${escapeHtml(row.itemName || 'Item')}" class="qb-row-thumb" onclick="openItemImageModal('${row.uid}', event)" title="Click to view large image &amp; details">
+                    ` : `
+                        <div class="qb-no-image-thumb" onclick="openItemImageModal('${row.uid}', event)" title="Click to view item details">
+                            <i class="fas fa-image text-muted"></i>
+                        </div>
+                    `}
+                </td>
                 <td class="col-item-name">
                     <strong>${row.itemName}</strong>
                     <div class="qb-row-subtext" style="font-size:11px;">
                         <span class="text-muted">Unit:</span> <span class="badge bg-light text-primary border">${row.uomName || row.unit || 'Pcs'}</span>
+                        ${(row.uomRatio && row.uomRatio > 1) ? `<span class="badge bg-secondary-subtle text-secondary border font-monospace ms-1" style="font-size:9.5px;">1 ${row.uomName} = ${row.uomRatio} Base</span>` : ''}
                         ${(row.uomUnits && row.uomUnits.length > 1) ? `
                             <button type="button" class="btn btn-xs btn-outline-primary py-0 px-1 ms-1 btn-open-choose-uom-addsale" data-uid="${row.uid}" style="font-size: 10px; height: 18px; line-height: 16px;">
                                 <i class="fas fa-layer-group me-1"></i>Units
@@ -5144,9 +5901,18 @@ $(document).ready(function() {
                     ${pCodeHtml}
                 </td>
                 <td class="col-qty text-end fw-bold">${row.qty}</td>
-                <td class="col-price text-end">
-                    ${row.price.toFixed(2)}
-                    ${row.adminApproved ? '<span class="badge bg-success-subtle text-success border border-success-subtle d-inline-block font-monospace ms-1" style="font-size: 8.5px; padding: 1px 3px;" title="Admin Authorized Below Root Price"><i class="fas fa-check-circle"></i> Auth</span>' : ''}
+                <td class="col-price text-end" data-uid="${row.uid}" title="Click to edit price">
+                    <div class="qb-price-inline-wrap">
+                        <input type="number" 
+                               step="any" 
+                               min="0" 
+                               class="qb-price-inline-input" 
+                               data-uid="${row.uid}" 
+                               value="${row.price.toFixed(2)}" 
+                               autocomplete="off" 
+                               title="Click to edit price">
+                        ${row.adminApproved ? '<span class="badge bg-success-subtle text-success border border-success-subtle d-inline-block font-monospace flex-shrink-0" style="font-size: 8.5px; padding: 1px 3px;" title="Admin Authorized Below Root Price"><i class="fas fa-check-circle"></i> Auth</span>' : ''}
+                    </div>
                 </td>
                 <td class="col-ext-price text-end fw-bold">${extPrice.toFixed(2)}</td>
                 <td class="col-sales-desc">${row.salesDesc}</td>
@@ -5190,9 +5956,14 @@ $(document).ready(function() {
         }
     }
 
+    window.getGridRowByUid = function(uid) {
+        return gridRows.find(r => r.uid === uid);
+    };
+
     // Row Click Selection (Clicking any row activates it and moves toolbar under it)
     $(document).on('click', '#salesTableBody tr[data-uid]', function(e) {
         if ($(e.target).closest('.qb-inrow-actionbar').length) return;
+        if ($(e.target).closest('.col-price, .qb-price-inline-input').length) return;
         const uid = $(this).data('uid');
         if (uid) {
             selectRow(uid);
@@ -5203,6 +5974,254 @@ $(document).ready(function() {
         selectedRowUid = uid;
         renderGrid();
     }
+
+    function activateRowLightweight(uid) {
+        if (!uid) return;
+        selectedRowUid = uid;
+        if (typeof orders !== 'undefined' && orders[activeOrderIndex]) {
+            orders[activeOrderIndex].selectedRowUid = selectedRowUid;
+        }
+        const $targetTr = $(`#salesTableBody tr[data-uid="${uid}"]`);
+        if (!$targetTr.length) return;
+
+        $('#salesTableBody tr.qb-active-row').removeClass('qb-active-row');
+        $targetTr.addClass('qb-active-row');
+        $('.qb-active-toolbar-tr').remove();
+
+        const toolbarTr = `
+        <tr class="qb-active-toolbar-tr" data-toolbar-uid="${uid}">
+            <td colspan="100" class="p-0 border-0">
+                <div class="qb-inrow-actionbar" style="background: #e2f4e4; border-bottom: 2px solid #a3d9a9; padding: 4px 10px; display: flex; justify-content: space-between; align-items: center; width: 100%;">
+                    <div class="d-flex align-items-center gap-2">
+                        <button type="button" class="qb-row-btn btn-row-edit" title="Edit row details"><i class="fas fa-edit"></i> Edit</button>
+                        <button type="button" class="qb-row-btn btn-row-return-item" title="Toggle item as return"><i class="fas fa-undo"></i> Return Item</button>
+                    </div>
+                    <div class="d-flex align-items-center gap-2">
+                        <button type="button" class="qb-row-btn btn-row-qty-price-disc" title="Edit Qty / Price / Discount">Qty/Price/Discount</button>
+                        <button type="button" class="qb-row-btn btn-row-qty-plus" style="background: linear-gradient(180deg, #10b981 0%, #059669 100%); border-color: #047857;" title="Increase Quantity (+1)"><i class="fas fa-plus"></i> Qty+</button>
+                        <button type="button" class="qb-row-btn btn-row-qty-minus" style="background: linear-gradient(180deg, #f59e0b 0%, #d97706 100%); border-color: #b45309;" title="Decrease Quantity (-1)"><i class="fas fa-minus"></i> Qty-</button>
+                        <button type="button" class="qb-row-btn btn-row-remove" style="background: linear-gradient(180deg, #dc3545 0%, #b02a37 100%); border-color: #842029;" title="Remove Item"><i class="fas fa-trash-alt"></i> Remove</button>
+                    </div>
+                </div>
+            </td>
+        </tr>`;
+        $targetTr.after(toolbarTr);
+    }
+
+    // ==============================================================
+    // INLINE PRICE EDITING HANDLERS
+    // ==============================================================
+    function commitInlinePriceChange($input) {
+        const uid = $input.data('uid');
+        const row = gridRows.find(r => r.uid === uid);
+        if (!row) return;
+
+        const valStr = String($input.val()).trim();
+        const newPrice = parseFloat(valStr);
+
+        if (valStr === '' || isNaN(newPrice) || newPrice < 0) {
+            $input.val(row.price.toFixed(2));
+            return;
+        }
+
+        // Check if price hasn't changed
+        if (Math.abs(newPrice - row.price) < 0.0001) {
+            $input.val(row.price.toFixed(2));
+            return;
+        }
+
+        // Root price validation
+        const rootPrice = row.rootPrice || 0;
+        if (rootPrice > 0 && newPrice < rootPrice && (!row.adminApproved || row.approvedPrice !== newPrice)) {
+            if (window.isUserAdmin) {
+                // If user is Admin / Super Admin, show warning confirmation
+                if (typeof Swal !== 'undefined') {
+                    Swal.fire({
+                        title: 'Below Root Price Warning!',
+                        html: `Entered price <b class="text-danger font-monospace">Rs. ${newPrice.toFixed(2)}</b> is lower than the Root Price <b class="font-monospace">Rs. ${rootPrice.toFixed(2)}</b>.<br><br>As Admin, do you want to authorize and apply this price?`,
+                        icon: 'warning',
+                        showCancelButton: true,
+                        confirmButtonText: '<i class="fas fa-check-circle me-1"></i> Authorize & Apply',
+                        cancelButtonText: 'Cancel',
+                        confirmButtonColor: '#16a34a',
+                        cancelButtonColor: '#64748b'
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            row.adminApproved = true;
+                            row.approvedPrice = newPrice;
+                            applyInlinePrice(row, newPrice, $input);
+                        } else {
+                            $input.val(row.price.toFixed(2));
+                        }
+                    });
+                } else {
+                    if (confirm(`Entered price Rs. ${newPrice.toFixed(2)} is lower than Root Price Rs. ${rootPrice.toFixed(2)}. Authorize and apply as Admin?`)) {
+                        row.adminApproved = true;
+                        row.approvedPrice = newPrice;
+                        applyInlinePrice(row, newPrice, $input);
+                    } else {
+                        $input.val(row.price.toFixed(2));
+                    }
+                }
+                return;
+            }
+
+            // If user is Staff (non-admin), require Admin Permission
+            $input.val(row.price.toFixed(2));
+            if (typeof Swal !== 'undefined') {
+                Swal.fire({
+                    title: 'Need Admin Permission!',
+                    html: `Entered price <b class="text-danger font-monospace">Rs. ${newPrice.toFixed(2)}</b> is lower than the Root Price <b class="font-monospace">Rs. ${rootPrice.toFixed(2)}</b>.<br><br><strong>Need admin permission to sell at this price.</strong><br>Do you want to send an approval request to Admin?`,
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonText: '<i class="fas fa-paper-plane me-1"></i> Yes, Request Admin',
+                    cancelButtonText: 'Cancel',
+                    confirmButtonColor: '#1e40af',
+                    cancelButtonColor: '#64748b'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        sendPriceApprovalRequest({
+                            gridRowUid: row.uid,
+                            productId: row.productId,
+                            sku: row.itemNumber,
+                            name: row.itemName,
+                            salesDesc: row.salesDesc,
+                            unit: 'Pcs',
+                            price: row.price,
+                            rootPrice: rootPrice,
+                            raw: {
+                                product_id: row.productId,
+                                sku: row.itemNumber,
+                                name: row.itemName,
+                                sales_desc: row.salesDesc,
+                                price: newPrice,
+                                retail_price: newPrice,
+                                qty: Math.abs(row.qty),
+                                wholesale_price: rootPrice
+                            }
+                        }, Math.abs(row.qty), newPrice, rootPrice);
+                    }
+                });
+            } else {
+                if (confirm(`Entered price Rs. ${newPrice.toFixed(2)} is lower than Root Price Rs. ${rootPrice.toFixed(2)}. Need admin permission. Request Admin Approval?`)) {
+                    sendPriceApprovalRequest({
+                        gridRowUid: row.uid,
+                        productId: row.productId,
+                        sku: row.itemNumber,
+                        name: row.itemName,
+                        salesDesc: row.salesDesc,
+                        unit: 'Pcs',
+                        price: row.price,
+                        rootPrice: rootPrice,
+                        raw: {
+                            product_id: row.productId,
+                            sku: row.itemNumber,
+                            name: row.itemName,
+                            sales_desc: row.salesDesc,
+                            price: newPrice,
+                            retail_price: newPrice,
+                            qty: Math.abs(row.qty),
+                            wholesale_price: rootPrice
+                        }
+                    }, Math.abs(row.qty), newPrice, rootPrice);
+                }
+            }
+            return;
+        }
+
+        applyInlinePrice(row, newPrice, $input);
+    }
+
+    function applyInlinePrice(row, newPrice, $input) {
+        row.price = newPrice;
+        $input.val(newPrice.toFixed(2));
+
+        if (typeof window.encodeToPCode === 'function' && newPrice > 0) {
+            row.pCode = window.encodeToPCode(newPrice);
+        }
+
+        const rootPrice = row.rootPrice || 0;
+        if (rootPrice > 0 && newPrice >= rootPrice && row.adminApproved && row.approvedPrice !== newPrice) {
+            row.adminApproved = false;
+            row.approvedPrice = null;
+            $input.closest('td').find('.badge').remove();
+        } else if (row.adminApproved) {
+            if (!$input.closest('td').find('.badge').length) {
+                $input.after('<span class="badge bg-success-subtle text-success border border-success-subtle d-inline-block font-monospace flex-shrink-0" style="font-size: 8.5px; padding: 1px 3px;" title="Admin Authorized Below Root Price"><i class="fas fa-check-circle"></i> Auth</span>');
+            }
+        }
+
+        // Update Ext Price in DOM
+        const extPrice = (row.qty * row.price) - ((row.qty * row.price) * (row.discount / 100));
+        const $tr = $(`#salesTableBody tr[data-uid="${row.uid}"]`);
+        $tr.find('.col-ext-price').text(extPrice.toFixed(2));
+
+        // Update P-Code in DOM if displayed
+        let rSky = row.pCode || (window.encodeToPCode && row.price > 0 ? window.encodeToPCode(row.price) : '');
+        let rRot = row.rotCode || (window.encodeToPCode && row.rootPrice > 0 ? window.encodeToPCode(row.rootPrice) : '');
+        const combinedPCode = window.formatCombinedPCode ? window.formatCombinedPCode(rSky, rRot) : (rSky && rRot ? `${rSky}-${rRot}` : (rSky || rRot || ''));
+        if (combinedPCode) {
+            let $pcodeEl = $tr.find('.qb-pcode-text');
+            if ($pcodeEl.length) {
+                $pcodeEl.text('P-Code: ' + combinedPCode);
+            } else {
+                $tr.find('.col-size').append(`<div class="qb-row-subtext qb-pcode-text">P-Code: ${escapeHtml(combinedPCode)}</div>`);
+            }
+        }
+
+        syncHiddenInputs();
+        recomputeTotals();
+
+        if (typeof orders !== 'undefined' && orders[activeOrderIndex]) {
+            orders[activeOrderIndex].gridRows = gridRows;
+        }
+        if (typeof renderOrderTabs === 'function') {
+            renderOrderTabs();
+        }
+    }
+
+    $(document).on('focus', '.qb-price-inline-input', function(e) {
+        const uid = $(this).data('uid');
+        if (uid) {
+            activateRowLightweight(uid);
+        }
+        const self = this;
+        setTimeout(() => {
+            self.select();
+        }, 15);
+    });
+
+    $(document).on('click', '.qb-price-inline-input', function(e) {
+        e.stopPropagation();
+    });
+
+    $(document).on('click', '#salesTableBody td.col-price', function(e) {
+        e.stopPropagation();
+        const $input = $(this).find('.qb-price-inline-input');
+        if ($input.length) {
+            $input.focus();
+        }
+    });
+
+    $(document).on('keydown', '.qb-price-inline-input', function(e) {
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            commitInlinePriceChange($(this));
+            $(this).blur();
+        } else if (e.key === 'Escape') {
+            e.preventDefault();
+            const uid = $(this).data('uid');
+            const row = gridRows.find(r => r.uid === uid);
+            if (row) {
+                $(this).val(row.price.toFixed(2));
+            }
+            $(this).blur();
+        }
+    });
+
+    $(document).on('blur', '.qb-price-inline-input', function(e) {
+        commitInlinePriceChange($(this));
+    });
 
     // In-Row Actions: Qty+, Qty-, Remove, Edit, Return (Delegated Listeners)
     $(document).on('click', '.btn-row-qty-plus, #btnRowQtyPlus', function(e) {
@@ -5291,7 +6310,58 @@ $(document).ready(function() {
             const newPrice = parseFloat($('#editRowPrice').val()) || 0;
             const rootPrice = row.rootPrice || 0;
 
-            if (rootPrice > 0 && newPrice < rootPrice && !window.isUserAdmin && (!row.adminApproved || row.approvedPrice !== newPrice)) {
+            if (rootPrice > 0 && newPrice < rootPrice && (!row.adminApproved || row.approvedPrice !== newPrice)) {
+                if (window.isUserAdmin) {
+                    if (typeof Swal !== 'undefined') {
+                        Swal.fire({
+                            title: 'Below Root Price Warning!',
+                            html: `Entered price <b class="text-danger font-monospace">Rs. ${newPrice.toFixed(2)}</b> is lower than the Root Price <b class="font-monospace">Rs. ${rootPrice.toFixed(2)}</b>.<br><br>As Admin, do you want to authorize and sell at this price?`,
+                            icon: 'warning',
+                            showCancelButton: true,
+                            confirmButtonText: '<i class="fas fa-check-circle me-1"></i> Authorize & Apply',
+                            cancelButtonText: 'Cancel',
+                            confirmButtonColor: '#16a34a',
+                            cancelButtonColor: '#64748b'
+                        }).then((result) => {
+                            if (result.isConfirmed) {
+                                row.adminApproved = true;
+                                row.approvedPrice = newPrice;
+                                row.qty = (row.isReturn || row.qty < 0) ? -Math.abs(rawQty) : Math.abs(rawQty);
+                                row.price = newPrice;
+            if (typeof window.encodeToPCode === 'function' && newPrice > 0) {
+                row.pCode = window.encodeToPCode(newPrice);
+            }
+                                if (typeof window.encodeToPCode === 'function' && newPrice > 0) {
+                                    row.pCode = window.encodeToPCode(newPrice);
+                                }
+                                row.discount = parseFloat($('#editRowDiscount').val()) || 0;
+                                row.attribute = $('#editRowAttribute').val() || '-';
+                                row.size = $('#editRowSize').val() || '-';
+                                row.salesDesc = $('#editRowDesc').val();
+                                $('#modalEditLineItem').modal('hide');
+                                renderGrid();
+                            }
+                        });
+                    } else {
+                        if (confirm(`Entered price Rs. ${newPrice.toFixed(2)} is lower than Root Price Rs. ${rootPrice.toFixed(2)}. Authorize and apply as Admin?`)) {
+                            row.adminApproved = true;
+                            row.approvedPrice = newPrice;
+                            row.qty = (row.isReturn || row.qty < 0) ? -Math.abs(rawQty) : Math.abs(rawQty);
+                            row.price = newPrice;
+            if (typeof window.encodeToPCode === 'function' && newPrice > 0) {
+                row.pCode = window.encodeToPCode(newPrice);
+            }
+                            row.discount = parseFloat($('#editRowDiscount').val()) || 0;
+                            row.attribute = $('#editRowAttribute').val() || '-';
+                            row.size = $('#editRowSize').val() || '-';
+                            row.salesDesc = $('#editRowDesc').val();
+                            $('#modalEditLineItem').modal('hide');
+                            renderGrid();
+                        }
+                    }
+                    return;
+                }
+
                 if (typeof Swal !== 'undefined') {
                     Swal.fire({
                         title: 'Need Admin Permission!',
@@ -5306,6 +6376,7 @@ $(document).ready(function() {
                         if (result.isConfirmed) {
                             $('#modalEditLineItem').modal('hide');
                             sendPriceApprovalRequest({
+                                gridRowUid: row.uid,
                                 productId: row.productId,
                                 sku: row.itemNumber,
                                 name: row.itemName,
@@ -5332,6 +6403,9 @@ $(document).ready(function() {
 
             row.qty = (row.isReturn || row.qty < 0) ? -Math.abs(rawQty) : Math.abs(rawQty);
             row.price = newPrice;
+            if (typeof window.encodeToPCode === 'function' && newPrice > 0) {
+                row.pCode = window.encodeToPCode(newPrice);
+            }
             row.discount = parseFloat($('#editRowDiscount').val()) || 0;
             row.attribute = $('#editRowAttribute').val() || '-';
             row.size = $('#editRowSize').val() || '-';
@@ -5367,69 +6441,147 @@ $(document).ready(function() {
             }
         });
 
-        const subTotal = Math.max(0, soldTotal - returnTotal);
+        // Net amount calculation: sold items minus returned items
+        const rawNet = soldTotal - returnTotal;
+        const isNetRefund = (rawNet < -0.009);
+        const netRefundAmount = isNetRefund ? Math.abs(rawNet) : 0;
 
-        // Overall discount
+        // Overall discount applies only to positive sold portion
         let overallDisc = 0;
         const discVal = parseFloat($('#overallDiscountVal').val()) || 0;
         const discType = $('#overallDiscountType').val();
-        if (discType === 'percent') {
-            overallDisc = (subTotal * discVal) / 100;
-        } else {
-            overallDisc = Math.min(subTotal, discVal);
+        if (!isNetRefund && soldTotal > 0) {
+            const discBase = Math.max(0, soldTotal - returnTotal);
+            if (discType === 'percent') {
+                overallDisc = (discBase * discVal) / 100;
+            } else {
+                overallDisc = Math.min(discBase, discVal);
+            }
         }
 
-        const grandTotal = Math.max(0, subTotal - overallDisc);
+        const grandTotal = isNetRefund ? -netRefundAmount : Math.max(0, (soldTotal - returnTotal) - overallDisc);
 
         // Update statistics display
         $('#qbStatItemsSold').text(itemsSold);
         $('#qbStatQtySold').text(qtySold);
         $('#qbStatItemsReturned').text(itemsReturned);
         $('#qbStatQtyReturned').text(qtyReturned);
-        $('#qbStatSubTotal').text(subTotal.toFixed(2));
+
+        // SubTotal display
+        if (itemsSold === 0 && itemsReturned > 0) {
+            $('#qbStatSubTotal').text((-returnTotal).toFixed(2));
+        } else if (itemsReturned > 0) {
+            $('#qbStatSubTotal').text((soldTotal - returnTotal).toFixed(2));
+        } else {
+            $('#qbStatSubTotal').text(soldTotal.toFixed(2));
+        }
+
+        // Return chip in summary strip
+        if (returnTotal > 0) {
+            if ($('#qbStatReturnValChip').length === 0) {
+                $(`<div class="qb-stat-chip qb-chip-ret" id="qbStatReturnValChip" title="Total Return Amount">
+                    <span class="qb-stat-lbl">Return Amt:</span>
+                    <span class="qb-stat-num text-danger fw-bold" id="qbStatReturnTotal">-Rs. ${returnTotal.toFixed(2)}</span>
+                </div>`).insertAfter($('.qb-stat-chip.qb-chip-ret').last());
+            } else {
+                $('#qbStatReturnTotal').text('-Rs. ' + returnTotal.toFixed(2));
+                $('#qbStatReturnValChip').show();
+            }
+        } else {
+            $('#qbStatReturnValChip').hide();
+        }
+
         $('#qbStatDiscount').text(overallDisc.toFixed(2));
         $('#qbStatGrandTotal').text(grandTotal.toFixed(2));
 
         const isWalkin = ($('#is_walkin').val() === '1');
 
-        // Payment allocation adjustment on total change
-        if (isWalkin && (orderPaymentAllocation.method === 'account' || orderPaymentAllocation.method === 'credit' || orderPaymentAllocation.khataAmount > 0)) {
-            orderPaymentAllocation.method = 'cash';
-            orderPaymentAllocation.cashAmount = grandTotal;
-            orderPaymentAllocation.bankAmount = 0;
-            orderPaymentAllocation.khataAmount = 0;
-            currentActivePaymentMethod = 'cash';
-            $('.qb-pay-tab').removeClass('active');
-            $('.qb-pay-tab[data-method="cash"]').addClass('active');
-        } else if (orderPaymentAllocation.method === 'cash') {
-            orderPaymentAllocation.cashAmount = grandTotal;
-            orderPaymentAllocation.bankAmount = 0;
-            orderPaymentAllocation.khataAmount = 0;
-        } else if (orderPaymentAllocation.method === 'account') {
-            orderPaymentAllocation.cashAmount = 0;
-            orderPaymentAllocation.bankAmount = 0;
-            orderPaymentAllocation.khataAmount = grandTotal;
-        } else if (orderPaymentAllocation.method === 'debit' || orderPaymentAllocation.method === 'check') {
-            orderPaymentAllocation.cashAmount = 0;
-            orderPaymentAllocation.bankAmount = grandTotal;
-            orderPaymentAllocation.khataAmount = 0;
-        } else if (orderPaymentAllocation.method === 'gift') {
-            orderPaymentAllocation.cashAmount = 0;
-            orderPaymentAllocation.bankAmount = grandTotal;
-            orderPaymentAllocation.khataAmount = 0;
-        } else if (orderPaymentAllocation.method === 'credit') {
-            orderPaymentAllocation.cashAmount = 0;
-            orderPaymentAllocation.bankAmount = 0;
-            orderPaymentAllocation.khataAmount = grandTotal;
-        } else if (orderPaymentAllocation.method === 'split') {
-            const upfront = orderPaymentAllocation.cashAmount + orderPaymentAllocation.bankAmount;
-            orderPaymentAllocation.khataAmount = Math.max(0, grandTotal - upfront);
+        if (isNetRefund) {
+            // ==========================================
+            // REFUND MODE (RETURN EXCEEDS SALES)
+            // ==========================================
+            // If Walk-in, customer cannot select khata / ledger credit
+            if (isWalkin && (orderPaymentAllocation.method === 'account' || orderPaymentAllocation.method === 'credit' || orderPaymentAllocation.khataAmount > 0)) {
+                orderPaymentAllocation.method = 'cash';
+                orderPaymentAllocation.cashAmount = netRefundAmount;
+                orderPaymentAllocation.bankAmount = 0;
+                orderPaymentAllocation.khataAmount = 0;
+                currentActivePaymentMethod = 'cash';
+                $('.qb-pay-tab').removeClass('active');
+                $('.qb-pay-tab[data-method="cash"]').addClass('active');
+            } else if (orderPaymentAllocation.method === 'cash') {
+                orderPaymentAllocation.cashAmount = netRefundAmount;
+                orderPaymentAllocation.bankAmount = 0;
+                orderPaymentAllocation.khataAmount = 0;
+            } else if (orderPaymentAllocation.method === 'account' || orderPaymentAllocation.method === 'credit') {
+                orderPaymentAllocation.cashAmount = 0;
+                orderPaymentAllocation.bankAmount = 0;
+                orderPaymentAllocation.khataAmount = netRefundAmount;
+            } else if (orderPaymentAllocation.method === 'debit' || orderPaymentAllocation.method === 'check' || orderPaymentAllocation.method === 'gift') {
+                orderPaymentAllocation.cashAmount = 0;
+                orderPaymentAllocation.bankAmount = netRefundAmount;
+                orderPaymentAllocation.khataAmount = 0;
+            } else if (orderPaymentAllocation.method === 'split') {
+                const currentSum = orderPaymentAllocation.cashAmount + orderPaymentAllocation.bankAmount + orderPaymentAllocation.khataAmount;
+                if (Math.abs(currentSum - netRefundAmount) > 0.01) {
+                    orderPaymentAllocation.cashAmount = netRefundAmount;
+                    orderPaymentAllocation.bankAmount = 0;
+                    orderPaymentAllocation.khataAmount = 0;
+                }
+            }
+
+            // Update UI Banner to REFUND DUE
+            $('.qb-amount-due-banner').addClass('qb-banner-refund-mode');
+            $('.qb-amount-due-banner .qb-due-label').html('<i class="fas fa-undo me-1"></i> Refund to Customer');
+            $('#qbAmountDueVal').text('Rs. ' + netRefundAmount.toFixed(2));
+
+        } else {
+            // ==========================================
+            // NORMAL / EXCHANGE SALE MODE
+            // ==========================================
+            $('.qb-amount-due-banner').removeClass('qb-banner-refund-mode');
+            $('.qb-amount-due-banner .qb-due-label').text('Amount Due');
+
+            // Payment allocation adjustment on total change
+            if (isWalkin && (orderPaymentAllocation.method === 'account' || orderPaymentAllocation.method === 'credit' || orderPaymentAllocation.khataAmount > 0)) {
+                orderPaymentAllocation.method = 'cash';
+                orderPaymentAllocation.cashAmount = grandTotal;
+                orderPaymentAllocation.bankAmount = 0;
+                orderPaymentAllocation.khataAmount = 0;
+                currentActivePaymentMethod = 'cash';
+                $('.qb-pay-tab').removeClass('active');
+                $('.qb-pay-tab[data-method="cash"]').addClass('active');
+            } else if (orderPaymentAllocation.method === 'cash') {
+                orderPaymentAllocation.cashAmount = grandTotal;
+                orderPaymentAllocation.bankAmount = 0;
+                orderPaymentAllocation.khataAmount = 0;
+            } else if (orderPaymentAllocation.method === 'account') {
+                orderPaymentAllocation.cashAmount = 0;
+                orderPaymentAllocation.bankAmount = 0;
+                orderPaymentAllocation.khataAmount = grandTotal;
+            } else if (orderPaymentAllocation.method === 'debit' || orderPaymentAllocation.method === 'check') {
+                orderPaymentAllocation.cashAmount = 0;
+                orderPaymentAllocation.bankAmount = grandTotal;
+                orderPaymentAllocation.khataAmount = 0;
+            } else if (orderPaymentAllocation.method === 'gift') {
+                orderPaymentAllocation.cashAmount = 0;
+                orderPaymentAllocation.bankAmount = grandTotal;
+                orderPaymentAllocation.khataAmount = 0;
+            } else if (orderPaymentAllocation.method === 'credit') {
+                orderPaymentAllocation.cashAmount = 0;
+                orderPaymentAllocation.bankAmount = 0;
+                orderPaymentAllocation.khataAmount = grandTotal;
+            } else if (orderPaymentAllocation.method === 'split') {
+                const upfront = orderPaymentAllocation.cashAmount + orderPaymentAllocation.bankAmount;
+                orderPaymentAllocation.khataAmount = Math.max(0, grandTotal - upfront);
+            }
+
+            $('#qbAmountDueVal').text(orderPaymentAllocation.khataAmount.toFixed(2));
         }
 
         $('#inputCashReceived').val(orderPaymentAllocation.cashAmount.toFixed(2));
         $('#inputCardAmount').val(orderPaymentAllocation.bankAmount.toFixed(2));
         $('#inputPaymentMethod').val(orderPaymentAllocation.method);
-        $('#qbAmountDueVal').text(orderPaymentAllocation.khataAmount.toFixed(2));
         $('#totalBalance').val(grandTotal.toFixed(2));
 
         if (typeof syncPaymentAccounts === 'function') {
@@ -5446,7 +6598,7 @@ $(document).ready(function() {
         $itemContainer.empty();
 
         // Also purge any legacy loose inputs directly inside #saleForm
-        $('#saleForm > input[name="product_id[]"], #saleForm > input[name="qty[]"], #saleForm > input[name="price_per_piece[]"], #saleForm > input[name="total[]"], #saleForm > input[name="gross_amount[]"], #saleForm > input[name="carton_qty[]"], #saleForm > input[name="total_pieces[]"], #saleForm > input[name="item_disc[]"], #saleForm > input[name="color[]"], #saleForm > input[name="size_display[]"], #saleForm > input[name="p_code[]"], #saleForm > input[name="warehouse_id[]"], #saleForm > input[name="visible_price[]"], #saleForm > input[name="discount_type[]"]').remove();
+        $('#saleForm > input[name="product_id[]"], #saleForm > input[name="qty[]"], #saleForm > input[name="price_per_piece[]"], #saleForm > input[name="total[]"], #saleForm > input[name="gross_amount[]"], #saleForm > input[name="carton_qty[]"], #saleForm > input[name="total_pieces[]"], #saleForm > input[name="item_disc[]"], #saleForm > input[name="color[]"], #saleForm > input[name="size_display[]"], #saleForm > input[name="p_code[]"], #saleForm > input[name="rot_p_code[]"], #saleForm > input[name="warehouse_id[]"], #saleForm > input[name="visible_price[]"], #saleForm > input[name="discount_type[]"]').remove();
         $('#saleForm > input[name="return_product_id[]"], #saleForm > input[name="return_qty[]"], #saleForm > input[name="return_price[]"], #saleForm > input[name="return_color[]"], #saleForm > input[name="return_is_manual[]"], #saleForm > input[name="return_sale_item_id[]"], #saleForm > input[name="original_sale_id"]').remove();
 
         let origSaleIdSet = false;
@@ -5487,6 +6639,7 @@ $(document).ready(function() {
                     <input type="hidden" name="size_display[]" value="${row.size}">
                     <input type="hidden" name="stock[]" value="${row.stock !== undefined ? row.stock : ''}">
                     <input type="hidden" name="p_code[]" value="${row.pCode || ''}">
+                    <input type="hidden" name="rot_p_code[]" value="${row.rotCode || ''}">
                     <input type="hidden" name="warehouse_id[]" value="{{ auth()->user()->warehouse_id ?? 1 }}">
                     <input type="hidden" name="uom_name[]" value="${row.uomName || ''}">
                     <input type="hidden" name="uom_ratio[]" value="${row.uomRatio || 1}">
@@ -5502,7 +6655,10 @@ $(document).ready(function() {
 
     function syncPaymentAccounts() {
         const $payContainer = $('#paymentAccountsContainer').empty();
-        const total = parseFloat($('#qbStatGrandTotal').text()) || 0;
+        const totalText = $('#qbStatGrandTotal').text();
+        const grandTotal = parseFloat(totalText) || 0;
+        const isNetRefund = (grandTotal < -0.009);
+        const refundAmt = Math.abs(grandTotal);
 
         const defaultCashId = "{{ $defaultCashAccountId ?? 2 }}";
         const defaultBankId = "{{ $defaultBankAccountId ?? 3 }}";
@@ -5510,18 +6666,30 @@ $(document).ready(function() {
         const cashAccId = orderPaymentAllocation.cashAccountId || defaultCashId;
         const bankAccId = orderPaymentAllocation.bankAccountId || defaultBankId;
 
-        // Append receipt accounts if amounts > 0
-        if (orderPaymentAllocation.cashAmount > 0.009) {
+        if (isNetRefund) {
             $payContainer.append(`
-                <input type="hidden" name="receipt_account_id[]" value="${cashAccId}">
-                <input type="hidden" name="receipt_amount[]" value="${orderPaymentAllocation.cashAmount.toFixed(2)}">
+                <input type="hidden" name="is_refund" value="1">
+                <input type="hidden" name="refund_method" value="${orderPaymentAllocation.method}">
+                <input type="hidden" name="refund_cash_account_id" value="${cashAccId}">
+                <input type="hidden" name="refund_cash_amount" value="${orderPaymentAllocation.cashAmount.toFixed(2)}">
+                <input type="hidden" name="refund_bank_account_id" value="${bankAccId}">
+                <input type="hidden" name="refund_bank_amount" value="${orderPaymentAllocation.bankAmount.toFixed(2)}">
+                <input type="hidden" name="refund_khata_amount" value="${orderPaymentAllocation.khataAmount.toFixed(2)}">
             `);
-        }
-        if (orderPaymentAllocation.bankAmount > 0.009) {
-            $payContainer.append(`
-                <input type="hidden" name="receipt_account_id[]" value="${bankAccId}">
-                <input type="hidden" name="receipt_amount[]" value="${orderPaymentAllocation.bankAmount.toFixed(2)}">
-            `);
+        } else {
+            // Append receipt accounts if amounts > 0
+            if (orderPaymentAllocation.cashAmount > 0.009) {
+                $payContainer.append(`
+                    <input type="hidden" name="receipt_account_id[]" value="${cashAccId}">
+                    <input type="hidden" name="receipt_amount[]" value="${orderPaymentAllocation.cashAmount.toFixed(2)}">
+                `);
+            }
+            if (orderPaymentAllocation.bankAmount > 0.009) {
+                $payContainer.append(`
+                    <input type="hidden" name="receipt_account_id[]" value="${bankAccId}">
+                    <input type="hidden" name="receipt_amount[]" value="${orderPaymentAllocation.bankAmount.toFixed(2)}">
+                `);
+            }
         }
 
         // Get Account Titles for Badge
@@ -5537,28 +6705,34 @@ $(document).ready(function() {
         const custName = $('#walkinNameInput').val() || 'Customer';
 
         let badgeHtml = '';
-        if (orderPaymentAllocation.method === 'split') {
-            badgeHtml = `<i class="fas fa-random text-primary me-1"></i> Split: <strong>Cash Rs. ${orderPaymentAllocation.cashAmount.toFixed(0)} | ${bankTitle} Rs. ${orderPaymentAllocation.bankAmount.toFixed(0)} | Due Rs. ${orderPaymentAllocation.khataAmount.toFixed(0)}</strong>`;
-        } else if (orderPaymentAllocation.method === 'cash') {
-            badgeHtml = `<i class="fas fa-money-bill-wave text-success me-1"></i> Cash: <strong>${cashTitle} (Rs. ${orderPaymentAllocation.cashAmount.toFixed(2)})</strong>`;
-        } else if (orderPaymentAllocation.method === 'debit' || orderPaymentAllocation.method === 'check') {
-            badgeHtml = `<i class="fas fa-university text-primary me-1"></i> Bank: <strong>${bankTitle} (Rs. ${orderPaymentAllocation.bankAmount.toFixed(2)})</strong>`;
-        } else if (orderPaymentAllocation.method === 'credit') {
-            if (isWalkin) {
-                badgeHtml = `<i class="fas fa-file-invoice text-warning me-1"></i> Credit (Khata): <strong>Select Customer (Rs. ${orderPaymentAllocation.khataAmount.toFixed(2)})</strong>`;
-            } else {
-                badgeHtml = `<i class="fas fa-file-invoice text-warning me-1"></i> Credit: <strong>${custName} Khata (Rs. ${orderPaymentAllocation.khataAmount.toFixed(2)})</strong>`;
-            }
-        } else if (orderPaymentAllocation.method === 'account') {
-            badgeHtml = `<i class="fas fa-book text-warning me-1"></i> Account: <strong>${custName} Khata (Rs. ${orderPaymentAllocation.khataAmount.toFixed(2)})</strong>`;
-        } else if (orderPaymentAllocation.method === 'credit') {
-            if (isWalkin) {
-                badgeHtml = `<i class="fas fa-file-invoice text-warning me-1"></i> Credit (Khata): <strong>Select Customer (Rs. ${orderPaymentAllocation.khataAmount.toFixed(2)})</strong>`;
-            } else {
-                badgeHtml = `<i class="fas fa-file-invoice text-warning me-1"></i> Credit: <strong>${custName} Khata (Rs. ${orderPaymentAllocation.khataAmount.toFixed(2)})</strong>`;
+        if (isNetRefund) {
+            if (orderPaymentAllocation.method === 'split') {
+                badgeHtml = `<i class="fas fa-random text-primary me-1"></i> Refund Split: <strong>Cash Rs. ${orderPaymentAllocation.cashAmount.toFixed(0)} | Bank Rs. ${orderPaymentAllocation.bankAmount.toFixed(0)} | Khata Rs. ${orderPaymentAllocation.khataAmount.toFixed(0)}</strong>`;
+            } else if (orderPaymentAllocation.method === 'cash') {
+                badgeHtml = `<i class="fas fa-hand-holding-usd text-success me-1"></i> Cash Refund: <strong>${cashTitle} (Rs. ${orderPaymentAllocation.cashAmount.toFixed(2)})</strong>`;
+            } else if (orderPaymentAllocation.method === 'debit' || orderPaymentAllocation.method === 'check' || orderPaymentAllocation.method === 'gift') {
+                badgeHtml = `<i class="fas fa-university text-primary me-1"></i> Bank Refund: <strong>${bankTitle} (Rs. ${orderPaymentAllocation.bankAmount.toFixed(2)})</strong>`;
+            } else if (orderPaymentAllocation.method === 'account' || orderPaymentAllocation.method === 'credit') {
+                badgeHtml = `<i class="fas fa-book text-warning me-1"></i> Credit to Ledger: <strong>${custName} Khata (Rs. ${orderPaymentAllocation.khataAmount.toFixed(2)})</strong>`;
             }
         } else {
-            badgeHtml = `<i class="fas fa-book text-secondary me-1"></i> Account: <strong>${cashTitle}</strong>`;
+            if (orderPaymentAllocation.method === 'split') {
+                badgeHtml = `<i class="fas fa-random text-primary me-1"></i> Split: <strong>Cash Rs. ${orderPaymentAllocation.cashAmount.toFixed(0)} | ${bankTitle} Rs. ${orderPaymentAllocation.bankAmount.toFixed(0)} | Due Rs. ${orderPaymentAllocation.khataAmount.toFixed(0)}</strong>`;
+            } else if (orderPaymentAllocation.method === 'cash') {
+                badgeHtml = `<i class="fas fa-money-bill-wave text-success me-1"></i> Cash: <strong>${cashTitle} (Rs. ${orderPaymentAllocation.cashAmount.toFixed(2)})</strong>`;
+            } else if (orderPaymentAllocation.method === 'debit' || orderPaymentAllocation.method === 'check') {
+                badgeHtml = `<i class="fas fa-university text-primary me-1"></i> Bank: <strong>${bankTitle} (Rs. ${orderPaymentAllocation.bankAmount.toFixed(2)})</strong>`;
+            } else if (orderPaymentAllocation.method === 'credit') {
+                if (isWalkin) {
+                    badgeHtml = `<i class="fas fa-file-invoice text-warning me-1"></i> Credit (Khata): <strong>Select Customer (Rs. ${orderPaymentAllocation.khataAmount.toFixed(2)})</strong>`;
+                } else {
+                    badgeHtml = `<i class="fas fa-file-invoice text-warning me-1"></i> Credit: <strong>${custName} Khata (Rs. ${orderPaymentAllocation.khataAmount.toFixed(2)})</strong>`;
+                }
+            } else if (orderPaymentAllocation.method === 'account') {
+                badgeHtml = `<i class="fas fa-book text-warning me-1"></i> Account: <strong>${custName} Khata (Rs. ${orderPaymentAllocation.khataAmount.toFixed(2)})</strong>`;
+            } else {
+                badgeHtml = `<i class="fas fa-book text-secondary me-1"></i> Account: <strong>${cashTitle}</strong>`;
+            }
         }
 
         $('#qbActiveAccountBadge').html(badgeHtml);
@@ -5570,7 +6744,9 @@ $(document).ready(function() {
 
     // Modal Payment Account Selector
     window.openPaymentAccountSelectorModal = function(initialMode) {
-        const grandTotal = parseFloat($('#qbStatGrandTotal').text()) || 0;
+        const rawTotal = parseFloat($('#qbStatGrandTotal').text()) || 0;
+        const isNetRefund = (rawTotal < -0.009);
+        const grandTotal = isNetRefund ? Math.abs(rawTotal) : Math.max(0, rawTotal);
         const isWalkin = ($('#is_walkin').val() === '1');
         const custName = $('#walkinNameInput').val() || 'Walk-in Customer';
         const prevBal = parseFloat($('#previousBalance').val() || 0);
@@ -5578,7 +6754,40 @@ $(document).ready(function() {
         $('#qbModalGrandTotalDisplay').text(grandTotal.toFixed(2));
         $('#qbModalCustName').text(custName);
         $('#qbModalCustPrevBal').text('Rs. ' + prevBal.toFixed(2));
-        $('#qbModalCustKhataTarget').text(isWalkin ? '⚠️ No Khata (Walk-in Customer)' : (custName + ' Khata'));
+
+        if (isNetRefund) {
+            $('.qb-hero-lbl').html('<i class="fas fa-undo me-1 text-danger"></i> Total Net Refund to Customer');
+            $('#qbModalCustKhataTarget').text(isWalkin ? '⚠️ No Khata for Walk-in (Refund via Cash/Bank)' : (custName + ' Khata (Credit Note)'));
+            $('.qb-tender-title-wrap .qb-tender-title').eq(0).text('Cash Refund');
+            $('.qb-tender-title-wrap .qb-tender-title').eq(1).text('Bank Refund');
+            $('.qb-tender-title-wrap .qb-tender-title').eq(2).text('Credit to Khata');
+            $('.qb-tender-card-cash .qb-tender-field-lbl').eq(0).text('Refund from Cash:');
+            $('.qb-tender-card-cash .qb-tender-field-lbl').eq(1).text('Cash Paid Out:');
+            $('.qb-tender-card-bank .qb-tender-field-lbl').eq(0).text('Refund from Bank:');
+            $('.qb-tender-card-bank .qb-tender-field-lbl').eq(1).text('Bank Transferred Out:');
+            $('.qb-tender-card-khata .qb-tender-field-lbl').eq(1).text('Credit to Ledger:');
+            $('.qb-preset-title').html('<i class="fas fa-undo text-warning me-1"></i> Refund Presets:');
+            $('.qb-preset-cash').html('<i class="fas fa-money-bill-wave me-1"></i> 100% Cash Refund');
+            $('.qb-preset-bank').html('<i class="fas fa-university me-1"></i> 100% Bank Refund');
+            $('.qb-preset-khata').html('<i class="fas fa-book me-1"></i> 100% Khata Credit');
+            $('.qb-preset-split').html('<i class="fas fa-balance-scale me-1"></i> 50/50 Cash + Bank');
+        } else {
+            $('.qb-hero-lbl').html('<i class="fas fa-file-invoice-dollar me-1"></i> Net Invoice Payable');
+            $('#qbModalCustKhataTarget').text(isWalkin ? '⚠️ No Khata (Walk-in Customer)' : (custName + ' Khata'));
+            $('.qb-tender-title-wrap .qb-tender-title').eq(0).text('Cash Tender');
+            $('.qb-tender-title-wrap .qb-tender-title').eq(1).text('Bank / Account');
+            $('.qb-tender-title-wrap .qb-tender-title').eq(2).text('Ledger');
+            $('.qb-tender-card-cash .qb-tender-field-lbl').eq(0).text('Deposit Account:');
+            $('.qb-tender-card-cash .qb-tender-field-lbl').eq(1).text('Amount Received:');
+            $('.qb-tender-card-bank .qb-tender-field-lbl').eq(0).text('Select Bank Account:');
+            $('.qb-tender-card-bank .qb-tender-field-lbl').eq(1).text('Amount Paid:');
+            $('.qb-tender-card-khata .qb-tender-field-lbl').eq(1).text('Due on Ledger:');
+            $('.qb-preset-title').html('<i class="fas fa-bolt text-warning me-1"></i> Quick Presets:');
+            $('.qb-preset-cash').html('<i class="fas fa-money-bill-wave me-1"></i> 100% Cash');
+            $('.qb-preset-bank').html('<i class="fas fa-university me-1"></i> 100% Bank / Card');
+            $('.qb-preset-khata').html('<i class="fas fa-book me-1"></i> 100% Khata (Udhar)');
+            $('.qb-preset-split').html('<i class="fas fa-balance-scale me-1"></i> 50/50 Cash + Bank');
+        }
 
         // Show/Hide Khata card and preset button for walk-in customers
         if (isWalkin) {
@@ -5656,13 +6865,25 @@ $(document).ready(function() {
     };
 
     function reconcileModalAllocation() {
-        const totalBill = parseFloat($('#qbStatGrandTotal').text()) || 0;
+        const rawTotal = parseFloat($('#qbStatGrandTotal').text()) || 0;
+        const isNetRefund = (rawTotal < -0.009);
+        const totalBill = isNetRefund ? Math.abs(rawTotal) : Math.max(0, rawTotal);
         const cash = parseFloat($('#qbSplitCashInput').val()) || 0;
         const bank = parseFloat($('#qbSplitBankInput').val()) || 0;
         const khata = parseFloat($('#qbSplitKhataInput').val()) || 0;
         const totalPaid = cash + bank;
         const totalAllocated = totalPaid + khata;
         const diff = totalBill - totalAllocated;
+
+        if (isNetRefund) {
+            $('.qb-rec-lbl').eq(0).text('Total Net Refund');
+            $('.qb-rec-lbl').eq(1).text('Cash + Bank Out');
+            $('.qb-rec-lbl').eq(2).text('Credit to Khata');
+        } else {
+            $('.qb-rec-lbl').eq(0).text('Total Net Bill');
+            $('.qb-rec-lbl').eq(1).text('Paid Upfront');
+            $('.qb-rec-lbl').eq(2).text('Due on Khata');
+        }
 
         $('#qbBalTotalBill').text('Rs. ' + totalBill.toFixed(2));
         $('#qbBalTotalPaid').text('Rs. ' + totalPaid.toFixed(2));
@@ -5676,7 +6897,7 @@ $(document).ready(function() {
             $('#btnApplySplitPayment').prop('disabled', true);
             $('#qbBalStatusBadge').html(`
                 <span class="badge bg-danger text-white fw-bold px-2 py-1 shadow-sm" style="font-size: 11px;">
-                    <i class="fas fa-times-circle me-1"></i> Walk-in cannot have Khata Due
+                    <i class="fas fa-times-circle me-1"></i> ${isNetRefund ? 'Walk-in cannot credit Khata (Pay via Cash or Bank)' : 'Walk-in cannot have Khata Due'}
                 </span>
             `);
             return false;
@@ -5688,7 +6909,7 @@ $(document).ready(function() {
             $('#btnApplySplitPayment').prop('disabled', false);
             $('#qbBalStatusBadge').html(`
                 <span class="badge bg-success text-white fw-bold px-2 py-1 shadow-sm" style="font-size: 11px;">
-                    <i class="fas fa-check-circle me-1"></i> Exact Match (100% Balanced)
+                    <i class="fas fa-check-circle me-1"></i> Exact Match (100% Balanced ${isNetRefund ? 'Refund' : ''})
                 </span>
             `);
             return true;
@@ -5715,7 +6936,7 @@ $(document).ready(function() {
             const change = Math.abs(diff);
             $('#qbBalStatusBadge').html(`
                 <span class="badge bg-info text-dark fw-bold px-2 py-1 shadow-sm" style="font-size: 11px;">
-                    <i class="fas fa-info-circle me-1"></i> Overpaid: Cash Change Rs. ${change.toFixed(2)}
+                    <i class="fas fa-info-circle me-1"></i> ${isNetRefund ? 'Over-allocated: Exceeds Refund by Rs. ' : 'Overpaid: Cash Change Rs. '}${change.toFixed(2)}
                 </span>
             `);
             return true;
@@ -5736,7 +6957,8 @@ $(document).ready(function() {
     });
 
     window.autoFillRemainder = function(target) {
-        const totalBill = parseFloat($('#qbStatGrandTotal').text()) || 0;
+        const rawTotal = parseFloat($('#qbStatGrandTotal').text()) || 0;
+        const totalBill = (rawTotal < -0.009) ? Math.abs(rawTotal) : Math.max(0, rawTotal);
         const cash = parseFloat($('#qbSplitCashInput').val()) || 0;
         const bank = parseFloat($('#qbSplitBankInput').val()) || 0;
         const khata = parseFloat($('#qbSplitKhataInput').val()) || 0;
@@ -5762,7 +6984,8 @@ $(document).ready(function() {
     // Quick 1-Click Presets
     $(document).on('click', '.qb-preset-btn', function() {
         const p = $(this).data('preset');
-        const totalBill = parseFloat($('#qbStatGrandTotal').text()) || 0;
+        const rawTotal = parseFloat($('#qbStatGrandTotal').text()) || 0;
+        const totalBill = (rawTotal < -0.009) ? Math.abs(rawTotal) : Math.max(0, rawTotal);
         const isWalkin = ($('#is_walkin').val() === '1');
 
         if (p === 'full_cash') {
@@ -5775,7 +6998,7 @@ $(document).ready(function() {
             $('#qbSplitKhataInput').val('0.00');
         } else if (p === 'full_khata') {
             if (isWalkin) {
-                Swal.fire('Customer Required', 'Walk-in customers cannot have unpaid Khata. Please select a registered customer first.', 'warning');
+                Swal.fire('Customer Required', 'Walk-in customers cannot have Khata ledger balance. Please select a registered customer first.', 'warning');
                 return;
             }
             $('#qbSplitCashInput').val('0.00');
@@ -5796,7 +7019,8 @@ $(document).ready(function() {
     });
 
     window.allocateFullTo = function(dest) {
-        const totalBill = parseFloat($('#qbStatGrandTotal').text()) || 0;
+        const rawTotal = parseFloat($('#qbStatGrandTotal').text()) || 0;
+        const totalBill = (rawTotal < -0.009) ? Math.abs(rawTotal) : Math.max(0, rawTotal);
         const isWalkin = ($('#is_walkin').val() === '1');
         if (dest === 'cash') {
             $('#qbSplitCashInput').val(totalBill.toFixed(2));
@@ -5808,7 +7032,7 @@ $(document).ready(function() {
             $('#qbSplitKhataInput').val('0.00');
         } else if (dest === 'khata') {
             if (isWalkin) {
-                Swal.fire('Customer Required', 'Walk-in customers cannot have unpaid Khata. Please select a registered customer first.', 'warning');
+                Swal.fire('Customer Required', 'Walk-in customers cannot have Khata ledger balance. Please select a registered customer first.', 'warning');
                 return;
             }
             $('#qbSplitCashInput').val('0.00');
@@ -5820,6 +7044,8 @@ $(document).ready(function() {
 
     $('#btnApplySplitPayment').on('click', function() {
         const isWalkin = ($('#is_walkin').val() === '1');
+        const rawTotal = parseFloat($('#qbStatGrandTotal').text()) || 0;
+        const isNetRefund = (rawTotal < -0.009);
         const cash = parseFloat($('#qbSplitCashInput').val()) || 0;
         const bank = parseFloat($('#qbSplitBankInput').val()) || 0;
         const khata = parseFloat($('#qbSplitKhataInput').val()) || 0;
@@ -5827,7 +7053,7 @@ $(document).ready(function() {
         const bankAccId = $('#qbSplitBankAccountId').val();
 
         if (isWalkin && khata > 0.009) {
-            Swal.fire('Customer Required', 'Walk-in customers cannot have unpaid Khata. Please select a registered customer or pay 100% in Cash/Bank.', 'warning');
+            Swal.fire('Customer Required', isNetRefund ? 'Walk-in customers cannot credit refund to Khata. Please select a registered customer or refund via Cash/Bank.' : 'Walk-in customers cannot have unpaid Khata. Please select a registered customer or pay 100% in Cash/Bank.', 'warning');
             return;
         }
 
@@ -5854,7 +7080,11 @@ $(document).ready(function() {
         $(`.qb-pay-tab[data-method="${currentActivePaymentMethod}"]`).addClass('active');
 
         syncPaymentAccounts();
-        $('#qbAmountDueVal').text(khata.toFixed(2));
+        if (isNetRefund) {
+            $('#qbAmountDueVal').text('Rs. ' + (cash + bank + khata).toFixed(2));
+        } else {
+            $('#qbAmountDueVal').text(khata.toFixed(2));
+        }
 
         if (typeof saveCurrentOrderState === 'function') {
             saveCurrentOrderState();
@@ -5868,7 +7098,9 @@ $(document).ready(function() {
     // ==============================================================
     $('.qb-pay-tab').on('click', function() {
         const m = $(this).data('method');
-        const grandTotal = parseFloat($('#qbStatGrandTotal').text()) || 0;
+        const rawTotal = parseFloat($('#qbStatGrandTotal').text()) || 0;
+        const isNetRefund = (rawTotal < -0.009);
+        const grandTotal = isNetRefund ? Math.abs(rawTotal) : Math.max(0, rawTotal);
         const isWalkin = ($('#is_walkin').val() === '1');
 
         if (m === 'cash') {
@@ -5881,7 +7113,11 @@ $(document).ready(function() {
             orderPaymentAllocation.bankAmount = 0;
             orderPaymentAllocation.khataAmount = 0;
 
-            $('#qbAmountDueVal').text('0.00');
+            if (isNetRefund) {
+                $('#qbAmountDueVal').text('Rs. ' + grandTotal.toFixed(2));
+            } else {
+                $('#qbAmountDueVal').text('0.00');
+            }
             $('#inputCashReceived').val(grandTotal.toFixed(2));
             $('#inputCardAmount').val('0.00');
             $('#inputPaymentMethod').val('cash');
@@ -5897,7 +7133,9 @@ $(document).ready(function() {
             if (isWalkin) {
                 Swal.fire({
                     title: 'Customer Required',
-                    text: 'Account (Khata) sale sirf registered / main customer ke liye hai. Walk-in customer ko pori payment karni hogi. Barah-e-karam pehle customer select karein.',
+                    text: isNetRefund
+                        ? 'Walk-in customer ke khata me refund add nahi ho sakta kyunki walk-in ka khata nahi hota. Cash wapas karein ya bank se transfer karein, ya customer select karein.'
+                        : 'Account (Khata) sale sirf registered / main customer ke liye hai. Walk-in customer ko pori payment karni hogi. Barah-e-karam pehle customer select karein.',
                     icon: 'warning',
                     confirmButtonText: '<i class="fas fa-user-plus me-1"></i> Select Customer',
                     confirmButtonColor: '#2563eb'
@@ -5916,7 +7154,11 @@ $(document).ready(function() {
             orderPaymentAllocation.bankAmount = 0;
             orderPaymentAllocation.khataAmount = grandTotal;
 
-            $('#qbAmountDueVal').text(grandTotal.toFixed(2));
+            if (isNetRefund) {
+                $('#qbAmountDueVal').text('Rs. ' + grandTotal.toFixed(2));
+            } else {
+                $('#qbAmountDueVal').text(grandTotal.toFixed(2));
+            }
             $('#inputCashReceived').val('0.00');
             $('#inputCardAmount').val('0.00');
             $('#inputPaymentMethod').val('account');
@@ -5932,7 +7174,9 @@ $(document).ready(function() {
             if (isWalkin) {
                 Swal.fire({
                     title: 'Customer Required for Credit',
-                    text: 'Credit / Khata sale sirf registered / main customer ke liye hai. Walk-in customer ko pori payment karni hogi.',
+                    text: isNetRefund
+                        ? 'Walk-in customer ka khata nahi hota. Barah-e-karam Cash ya Bank refund select karein.'
+                        : 'Credit / Khata sale sirf registered / main customer ke liye hai. Walk-in customer ko pori payment karni hogi.',
                     icon: 'warning',
                     confirmButtonText: '<i class="fas fa-user-plus me-1"></i> Select Customer',
                     confirmButtonColor: '#2563eb'
@@ -5967,7 +7211,11 @@ $(document).ready(function() {
             orderPaymentAllocation.khataAmount = 0;
         }
 
-        $('#qbAmountDueVal').text('0.00');
+        if (isNetRefund) {
+            $('#qbAmountDueVal').text('Rs. ' + grandTotal.toFixed(2));
+        } else {
+            $('#qbAmountDueVal').text('0.00');
+        }
         $('#inputCashReceived').val(orderPaymentAllocation.cashAmount.toFixed(2));
         $('#inputCardAmount').val(orderPaymentAllocation.bankAmount.toFixed(2));
         $('#inputPaymentMethod').val(m);
@@ -6073,19 +7321,27 @@ $(document).ready(function() {
             const safeName = escapeHtml(itemName);
             const skuText = p.sku || p.item_code || ('#' + p.id);
             const safeSku = escapeHtml(skuText);
-            const pCode = (p.p_code || '').trim();
-            const pCodeBadge = pCode ? `<span class="qb-card-pcode" title="P-Code: ${escapeHtml(pCode)}">P: <strong>${escapeHtml(pCode)}</strong></span>` : '';
+            const skyP = (p.sky_p_code || p.p_code || (window.encodeToPCode ? window.encodeToPCode(p.sale_price_per_piece || p.price || 0) : '')).trim();
+            const rotP = (p.rot_p_code || (window.encodeToPCode ? window.encodeToPCode(p.wholesale_price || 0) : '')).trim();
+            const combP = window.formatCombinedPCode ? window.formatCombinedPCode(skyP, rotP) : (skyP && rotP ? `${skyP}-${rotP}` : (skyP || rotP));
+            const pCodeBadge = combP ? `<span class="qb-card-pcode" title="P-Code: ${escapeHtml(combP)}">P: <strong>${escapeHtml(combP)}</strong></span>` : '';
+
+            const imgUrl = (p.image && typeof p.image === 'string') ? escapeHtml(p.image) : '';
+            const bgHtml = imgUrl 
+                ? `<div class="qb-prod-card-bg" style="background-image: url('${imgUrl}');"></div><div class="qb-prod-card-overlay"></div>`
+                : '';
 
             const card = `
                 <div class="qb-prod-card" data-product-id="${p.id}" data-has-variants="${hasVar}" data-json='${JSON.stringify(p).replace(/'/g, "&apos;")}'>
-                    <div class="d-flex align-items-center justify-content-between mb-1" style="gap: 4px;">
+                    ${bgHtml}
+                    <div class="d-flex align-items-center justify-content-between mb-1" style="gap: 4px; flex-wrap: wrap; position: relative; z-index: 2;">
                         <span class="qb-card-top-badge ${badgeClass}">
                             <i class="fas ${isStock ? 'fa-check-circle' : 'fa-exclamation-circle'} me-1"></i> ${badgeText}
                         </span>
                         ${varBadge}
                     </div>
                     <div class="qb-card-title" title="${safeName}">${safeName}</div>
-                    <div class="d-flex align-items-center justify-content-between mt-auto mb-1" style="gap: 4px;">
+                    <div class="d-flex align-items-center justify-content-between mt-auto mb-1" style="gap: 4px; flex-wrap: wrap; position: relative; z-index: 2;">
                         <span class="qb-card-sku">#${safeSku}</span>
                         ${pCodeBadge}
                     </div>
@@ -6153,8 +7409,10 @@ $(document).ready(function() {
         const filtered = catalogProductsCache.filter(p => {
             const name = (p.name || p.item_name || '').toLowerCase();
             const sku = (p.sku || p.item_code || '').toLowerCase();
-            const pcode = (p.p_code || '').toLowerCase();
-            return name.includes(q) || sku.includes(q) || pcode.includes(q);
+            const skyP = (p.sky_p_code || p.p_code || '').toLowerCase();
+            const rotP = (p.rot_p_code || '').toLowerCase();
+            const combP = (window.formatCombinedPCode ? window.formatCombinedPCode(skyP, rotP) : `${skyP}-${rotP}`).toLowerCase();
+            return name.includes(q) || sku.includes(q) || skyP.includes(q) || rotP.includes(q) || combP.includes(q);
         });
         renderCatalogProducts(filtered);
     });
@@ -6662,7 +7920,10 @@ $(document).ready(function() {
             const color = (vData && vData.color) ? vData.color : (v.color || '-');
             const serialNo = v.serial_no || (vData && vData.serial_no) || '-';
             const stockPieces = parseFloat(v.stock_pieces !== undefined ? v.stock_pieces : (v.stock || 0));
-            const pCode = v.sky_p_code || v.p_code || (vData && (vData.sky_p_code || vData.p_code)) || '-';
+            const skyP = v.sky_p_code || v.p_code || (vData && (vData.sky_p_code || vData.p_code)) || '';
+            const rotP = v.rot_p_code || (vData && vData.rot_p_code) || '';
+            const combP = window.formatCombinedPCode ? window.formatCombinedPCode(skyP, rotP) : (skyP && rotP ? `${skyP}-${rotP}` : (skyP || rotP));
+            const pCode = combP || '-';
             const price = parseFloat(v.retail_price !== undefined ? v.retail_price : (v.price || 0)).toFixed(2);
             const isStock = stockPieces > 0;
 
@@ -6678,7 +7939,7 @@ $(document).ready(function() {
                         </span>
                     </td>
                     <td class="text-center">
-                        <span class="badge bg-warning-subtle text-dark border border-warning-subtle font-monospace">${escapeHtml(pCode)}</span>
+                        <span class="badge bg-warning-subtle text-dark border border-warning-subtle font-monospace" title="P-Code: ${escapeHtml(pCode)}">${escapeHtml(pCode)}</span>
                     </td>
                     <td class="text-end fw-bold text-dark">Rs. ${price}</td>
                     <td class="text-center">
@@ -6790,9 +8051,22 @@ $(document).ready(function() {
             }
         }
 
+        let itemImg = rawItem.image || rawItem.image_url || (rawItem.raw && (rawItem.raw.image || rawItem.raw.image_url)) || '';
+        if (itemImg && typeof itemImg === 'string' && !itemImg.startsWith('http') && !itemImg.startsWith('/') && !itemImg.startsWith('data:')) {
+            itemImg = '/uploads/products/' + itemImg;
+        }
+        if (!itemImg && pId && window.productImageCache && window.productImageCache[pId]) {
+            itemImg = window.productImageCache[pId];
+        }
+        if (pId && itemImg) {
+            window.productImageCache = window.productImageCache || {};
+            window.productImageCache[pId] = itemImg;
+        }
+
         return {
             raw: rawItem,
             productId: pId || null,
+            image: itemImg,
             sku: rawItem.sku || rawItem.item_code || rawItem.serial_no || '',
             name: itemName,
             salesDesc: salesDesc,
@@ -6800,15 +8074,19 @@ $(document).ready(function() {
             vendor: vendor,
             attribute: attr,
             size: size,
-            unit: unit,
+            unit: selectedUnit,
             price: price,
+            basePrice: price,
             rootPrice: rootPrice,
+            baseRootPrice: rootPrice,
+            baseUnitName: baseUnitName,
             stock: stock,
             pCode: pCode,
             rotCode: rotCode,
             variantData: vData || rawItem.variantData || null,
             qty: parseFloat(rawItem.qty || 1),
             uomUnits: uomUnits,
+            uomSellUnit: uomSellUnit,
             uomName: selectedUnit,
             uomRatio: uomRatio
         };
@@ -6819,8 +8097,14 @@ $(document).ready(function() {
         const meta = extractItemMetadata(item);
         pendingSaleItem = meta;
 
-        // Step 1: Price Entry Modal (Modal 10) - Always ask / confirm price first (even if price is in DB)
-        showZeroPriceModal(meta);
+        // Step 0: Unit of Measurement Check (ERP QuickBooks / Odoo POS style)
+        // If product has more than 1 unit of measurement configured, show UOM modal first!
+        if (Array.isArray(meta.uomUnits) && meta.uomUnits.length > 1) {
+            showChooseUomModal(meta);
+        } else {
+            // Only 1 unit exists -> proceed directly to Step 1: Price Entry Modal
+            showZeroPriceModal(meta);
+        }
     };
 
     function showZeroPriceModal(meta) {
@@ -6834,15 +8118,22 @@ $(document).ready(function() {
 
         // Empty field & cursor as requested ("new price ke field empty rakho cursor field ma ho. or price show nai ho.")
         $('#zpNewPriceInput').val('');
+        $('#zpNewPriceInput').attr('placeholder', (meta.price > 0 ? meta.price.toFixed(2) : '0.00'));
 
-        $('#zpItemName').text(meta.name);
+        $('#zpItemName').text(meta.name + (meta.uomRatio > 1 ? ' (' + meta.uomName + ')' : ''));
         $('#zpSalesDesc').text(meta.salesDesc || '-');
         $('#zpDept').text(meta.dept || '-');
         $('#zpVendor').text(meta.vendor || '-');
         $('#zpAttribute').text(meta.attribute || '-');
         $('#zpSize').text(meta.size || '-');
-        $('#zpUnit').text(meta.unit || '-');
-        // P-Code in Image 2 box table: Show both Sky and Root P-Codes
+        if (meta.uomRatio > 1) {
+            $('#zpUnit').html('<strong>' + escapeHtml(meta.unit) + '</strong> <span class="badge bg-primary text-white ms-1" style="font-size:10px;">1 ' + escapeHtml(meta.unit) + ' = ' + meta.uomRatio + ' Base</span>');
+        } else {
+            $('#zpUnit').text(meta.unit || '-');
+        }
+        // P-Code in Image 2 box table: Show Combined, Sky and Root P-Codes
+        const zpComb = window.formatCombinedPCode ? window.formatCombinedPCode(meta.pCode, meta.rotCode) : (meta.pCode && meta.rotCode ? `${meta.pCode}-${meta.rotCode}` : (meta.pCode || meta.rotCode));
+        $('#zpCombinedVal').text(zpComb || '-');
         $('#zpSkyVal').text(meta.pCode || '-');
         $('#zpRotVal').text(meta.rotCode || '-');
 
@@ -6986,25 +8277,40 @@ $(document).ready(function() {
         const avail = meta.stock;
         const reqQty = meta.qty || 1;
 
-        $('#qeItemName').text(meta.name);
+        $('#qeItemName').text(meta.name + (meta.uomRatio > 1 ? ' (' + meta.uomName + ')' : ''));
         $('#qeSalesDesc').text(meta.salesDesc || '-');
         $('#qeDept').text(meta.dept || '-');
         $('#qeVendor').text(meta.vendor || '-');
         $('#qeAttribute').text(meta.attribute || '-');
         $('#qeSize').text(meta.size || '-');
-        $('#qeUnit').text(meta.unit || '-');
-        // P-Code in Quantity Modal: Show both Sky and Root P-Codes
+        if (meta.uomRatio > 1) {
+            $('#qeUnit').html('<strong>' + escapeHtml(meta.unit) + '</strong> <span class="badge bg-primary text-white ms-1" style="font-size:10px;">Ratio: ' + meta.uomRatio + ' Base</span>');
+        } else {
+            $('#qeUnit').text(meta.unit || '-');
+        }
+        // P-Code in Quantity Modal: Show Combined, Sky and Root P-Codes
+        const qeComb = window.formatCombinedPCode ? window.formatCombinedPCode(meta.pCode, meta.rotCode) : (meta.pCode && meta.rotCode ? `${meta.pCode}-${meta.rotCode}` : (meta.pCode || meta.rotCode));
+        $('#qeCombinedVal').text(qeComb || '-');
         $('#qeSkyVal').text(meta.pCode || '-');
         $('#qeRotVal').text(meta.rotCode || '-');
-        $('#qeQtyOnHand').text(avail);
-        $('#qeQtyAvail').text(avail);
+
+        const baseUnit = meta.baseUnitName || 'Pcs';
+        if (meta.uomRatio > 1) {
+            const availInUnits = (avail / meta.uomRatio).toFixed(1);
+            $('#qeQtyOnHand').text(avail + ' ' + baseUnit + ' (' + availInUnits + ' ' + meta.unit + ')');
+            $('#qeQtyAvail').text(avail + ' ' + baseUnit + ' (' + availInUnits + ' ' + meta.unit + ')');
+        } else {
+            $('#qeQtyOnHand').text(avail + ' ' + baseUnit);
+            $('#qeQtyAvail').text(avail + ' ' + baseUnit);
+        }
         $('#qeQtyInput').val(reqQty);
 
         // Display confirmed unit price from Step 1
         const priceToShow = (meta.price || 0).toFixed(2);
-        $('#qeConfirmedPriceBadge').text('Rs. ' + priceToShow);
+        $('#qeConfirmedPriceBadge').text('Rs. ' + priceToShow + ' / ' + meta.unit);
 
-        const isLow = (avail <= 0 || reqQty > avail);
+        const reqInBase = reqQty * (meta.uomRatio || 1);
+        const isLow = (avail <= 0 || reqInBase > avail);
         updateQtyModalDisplay(isLow);
 
         $('#modalQtyEntry').modal('show');
@@ -7057,8 +8363,9 @@ $(document).ready(function() {
     $('#qeQtyInput').on('input', function() {
         if (!pendingSaleItem) return;
         const q = parseFloat($(this).val()) || 0;
+        const ratio = pendingSaleItem.uomRatio || 1;
         const avail = pendingSaleItem.stock;
-        updateQtyModalDisplay(avail <= 0 || q > avail);
+        updateQtyModalDisplay(avail <= 0 || (q * ratio) > avail);
     });
 
     $('#qeQtyInput').on('keydown', function(e) {
@@ -7091,6 +8398,30 @@ $(document).ready(function() {
         }
 
         $('#modalQtyEntry').modal('hide');
+
+        if (pendingSaleItem.raw) {
+            if (pendingSaleItem.image) {
+                pendingSaleItem.raw.image = pendingSaleItem.image;
+            }
+            pendingSaleItem.raw.p_code = pendingSaleItem.pCode;
+            pendingSaleItem.raw.sky_p_code = pendingSaleItem.pCode;
+            pendingSaleItem.raw.rot_p_code = pendingSaleItem.rotCode;
+            pendingSaleItem.raw.pCode = pendingSaleItem.pCode;
+            pendingSaleItem.raw.rotCode = pendingSaleItem.rotCode;
+            pendingSaleItem.raw.rootPrice = pendingSaleItem.rootPrice;
+            pendingSaleItem.raw.wholesale_price = pendingSaleItem.rootPrice;
+            pendingSaleItem.raw.admin_approved = pendingSaleItem.admin_approved || pendingSaleItem.approved_by_admin || false;
+            pendingSaleItem.raw.approval_id = pendingSaleItem.approval_id || null;
+            pendingSaleItem.raw.price = pendingSaleItem.price;
+            pendingSaleItem.raw.retail_price = pendingSaleItem.price;
+            pendingSaleItem.raw.qty = pendingSaleItem.qty;
+            pendingSaleItem.raw.uomName = pendingSaleItem.uomName;
+            pendingSaleItem.raw.uomRatio = pendingSaleItem.uomRatio;
+            pendingSaleItem.raw.unit = pendingSaleItem.unit;
+            pendingSaleItem.raw.basePrice = pendingSaleItem.basePrice;
+            pendingSaleItem.raw.baseRootPrice = pendingSaleItem.baseRootPrice;
+            pendingSaleItem.raw.uomUnits = pendingSaleItem.uomUnits;
+        }
 
         addItemToGrid(pendingSaleItem.raw);
         playBeep();
@@ -7148,6 +8479,19 @@ $(document).ready(function() {
                     startStaffApprovalPolling(resp.request_id, meta, qty, reqPrice);
                 } else if (resp.success && resp.is_admin) {
                     $('#modalStaffWaitingApproval').modal('hide');
+                    if (meta.gridRowUid) {
+                        const existRow = gridRows.find(r => r.uid === meta.gridRowUid);
+                        if (existRow) {
+                            existRow.price = reqPrice;
+                            existRow.adminApproved = true;
+                            existRow.approvedPrice = reqPrice;
+                            existRow.approvalId = resp.request_id || null;
+                            renderGrid();
+                            syncHiddenInputs();
+                            recomputeTotals();
+                            return;
+                        }
+                    }
                     meta.approved_by_admin = true;
                     meta.approved_price = reqPrice;
                     pendingSaleItem = meta;
@@ -7194,6 +8538,20 @@ $(document).ready(function() {
                             });
                         }
 
+                        if (meta.gridRowUid) {
+                            const existRow = gridRows.find(r => r.uid === meta.gridRowUid);
+                            if (existRow) {
+                                existRow.price = reqPrice;
+                                existRow.adminApproved = true;
+                                existRow.approvedPrice = reqPrice;
+                                existRow.approvalId = reqId;
+                                renderGrid();
+                                syncHiddenInputs();
+                                recomputeTotals();
+                                return;
+                            }
+                        }
+
                         meta.approved_by_admin = true;
                         meta.approved_price = reqPrice;
                         meta.approval_id = reqId;
@@ -7222,6 +8580,11 @@ $(document).ready(function() {
                                 confirmButtonText: 'OK',
                                 confirmButtonColor: '#dc2626'
                             });
+                        }
+
+                        if (meta.gridRowUid) {
+                            renderGrid();
+                            return;
                         }
 
                         meta.price = meta.rootPrice;
@@ -7341,6 +8704,13 @@ $(document).ready(function() {
         setTimeout(() => $('#returnSearchInvoiceNo').focus(), 300);
     });
 
+    $('#returnSearchInvoiceNo').on('keydown', function(e) {
+        if (e.which === 13 || e.keyCode === 13) {
+            e.preventDefault();
+            $('#btnSearchReturnReceipt').click();
+        }
+    });
+
     $('#btnSearchReturnReceipt').on('click', function() {
         const term = $('#returnSearchInvoiceNo').val().trim();
         if (!term) return;
@@ -7354,7 +8724,29 @@ $(document).ready(function() {
             data: { invoice_no: term },
             success: function(res) {
                 $btn.prop('disabled', false).html('<i class="fas fa-search me-1"></i> Find Receipt');
-                $('#returnReceiptMeta').text(`Invoice #${res.invoice_no} | Customer: ${res.customer_name || 'Walk-in'} | Total Items: ${res.items.length}`);
+                if (res.invoice_no) {
+                    $('#returnSearchInvoiceNo').val(res.invoice_no);
+                }
+                window.lastSearchedReturnCustomer = res.customer || null;
+
+                let metaHtml = `<strong>Invoice:</strong> #${res.invoice_no}`;
+                if (res.customer && res.customer.id) {
+                    const custBal = parseFloat(res.customer.previous_balance || 0);
+                    const currentPosCustId = $('#customerSelect').val();
+                    const isSameCustomer = (String(currentPosCustId) === String(res.customer.id));
+
+                    metaHtml += ` | <strong>Customer:</strong> <span class="badge bg-primary-subtle text-primary border">${res.customer.customer_name}</span> (Khata: Rs. ${custBal.toFixed(2)})`;
+                    
+                    if (!isSameCustomer) {
+                        metaHtml += ` <button type="button" class="btn btn-xs btn-outline-success ms-2 py-0 px-2 fw-bold btn-adopt-return-customer" style="font-size: 11px;">
+                            <i class="fas fa-user-check me-1"></i> Switch POS to this Customer
+                        </button>`;
+                    }
+                } else {
+                    metaHtml += ` | <strong>Customer:</strong> <span class="badge bg-warning-subtle text-dark border">Walk-in Customer</span>`;
+                }
+                metaHtml += ` | <strong>Items:</strong> ${res.items.length}`;
+                $('#returnReceiptMeta').html(metaHtml);
 
                 if (!res.items || !res.items.length) {
                     $('#returnItemsContainer').html('<div class="text-danger text-center py-3">No returnable items found in this invoice.</div>');
@@ -7455,6 +8847,17 @@ $(document).ready(function() {
         });
     });
 
+    $(document).on('click', '.btn-adopt-return-customer', function(e) {
+        e.preventDefault();
+        if (window.lastSearchedReturnCustomer) {
+            setCustomer(window.lastSearchedReturnCustomer);
+            if (typeof showAlert === 'function') {
+                showAlert('success', `POS customer switched to ${window.lastSearchedReturnCustomer.customer_name}. Refund can now be credited to Khata or refunded via Cash/Bank.`);
+            }
+            $(this).removeClass('btn-outline-success').addClass('btn-success disabled').html('<i class="fas fa-check me-1"></i> Switched');
+        }
+    });
+
     $(document).on('click', '.btn-add-ret-item', function() {
         const item = $(this).data('item');
         const receiptNo = $(this).data('receipt-no');
@@ -7462,6 +8865,14 @@ $(document).ready(function() {
         const $tr = $(this).closest('tr');
         const qty = parseFloat($tr.find('.ret-qty-box').val()) || 1;
         const commMode = $('input[name="commRefundMode"]:checked').val() || 'clawback';
+
+        // If current customer is Walk-in but original invoice was for a registered customer, automatically adopt that customer
+        if (window.lastSearchedReturnCustomer && window.lastSearchedReturnCustomer.id) {
+            const currentCustId = $('#customerSelect').val();
+            if (!currentCustId || $('#is_walkin').val() === '1') {
+                setCustomer(window.lastSearchedReturnCustomer);
+            }
+        }
 
         item.returnQty = qty;
         // If clawback mode, customer gets full price (raw_net_unit_price). If cust_deduct, customer gets net_unit_price.
@@ -7506,6 +8917,11 @@ $(document).ready(function() {
     // 9. SUBMIT ACTIONS: PUT ON HOLD, SAVE ONLY, SAVE & PRINT
     // ==============================================================
     function processSubmission(actionType, callback) {
+        // Commit any active inline price edit before validation/submitting
+        $('.qb-price-inline-input:focus').each(function() {
+            commitInlinePriceChange($(this));
+        });
+
         if (gridRows.length === 0) {
             Swal.fire('Empty Receipt', 'Please add at least one item or return to the receipt before saving.', 'warning');
             return;
@@ -7513,6 +8929,24 @@ $(document).ready(function() {
 
         // Validate credit / unpaid Khata balance with walk-in customer
         const isWalkin = ($('#is_walkin').val() === '1');
+
+        // Walk-in name required validation before submit
+        if (isWalkin) {
+            const walkinName = $('#walkinNameInput').val().trim();
+            if (!walkinName) {
+                Swal.fire({
+                    title: 'Customer Name Required',
+                    text: 'Walk-in customer ka naam daalna zarori hai. Pehle "Edit Walk-in" se naam enter karein.',
+                    icon: 'warning',
+                    confirmButtonText: '<i class="fas fa-user-edit me-1"></i> Enter Name',
+                    confirmButtonColor: '#d97706'
+                }).then(() => {
+                    openQuickWalkinModal();
+                });
+                return;
+            }
+        }
+
         const unpaidKhata = (typeof orderPaymentAllocation !== 'undefined' && orderPaymentAllocation.khataAmount) ? orderPaymentAllocation.khataAmount : (currentActivePaymentMethod === 'account' || currentActivePaymentMethod === 'credit' ? (parseFloat($('#qbStatGrandTotal').text()) || 0) : 0);
         if (actionType === 'sale' && isWalkin && (unpaidKhata > 0.05 || currentActivePaymentMethod === 'account')) {
             Swal.fire({
@@ -7988,9 +9422,11 @@ $(document).ready(function() {
                     $b64 = base64_decode($it->color, true);
                     $vData = ($b64 !== false) ? json_decode($b64, true) : json_decode($it->color, true);
                 }
+                $itemImg = ($it->product && $it->product->image) ? asset('uploads/products/' . $it->product->image) : '';
             @endphp
             addItemToGrid({
                 product_id: "{{ $it->product_id }}",
+                image: "{{ $itemImg }}",
                 sku: "{{ $it->product->item_code ?? $it->product_id }}",
                 name: "{{ $it->product_name ?? ($it->product->item_name ?? 'Item') }}",
                 vendor_desc: "{{ $it->product->brand->name ?? 'Khunty' }}",
@@ -8000,6 +9436,8 @@ $(document).ready(function() {
                 price: {{ $it->price ?? 0 }},
                 discount: {{ $it->discount_percent ?? 0 }},
                 p_code: "{{ $it->p_code ?? '' }}",
+                rot_p_code: "{{ $it->rot_p_code ?? ($it->product->rot_p_code ?? '') }}",
+                rootPrice: {{ (float)($it->product->wholesale_price ?? 0) }},
                 sales_desc: "{{ $it->product_name ?? 'Khunty' }}"
             });
         @endforeach
@@ -8268,11 +9706,137 @@ $(document).ready(function() {
     });
 
     // ==============================================================
-    // QUICKBOOKS DESKTOP POS: CHOOSE UNIT OF MEASURE MODAL (ADD SALE)
+    // QUICKBOOKS POS & ODOO ERP: CHOOSE UNIT OF MEASURE MODAL (ADD SALE)
     // ==============================================================
     let activeUomAddSaleRowUid = null;
     let selectedAddSaleUomChoice = null;
 
+    // Open UoM Modal during Item Addition Pipeline (Step 0)
+    function showChooseUomModal(meta) {
+        activeUomAddSaleRowUid = null; // New item pipeline mode
+        selectedAddSaleUomChoice = null;
+
+        $('#qbAddSaleModalProductName').text(meta.name || 'Item');
+        $('#qbAddSaleModalProductSku').text(meta.sku || '-');
+
+        let varText = [];
+        if (meta.attribute && meta.attribute !== '-') varText.push(meta.attribute);
+        if (meta.size && meta.size !== '-') varText.push(meta.size);
+        $('#qbAddSaleModalProductVariant').text(varText.length ? varText.join(' / ') : 'Standard');
+
+        const baseUnit = meta.baseUnitName || meta.unit || 'Pcs';
+        const totalPieces = meta.stock || 0;
+        $('#qbAddSaleModalProductStock').text(totalPieces + ' ' + baseUnit);
+
+        const $container = $('#qbAddSaleModalUnitsContainer').empty();
+
+        let defaultUnitChoice = null;
+
+        meta.uomUnits.forEach((u, idx) => {
+            const uRatio = parseFloat(u.ratio) || 1;
+            const isBase = (uRatio === 1) || (u.is_base === true);
+            const ratioText = isBase ? 'Base Unit (1.0)' : `1 ${u.name} = ${uRatio} ${baseUnit}`;
+
+            // Determine unit price
+            let uPrice = 0;
+            if (u.price && parseFloat(u.price) > 0) {
+                uPrice = parseFloat(u.price);
+            } else {
+                const baseP = (meta.basePrice !== undefined && meta.basePrice > 0) ? meta.basePrice : (meta.price || 0);
+                uPrice = baseP * uRatio;
+            }
+
+            // Determine unit root price (cost / wholesale)
+            let uCost = 0;
+            if (u.cost && parseFloat(u.cost) > 0) {
+                uCost = parseFloat(u.cost);
+            } else {
+                const baseR = (meta.baseRootPrice !== undefined && meta.baseRootPrice > 0) ? meta.baseRootPrice : (meta.rootPrice || 0);
+                uCost = baseR * uRatio;
+            }
+
+            const stockInUnit = (totalPieces > 0 && uRatio > 0) 
+                ? (isBase ? totalPieces : (totalPieces / uRatio).toFixed(1)) 
+                : 0;
+
+            const isDefaultSell = (meta.uomSellUnit && meta.uomSellUnit.toLowerCase() === u.name.toLowerCase());
+            let isSelected = false;
+            if (meta.uomName && meta.uomName.toLowerCase() === u.name.toLowerCase()) {
+                isSelected = true;
+            } else if (!meta.uomName && isDefaultSell) {
+                isSelected = true;
+            } else if (!meta.uomName && !defaultUnitChoice && isBase) {
+                isSelected = true;
+            }
+
+            if (isSelected) {
+                defaultUnitChoice = {
+                    name: u.name,
+                    ratio: uRatio,
+                    price: uPrice,
+                    cost: uCost,
+                    barcode: u.barcode || u.upc || '',
+                    stockInUnit: stockInUnit
+                };
+            }
+
+            const cardHtml = `
+                <div class="qb-uom-card-item ${isSelected ? 'active' : ''}" 
+                     data-unit-name="${escapeHtml(u.name)}" 
+                     data-ratio="${uRatio}" 
+                     data-price="${uPrice}" 
+                     data-cost="${uCost}" 
+                     data-barcode="${escapeHtml(u.barcode || u.upc || '')}" 
+                     data-index="${idx}">
+                    <div class="d-flex align-items-center gap-2">
+                        <i class="${isSelected ? 'fas fa-check-circle text-primary' : 'far fa-circle text-secondary'} fs-5 flex-shrink-0 qb-uom-check-icon"></i>
+                        <div>
+                            <div class="d-flex align-items-center flex-wrap gap-1">
+                                <span class="fw-bold text-dark fs-6 qb-uom-unit-name">${escapeHtml(u.name)}</span>
+                                <span class="badge ${isSelected ? 'bg-primary text-white' : 'bg-light text-secondary border'}" style="font-size: 10px;">
+                                    ${ratioText}
+                                </span>
+                                ${isDefaultSell ? '<span class="badge bg-success-subtle text-success border border-success-subtle" style="font-size:9.5px;">Default Sell</span>' : ''}
+                            </div>
+                            ${u.barcode ? `<div class="text-muted font-monospace" style="font-size: 10px;"><i class="fas fa-barcode me-1"></i>${escapeHtml(u.barcode)}</div>` : ''}
+                        </div>
+                    </div>
+                    <div class="text-end flex-shrink-0 ms-2">
+                        <div class="fw-bold font-monospace fs-6 ${isSelected ? 'text-primary' : 'text-dark'}">
+                            Rs. ${uPrice.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}
+                        </div>
+                        <small class="text-muted" style="font-size: 10.5px;">
+                            Avail: <b>${stockInUnit}</b> ${escapeHtml(u.name)}
+                        </small>
+                    </div>
+                </div>
+            `;
+            $container.append(cardHtml);
+        });
+
+        if (!defaultUnitChoice && meta.uomUnits.length > 0) {
+            const firstCard = $container.find('.qb-uom-card-item').first();
+            firstCard.addClass('active');
+            firstCard.find('.qb-uom-check-icon').removeClass('far fa-circle text-secondary').addClass('fas fa-check-circle text-primary');
+            defaultUnitChoice = {
+                name: firstCard.data('unit-name'),
+                ratio: parseFloat(firstCard.data('ratio')) || 1,
+                price: parseFloat(firstCard.data('price')) || 0,
+                cost: parseFloat(firstCard.data('cost')) || 0,
+                barcode: firstCard.data('barcode') || ''
+            };
+        }
+
+        selectedAddSaleUomChoice = defaultUnitChoice;
+
+        $('#btnConfirmQbAddSaleUomChoice').html('<i class="fas fa-arrow-right me-1"></i> Continue to Price');
+        $('#qbChooseUomModalAddSale').modal('show');
+        $('#qbChooseUomModalAddSale').one('shown.bs.modal', function() {
+            $('#btnConfirmQbAddSaleUomChoice').focus();
+        });
+    }
+
+    // Open UoM Modal when changing unit on an existing row in Grid Table
     $(document).on('click', '.btn-open-choose-uom-addsale', function(e) {
         e.stopPropagation();
         const uid = $(this).data('uid');
@@ -8283,76 +9847,248 @@ $(document).ready(function() {
         selectedAddSaleUomChoice = null;
 
         $('#qbAddSaleModalProductName').text(row.itemName);
-        const $container = $('#qbAddSaleModalUnitsContainer');
-        $container.empty();
+        $('#qbAddSaleModalProductSku').text(row.itemNumber || '-');
 
-        row.uomUnits.forEach(u => {
+        let varText = [];
+        if (row.attribute && row.attribute !== '-') varText.push(row.attribute);
+        if (row.size && row.size !== '-') varText.push(row.size);
+        $('#qbAddSaleModalProductVariant').text(varText.length ? varText.join(' / ') : 'Standard');
+        $('#qbAddSaleModalProductStock').text(row.stock + ' Pcs');
+
+        const $container = $('#qbAddSaleModalUnitsContainer').empty();
+
+        row.uomUnits.forEach((u, idx) => {
             const isSelected = (row.uomName && row.uomName.toLowerCase() === u.name.toLowerCase());
-            if (isSelected) {
-                selectedAddSaleUomChoice = u;
+            const uRatio = parseFloat(u.ratio) || 1;
+            const isBase = (uRatio === 1) || (u.is_base === true);
+            const ratioText = isBase ? 'Base Unit (1.0)' : `1 ${u.name} = ${uRatio} Base`;
+
+            let uPrice = 0;
+            if (u.price && parseFloat(u.price) > 0) {
+                uPrice = parseFloat(u.price);
+            } else if (row.basePrice > 0) {
+                uPrice = row.basePrice * uRatio;
+            } else {
+                uPrice = row.price;
             }
-            const ratioVal = parseFloat(u.ratio) || 1;
-            const ratioText = (ratioVal === 1) ? 'Base Unit' : `${ratioVal} Base Units`;
-            const priceText = (parseFloat(u.price) > 0) ? `Rs ${parseFloat(u.price).toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}` : 'Default Price';
+
+            let uCost = 0;
+            if (u.cost && parseFloat(u.cost) > 0) {
+                uCost = parseFloat(u.cost);
+            } else if (row.baseRootPrice > 0) {
+                uCost = row.baseRootPrice * uRatio;
+            } else {
+                uCost = row.rootPrice;
+            }
+
+            if (isSelected) {
+                selectedAddSaleUomChoice = {
+                    name: u.name,
+                    ratio: uRatio,
+                    price: uPrice,
+                    cost: uCost,
+                    barcode: u.barcode || u.upc || ''
+                };
+            }
 
             const cardHtml = `
-                <button type="button" class="btn btn-outline-secondary text-start p-2.5 qb-addsale-uom-card-btn ${isSelected ? 'active border-primary bg-primary text-white' : ''}" 
-                        data-unit-name="${u.name}" 
-                        data-ratio="${ratioVal}" 
-                        data-price="${u.price || 0}"
-                        style="border-radius: 6px; transition: all 0.15s ease;">
-                    <div class="d-flex justify-content-between align-items-center">
+                <div class="qb-uom-card-item ${isSelected ? 'active' : ''}" 
+                     data-unit-name="${escapeHtml(u.name)}" 
+                     data-ratio="${uRatio}" 
+                     data-price="${uPrice}" 
+                     data-cost="${uCost}" 
+                     data-barcode="${escapeHtml(u.barcode || u.upc || '')}" 
+                     data-index="${idx}">
+                    <div class="d-flex align-items-center gap-2">
+                        <i class="${isSelected ? 'fas fa-check-circle text-primary' : 'far fa-circle text-secondary'} fs-5 flex-shrink-0 qb-uom-check-icon"></i>
                         <div>
-                            <span class="fw-bold fs-6">${u.name}</span>
-                            <span class="badge ${isSelected ? 'bg-light text-dark' : 'bg-light text-secondary border'} ms-2" style="font-size: 11px;">
-                                ${ratioText}
-                            </span>
-                        </div>
-                        <div class="text-end">
-                            <span class="fw-bold fs-6 ${isSelected ? 'text-white' : 'text-primary'}">${priceText}</span>
-                            ${u.barcode ? `<div class="${isSelected ? 'text-white-50' : 'text-muted'}" style="font-size: 10px;">UPC: ${u.barcode}</div>` : ''}
+                            <div class="d-flex align-items-center flex-wrap gap-1">
+                                <span class="fw-bold text-dark fs-6 qb-uom-unit-name">${escapeHtml(u.name)}</span>
+                                <span class="badge ${isSelected ? 'bg-primary text-white' : 'bg-light text-secondary border'}" style="font-size: 10px;">
+                                    ${ratioText}
+                                </span>
+                            </div>
+                            ${u.barcode ? `<div class="text-muted font-monospace" style="font-size: 10px;"><i class="fas fa-barcode me-1"></i>${escapeHtml(u.barcode)}</div>` : ''}
                         </div>
                     </div>
-                </button>
+                    <div class="text-end flex-shrink-0 ms-2">
+                        <div class="fw-bold font-monospace fs-6 ${isSelected ? 'text-primary' : 'text-dark'}">
+                            Rs. ${uPrice.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}
+                        </div>
+                    </div>
+                </div>
             `;
             $container.append(cardHtml);
         });
 
+        $('#btnConfirmQbAddSaleUomChoice').html('<i class="fas fa-check me-1"></i> Apply Unit Change');
         $('#qbChooseUomModalAddSale').modal('show');
     });
 
-    $(document).on('click', '.qb-addsale-uom-card-btn', function() {
-        $('.qb-addsale-uom-card-btn').removeClass('active border-primary bg-primary text-white');
-        $('.qb-addsale-uom-card-btn .badge').removeClass('bg-light text-dark').addClass('bg-light text-secondary border');
-        $('.qb-addsale-uom-card-btn .text-end span').removeClass('text-white').addClass('text-primary');
+    // Card selection click
+    $(document).on('click', '.qb-uom-card-item', function() {
+        $('#qbAddSaleModalUnitsContainer .qb-uom-card-item').removeClass('active');
+        $('#qbAddSaleModalUnitsContainer .qb-uom-check-icon').removeClass('fas fa-check-circle text-primary').addClass('far fa-circle text-secondary');
+        $('#qbAddSaleModalUnitsContainer .badge.bg-primary').removeClass('bg-primary text-white').addClass('bg-light text-secondary border');
 
-        $(this).addClass('active border-primary bg-primary text-white');
-        $(this).find('.badge').removeClass('bg-light text-secondary border').addClass('bg-light text-dark');
-        $(this).find('.text-end span').removeClass('text-primary').addClass('text-white');
+        $(this).addClass('active');
+        $(this).find('.qb-uom-check-icon').removeClass('far fa-circle text-secondary').addClass('fas fa-check-circle text-primary');
+        $(this).find('.badge').first().removeClass('bg-light text-secondary border').addClass('bg-primary text-white');
 
         selectedAddSaleUomChoice = {
             name: $(this).data('unit-name'),
             ratio: parseFloat($(this).data('ratio')) || 1,
-            price: parseFloat($(this).data('price')) || 0
+            price: parseFloat($(this).data('price')) || 0,
+            cost: parseFloat($(this).data('cost')) || 0,
+            barcode: $(this).data('barcode') || ''
         };
     });
 
+    // Double click on card: instant confirm & proceed
+    $(document).on('dblclick', '.qb-uom-card-item', function(e) {
+        e.preventDefault();
+        $(this).trigger('click');
+        confirmUomChoiceAndProceed();
+    });
+
+    // Confirm button click
     $('#btnConfirmQbAddSaleUomChoice').on('click', function() {
-        if (activeUomAddSaleRowUid && selectedAddSaleUomChoice) {
+        confirmUomChoiceAndProceed();
+    });
+
+    // Cancel / Close buttons
+    $('#btnCancelQbAddSaleUom, #btnUomModalClose').on('click', function() {
+        $('#qbChooseUomModalAddSale').modal('hide');
+        pendingSaleItem = null;
+        activeUomAddSaleRowUid = null;
+        selectedAddSaleUomChoice = null;
+        $itemInput.focus();
+    });
+
+    // Keyboard navigation in UoM Modal
+    $(document).on('keydown', function(e) {
+        if (!$('#qbChooseUomModalAddSale').is(':visible')) return;
+
+        if (e.key === 'ArrowDown') {
+            e.preventDefault();
+            const $cards = $('#qbAddSaleModalUnitsContainer .qb-uom-card-item');
+            if (!$cards.length) return;
+            const curIdx = $cards.index($cards.filter('.active'));
+            const nextIdx = (curIdx + 1) % $cards.length;
+            $cards.eq(nextIdx).trigger('click');
+            if ($cards.eq(nextIdx)[0]) {
+                $cards.eq(nextIdx)[0].scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+            }
+        } else if (e.key === 'ArrowUp') {
+            e.preventDefault();
+            const $cards = $('#qbAddSaleModalUnitsContainer .qb-uom-card-item');
+            if (!$cards.length) return;
+            const curIdx = $cards.index($cards.filter('.active'));
+            const prevIdx = (curIdx - 1 + $cards.length) % $cards.length;
+            $cards.eq(prevIdx).trigger('click');
+            if ($cards.eq(prevIdx)[0]) {
+                $cards.eq(prevIdx)[0].scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+            }
+        } else if (e.key === 'Enter') {
+            e.preventDefault();
+            confirmUomChoiceAndProceed();
+        } else if (e.key === 'Escape') {
+            e.preventDefault();
+            $('#btnCancelQbAddSaleUom').click();
+        }
+    });
+
+    function confirmUomChoiceAndProceed() {
+        if (!selectedAddSaleUomChoice) {
+            if (typeof Swal !== 'undefined') Swal.fire('Select Unit', 'Please select a unit of measure.', 'warning');
+            return;
+        }
+
+        if (activeUomAddSaleRowUid) {
+            // Updating an existing row in the grid table
             const row = gridRows.find(r => r.uid === activeUomAddSaleRowUid);
             if (row) {
                 row.uomName = selectedAddSaleUomChoice.name;
                 row.uomRatio = selectedAddSaleUomChoice.ratio;
                 if (selectedAddSaleUomChoice.price > 0) {
                     row.price = selectedAddSaleUomChoice.price;
+                } else if (row.basePrice > 0) {
+                    row.price = row.basePrice * selectedAddSaleUomChoice.ratio;
+                }
+                if (selectedAddSaleUomChoice.cost > 0) {
+                    row.rootPrice = selectedAddSaleUomChoice.cost;
+                } else if (row.baseRootPrice > 0) {
+                    row.rootPrice = row.baseRootPrice * selectedAddSaleUomChoice.ratio;
                 }
                 renderGrid();
                 syncHiddenInputs();
                 recomputeTotals();
             }
+            $('#qbChooseUomModalAddSale').modal('hide');
+            activeUomAddSaleRowUid = null;
+            selectedAddSaleUomChoice = null;
+            return;
         }
+
+        // New item addition pipeline!
+        if (!pendingSaleItem) {
+            $('#qbChooseUomModalAddSale').modal('hide');
+            return;
+        }
+
+        // Apply chosen unit to pendingSaleItem
+        pendingSaleItem.uomName = selectedAddSaleUomChoice.name;
+        pendingSaleItem.uomRatio = selectedAddSaleUomChoice.ratio;
+        pendingSaleItem.unit = selectedAddSaleUomChoice.name;
+
+        // Determine price for this unit
+        let unitPrice = 0;
+        if (selectedAddSaleUomChoice.price > 0) {
+            unitPrice = selectedAddSaleUomChoice.price;
+        } else {
+            const baseP = (pendingSaleItem.basePrice !== undefined && pendingSaleItem.basePrice > 0) 
+                ? pendingSaleItem.basePrice 
+                : (pendingSaleItem.price || 0);
+            unitPrice = baseP * selectedAddSaleUomChoice.ratio;
+        }
+
+        // Determine root price (cost / wholesale) for this unit
+        let unitRootPrice = 0;
+        if (selectedAddSaleUomChoice.cost > 0) {
+            unitRootPrice = selectedAddSaleUomChoice.cost;
+        } else {
+            const baseR = (pendingSaleItem.baseRootPrice !== undefined && pendingSaleItem.baseRootPrice > 0) 
+                ? pendingSaleItem.baseRootPrice 
+                : (pendingSaleItem.rootPrice || 0);
+            unitRootPrice = baseR * selectedAddSaleUomChoice.ratio;
+        }
+
+        pendingSaleItem.price = unitPrice;
+        pendingSaleItem.rootPrice = unitRootPrice;
+        if (selectedAddSaleUomChoice.barcode) {
+            pendingSaleItem.unitUpc = selectedAddSaleUomChoice.barcode;
+        }
+
+        // Recalculate pCode and rotCode for this unit price
+        if (typeof window.encodeToPCode === 'function') {
+            if (unitPrice > 0) pendingSaleItem.pCode = window.encodeToPCode(unitPrice);
+            if (unitRootPrice > 0) pendingSaleItem.rotCode = window.encodeToPCode(unitRootPrice);
+        }
+
+        // Hide UoM modal and transition smoothly to Step 1 (Price Modal)
+        let fired = false;
+        function openPriceModal() {
+            if (fired) return;
+            fired = true;
+            showZeroPriceModal(pendingSaleItem);
+        }
+
+        $('#qbChooseUomModalAddSale').one('hidden.bs.modal', function() {
+            setTimeout(openPriceModal, 40);
+        });
         $('#qbChooseUomModalAddSale').modal('hide');
-    });
+        setTimeout(openPriceModal, 220); // Fallback
+    }
 
     // Initial render of Odoo POS order tabs
     renderOrderTabs();

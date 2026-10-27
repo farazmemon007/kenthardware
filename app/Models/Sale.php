@@ -60,6 +60,117 @@ class Sale extends Model
         return \App\Models\InvoiceSeries::generateNextNo($prefix);
     }
 
+    /**
+     * Find a sale flexibly by invoice number, ID, or short number (e.g. '7', '0007', 'INV-0007', 'inv-7')
+     */
+    public static function findByInvoiceTerm($term, array $statuses = ['posted', 'post', 'returned'])
+    {
+        $term = trim($term);
+        if ($term === '') {
+            return null;
+        }
+
+        $baseQuery = self::with(['items.product', 'customer_relation'])
+            ->whereIn('sale_status', $statuses);
+
+        // 1. Exact match on invoice_no
+        $sale = (clone $baseQuery)->where('invoice_no', $term)->first();
+        if ($sale) {
+            return $sale;
+        }
+
+        // 2. Case-insensitive exact match
+        $sale = (clone $baseQuery)->whereRaw('LOWER(invoice_no) = ?', [strtolower($term)])->first();
+        if ($sale) {
+            return $sale;
+        }
+
+        // 3. If input is pure numeric (e.g. "7", "0007", "0022")
+        if (ctype_digit($term) || is_numeric($term)) {
+            $num = (int)$term;
+            if ($num > 0) {
+                // Determine active/default invoice series prefix & padding
+                $allSeries = \App\Models\InvoiceSeries::all();
+                $defaultSeries = $allSeries->where('is_default', 1)->first() ?: $allSeries->first();
+                $defaultPrefix = $defaultSeries ? strtoupper(trim($defaultSeries->prefix)) : 'INV';
+                $defaultPadding = ($defaultSeries && $defaultSeries->padding) ? (int)$defaultSeries->padding : 4;
+
+                // 3a. Try default series with configured padding (e.g. INV-0007, INV-00007)
+                $paddings = array_unique([$defaultPadding, 4, 5, 6]);
+                foreach ($paddings as $pad) {
+                    $candidate = $defaultPrefix . '-' . str_pad($num, $pad, '0', STR_PAD_LEFT);
+                    $sale = (clone $baseQuery)->where('invoice_no', $candidate)->first();
+                    if ($sale) {
+                        return $sale;
+                    }
+                }
+
+                // 3b. Try other configured series (e.g. SIN, INVSLE, etc.)
+                foreach ($allSeries as $s) {
+                    $pref = strtoupper(trim($s->prefix));
+                    if ($pref === $defaultPrefix) continue;
+                    $pad = (int)($s->padding ?: 4);
+                    $candidate = $pref . '-' . str_pad($num, $pad, '0', STR_PAD_LEFT);
+                    $sale = (clone $baseQuery)->where('invoice_no', $candidate)->first();
+                    if ($sale) {
+                        return $sale;
+                    }
+                }
+
+                // 3c. Try default prefix with regex: ^INV-0*7$
+                $sale = (clone $baseQuery)
+                    ->where('invoice_no', 'REGEXP', '^' . preg_quote($defaultPrefix, '/') . '-0*' . $num . '$')
+                    ->latest('id')
+                    ->first();
+                if ($sale) {
+                    return $sale;
+                }
+
+                // 3d. Any invoice ending with -0*num$, e.g. ^[A-Za-z0-9]+-0*7$
+                $sale = (clone $baseQuery)
+                    ->where('invoice_no', 'REGEXP', '^[A-Za-z0-9]+-0*' . $num . '$')
+                    ->latest('id')
+                    ->first();
+                if ($sale) {
+                    return $sale;
+                }
+
+                // 3e. Check if primary ID matches directly (last resort)
+                $sale = (clone $baseQuery)->where('id', $num)->first();
+                if ($sale) {
+                    return $sale;
+                }
+            }
+        }
+
+        // 4. If user entered prefix with number, e.g. "inv-7", "inv 7", "inv7", "inv-07", "inv0007"
+        if (preg_match('/^([A-Za-z]+)[\s\-_]*(\d+)$/', $term, $matches)) {
+            $pref = strtoupper($matches[1]);
+            $num = (int)$matches[2];
+            if ($num > 0) {
+                // Try padding 4, 5, 6
+                foreach ([4, 5, 6] as $pad) {
+                    $candidate = $pref . '-' . str_pad($num, $pad, '0', STR_PAD_LEFT);
+                    $sale = (clone $baseQuery)->where('invoice_no', $candidate)->first();
+                    if ($sale) {
+                        return $sale;
+                    }
+                }
+
+                // Try regex for this prefix: ^PREF-0*NUM$
+                $sale = (clone $baseQuery)
+                    ->where('invoice_no', 'REGEXP', '^' . preg_quote($pref, '/') . '-0*' . $num . '$')
+                    ->latest('id')
+                    ->first();
+                if ($sale) {
+                    return $sale;
+                }
+            }
+        }
+
+        return null;
+    }
+
     public function items()
     {
         return $this->hasMany(SaleItem::class);

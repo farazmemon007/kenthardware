@@ -1,6 +1,20 @@
 
 
 <script>
+    window.formatCombinedPCode = window.formatCombinedPCode || function(skyCode, rotCode) {
+        skyCode = (skyCode || '').toString().trim();
+        rotCode = (rotCode || '').toString().trim();
+        if (skyCode === '---' || skyCode === '-') skyCode = '';
+        if (rotCode === '---' || rotCode === '-') rotCode = '';
+        if (skyCode && rotCode) {
+            if (skyCode.indexOf(rotCode) !== -1) {
+                return skyCode.replace(/\s*-\s*/g, '-');
+            }
+            return `${skyCode}-${rotCode}`;
+        }
+        return skyCode || rotCode || '';
+    };
+
     let lastSelectedPriceMode = 'retail';
     /* =========================================
        SHARED SALES LOGIC (Add/Edit)
@@ -94,7 +108,10 @@
         let sku = repo.sku || 'N/A';
         let stockVal = parseFloat(repo.stock_pieces !== undefined ? repo.stock_pieces : repo.stock) || 0;
         let badgeClass = stockVal > 0 ? 'bg-success' : 'bg-danger';
-        let pCodeBadge = repo.p_code ? `<span class="badge bg-warning-subtle text-dark border border-warning-subtle font-monospace ms-1" style="font-size:10px;" title="P-Code: ${repo.p_code}">P: ${repo.p_code}</span>` : '';
+        const repoSky = repo.sky_p_code || repo.p_code || '';
+        const repoRot = repo.rot_p_code || '';
+        const repoComb = window.formatCombinedPCode ? window.formatCombinedPCode(repoSky, repoRot) : (repoSky && repoRot ? `${repoSky}-${repoRot}` : (repoSky || repoRot));
+        let pCodeBadge = repoComb ? `<span class="badge bg-warning-subtle text-dark border border-warning-subtle font-monospace ms-1" style="font-size:10px;" title="P-Code: ${repoComb}">P: ${repoComb}</span>` : '';
 
         return $(`
         <div class="clearfix">
@@ -1019,21 +1036,28 @@
             }
 
             // Determine and Display P-Code Badge
-            let variantPCode = data.p_code || '';
+            let variantSkyPCode = data.sky_p_code || data.p_code || '';
+            let variantRotPCode = data.rot_p_code || '';
             if (data.variant_data) {
                 try {
                     const vd = JSON.parse(atob(data.variant_data));
-                    if (!variantPCode && vd.p_code) variantPCode = vd.p_code;
+                    if (!variantSkyPCode && (vd.sky_p_code || vd.p_code)) variantSkyPCode = vd.sky_p_code || vd.p_code;
+                    if (!variantRotPCode && vd.rot_p_code) variantRotPCode = vd.rot_p_code;
                 } catch(ex) {}
             }
-            if (!variantPCode && typeof window.encodeToPCode === 'function') {
-                let costVal = data.trade_price || data.purchase_price_per_piece || data.retail_price || 0;
-                variantPCode = window.encodeToPCode(costVal);
+            if (!variantSkyPCode && typeof window.encodeToPCode === 'function') {
+                let saleVal = data.retail_price || data.price || 0;
+                variantSkyPCode = window.encodeToPCode(saleVal);
+            }
+            if (!variantRotPCode && typeof window.encodeToPCode === 'function') {
+                let costVal = data.trade_price || data.purchase_price_per_piece || data.wholesale_price || 0;
+                variantRotPCode = window.encodeToPCode(costVal);
             }
 
-            $row.find('.item-pcode-hidden').val(variantPCode);
-            if (variantPCode) {
-                $row.find('.item-pcode-badge').text('P: ' + variantPCode).attr('title', 'P-Code: ' + variantPCode).removeClass('d-none');
+            const combinedVPCode = window.formatCombinedPCode ? window.formatCombinedPCode(variantSkyPCode, variantRotPCode) : (variantSkyPCode && variantRotPCode ? `${variantSkyPCode}-${variantRotPCode}` : (variantSkyPCode || variantRotPCode));
+            $row.find('.item-pcode-hidden').val(variantSkyPCode);
+            if (combinedVPCode) {
+                $row.find('.item-pcode-badge').text('P: ' + combinedVPCode).attr('title', 'P-Code: ' + combinedVPCode).removeClass('d-none');
             } else {
                 $row.find('.item-pcode-badge').text('').addClass('d-none');
             }
@@ -1191,11 +1215,16 @@
                 const retailPrice = parseFloat(v.retail_price || 0).toFixed(2);
                 const wholesalePrice = parseFloat(v.wholesale_price || 0).toFixed(2);
 
-                let vPCode = v.p_code || '';
-                if (!vPCode && typeof window.encodeToPCode === 'function') {
-                    let cost = v.trade_price || v.purchase_price_per_piece || v.purch_price || v.retail_price || 0;
-                    vPCode = window.encodeToPCode(cost);
+                let vSky = v.sky_p_code || v.p_code || '';
+                let vRot = v.rot_p_code || '';
+                if (!vSky && typeof window.encodeToPCode === 'function') {
+                    vSky = window.encodeToPCode(v.retail_price || 0);
                 }
+                if (!vRot && typeof window.encodeToPCode === 'function') {
+                    let cost = v.trade_price || v.purchase_price_per_piece || v.purch_price || v.wholesale_price || 0;
+                    vRot = window.encodeToPCode(cost);
+                }
+                let vPCode = window.formatCombinedPCode ? window.formatCombinedPCode(vSky, vRot) : (vSky && vRot ? `${vSky}-${vRot}` : (vSky || vRot));
 
                 const vJson = encodeURIComponent(JSON.stringify(v));
 
@@ -1950,7 +1979,10 @@
                     res.forEach(p => {
                         const stockText = p.wh_stock ? `${p.wh_stock} Pcs` : '0 Pcs';
                         const priceText = p.retail_price ? parseFloat(p.retail_price).toFixed(2) : '0.00';
-                        const pCodeBadge = p.p_code ? `<span class="badge bg-warning-subtle text-dark border border-warning-subtle font-monospace py-0 px-1 ms-1" style="font-size:0.65rem;" title="Secret Cost Code (P-Code)">P: ${p.p_code}</span>` : '';
+                        const pSky = p.sky_p_code || p.p_code || (window.encodeToPCode ? window.encodeToPCode(p.retail_price || p.price || 0) : '');
+                        const pRot = p.rot_p_code || (window.encodeToPCode ? window.encodeToPCode(p.wholesale_price || 0) : '');
+                        const pComb = window.formatCombinedPCode ? window.formatCombinedPCode(pSky, pRot) : (pSky && pRot ? `${pSky}-${pRot}` : (pSky || pRot));
+                        const pCodeBadge = pComb ? `<span class="badge bg-warning-subtle text-dark border border-warning-subtle font-monospace py-0 px-1 ms-1" style="font-size:0.65rem;" title="Secret Cost Code (P-Code): ${escapeHtml(pComb)}">P: ${escapeHtml(pComb)}</span>` : '';
                         html += `
                             <div class="pos-product-card">
                                 <div class="pos-product-img">

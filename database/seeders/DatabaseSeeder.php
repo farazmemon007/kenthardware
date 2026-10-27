@@ -19,8 +19,9 @@ class DatabaseSeeder extends Seeder
         $this->call([
             CategorySeeder::class,
             WarehouseSeeder::class,
+            StorageLocationsListSeeder::class,
             ModulesTableSeeder::class, 
-            SystemRolesAndPermissionsSeeder::class, // Complete Spatie RBAC & Module Permissions
+            RoleSeeder::class, // Complete Spatie RBAC & All 7 Roles
             SuperadminSeeder::class, 
         ]);
     }

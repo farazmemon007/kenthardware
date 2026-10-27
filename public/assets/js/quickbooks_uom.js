@@ -48,6 +48,14 @@
                 }
             });
 
+            // Apply preset UOM Template loader
+            $(document).on('change', '#qb_preset_uom_set', function() {
+                const uomId = $(this).val();
+                if (uomId) {
+                    self.applyPresetUomSet(uomId);
+                }
+            });
+
             // Quick Add Unit button (inside QuickBooks UOM modal)
             $(document).on('click', '.btn-open-quick-unit-modal', function(e) {
                 e.preventDefault();
@@ -148,6 +156,16 @@
             $('.qb-card-base-title').text(newBase);
             $('#qb_base_unit_input').val(newBase);
             $('.qb-base-unit-suffix').text(newBase);
+
+            // Synchronize modal select if changed externally/via preset
+            const $modalSelect = $('#qb_base_unit_select');
+            if ($modalSelect.length && $modalSelect.val() !== newBase) {
+                if ($modalSelect.find(`option[value="${newBase}"]`).length === 0) {
+                    $modalSelect.append(new Option(newBase, newBase, true, true));
+                } else {
+                    $modalSelect.val(newBase);
+                }
+            }
 
             // Re-render related units card headers (e.g. "(16 Pcs)")
             $('#qbRelatedUnitsContainer .qb-unit-card').each(function() {
@@ -324,6 +342,66 @@
             }
             if (uom && uom.sell_unit) {
                 $('#qb_sell_unit').val(uom.sell_unit);
+            }
+
+            // Populate preset UOM sets dropdown if available
+            if (window.allUomSets && Array.isArray(window.allUomSets)) {
+                let presetHtml = '<option value="">-- Apply from Pre-defined UOM Set --</option>';
+                window.allUomSets.forEach(function(s) {
+                    const base = s.base_unit || s.name;
+                    const uData = (typeof s.uom_data === 'string') ? JSON.parse(s.uom_data) : (s.uom_data || {});
+                    const uCount = (uData && uData.units) ? uData.units.length : 0;
+                    const extra = uCount > 0 ? ` (${uCount} related units)` : '';
+                    presetHtml += `<option value="${s.id}">${s.name} [Base: ${base}]${extra}</option>`;
+                });
+                $('#qb_preset_uom_set').html(presetHtml);
+            }
+        },
+
+        applyPresetUomSet: function(uomId) {
+            const self = this;
+            if (!window.allUomSets || !Array.isArray(window.allUomSets)) return;
+            const found = window.allUomSets.find(u => u.id == uomId);
+            if (!found) return;
+
+            const base = found.base_unit || found.name;
+            const uData = (typeof found.uom_data === 'string') ? JSON.parse(found.uom_data) : (found.uom_data || {});
+
+            self.onBaseUnitChanged(base);
+
+            const $container = $('#qbRelatedUnitsContainer');
+            $container.empty();
+
+            if (uData && Array.isArray(uData.units) && uData.units.length > 0) {
+                uData.units.forEach(function(u, idx) {
+                    self.addUnitCard({
+                        name: u.name,
+                        ratio: u.ratio,
+                        price: '',
+                        cost: '',
+                        upc: '',
+                        alu: ''
+                    }, idx + 1);
+                });
+            } else {
+                self.addUnitCard({ name: '', ratio: '', price: '', cost: '', upc: '', alu: '' }, 1);
+            }
+
+            self.updateDropdowns();
+
+            if (uData.order_unit) $('#qb_order_unit').val(uData.order_unit);
+            if (uData.sell_unit) $('#qb_sell_unit').val(uData.sell_unit);
+
+            if (typeof Swal !== 'undefined') {
+                Swal.fire({
+                    icon: 'info',
+                    title: 'UOM Set Applied',
+                    text: `Loaded '${found.name}' with base unit '${base}'.`,
+                    timer: 1200,
+                    showConfirmButton: false,
+                    toast: true,
+                    position: 'top-end'
+                });
             }
         },
 

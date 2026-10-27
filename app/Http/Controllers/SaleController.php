@@ -212,8 +212,22 @@ class SaleController extends Controller
                 $query->where('products.item_name', 'like', "%{$q}%")
                     ->orWhere('products.item_code', 'like', "%{$q}%")
                     ->orWhere('products.item_number', 'like', "%{$q}%")
+                    ->orWhere('products.p_code', 'like', "%{$q}%")
+                    ->orWhere('products.rot_p_code', 'like', "%{$q}%")
                     ->orWhere('products.barcode_path', 'like', "%{$q}%")
                     ->orWhere('products.color', 'like', "%{$q}%");
+
+                if (str_contains($q, '-')) {
+                    $pParts = explode('-', $q, 2);
+                    $skyPart = trim($pParts[0]);
+                    $rotPart = trim($pParts[1]);
+                    if (!empty($skyPart) && !empty($rotPart)) {
+                        $query->orWhere(function ($sub) use ($skyPart, $rotPart) {
+                            $sub->where('products.p_code', 'like', "%{$skyPart}%")
+                                ->where('products.rot_p_code', 'like', "%{$rotPart}%");
+                        });
+                    }
+                }
             })
             ->select(
                 'products.*',
@@ -231,6 +245,8 @@ class SaleController extends Controller
                     $rotPrice = $product->wholesale_price ?? 0;
                     $product->rot_p_code = PCodeService::encode($rotPrice);
                 }
+                $product->sky_p_code = $product->p_code;
+                $product->combined_p_code = PCodeService::formatCombined($product->p_code, $product->rot_p_code);
                 $product->uom_units = $product->getUomUnitsList();
                 $product->uom_sell_unit = $product->getUomSellUnit();
                 $product->base_unit_name = $product->unit ? $product->unit->name : 'Pcs';
@@ -1638,45 +1654,91 @@ class SaleController extends Controller
                 }
             }
             $netPayable = max(0, $sale->total_net - $precalcReturnAmount);
+            $isNetRefund = ($precalcReturnAmount > $sale->total_net);
+            $netRefundAmount = $isNetRefund ? ($precalcReturnAmount - $sale->total_net) : 0;
 
             if ($status === 'posted') {
-                $inputCash = (float)($request->cash ?? 0);
-                $inputCard = (float)($request->card ?? 0);
-                $totalPaid = $inputCash + $inputCard;
+                if ($isNetRefund) {
+                    $refundMethod = $request->input('refund_method', $paymentMethod);
+                    $refundCash = (float)$request->input('refund_cash_amount', 0);
+                    $refundBank = (float)$request->input('refund_bank_amount', 0);
+                    $refundKhata = (float)$request->input('refund_khata_amount', 0);
 
-                // 100% Credit / Ledger / Account (No upfront cash or card)
-                if (in_array($paymentMethod, ['credit', 'account']) && $totalPaid <= 0.009 && $netPayable > 0) {
-                    if ($isWalkin) {
+                    // If individual refund amounts were not sent via modal, allocate automatically
+                    if (($refundCash + $refundBank + $refundKhata) <= 0.009) {
+                        $inputCash = (float)($request->cash ?? 0);
+                        $inputCard = (float)($request->card ?? 0);
+                        if ($inputCash > 0 || $inputCard > 0) {
+                            $refundCash = $inputCash;
+                            $refundBank = $inputCard;
+                            $refundKhata = max(0, $netRefundAmount - ($refundCash + $refundBank));
+                        } elseif ($paymentMethod === 'cash') {
+                            $refundCash = $netRefundAmount;
+                        } elseif (in_array($paymentMethod, ['debit', 'check', 'gift', 'bank'])) {
+                            $refundBank = $netRefundAmount;
+                        } elseif (in_array($paymentMethod, ['credit', 'account'])) {
+                            if ($isWalkin) {
+                                throw \Illuminate\Validation\ValidationException::withMessages([
+                                    'customer' => 'Walk-in customers cannot have refund credited to Khata/Ledger. Please select a registered customer or refund via Cash/Bank.'
+                                ]);
+                            }
+                            $refundKhata = $netRefundAmount;
+                        } else {
+                            $refundCash = $netRefundAmount;
+                        }
+                    }
+
+                    if ($isWalkin && $refundKhata > 0.009) {
                         throw \Illuminate\Validation\ValidationException::withMessages([
-                            'customer' => 'Account / Credit sale (Udhar) requires a registered customer to record in ledger. Please select or add a customer.'
+                            'customer' => 'Walk-in customers cannot have refund credited to Khata/Ledger. Please select a registered customer or refund via Cash/Bank.'
                         ]);
                     }
-                    $sale->cash = 0;
-                    $sale->card = 0;
-                    $sale->change = -$netPayable;
-                } else {
-                    // Cash, Debit, Split, Account, etc.
-                    // Fallback for single tender if both inputs are 0
-                    if ($inputCash <= 0.009 && $inputCard <= 0.009 && !in_array($paymentMethod, ['credit', 'account'])) {
-                        if ($paymentMethod === 'debit' || $paymentMethod === 'check') {
-                            $inputCard = $netPayable;
-                        } else {
-                            $inputCash = $netPayable;
-                        }
-                        $totalPaid = $inputCash + $inputCard;
+
+                    $sale->cash = $refundCash;
+                    $sale->card = $refundBank;
+                    $sale->change = 0;
+                    if (empty($sale->reference)) {
+                        $sale->reference = 'Sale Return / Refund for Receipt #' . ($request->input('original_sale_id')[0] ?? '');
                     }
+                } else {
+                    $inputCash = (float)($request->cash ?? 0);
+                    $inputCard = (float)($request->card ?? 0);
+                    $totalPaid = $inputCash + $inputCard;
 
-                    $sale->cash = $inputCash;
-                    $sale->card = $inputCard;
-                    $sale->change = round($totalPaid - $netPayable, 2);
-
-                    // If change is negative, remaining balance is Due on customer ledger
-                    if ($sale->change < -0.05 && $netPayable > 0) {
+                    // 100% Credit / Ledger / Account (No upfront cash or card)
+                    if (in_array($paymentMethod, ['credit', 'account']) && $totalPaid <= 0.009 && $netPayable > 0) {
                         if ($isWalkin) {
-                            $unpaidAmt = number_format(abs($sale->change), 2);
                             throw \Illuminate\Validation\ValidationException::withMessages([
-                                'customer' => "Walk-in customers cannot have unpaid balance on Khata (Rs. {$unpaidAmt}). Please select a registered customer or pay 100% upfront."
+                                'customer' => 'Account / Credit sale (Udhar) requires a registered customer to record in ledger. Please select or add a customer.'
                             ]);
+                        }
+                        $sale->cash = 0;
+                        $sale->card = 0;
+                        $sale->change = -$netPayable;
+                    } else {
+                        // Cash, Debit, Split, Account, etc.
+                        // Fallback for single tender if both inputs are 0
+                        if ($inputCash <= 0.009 && $inputCard <= 0.009 && !in_array($paymentMethod, ['credit', 'account'])) {
+                            if ($paymentMethod === 'debit' || $paymentMethod === 'check') {
+                                $inputCard = $netPayable;
+                            } else {
+                                $inputCash = $netPayable;
+                            }
+                            $totalPaid = $inputCash + $inputCard;
+                        }
+
+                        $sale->cash = $inputCash;
+                        $sale->card = $inputCard;
+                        $sale->change = round($totalPaid - $netPayable, 2);
+
+                        // If change is negative, remaining balance is Due on customer ledger
+                        if ($sale->change < -0.05 && $netPayable > 0) {
+                            if ($isWalkin) {
+                                $unpaidAmt = number_format(abs($sale->change), 2);
+                                throw \Illuminate\Validation\ValidationException::withMessages([
+                                    'customer' => "Walk-in customers cannot have unpaid balance on Khata (Rs. {$unpaidAmt}). Please select a registered customer or pay 100% upfront."
+                                ]);
+                            }
                         }
                     }
                 }
@@ -1918,8 +1980,9 @@ class SaleController extends Controller
                     }
 
                     // Recalculate true change based on net payable
-                    $sale->change = $sale->cash - max(0, $sale->total_net - $totalReturnAmountForNet);
-                    $sale->reference = "Exchange/Return for " . $origSale->invoice_no;
+                    $netRemainingDue = max(0, $sale->total_net - $totalReturnAmountForNet);
+                    $sale->change = ($sale->total_net >= $totalReturnAmountForNet) ? round($sale->cash - $netRemainingDue, 2) : 0;
+                    $sale->reference = $sale->reference ?: ("Exchange/Return for " . $origSale->invoice_no);
                     $sale->save();
 
                     // Update Return Header Totals & Carpenter Deduction
@@ -1960,6 +2023,13 @@ class SaleController extends Controller
                                     $commRecord->status = 'cancelled';
                                 }
                                 $commRecord->save();
+
+                                // Keep original sale commission in sync
+                                $origSale->carpenter_commission_amount = $newCommAmount;
+                                if ($newCommAmount <= 0) {
+                                    $origSale->carpenter_id = null;
+                                }
+                                $origSale->save();
                             }
                         }
                     }
@@ -2028,58 +2098,54 @@ class SaleController extends Controller
                 $isExchange = $totalReturnVal > 0;
                 $trueNetPayable = $sale->total_net - $totalReturnVal;
 
-                // 2. LEGACY LEDGER: Post Invoice First (Increases Balance)
-                if ($isExchange) {
-                    if ($trueNetPayable !== 0.0) {
-                        $this->updateLedger($sale, $trueNetPayable);
-                    }
-                } else {
-                    $this->updateLedger($sale);
-                }
-
                 try {
-                    $journalService = app(\App\Services\JournalEntryService::class);
                     $balanceService = app(\App\Services\BalanceService::class);
+                    $journalService = app(\App\Services\JournalEntryService::class);
                     $arAccountId = $balanceService->getAccountsReceivableId();
                     $salesAccountId = $balanceService->getSalesRevenueId();
                     $date = $sale->created_at->format('Y-m-d');
-                    $custForVoucher = $sale->customer_relation ?? \App\Models\Customer::find($sale->customer_id);
+                    $custForVoucher = $sale->customer_relation ?? ($sale->customer_id ? \App\Models\Customer::find($sale->customer_id) : null);
 
-                    // --- PROFESSIONAL LEDGER POSTING (ENTRY 1: THE INVOICE) ---
-                    if ($isExchange) {
-                        if ($trueNetPayable > 0 && $custForVoucher) {
-                            $balanceService->createSaleVoucher(
-                                $custForVoucher,
-                                $trueNetPayable,
-                                $sale->invoice_no,
-                                $date
-                            );
-                        } elseif ($trueNetPayable < 0 && $custForVoucher) {
-                            $refundAmt = abs($trueNetPayable);
-                            
-                            // Debit Sales Return (Reduce Revenue)
-                            $journalService->recordEntry(
-                                clone $sale,
-                                $salesAccountId,
-                                $refundAmt,
-                                0,
-                                "Refund for POS Exchange #{$sale->invoice_no}",
-                                $date
-                            );
+                if ($isExchange && $trueNetPayable < -0.009) {
+                    // =========================================================================
+                    // NET REFUND / RETURN TO CUSTOMER (INTERNATIONAL ERP COMPLIANT)
+                    // =========================================================================
+                    $netRefund = abs($trueNetPayable);
 
-                            // Credit Customer (AR)
-                            $journalService->recordEntry(
-                                clone $sale,
-                                $arAccountId,
-                                0,
-                                $refundAmt,
-                                "Refund for POS Exchange #{$sale->invoice_no}",
-                                $date,
-                                $custForVoucher
-                            );
+                    // Accounts to credit for payout (Cash Drawer or Bank Account)
+                    $refundCashAccountId = (int)($request->input('refund_cash_account_id') ?: $balanceService->getCashAccountId());
+                    $refundBankAccountId = (int)($request->input('refund_bank_account_id') ?: ($request->input('change_account_id') ?: $balanceService->getBankAccountId()));
+
+                    $refundCash = (float)($request->input('refund_cash_amount') ?? $sale->cash ?? 0);
+                    $refundBank = (float)($request->input('refund_bank_amount') ?? $sale->card ?? 0);
+                    $refundKhata = (float)($request->input('refund_khata_amount') ?? 0);
+
+                    // If not specifically broken down by tender modal, allocate by paymentMethod
+                    if (($refundCash + $refundBank + $refundKhata) <= 0.009) {
+                        if ($paymentMethod === 'cash') {
+                            $refundCash = $netRefund;
+                        } elseif (in_array($paymentMethod, ['debit', 'check', 'gift', 'bank'])) {
+                            $refundBank = $netRefund;
+                        } elseif (in_array($paymentMethod, ['credit', 'account']) && !$isWalkin) {
+                            $refundKhata = $netRefund;
+                        } else {
+                            $refundCash = $netRefund;
                         }
-                    } else {
-                        if ($custForVoucher) {
+                    }
+
+                    try {
+                        // 1. REVENUE REDUCTION: Debit Sales Return / Revenue
+                        $journalService->recordEntry(
+                            clone $sale,
+                            $salesAccountId,
+                            $totalReturnVal,
+                            0,
+                            "Sales Return / Revenue Reduction for POS Return on #{$sale->invoice_no}",
+                            $date
+                        );
+
+                        // If there were also sold items on this exchange, record sale voucher for sold portion
+                        if ($sale->total_net > 0 && $custForVoucher) {
                             $balanceService->createSaleVoucher(
                                 $custForVoucher,
                                 $sale->total_net,
@@ -2087,103 +2153,195 @@ class SaleController extends Controller
                                 $date
                             );
                         }
-                    }
 
-                    // --- AUTO RECEIPT (ENTRY 2: THE PAYMENT & MULTI-ACCOUNT TENDER) ---
-                    $receiptAccIds = $request->input('receipt_account_id', []);
-                    $receiptAmts = $request->input('receipt_amount', []);
-
-                    $filteredAccIds = [];
-                    $filteredAmts = [];
-                    if (is_array($receiptAccIds) && is_array($receiptAmts)) {
-                        foreach ($receiptAccIds as $idx => $accId) {
-                            $amt = (float)($receiptAmts[$idx] ?? 0);
-                            if ($amt > 0.009 && !empty($accId)) {
-                                $filteredAccIds[] = (int)$accId;
-                                $filteredAmts[] = $amt;
-                            }
-                        }
-                    }
-
-                    // Fallback if no receipt amounts explicitly sent, but cash/card was received
-                    if (empty($filteredAccIds) && ($sale->cash > 0.009 || $sale->card > 0.009) && !in_array($paymentMethod, ['credit', 'account'])) {
-                        if ($sale->cash > 0.009) {
-                            $filteredAccIds[] = (int)$balanceService->getCashAccountId();
-                            $filteredAmts[] = (float)$sale->cash;
-                        }
-                        if ($sale->card > 0.009) {
-                            $chosenBankId = (int)($request->input('change_account_id') ?: $balanceService->getBankAccountId());
-                            $filteredAccIds[] = $chosenBankId;
-                            $filteredAmts[] = (float)$sale->card;
-                        }
-                    }
-
-                    if (!empty($filteredAccIds) && array_sum($filteredAmts) > 0.009) {
-                        $transactionService = app(\App\Services\TransactionService::class);
-                        $transactionService->createReceiptFromSale(
-                            $sale,
-                            $filteredAccIds,
-                            $filteredAmts,
-                            $sale->change_account_id
-                        );
-                    }
-
-                    // --- AUTO REFUND (ENTRY 3: IF NET PAYABLE IS NEGATIVE) ---
-                    if ($isExchange && $trueNetPayable < 0) {
-                        $refundAmt = abs($trueNetPayable);
-                        $cashAccountId = $balanceService->getCashAccountId();
-                        
+                        // 2. REGISTERED CUSTOMER AR & LEDGER vs WALKIN
                         if ($custForVoucher) {
-                            // Debit AR
+                            // A. Credit Customer AR by Total Return Amount (Credit Note on Customer Ledger)
                             $journalService->recordEntry(
                                 clone $sale,
                                 $arAccountId,
-                                $refundAmt,
                                 0,
-                                "Refund Paid for POS Exchange #{$sale->invoice_no}",
+                                $totalReturnVal,
+                                "Sale Return Credit Note for POS Receipt #{$sale->invoice_no}",
                                 $date,
                                 $custForVoucher
                             );
-                            
-                            // Credit Cash
-                            $journalService->recordEntry(
-                                clone $sale,
-                                $cashAccountId,
-                                0,
-                                $refundAmt,
-                                "Refund Paid for POS Exchange #{$sale->invoice_no}",
-                                $date
-                            );
 
-                            // Log refund voucher
-                            \App\Models\CustomerPayment::create([
-                                'customer_id' => $custForVoucher->id,
-                                'admin_or_user_id' => auth()->id(),
-                                'payment_date' => $date,
-                                'payment_method' => 'Cash',
-                                'amount' => $refundAmt,
-                                'note' => "Refund Paid for POS Exchange #{$sale->invoice_no}"
-                            ]);
+                            // B. Legacy Customer Ledger:
+                            // ONLY reduce customer ledger by the net amount left on Khata ($refundKhata)
+                            // plus any exchange difference ($sale->total_net). If customer was paid cash/bank,
+                            // their ledger balance must NOT be reduced (since they took physical cash away).
+                            $netKhataEffect = $sale->total_net - $refundKhata;
+                            if (abs($netKhataEffect) > 0.009) {
+                                $this->updateLedger($sale, $netKhataEffect);
+                            }
+
+                            // C. Refund Payout Entries (if cash or bank money left the shop)
+                            if ($refundCash > 0.009) {
+                                // Debit Customer AR (Settling the credit)
+                                $journalService->recordEntry(
+                                    clone $sale,
+                                    $arAccountId,
+                                    $refundCash,
+                                    0,
+                                    "Cash Refund Paid for Return on #{$sale->invoice_no}",
+                                    $date,
+                                    $custForVoucher
+                                );
+                                // Credit Cash Account (Shop Cash Drawer decreases)
+                                $journalService->recordEntry(
+                                    clone $sale,
+                                    $refundCashAccountId,
+                                    0,
+                                    $refundCash,
+                                    "Cash Refund Paid for Return on #{$sale->invoice_no}",
+                                    $date
+                                );
+                                // Log Customer Payment Voucher
+                                \App\Models\CustomerPayment::create([
+                                    'customer_id' => $custForVoucher->id,
+                                    'admin_or_user_id' => auth()->id(),
+                                    'payment_date' => $date,
+                                    'payment_method' => 'Cash Refund',
+                                    'amount' => $refundCash,
+                                    'note' => "Cash Refund Paid for POS Receipt #{$sale->invoice_no}"
+                                ]);
+                            }
+
+                            if ($refundBank > 0.009) {
+                                // Debit Customer AR
+                                $journalService->recordEntry(
+                                    clone $sale,
+                                    $arAccountId,
+                                    $refundBank,
+                                    0,
+                                    "Bank Refund Paid for Return on #{$sale->invoice_no}",
+                                    $date,
+                                    $custForVoucher
+                                );
+                                // Credit Bank Account (Bank balance decreases)
+                                $journalService->recordEntry(
+                                    clone $sale,
+                                    $refundBankAccountId,
+                                    0,
+                                    $refundBank,
+                                    "Bank Refund Paid for Return on #{$sale->invoice_no}",
+                                    $date
+                                );
+                                // Log Customer Payment Voucher
+                                \App\Models\CustomerPayment::create([
+                                    'customer_id' => $custForVoucher->id,
+                                    'admin_or_user_id' => auth()->id(),
+                                    'payment_date' => $date,
+                                    'payment_method' => 'Bank Refund',
+                                    'amount' => $refundBank,
+                                    'note' => "Bank Refund Paid for POS Receipt #{$sale->invoice_no}"
+                                ]);
+                            }
                         } else {
-                            // Walk-in refund: Debit Sales Revenue, Credit Cash
-                            $journalService->recordEntry(
-                                clone $sale,
-                                $salesAccountId,
-                                $refundAmt,
-                                0,
-                                "Refund Paid for POS Exchange #{$sale->invoice_no} (Walk-in)",
-                                $date
-                            );
-                            $journalService->recordEntry(
-                                clone $sale,
-                                $cashAccountId,
-                                0,
-                                $refundAmt,
-                                "Refund Paid for POS Exchange #{$sale->invoice_no} (Walk-in)",
-                                $date
+                            // WALKIN CUSTOMER (No AR Ledger)
+                            // Payout directly credits Cash drawer or Bank account
+                            if ($refundCash > 0.009) {
+                                $journalService->recordEntry(
+                                    clone $sale,
+                                    $refundCashAccountId,
+                                    0,
+                                    $refundCash,
+                                    "Walk-in Cash Refund for POS Return #{$sale->invoice_no}",
+                                    $date
+                                );
+                            }
+                            if ($refundBank > 0.009) {
+                                $journalService->recordEntry(
+                                    clone $sale,
+                                    $refundBankAccountId,
+                                    0,
+                                    $refundBank,
+                                    "Walk-in Bank Refund for POS Return #{$sale->invoice_no}",
+                                    $date
+                                );
+                            }
+                        }
+                    } catch (\Exception $e) {
+                        \Log::error('POS Return Accounting Error: ' . $e->getMessage());
+                    }
+
+                } else {
+                    // =========================================================================
+                    // NORMAL SALE OR NET POSITIVE EXCHANGE (MONEY INFLOW)
+                    // =========================================================================
+                    // 2. LEGACY LEDGER: Post Invoice First (Increases Balance)
+                    if ($isExchange) {
+                        if ($trueNetPayable > 0.009) {
+                            $this->updateLedger($sale, $trueNetPayable);
+                        }
+                    } else {
+                        $this->updateLedger($sale);
+                    }
+
+                    try {
+                        if ($isExchange) {
+                            if ($trueNetPayable > 0 && $custForVoucher) {
+                                $balanceService->createSaleVoucher(
+                                    $custForVoucher,
+                                    $trueNetPayable,
+                                    $sale->invoice_no,
+                                    $date
+                                );
+                            }
+                        } else {
+                            if ($custForVoucher) {
+                                $balanceService->createSaleVoucher(
+                                    $custForVoucher,
+                                    $sale->total_net,
+                                    $sale->invoice_no,
+                                    $date
+                                );
+                            }
+                        }
+
+                        // AUTO RECEIPT (ENTRY 2: THE PAYMENT & MULTI-ACCOUNT TENDER)
+                        $receiptAccIds = $request->input('receipt_account_id', []);
+                        $receiptAmts = $request->input('receipt_amount', []);
+
+                        $filteredAccIds = [];
+                        $filteredAmts = [];
+                        if (is_array($receiptAccIds) && is_array($receiptAmts)) {
+                            foreach ($receiptAccIds as $idx => $accId) {
+                                $amt = (float)($receiptAmts[$idx] ?? 0);
+                                if ($amt > 0.009 && !empty($accId)) {
+                                    $filteredAccIds[] = (int)$accId;
+                                    $filteredAmts[] = $amt;
+                                }
+                            }
+                        }
+
+                        // Fallback if no receipt amounts explicitly sent, but cash/card was received
+                        if (empty($filteredAccIds) && ($sale->cash > 0.009 || $sale->card > 0.009) && !in_array($paymentMethod, ['credit', 'account'])) {
+                            if ($sale->cash > 0.009) {
+                                $filteredAccIds[] = (int)$balanceService->getCashAccountId();
+                                $filteredAmts[] = (float)$sale->cash;
+                            }
+                            if ($sale->card > 0.009) {
+                                $chosenBankId = (int)($request->input('change_account_id') ?: $balanceService->getBankAccountId());
+                                $filteredAccIds[] = $chosenBankId;
+                                $filteredAmts[] = (float)$sale->card;
+                            }
+                        }
+
+                        if (!empty($filteredAccIds) && array_sum($filteredAmts) > 0.009) {
+                            $transactionService = app(\App\Services\TransactionService::class);
+                            $transactionService->createReceiptFromSale(
+                                $sale,
+                                $filteredAccIds,
+                                $filteredAmts,
+                                $sale->change_account_id
                             );
                         }
+                    } catch (\Exception $e) {
+                        \Log::error('POS Sale Accounting Error: ' . $e->getMessage());
                     }
+                }
 
                     // --- MANUAL PRODUCT VENDOR LEDGER ---
                     if (isset($manualItemsForLedger) && count($manualItemsForLedger) > 0) {

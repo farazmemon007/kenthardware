@@ -99,7 +99,7 @@ class ProductController extends Controller
         $productId = $request->get('product_id');
 
         $query = Product::query()
-            ->select('id', 'item_name', 'item_code', 'item_number', 'barcode_path', 'size_mode', 'unit_id', 'height', 'width', 'pieces_per_box', 'purchase_price_per_box', 'purchase_price_per_m2', 'purchase_price_per_piece', 'pieces_per_m2', 'purchase_discount_percent', 'sale_discount_percent', 'color', 'sale_price_per_piece', 'wholesale_price', 'p_code', 'rot_p_code', 'uom_data')
+            ->select('id', 'item_name', 'item_code', 'item_number', 'barcode_path', 'size_mode', 'unit_id', 'height', 'width', 'pieces_per_box', 'purchase_price_per_box', 'purchase_price_per_m2', 'purchase_price_per_piece', 'pieces_per_m2', 'purchase_discount_percent', 'sale_discount_percent', 'color', 'sale_price_per_piece', 'wholesale_price', 'p_code', 'rot_p_code', 'uom_data', 'image', 'web_main_image')
             ->with(['unit'])
             ->withSum('warehouseStocks', 'total_pieces') /* Sum PIECES, not boxes */
             ->where('is_active', true); /* Only active products */
@@ -111,8 +111,22 @@ class ProductController extends Controller
                 $q->where('item_name', 'like', "%{$term}%")
                     ->orWhere('item_code', 'like', "%{$term}%")
                     ->orWhere('item_number', 'like', "%{$term}%")
+                    ->orWhere('p_code', 'like', "%{$term}%")
+                    ->orWhere('rot_p_code', 'like', "%{$term}%")
                     ->orWhere('barcode_path', 'like', "%{$term}%")
                     ->orWhere('color', 'like', "%{$term}%");
+
+                if (str_contains($term, '-')) {
+                    $parts = explode('-', $term, 2);
+                    $sPart = trim($parts[0]);
+                    $rPart = trim($parts[1]);
+                    if ($sPart !== '' && $rPart !== '') {
+                        $q->orWhere(function ($sub) use ($sPart, $rPart) {
+                            $sub->where('p_code', 'like', "%{$sPart}%")
+                                ->where('rot_p_code', 'like', "%{$rPart}%");
+                        });
+                    }
+                }
             });
         }
 
@@ -398,6 +412,12 @@ class ProductController extends Controller
                     $v['current_stock'] = $vStockDisplay;
                     $variantJson = json_encode($v);
 
+                    $vImg = !empty($v['image']) ? $v['image'] : ($p->image ?: $p->web_main_image);
+                    $imageUrl = null;
+                    if (!empty($vImg)) {
+                        $imageUrl = str_starts_with($vImg, 'http') ? $vImg : asset('uploads/products/' . $vImg);
+                    }
+
                     $expanded[] = [
                         'id' => $p->id . '|variant|' . base64_encode($variantJson),
                         'product_id' => $p->id,
@@ -410,6 +430,7 @@ class ProductController extends Controller
                         'name' => $p->item_name, // Clean base product name for Item Name column
                         'product_name' => $p->item_name,
                         'item_name' => $p->item_name,
+                        'image' => $imageUrl,
                         'variant_name' => $vSalesDesc,
                         'sales_desc' => $vSalesDesc,
                         'color' => !empty($vColor) ? $vColor : '-',
@@ -431,12 +452,22 @@ class ProductController extends Controller
                         'p_code' => !empty($v['sky_p_code']) ? $v['sky_p_code'] : (!empty($v['p_code']) ? $v['p_code'] : PCodeService::encode($v['sale_price'] ?? 0)),
                         'sky_p_code' => !empty($v['sky_p_code']) ? $v['sky_p_code'] : (!empty($v['p_code']) ? $v['p_code'] : PCodeService::encode($v['sale_price'] ?? 0)),
                         'rot_p_code' => !empty($v['rot_p_code']) ? $v['rot_p_code'] : PCodeService::encode($v['wholesale_price'] ?? 0),
+                        'combined_p_code' => PCodeService::formatCombined(
+                            !empty($v['sky_p_code']) ? $v['sky_p_code'] : (!empty($v['p_code']) ? $v['p_code'] : PCodeService::encode($v['sale_price'] ?? 0)),
+                            !empty($v['rot_p_code']) ? $v['rot_p_code'] : PCodeService::encode($v['wholesale_price'] ?? 0)
+                        ),
                         'uom_units' => $p->getUomUnitsList(),
                         'uom_sell_unit' => $p->getUomSellUnit(),
                         'base_unit_name' => $unitName,
                     ];
                 }
                 return $expanded;
+            }
+
+            $prodImg = $p->image ?: $p->web_main_image;
+            $imageUrl = null;
+            if (!empty($prodImg)) {
+                $imageUrl = str_starts_with($prodImg, 'http') ? $prodImg : asset('uploads/products/' . $prodImg);
             }
 
             return [[
@@ -447,6 +478,13 @@ class ProductController extends Controller
                 'stock' => $stockDisplay,
                 'stock_pieces' => $stockPieces,
                 'name' => $p->item_name,
+                'item_name' => $p->item_name,
+                'product_name' => $p->item_name,
+                'sales_desc' => $p->item_name,
+                'attribute' => !empty($p->color) && !is_array($p->color) ? $p->color : '-',
+                'color' => !empty($p->color) && !is_array($p->color) ? $p->color : '-',
+                'size' => ($p->height && $p->width) ? "{$p->height}x{$p->width}" : '-',
+                'image' => $imageUrl,
                 'size_mode' => $p->size_mode,
                 'unit_name' => $unitName,
                 'pieces_per_box' => $ppb,
@@ -463,6 +501,10 @@ class ProductController extends Controller
                 'p_code' => !empty($p->p_code) ? $p->p_code : PCodeService::encode($p->sale_price_per_piece ?? 0),
                 'sky_p_code' => !empty($p->p_code) ? $p->p_code : PCodeService::encode($p->sale_price_per_piece ?? 0),
                 'rot_p_code' => !empty($p->rot_p_code) ? $p->rot_p_code : PCodeService::encode($p->wholesale_price ?? 0),
+                'combined_p_code' => PCodeService::formatCombined(
+                    !empty($p->p_code) ? $p->p_code : PCodeService::encode($p->sale_price_per_piece ?? 0),
+                    !empty($p->rot_p_code) ? $p->rot_p_code : PCodeService::encode($p->wholesale_price ?? 0)
+                ),
                 'uom_units' => $p->getUomUnitsList(),
                 'uom_sell_unit' => $p->getUomSellUnit(),
                 'base_unit_name' => $unitName,
@@ -738,7 +780,7 @@ class ProductController extends Controller
     public function view_store()
     {
         $categories = Category::select('id', 'name')->get();
-        $units = Unit::select('id', 'name')->get();
+        $units = Unit::orderBy('name')->get();
         $brands = Brand::select('id', 'name')->get();
         $warehouses = Warehouse::select('id', 'warehouse_name')->get();
         $branches = Branch::select('id', 'name')->get();
@@ -793,7 +835,7 @@ class ProductController extends Controller
     {
         $categoryId = $request->get('category_id');
         $query = Product::where('is_active', true)
-            ->select('id', 'item_name', 'item_code', 'sale_price_per_piece', 'color', 'p_code', 'category_id')
+            ->select('id', 'item_name', 'item_code', 'sale_price_per_piece', 'color', 'p_code', 'category_id', 'image', 'web_main_image')
             ->withSum('warehouseStocks', 'total_pieces');
         if ($categoryId && $categoryId !== 'all') {
             $query->where('category_id', $categoryId);
@@ -811,6 +853,19 @@ class ProductController extends Controller
                     }
                 } catch (\Exception $e) {}
             }
+
+            $imgName = $p->image ?: $p->web_main_image;
+            $imageUrl = null;
+            if (!empty($imgName)) {
+                if (file_exists(public_path('uploads/products/' . $imgName))) {
+                    $imageUrl = asset('uploads/products/' . $imgName);
+                } elseif (file_exists(public_path($imgName))) {
+                    $imageUrl = asset($imgName);
+                } else {
+                    $imageUrl = asset('uploads/products/' . $imgName);
+                }
+            }
+
             return [
                 'id' => $p->id,
                 'name' => $p->item_name,
@@ -821,6 +876,7 @@ class ProductController extends Controller
                 'has_variants' => $hasVariants,
                 'p_code' => $p->p_code ?? '',
                 'category_id' => $p->category_id,
+                'image' => $imageUrl,
             ];
         });
 
@@ -970,9 +1026,13 @@ class ProductController extends Controller
 
         // Image upload
         if ($request->hasFile('image')) {
+            $destDir = public_path('uploads/products');
+            if (!file_exists($destDir)) {
+                mkdir($destDir, 0777, true);
+            }
             $file = $request->file('image');
-            $filename = time().'.'.$file->getClientOriginalExtension();
-            $file->move(public_path('uploads/products'), $filename);
+            $filename = time().'_'.uniqid().'.'.$file->getClientOriginalExtension();
+            $file->move($destDir, $filename);
             $imagePath = $filename;
         } else {
             $imagePath = null;
@@ -1181,6 +1241,7 @@ class ProductController extends Controller
                 'model' => $request->model,
                 'image' => $imagePath,
                 'color' => count($variants) > 0 ? json_encode($variants) : ($request->color ? json_encode($request->color) : null),
+                'attributes_data' => $request->filled('attributes_data') ? (is_array($request->attributes_data) ? json_encode($request->attributes_data) : $request->attributes_data) : null,
                 'uom_data' => $request->filled('uom_data') ? (is_array($request->uom_data) ? json_encode($request->uom_data) : $request->uom_data) : null,
                 'purchase_discount_percent' => $request->purchase_discount_percent ?? 0,
                 'sale_discount_percent' => $request->sale_discount_percent ?? 0,
@@ -1224,6 +1285,14 @@ class ProductController extends Controller
                 'created_at' => now(),
                 'updated_at' => now(),
             ]);
+
+            if ($request->filled('attributes_data')) {
+                $this->syncAttributesPayloadToMaster($request->attributes_data);
+            }
+
+            if ($request->filled('attributes_data')) {
+                $this->syncAttributesPayloadToMaster($request->attributes_data);
+            }
 
             $targetWh = null;
             if ($request->filled('warehouse_id')) {
@@ -1442,9 +1511,29 @@ class ProductController extends Controller
         // image handle
         $imagePath = Product::where('id', $id)->value('image');
         if ($request->hasFile('image')) {
-            $imageName = time().'.'.$request->image->extension();
-            $request->image->move(public_path('uploads/products'), $imageName);
+            $destDir = public_path('uploads/products');
+            if (!file_exists($destDir)) {
+                mkdir($destDir, 0777, true);
+            }
+            $file = $request->file('image');
+            $imageName = time().'_'.uniqid().'.'.$file->getClientOriginalExtension();
+            $file->move($destDir, $imageName);
+            // Delete previous non-demo image if existed
+            if ($imagePath && !str_starts_with($imagePath, 'product_') && !str_starts_with($imagePath, 'outfitter_')) {
+                $oldPath = public_path('uploads/products/' . $imagePath);
+                if (file_exists($oldPath)) {
+                    @unlink($oldPath);
+                }
+            }
             $imagePath = $imageName;
+        } elseif ($request->input('remove_image') == '1' || $request->input('remove_image') === true) {
+            if ($imagePath && !str_starts_with($imagePath, 'product_') && !str_starts_with($imagePath, 'outfitter_')) {
+                $oldPath = public_path('uploads/products/' . $imagePath);
+                if (file_exists($oldPath)) {
+                    @unlink($oldPath);
+                }
+            }
+            $imagePath = null;
         }
 
         // Master Unit & Packaging Resolution
@@ -1481,7 +1570,7 @@ class ProductController extends Controller
 
         DB::transaction(function () use ($request, $id, $userId, $imagePath, $mode, $height, $width, $piecesPerBox,
             $boxesQuantity, $loosePieces, $pieceQuantity,
-            $totalM2, $pricePerM2, $purchasePricePerM2, $salePricePerBox, $purchasePricePerPiece, $piecesPerM2,
+            $totalM2, $pricePerM2, $purchasePricePerM2, $totalStockQty, $salePricePerBox, $purchasePricePerPiece, $piecesPerM2,
             $salePricePerPiece, $purchasePricePerBox,
             $masterUnitId, $masterUnitName, $packingType, $packingName) {
 
@@ -1661,6 +1750,7 @@ class ProductController extends Controller
                 'model' => $request->model,
                 'image' => $imagePath,
                 'color' => $final_color,
+                'attributes_data' => $request->filled('attributes_data') ? (is_array($request->attributes_data) ? json_encode($request->attributes_data) : $request->attributes_data) : Product::where('id', $id)->value('attributes_data'),
                 'uom_data' => $request->filled('uom_data') ? (is_array($request->uom_data) ? json_encode($request->uom_data) : $request->uom_data) : Product::where('id', $id)->value('uom_data'),
                 'purchase_discount_percent' => $request->purchase_discount_percent ?? 0,
                 'sale_discount_percent' => $request->sale_discount_percent ?? 0,
@@ -1705,6 +1795,10 @@ class ProductController extends Controller
                 'meta_description' => $request->meta_description,
                 'updated_at' => now(),
             ]);
+
+            if ($request->filled('attributes_data')) {
+                $this->syncAttributesPayloadToMaster($request->attributes_data);
+            }
 
             // BOM re-save logic removed as table does not exist
             // DB::table('product_boms')->where('product_id', $id)->delete();
@@ -2167,7 +2261,7 @@ class ProductController extends Controller
 
                     $combinedSky = implode('/', $skyCodes);
                     $combinedRot = implode('/', $rotCodes);
-                    $line2 = (!empty($combinedSky) && !empty($combinedRot)) ? "{$combinedSky} - {$combinedRot}" : ($combinedSky ?: $combinedRot);
+                    $line2 = PCodeService::formatCombined($combinedSky, $combinedRot);
 
                     $varListStr = implode(', ', $varTitles);
                     $line1 = !empty($varListStr) ? "{$product->item_name} - {$varListStr}" : $product->item_name;
@@ -2254,7 +2348,7 @@ class ProductController extends Controller
                     $line1 = !empty($cleanVariantPart) ? "{$product->item_name} - {$cleanVariantPart}" : $product->item_name;
 
                     // Build Line 2: PCODE - ROOT
-                    $line2 = (!empty($skyPCode) && !empty($rotPCode)) ? "{$skyPCode} - {$rotPCode}" : ($skyPCode ?: $rotPCode);
+                    $line2 = PCodeService::formatCombined($skyPCode, $rotPCode);
 
                     // Build Line 3: LOCATION
                     $line3 = $vLocation;
@@ -2304,7 +2398,7 @@ class ProductController extends Controller
             // Build Line 1: Product Name
             $line1 = $product->item_name;
 
-            $line2 = (!empty($skyPCode) && !empty($rotPCode)) ? "{$skyPCode} - {$rotPCode}" : ($skyPCode ?: $rotPCode);
+            $line2 = PCodeService::formatCombined($skyPCode, $rotPCode);
             $line3 = $loc;
 
             $labelData = [
@@ -3189,6 +3283,49 @@ class ProductController extends Controller
             'mode'          => $mode,
             'updated_count' => $updatedCount,
         ]);
+    }
+
+    /**
+     * Synchronize configured product attributes payload into master attributes database tables.
+     */
+    protected function syncAttributesPayloadToMaster($attributesData)
+    {
+        try {
+            $payload = is_array($attributesData) ? $attributesData : json_decode($attributesData, true);
+            if (!is_array($payload)) return;
+
+            foreach ($payload as $item) {
+                $aName = trim($item['name'] ?? '');
+                if ($aName === '') continue;
+
+                $attr = \App\Models\ProductAttribute::whereRaw('LOWER(TRIM(name)) = ?', [strtolower($aName)])->first();
+                if (!$attr) {
+                    $attr = \App\Models\ProductAttribute::create([
+                        'name' => $aName,
+                        'display_type' => 'Radio',
+                        'creation_mode' => 'Instantly',
+                    ]);
+                }
+
+                if (!empty($item['values']) && is_array($item['values'])) {
+                    $existingVals = $attr->values()->pluck('value')->map(fn($v) => strtolower(trim($v)))->toArray();
+                    $seq = (int)($attr->values()->max('sequence') ?? 0);
+                    foreach ($item['values'] as $v) {
+                        $valStr = trim(is_array($v) ? ($v['name'] ?? $v['value'] ?? '') : (string)$v);
+                        if ($valStr !== '' && !in_array(strtolower($valStr), $existingVals, true)) {
+                            \App\Models\ProductAttributeValue::create([
+                                'product_attribute_id' => $attr->id,
+                                'value' => $valStr,
+                                'sequence' => ++$seq,
+                            ]);
+                            $existingVals[] = strtolower($valStr);
+                        }
+                    }
+                }
+            }
+        } catch (\Throwable $e) {
+            \Illuminate\Support\Facades\Log::warning('Error syncing attributes payload to master: ' . $e->getMessage());
+        }
     }
 }
 

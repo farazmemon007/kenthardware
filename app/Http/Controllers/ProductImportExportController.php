@@ -271,45 +271,91 @@ class ProductImportExportController extends Controller
         ini_set('memory_limit', '-1');
         set_time_limit(0);
         $request->validate([
-            'csv_file' => 'required|file|mimes:csv,txt|max:5120',
+            'csv_file' => [
+                'required',
+                'file',
+                'max:20480',
+                function ($attribute, $value, $fail) {
+                    $ext = strtolower($value->getClientOriginalExtension());
+                    if (!in_array($ext, ['csv', 'txt', 'xlsx', 'xls'])) {
+                        $fail('The file must be an Excel sheet (.xlsx, .xls) or CSV file (.csv).');
+                    }
+                },
+            ],
             'import_mode' => 'required|in:create,update_only',
+        ], [
+            'csv_file.required' => 'Please select a file to import.',
+            'csv_file.max'      => 'File size cannot exceed 20 MB.',
         ]);
 
         $mode = $request->input('import_mode');
         $autoCreate = $request->has('auto_create');
         
         $file = $request->file('csv_file');
-        $handle = fopen($file->getRealPath(), 'r');
+        $extension = strtolower($file->getClientOriginalExtension());
 
-        $bom = fread($handle, 3);
-        if ($bom !== "\xEF\xBB\xBF") rewind($handle);
+        $rawRows = [];
+        if (in_array($extension, ['xlsx', 'xls'])) {
+            try {
+                $spreadsheet = \PhpOffice\PhpSpreadsheet\IOFactory::load($file->getRealPath());
+                $sheet = $spreadsheet->getActiveSheet();
+                $rawRows = $sheet->toArray(null, true, true, false);
+            } catch (\Throwable $e) {
+                return redirect()->back()->with('error', 'Could not parse Excel file: ' . $e->getMessage());
+            }
+        } else {
+            $handle = fopen($file->getRealPath(), 'r');
+            if ($handle === false) {
+                return redirect()->back()->with('error', 'Could not open CSV file.');
+            }
+            $bom = fread($handle, 3);
+            if ($bom !== "\xEF\xBB\xBF") rewind($handle);
 
-        $headerRow = fgetcsv($handle);
-        if (!$headerRow) {
-            return redirect()->back()->with('error', 'CSV file is empty or invalid.');
+            while (($r = fgetcsv($handle)) !== false) {
+                $rawRows[] = $r;
+            }
+            fclose($handle);
+        }
+
+        if (empty($rawRows)) {
+            return redirect()->back()->with('error', 'The uploaded file is empty or contains no data.');
+        }
+
+        $headerRow = array_shift($rawRows);
+        if (!$headerRow || !is_array($headerRow)) {
+            return redirect()->back()->with('error', 'CSV/Excel file is empty or missing headers.');
         }
 
         $headerMap = [];
         foreach ($headerRow as $i => $col) {
-            $headerMap[strtolower(trim($col))] = $i;
+            if ($col !== null && trim((string)$col) !== '') {
+                $headerMap[strtolower(trim((string)$col))] = $i;
+            }
         }
 
         $get = function (array $row, $possibleNames, $default = '') use ($headerMap) {
             if (!is_array($possibleNames)) $possibleNames = [$possibleNames];
             foreach ($possibleNames as $pName) {
-                $key = strtolower(trim($pName));
-                if (isset($headerMap[$key]) && isset($row[$headerMap[$key]])) {
-                    return trim($row[$headerMap[$key]]);
+                $key = strtolower(trim((string)$pName));
+                if (isset($headerMap[$key]) && isset($row[$headerMap[$key]]) && $row[$headerMap[$key]] !== null) {
+                    return trim((string)$row[$headerMap[$key]]);
                 }
             }
             return $default;
+        };
+
+        $cleanNumber = function ($val, $default = 0) {
+            if ($val === null || $val === '') return $default;
+            $clean = preg_replace('/[^\d.-]/', '', (string)$val);
+            return is_numeric($clean) ? (float)$clean : $default;
         };
 
         // Flexible Header Validation: ensure at least one identifier column exists
         $hasIdentifier = false;
         $possibleIdentifierCols = [
             'item name', 'item_name', 'product name', 'product_name', 'item_name (*)', 'name',
-            'item #', 'item_#', 'item no', 'item_no', 'item number', 'item_number', 'itemnum', 'item code', 'item_code'
+            'item #', 'item_#', 'item no', 'item_no', 'item number', 'item_number', 'itemnum', 'item code', 'item_code',
+            'sales description', 'description', 'vendor description'
         ];
         foreach ($possibleIdentifierCols as $hCol) {
             if (isset($headerMap[$hCol])) {
@@ -327,7 +373,6 @@ class ProductImportExportController extends Controller
         
         $productsByRef = [];
         $errors = [];
-        $rowNum = 1;
         $barcodesSeen = [];
         
         // For preview tracking
@@ -337,9 +382,11 @@ class ProductImportExportController extends Controller
             'brands' => []
         ];
 
-        while (($row = fgetcsv($handle)) !== false) {
-            $rowNum++;
-            if (empty(array_filter($row))) continue;
+        foreach ($rawRows as $rowIndex => $row) {
+            $rowNum = $rowIndex + 2;
+            if (!is_array($row) || empty(array_filter($row, function($v) { return $v !== null && trim((string)$v) !== ''; }))) {
+                continue;
+            }
 
             $prodName = $get($row, ['item name', 'item_name', 'product name', 'product_name', 'item_name (*)', 'name']);
             if (empty($prodName)) {
@@ -374,7 +421,7 @@ class ProductImportExportController extends Controller
             
             if (!empty($vBarcode)) {
                 if (isset($barcodesSeen[$vBarcode])) {
-                    $errors[] = ["row" => $rowNum, "msg" => "Duplicate barcode '$vBarcode' found in CSV (Row ".$barcodesSeen[$vBarcode].")."];
+                    $errors[] = ["row" => $rowNum, "msg" => "Duplicate barcode '$vBarcode' found in CSV/Excel (Row ".$barcodesSeen[$vBarcode].")."];
                 }
                 $barcodesSeen[$vBarcode] = $rowNum;
             }
@@ -409,17 +456,17 @@ class ProductImportExportController extends Controller
             $vRawUnit = $get($row, ['unit of measure', 'unit_of_measure', 'uom', 'unit', 'variant unit', 'variant_unit'], 'Pcs');
             $vUnit = VariantSerialService::normalizeUnit($vRawUnit);
 
-            $vPurchPrice = (float) $get($row, ['cost', 'variant purch price', 'variant purchase price', 'purchase_price', 'purchase price', 'purch_price', 'cost price'], 0);
-            $vSalePrice = (float) $get($row, ['sale price', 'sale_price', 'price', 'retail price', 'variant sale price', 'sales price'], 0);
+            $vPurchPrice = (float) $cleanNumber($get($row, ['cost', 'variant purch price', 'variant purchase price', 'purchase_price', 'purchase price', 'purch_price', 'cost price'], 0));
+            $vSalePrice = (float) $cleanNumber($get($row, ['sale price', 'sale_price', 'price', 'retail price', 'variant sale price', 'sales price'], 0));
             if ($vSalePrice <= 0 && $vPurchPrice > 0) {
                 $vSalePrice = $vPurchPrice;
             }
-            $vWholesalePrice = (float) $get($row, ['wholesale price', 'wholesale_price', 'wholesale', 'variant wholesale', 'variant wholesale price'], $vSalePrice);
+            $vWholesalePrice = (float) $cleanNumber($get($row, ['wholesale price', 'wholesale_price', 'wholesale', 'variant wholesale', 'variant wholesale price'], $vSalePrice));
             if ($vWholesalePrice <= 0) {
                 $vWholesalePrice = $vSalePrice;
             }
 
-            $vStock = max(0, (float) $get($row, ['stock', 'on hand', 'on_hand', 'qty', 'variant stock', 'variant_stock', 'quantity'], 0));
+            $vStock = max(0, (float) $cleanNumber($get($row, ['stock', 'on hand', 'on_hand', 'qty', 'variant stock', 'variant_stock', 'quantity'], 0)));
             $vDesc = $get($row, ['sales description', 'sales_description', 'description'], '');
 
             if (!isset($productsByRef[$prodRef])) {
@@ -446,9 +493,9 @@ class ProductImportExportController extends Controller
                     'sub_category'   => $subCatName,
                     'brand'          => $brandName,
                     'size_mode'      => $sizeMode,
-                    'pcs_per_carton' => max(1, (int)$get($row, ['pcs per box', 'pieces per box', 'pcs_per_carton'], 1)),
-                    'sale_discount'  => max(0, (float)$get($row, ['sale discount %', 'sale_discount_%'], 0)),
-                    'purch_discount' => max(0, (float)$get($row, ['purchase discount %', 'purchase_discount_%'], 0)),
+                    'pcs_per_carton' => max(1, (int)$cleanNumber($get($row, ['pcs per box', 'pieces per box', 'pcs_per_carton'], 1), 1)),
+                    'sale_discount'  => max(0, (float)$cleanNumber($get($row, ['sale discount %', 'sale_discount_%'], 0))),
+                    'purch_discount' => max(0, (float)$cleanNumber($get($row, ['purchase discount %', 'purchase_discount_%'], 0))),
                     'is_active'      => (int)$get($row, ['is_active', 'is active'], 1),
                     'variants'       => []
                 ];
@@ -458,12 +505,12 @@ class ProductImportExportController extends Controller
                 }
             }
 
-            $vPieceWt = (float) $get($row, ['variant piece wt (g)', 'variant piece weight (g)', 'variant_weight_per_piece', 'weight_per_piece', 'piece_weight'], 0);
+            $vPieceWt = (float) $cleanNumber($get($row, ['variant piece wt (g)', 'variant piece weight (g)', 'variant_weight_per_piece', 'weight_per_piece', 'piece_weight'], 0));
             $rawConvFactor = $get($row, ['variant conv factor', 'variant_conv_factor', 'conv_factor', 'factor'], '');
-            $vConvFactor = $rawConvFactor !== '' ? (float)$rawConvFactor : 0;
+            $vConvFactor = $rawConvFactor !== '' ? (float)$cleanNumber($rawConvFactor, 0) : 0;
             $isFirstVariant = empty($productsByRef[$prodRef]['variants']);
             $vIsBase = (int) $get($row, ['variant is base', 'variant_is_base', 'is_base'], $isFirstVariant ? 1 : 0);
-            $vAlert  = (float) $get($row, ['variant alert', 'variant_alert_qty', 'alert'], 0);
+            $vAlert  = (float) $cleanNumber($get($row, ['variant alert', 'variant_alert_qty', 'alert'], 0));
 
             $isWeightProduct = (isset($productsByRef[$prodRef]) && in_array($productsByRef[$prodRef]['size_mode'], ['by_kg', 'by_gm', 'by_ton']));
 
@@ -513,8 +560,6 @@ class ProductImportExportController extends Controller
                 'description'      => $vDesc,
             ];
         }
-
-        fclose($handle);
 
         // Prepare Preview Summary: Match existing products by item_code OR by item_name
         $existingCodes = Product::pluck('id', 'item_code')->toArray();
@@ -640,6 +685,34 @@ class ProductImportExportController extends Controller
                 $payload['products'] = json_decode(file_get_contents($path), true);
             }
         }
+
+        $flatItems = [];
+        $totalVariants = 0;
+        foreach ($payload['products'] as $ref => $p) {
+            foreach ($p['variants'] as $v) {
+                $totalVariants++;
+                $flatItems[] = [
+                    'row'         => $v['row'] ?? $totalVariants,
+                    'item_number' => $v['item_number'] ?? '',
+                    'name'        => $v['name'] ?? $p['name'],
+                    'parent_name' => $p['name'],
+                    'ref'         => $ref,
+                    'category'    => $p['category'] ?? '-',
+                    'brand'       => $p['brand'] ?? '-',
+                    'attribute'   => $v['color'] ?? '-',
+                    'size'        => $v['size'] ?? '-',
+                    'cost'        => (float)($v['purch_price'] ?? 0),
+                    'sale_price'  => (float)($v['sale_price'] ?? 0),
+                    'stock'       => (float)($v['stock'] ?? 0),
+                    'unit'        => $v['unit'] ?? 'Pcs',
+                    'location'    => $v['location'] ?? '',
+                    'p_code'      => $v['p_code'] ?? '',
+                ];
+            }
+        }
+        $payload['flat_items'] = $flatItems;
+        $payload['total_variants'] = $totalVariants;
+
         return view('admin_panel.product.import_preview', compact('payload'));
     }
     
@@ -696,6 +769,19 @@ class ProductImportExportController extends Controller
             $catMap = Category::pluck('id', 'name')->mapWithKeys(function ($item, $key) { return [strtolower($key) => $item]; })->toArray();
             $brandMap = Brand::pluck('id', 'name')->mapWithKeys(function ($item, $key) { return [strtolower($key) => $item]; })->toArray();
             $subCatMap = Subcategory::pluck('id', 'name')->mapWithKeys(function ($item, $key) { return [strtolower($key) => $item]; })->toArray();
+            $rackMap = \App\Models\StorageLocation::where('type', 'warehouse_rack')->pluck('id', 'name')->mapWithKeys(function ($id, $name) { return [strtolower(trim($name)) => $id]; })->toArray();
+            $resolveRackId = function ($locStr) use ($rackMap) {
+                if (empty(trim((string)$locStr))) return null;
+                $clean = preg_replace('/\b([A-Za-z]+)\s+(\d+)\b/', '$1$2', trim($locStr));
+                $clean = trim($clean, " /-");
+                $tokens = preg_split('/[\/\-,\;\s]+/', strtolower($clean));
+                foreach ($tokens as $t) {
+                    if (isset($rackMap[$t])) {
+                        return $rackMap[$t];
+                    }
+                }
+                return null;
+            };
             
             if ($autoCreate && $offset === 0) {
                 foreach ($payload['master_data']['categories'] as $catName) {
@@ -846,7 +932,12 @@ class ProductImportExportController extends Controller
                     $diff = $stockTotal - ($ws->total_pieces ?? 0);
                     $ws->total_pieces = $stockTotal;
                     $ws->quantity = floor($stockTotal / max(1, $pData['pcs_per_carton']));
-                    $ws->remarks = 'Updated via Bulk Import';
+                    $targetLocStr = $finalVariants[0]['location'] ?? '';
+                    $resolvedRackId = $resolveRackId($targetLocStr);
+                    if ($resolvedRackId) {
+                        $ws->storage_location_id = $resolvedRackId;
+                    }
+                    $ws->remarks = !empty($targetLocStr) ? $targetLocStr : 'Updated via Bulk Import';
                     $ws->save();
                     
                     if ($diff != 0) {
@@ -938,12 +1029,16 @@ class ProductImportExportController extends Controller
                         'width' => 0,
                     ]);
                     
+                    $targetLocStr = $finalVariants[0]['location'] ?? '';
+                    $resolvedRackId = $resolveRackId($targetLocStr);
+
                     WarehouseStock::create([
-                        'warehouse_id' => 1,
-                        'product_id'   => $product->id,
-                        'quantity'     => floor($stockTotal / max(1, $pData['pcs_per_carton'])),
-                        'total_pieces' => $stockTotal,
-                        'remarks'      => 'Initial Stock via Import',
+                        'warehouse_id'        => 1,
+                        'product_id'          => $product->id,
+                        'quantity'            => floor($stockTotal / max(1, $pData['pcs_per_carton'])),
+                        'total_pieces'        => $stockTotal,
+                        'storage_location_id' => $resolvedRackId,
+                        'remarks'             => !empty($targetLocStr) ? $targetLocStr : 'Initial Stock via Import',
                     ]);
                     
                     if ($stockTotal > 0) {

@@ -347,9 +347,16 @@
         }
 
         /* Product Image Upload Box */
-        .product-avatar-box {
+        .image-box-container {
+            position: relative;
             width: 95px;
             height: 85px;
+            flex-shrink: 0;
+        }
+
+        .product-avatar-box {
+            width: 100%;
+            height: 100%;
             border: 1.5px dashed #94a3b8;
             border-radius: var(--radius-md);
             background: #f8fafc;
@@ -360,6 +367,7 @@
             position: relative;
             cursor: pointer;
             overflow: hidden;
+            user-select: none;
             transition: all 0.15s ease;
         }
 
@@ -397,25 +405,65 @@
         .product-avatar-box img {
             width: 100%;
             height: 100%;
-            object-fit: contain;
+            object-fit: cover;
             background: #fff;
+            display: block;
+            pointer-events: none;
+            -webkit-user-drag: none;
+            user-select: none;
+        }
+
+        .product-avatar-overlay {
+            position: absolute;
+            inset: 0;
+            background: rgba(15, 23, 42, 0.55);
+            color: #ffffff;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 2px;
+            font-size: 11px;
+            font-weight: 600;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.2s ease;
+            z-index: 4;
+        }
+
+        .product-avatar-box:hover .product-avatar-overlay {
+            opacity: 1;
+        }
+
+        #preview.d-none ~ .product-avatar-overlay {
+            display: none !important;
         }
 
         .clear-img-btn {
             position: absolute;
-            top: 3px;
-            right: 3px;
-            background: rgba(239, 68, 68, 0.95);
-            color: #fff;
-            border: none;
-            width: 20px;
-            height: 20px;
+            top: -6px;
+            right: -6px;
+            background: #ef4444;
+            color: #ffffff;
+            border: 2px solid #ffffff;
+            width: 24px;
+            height: 24px;
             border-radius: 50%;
-            display: grid;
-            place-items: center;
-            font-size: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            font-weight: bold;
+            line-height: 1;
             cursor: pointer;
-            z-index: 5;
+            z-index: 20;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.25);
+            transition: transform 0.15s ease, background-color 0.15s ease;
+        }
+
+        .clear-img-btn:hover {
+            transform: scale(1.15);
+            background: #dc2626;
         }
 
         /* Tabs Nav - Clean Odoo Style */
@@ -1967,32 +2015,27 @@
                                     </div>
                                 </button>
                             </div>
-                            <div class="image-box-container">
-                                <input type="file" id="imageInput" name="image" class="d-none" accept="image/*">
-                                <div class="product-avatar-box" id="avatarBox" onclick="document.getElementById('imageInput').click()" title="Click to upload image">
-                                    <button type="button" id="clearImageBtn" class="clear-img-btn d-none" title="Remove image">&times;</button>
-                                    @if(!empty($product->image) && file_exists(public_path($product->image)))
-                                        <button type="button" id="clearImageBtn" class="clear-img-btn" title="Remove image">&times;</button>
-                                        <img id="preview" src="{{ asset($product->image) }}" class="" alt="Product Preview">
-                                        <div id="uploadPlaceholder" class="text-center p-1 d-none">
-                                            <div class="cam-icon-wrap">
-                                                <i class="fas fa-camera cam-icon"></i>
-                                                <span class="cam-plus">+</span>
-                                            </div>
-                                            <div class="fw-bold text-muted mt-1" style="font-size: 10px;">Upload</div>
+                            <div class="image-box-container position-relative">
+                                <input type="file" id="imageInput" name="image" accept="image/*" style="position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); border: 0; opacity: 0;">
+                                <input type="hidden" name="remove_image" id="removeImageInput" value="0">
+                                @php
+                                    $currentImgUrl = $product->image_url;
+                                @endphp
+                                <label for="imageInput" class="product-avatar-box mb-0" id="avatarBox" title="Click or drop image to upload/change" style="cursor: pointer;">
+                                    <img id="preview" src="{{ $currentImgUrl ?? '' }}" class="{{ $currentImgUrl ? '' : 'd-none' }}" alt="Product Preview">
+                                    <div id="uploadPlaceholder" class="text-center p-1 {{ $currentImgUrl ? 'd-none' : '' }}" style="pointer-events: none;">
+                                        <div class="cam-icon-wrap">
+                                            <i class="fas fa-camera cam-icon"></i>
+                                            <span class="cam-plus">+</span>
                                         </div>
-                                    @else
-                                        <button type="button" id="clearImageBtn" class="clear-img-btn d-none" title="Remove image">&times;</button>
-                                        <img id="preview" class="d-none" alt="Product Preview">
-                                        <div id="uploadPlaceholder" class="text-center p-1">
-                                            <div class="cam-icon-wrap">
-                                                <i class="fas fa-camera cam-icon"></i>
-                                                <span class="cam-plus">+</span>
-                                            </div>
-                                            <div class="fw-bold text-muted mt-1" style="font-size: 10px;">Upload</div>
-                                        </div>
-                                    @endif
-                                </div>
+                                        <div class="fw-bold text-muted mt-1" style="font-size: 10px;">Upload</div>
+                                    </div>
+                                    <div class="product-avatar-overlay">
+                                        <i class="fas fa-camera"></i>
+                                        <span>Change</span>
+                                    </div>
+                                </label>
+                                <button type="button" id="clearImageBtn" class="clear-img-btn {{ $currentImgUrl ? '' : 'd-none' }}" title="Remove image">&times;</button>
                             </div>
                         </div>
                     </div>
@@ -3481,6 +3524,82 @@
         window.editProductId = {{ $product->id }};
         window.existingProduct = @json($product);
         window.existingProductVariants = @json($variants ?? []);
+        window.existingProductAttributes = @json($product->attributes_data ?? []);
+
+        // =========================================================
+        // Product Avatar Image Upload & Removal Handlers
+        // =========================================================
+        window.handleProductImageSelect = function(input) {
+            if (input && input.files && input.files[0]) {
+                const file = input.files[0];
+                if (file.type && !file.type.startsWith('image/')) {
+                    if (typeof Swal !== 'undefined') {
+                        Swal.fire({
+                            icon: 'warning',
+                            title: 'Invalid File',
+                            text: 'Please select a valid image file (JPG, PNG, WEBP, GIF).'
+                        });
+                    } else {
+                        alert('Please select a valid image file.');
+                    }
+                    input.value = '';
+                    return;
+                }
+
+                if (file.size > 10 * 1024 * 1024) {
+                    if (typeof Swal !== 'undefined') {
+                        Swal.fire({
+                            icon: 'warning',
+                            title: 'File Too Large',
+                            text: 'The selected image is larger than 10MB.'
+                        });
+                    } else {
+                        alert('Image must be under 10MB.');
+                    }
+                    input.value = '';
+                    return;
+                }
+
+                const removeImgInput = document.getElementById('removeImageInput');
+                const preview = document.getElementById('preview');
+                const ph = document.getElementById('uploadPlaceholder');
+                const clr = document.getElementById('clearImageBtn');
+
+                if (removeImgInput) removeImgInput.value = '0';
+
+                const r = new FileReader();
+                r.onload = function(e) {
+                    if (preview) {
+                        preview.src = e.target.result;
+                        preview.classList.remove('d-none');
+                    }
+                    if (ph) ph.classList.add('d-none');
+                    if (clr) clr.classList.remove('d-none');
+                };
+                r.readAsDataURL(file);
+            }
+        };
+
+        window.removeProductAvatar = function(e) {
+            if (e) {
+                if (typeof e.preventDefault === 'function') e.preventDefault();
+                if (typeof e.stopPropagation === 'function') e.stopPropagation();
+            }
+            const imgInput = document.getElementById('imageInput');
+            const removeImgInput = document.getElementById('removeImageInput');
+            const preview = document.getElementById('preview');
+            const ph = document.getElementById('uploadPlaceholder');
+            const clr = document.getElementById('clearImageBtn');
+
+            if (imgInput) imgInput.value = '';
+            if (removeImgInput) removeImgInput.value = '1';
+            if (preview) {
+                preview.src = '';
+                preview.classList.add('d-none');
+            }
+            if (ph) ph.classList.remove('d-none');
+            if (clr) clr.classList.add('d-none');
+        };
 
         // =========================================================
         // HTML Escaping Utility
@@ -4270,35 +4389,51 @@
                 });
             }
 
-            // 4. Product Image Handler with live preview and clear
+            // 4. Product Image Handler with live preview, drag-and-drop, and clear
             const imgInput = document.getElementById('imageInput');
-            const preview = document.getElementById('preview');
-            const ph = document.getElementById('uploadPlaceholder');
             const clr = document.getElementById('clearImageBtn');
+            const avatarBox = document.getElementById('avatarBox');
 
             if (imgInput) {
                 imgInput.addEventListener('change', function() {
-                    if (this.files && this.files[0]) {
-                        const r = new FileReader();
-                        r.onload = (e) => {
-                            preview.src = e.target.result;
-                            preview.classList.remove('d-none');
-                            ph.classList.add('d-none');
-                            clr.classList.remove('d-none');
-                        };
-                        r.readAsDataURL(this.files[0]);
-                    }
+                    window.handleProductImageSelect(this);
                 });
             }
 
             if (clr) {
-                clr.addEventListener('click', (e) => {
+                clr.addEventListener('click', function(e) {
+                    e.preventDefault();
                     e.stopPropagation();
-                    imgInput.value = '';
-                    preview.classList.add('d-none');
-                    ph.classList.remove('d-none');
-                    clr.classList.add('d-none');
+                    window.removeProductAvatar(e);
                 });
+            }
+
+            if (avatarBox && imgInput) {
+                ['dragenter', 'dragover'].forEach(function(evt) {
+                    avatarBox.addEventListener(evt, function(e) {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        avatarBox.classList.add('border-primary', 'bg-light');
+                    }, false);
+                });
+                ['dragleave', 'drop'].forEach(function(evt) {
+                    avatarBox.addEventListener(evt, function(e) {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        avatarBox.classList.remove('border-primary', 'bg-light');
+                    }, false);
+                });
+                avatarBox.addEventListener('drop', function(e) {
+                    if (e.dataTransfer && e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+                        const file = e.dataTransfer.files[0];
+                        if (file.type && file.type.startsWith('image/')) {
+                            const dt = new DataTransfer();
+                            dt.items.add(file);
+                            imgInput.files = dt.files;
+                            window.handleProductImageSelect(imgInput);
+                        }
+                    }
+                }, false);
             }
 
             // 5. Barcode Generator Helper
@@ -4414,16 +4549,23 @@
 
                                 $('#' + modalId).modal('hide');
                                 modalForm[0].reset();
+                                try {
+                                    const modalEl = document.getElementById(modalId);
+                                    if (modalEl && window.bootstrap && bootstrap.Modal) {
+                                        const inst = bootstrap.Modal.getInstance(modalEl);
+                                        if (inst) inst.hide();
+                                    }
+                                } catch(e) {}
+
+                                const successMsg = typeof res.success === 'string' ? res.success : (res.message || 'Added successfully');
                                 Swal.fire({
                                     icon: 'success', 
-                                    title: (typeof res.success === 'string' ? res.success : 'Added successfully'), 
-                                    toast: true, 
-                                    position: 'top-end', 
-                                    showConfirmButton: false, 
-                                    timer: 1500
+                                    title: 'Success!', 
+                                    text: successMsg, 
+                                    timer: 2000, 
+                                    showConfirmButton: false
                                 });
-                            }
-                        } else if (res.errors) {
+                            } else if (res.errors) {
                                 let msg = Object.values(res.errors).flat().join('<br>');
                                 Swal.fire({icon: 'warning', title: 'Notice', html: msg});
                             }
@@ -4656,6 +4798,52 @@
             }
             window.getAttributeDefaultValues = getAttributeDefaultValues;
 
+            // Load master attributes from MySQL Database
+            async function fetchMasterAttributes() {
+                try {
+                    const resp = await fetch("{{ route('product.attributes.index') }}", {
+                        headers: { 'Accept': 'application/json', 'X-Requested-With': 'XMLHttpRequest' }
+                    });
+                    const res = await resp.json();
+                    if (res.status === 'success' && Array.isArray(res.data) && res.data.length > 0) {
+                        masterAttributes = res.data;
+                        if (typeof renderModalAttributes === 'function') {
+                            renderModalAttributes(document.getElementById('modalAttrSearchInput')?.value || '');
+                        }
+                    }
+                } catch (e) {
+                    console.warn('Could not load master attributes from database:', e);
+                }
+            }
+            fetchMasterAttributes();
+
+            // Persist inline attribute value to database
+            function saveAttributeValueToDb(attrName, valName) {
+                if (!attrName || !valName) return;
+                const cleanAttr = attrName.trim();
+                const cleanVal = valName.trim();
+                if (!cleanAttr || !cleanVal) return;
+
+                let m = masterAttributes.find(a => a.name.toLowerCase() === cleanAttr.toLowerCase());
+                if (m && Array.isArray(m.default_values)) {
+                    if (!m.default_values.map(x => x.toLowerCase()).includes(cleanVal.toLowerCase())) {
+                        m.default_values.push(cleanVal);
+                    }
+                }
+
+                fetch(`/product-attributes/${encodeURIComponent(cleanAttr)}/values`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                        'Accept': 'application/json',
+                        'X-Requested-With': 'XMLHttpRequest'
+                    },
+                    body: JSON.stringify({ value: cleanVal, attribute_name: cleanAttr })
+                }).catch(err => console.warn('Attribute value auto-save notice:', err));
+            }
+            window.saveAttributeValueToDb = saveAttributeValueToDb;
+
             let activeTargetRow = null; // Currently targeted attribute line for search / selection
             let editingMasterAttr = null; // Currently edited master attribute (null when creating new)
             let editingRowTarget = null; // Currently edited attribute row (null when editing from master modal)
@@ -4799,6 +4987,16 @@
                             confirmButtonText: 'Yes, Delete'
                         }).then((result) => {
                             if (result.isConfirmed) {
+                                const deleteUrl = attr.id ? `/product-attributes/${attr.id}` : `/product-attributes/${encodeURIComponent(attr.name)}`;
+                                fetch(deleteUrl, {
+                                    method: 'DELETE',
+                                    headers: {
+                                        'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                                        'Accept': 'application/json',
+                                        'X-Requested-With': 'XMLHttpRequest'
+                                    }
+                                }).catch(e => console.warn('Attribute delete request:', e));
+
                                 masterAttributes = masterAttributes.filter(a => a.name.toLowerCase() !== attr.name.toLowerCase());
                                 renderModalAttributes(modalAttrSearchInput ? modalAttrSearchInput.value : '');
                                 showSmallAlert(`Attribute "${attr.name}" deleted.`, 'info');
@@ -5301,9 +5499,9 @@
                 });
             }
 
-            // Click "Save" in Create/Edit Attribute Modal
+            // Click "Save" in Create/Edit Attribute Modal (Persists directly to Database)
             if (saveCreateAttrBtn) {
-                saveCreateAttrBtn.addEventListener('click', function() {
+                saveCreateAttrBtn.addEventListener('click', async function() {
                     const name = createAttrNameInput ? createAttrNameInput.value.trim() : '';
                     if (!name) {
                         showSmallAlert('Attribute name is required!', 'warning');
@@ -5313,7 +5511,6 @@
 
                     // 1. Check Duplicate Attribute Name
                     if (!editingMasterAttr) {
-                        // Creating new
                         const exists = masterAttributes.some(a => a.name.toLowerCase() === name.toLowerCase());
                         if (exists) {
                             showSmallAlert('attribute name exist.', 'warning');
@@ -5321,7 +5518,6 @@
                             return;
                         }
                     } else {
-                        // Editing existing
                         const oldName = editingMasterAttr.name;
                         if (name.toLowerCase() !== oldName.toLowerCase()) {
                             const exists = masterAttributes.some(a => a.name.toLowerCase() === name.toLowerCase());
@@ -5358,77 +5554,65 @@
                     const displayType = createAttrDisplayType ? createAttrDisplayType.value : 'Radio';
                     const creation = document.querySelector('input[name="createAttrVariantCreation"]:checked')?.value || 'Instantly';
 
-                    if (editingMasterAttr) {
-                        // EDIT MODE: Update existing attribute
-                        const oldName = editingMasterAttr.name;
-                        editingMasterAttr.name = name;
-                        editingMasterAttr.display_type = displayType;
-                        editingMasterAttr.creation = creation;
-                        editingMasterAttr.default_values = enteredVals;
+                    const saveBtn = saveCreateAttrBtn;
+                    const origBtnText = saveBtn.innerHTML;
+                    saveBtn.disabled = true;
+                    saveBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-1"></i> Saving...';
 
-                        // Update attributeConfigurations map if name changed
-                        if (oldName.toLowerCase() !== name.toLowerCase() && attributeConfigurations[oldName]) {
-                            attributeConfigurations[name] = attributeConfigurations[oldName];
-                            delete attributeConfigurations[oldName];
+                    const isEdit = !!editingMasterAttr;
+                    const oldName = isEdit ? editingMasterAttr.name : '';
+                    const targetUrl = isEdit && editingMasterAttr.id
+                        ? `/product-attributes/${editingMasterAttr.id}`
+                        : (isEdit ? `/product-attributes/${encodeURIComponent(oldName)}` : '{{ route("product.attributes.store") }}');
+                    const reqMethod = isEdit ? 'PUT' : 'POST';
+
+                    try {
+                        const resp = await fetch(targetUrl, {
+                            method: reqMethod,
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                                'Accept': 'application/json',
+                                'X-Requested-With': 'XMLHttpRequest'
+                            },
+                            body: JSON.stringify({
+                                name: name,
+                                display_type: displayType,
+                                creation: creation,
+                                values: enteredVals
+                            })
+                        });
+
+                        const res = await resp.json().catch(() => ({}));
+                        if (!resp.ok || res.status === 'error') {
+                            throw new Error(res.message || 'Failed to save attribute in database.');
                         }
 
-                        // Update targeting row
-                        const rowToUpdate = editingRowTarget || (activeTargetRow && activeTargetRow.querySelector('.attr-name-input')?.value.toLowerCase() === oldName.toLowerCase() ? activeTargetRow : null);
-                        if (rowToUpdate) {
-                            const attrInput = rowToUpdate.querySelector('.attr-name-input');
-                            const valuesBox = rowToUpdate.querySelector('.values-tag-box');
-                            const tagInput = rowToUpdate.querySelector('.tag-input-field');
+                        const savedAttr = res.attribute || { name, display_type: displayType, creation, default_values: enteredVals };
 
-                            if (attrInput) attrInput.value = name;
-
-                            // Re-populate values tag pills
-                            if (valuesBox && tagInput) {
-                                valuesBox.querySelectorAll('.tag-pill').forEach(p => p.remove());
-                                enteredVals.forEach(v => {
-                                    const pill = document.createElement('span');
-                                    pill.className = 'tag-pill';
-                                    pill.dataset.val = v;
-                                    pill.innerHTML = `<span>${v}</span><span class="remove-tag">&times;</span>`;
-                                    pill.querySelector('.remove-tag').addEventListener('click', function(e) {
-                                        e.stopPropagation();
-                                        pill.remove();
-                                        syncAttributesToVariants();
-                                    });
-                                    valuesBox.insertBefore(pill, tagInput);
-                                });
-                                tagInput.placeholder = enteredVals.length > 0 ? '' : 'List of possible values (e.g. Blue, Green, White, ... )';
-                            }
-                        }
-
-                        syncAttributesToVariants();
-                        window.hideCreateAttributeModal();
-                        showSmallAlert('Attribute updated successfully!', 'success');
-
-                    } else {
-                        // CREATE MODE: Add new attribute
-                        masterAttributes.unshift({ name, display_type: displayType, creation, default_values: enteredVals });
-
-                        // Assign to active row if present
-                        if (!activeTargetRow) {
-                            activeTargetRow = attributesConfigBody.querySelector('.attr-row') || createAttributeRow('', []);
-                        }
-
-                        if (activeTargetRow) {
-                            if (isAttributeDuplicateInRows(name, activeTargetRow)) {
-                                showSmallAlert('attribute name exist.', 'warning');
-                                return;
+                        if (isEdit) {
+                            // EDIT MODE: Update existing attribute
+                            const idx = masterAttributes.findIndex(a => a.name.toLowerCase() === oldName.toLowerCase() || (editingMasterAttr.id && a.id === editingMasterAttr.id));
+                            if (idx !== -1) {
+                                masterAttributes[idx] = Object.assign(masterAttributes[idx], savedAttr);
                             }
 
-                            const attrInput = activeTargetRow.querySelector('.attr-name-input');
-                            const valuesBox = activeTargetRow.querySelector('.values-tag-box');
-                            const tagInput = activeTargetRow.querySelector('.tag-input-field');
+                            if (oldName.toLowerCase() !== name.toLowerCase() && attributeConfigurations[oldName]) {
+                                attributeConfigurations[name] = attributeConfigurations[oldName];
+                                delete attributeConfigurations[oldName];
+                            }
 
-                            if (attrInput) attrInput.value = name;
+                            const rowToUpdate = editingRowTarget || (activeTargetRow && activeTargetRow.querySelector('.attr-name-input')?.value.toLowerCase() === oldName.toLowerCase() ? activeTargetRow : null);
+                            if (rowToUpdate) {
+                                const attrInput = rowToUpdate.querySelector('.attr-name-input');
+                                const valuesBox = rowToUpdate.querySelector('.values-tag-box');
+                                const tagInput = rowToUpdate.querySelector('.tag-input-field');
 
-                            if (enteredVals.length > 0 && valuesBox && tagInput) {
-                                enteredVals.forEach(v => {
-                                    const currentPills = Array.from(valuesBox.querySelectorAll('.tag-pill')).map(p => p.dataset.val.toLowerCase());
-                                    if (!currentPills.includes(v.toLowerCase())) {
+                                if (attrInput) attrInput.value = name;
+
+                                if (valuesBox && tagInput) {
+                                    valuesBox.querySelectorAll('.tag-pill').forEach(p => p.remove());
+                                    enteredVals.forEach(v => {
                                         const pill = document.createElement('span');
                                         pill.className = 'tag-pill';
                                         pill.dataset.val = v;
@@ -5439,15 +5623,67 @@
                                             syncAttributesToVariants();
                                         });
                                         valuesBox.insertBefore(pill, tagInput);
-                                        tagInput.placeholder = '';
-                                    }
-                                });
+                                    });
+                                    tagInput.placeholder = enteredVals.length > 0 ? '' : 'List of possible values (e.g. Blue, Green, White, ... )';
+                                }
                             }
+
                             syncAttributesToVariants();
+                            window.hideCreateAttributeModal();
+                            renderModalAttributes(modalAttrSearchInput ? modalAttrSearchInput.value : '');
+                            showSmallAlert(`Attribute "${name}" updated successfully in database!`, 'success');
+
+                        } else {
+                            // CREATE MODE: Add new attribute
+                            masterAttributes.unshift(savedAttr);
+
+                            if (!activeTargetRow) {
+                                activeTargetRow = attributesConfigBody.querySelector('.attr-row') || createAttributeRow('', []);
+                            }
+
+                            if (activeTargetRow) {
+                                if (isAttributeDuplicateInRows(name, activeTargetRow)) {
+                                    showSmallAlert('attribute name exist in another row.', 'warning');
+                                } else {
+                                    const attrInput = activeTargetRow.querySelector('.attr-name-input');
+                                    const valuesBox = activeTargetRow.querySelector('.values-tag-box');
+                                    const tagInput = activeTargetRow.querySelector('.tag-input-field');
+
+                                    if (attrInput) attrInput.value = name;
+
+                                    if (enteredVals.length > 0 && valuesBox && tagInput) {
+                                        enteredVals.forEach(v => {
+                                            const currentPills = Array.from(valuesBox.querySelectorAll('.tag-pill')).map(p => (p.dataset.val || '').toLowerCase().trim());
+                                            if (!currentPills.includes(v.toLowerCase().trim())) {
+                                                const pill = document.createElement('span');
+                                                pill.className = 'tag-pill';
+                                                pill.dataset.val = v;
+                                                pill.innerHTML = `<span>${v}</span><span class="remove-tag">&times;</span>`;
+                                                pill.querySelector('.remove-tag').addEventListener('click', function(e) {
+                                                    e.stopPropagation();
+                                                    pill.remove();
+                                                    syncAttributesToVariants();
+                                                });
+                                                valuesBox.insertBefore(pill, tagInput);
+                                                tagInput.placeholder = '';
+                                            }
+                                        });
+                                    }
+                                    syncAttributesToVariants();
+                                }
+                            }
+
+                            window.hideCreateAttributeModal();
+                            renderModalAttributes(modalAttrSearchInput ? modalAttrSearchInput.value : '');
+                            showSmallAlert(`Attribute "${name}" saved to database successfully!`, 'success');
                         }
 
-                        window.hideCreateAttributeModal();
-                        showSmallAlert('Attribute created successfully!', 'success');
+                    } catch (err) {
+                        showSmallAlert(err.message, 'warning');
+                        if (createAttrNameInput) createAttrNameInput.focus();
+                    } finally {
+                        saveBtn.disabled = false;
+                        saveBtn.innerHTML = origBtnText;
                     }
                 });
             }
@@ -5665,6 +5901,14 @@
                 });
 
                 attrInput.addEventListener('input', function() {
+                    const val = this.value.trim();
+                    if (val && isAttributeDuplicateInRows(val, tr)) {
+                        showSmallAlert('attribute name exist in another row.', 'warning');
+                        this.value = '';
+                        closeAttrDropdown();
+                        syncAttributesToVariants();
+                        return;
+                    }
                     openAttrDropdown(attrInput, tr);
                     syncAttributesToVariants();
                 });
@@ -5737,6 +5981,7 @@
                         createLi.addEventListener('mousedown', function(e) {
                             e.preventDefault();
                             addTagPill(typed);
+                            saveAttributeValueToDb(attrInput.value.trim(), typed);
                         });
                         globalValueSuggestDropdown.appendChild(createLi);
                         hasItems = true;
@@ -5772,8 +6017,10 @@
                 tagInput.addEventListener('keydown', function(e) {
                     if (e.key === 'Enter' || e.key === ',') {
                         e.preventDefault();
-                        if (this.value.trim()) {
-                            addTagPill(this.value);
+                        const v = this.value.trim();
+                        if (v) {
+                            addTagPill(v);
+                            saveAttributeValueToDb(attrInput.value.trim(), v);
                         }
                     } else if (e.key === 'Backspace' && !this.value) {
                         const pills = valuesBox.querySelectorAll('.tag-pill');
@@ -6228,11 +6475,27 @@
             function getDefinedAttributes() {
                 const rows = attributesConfigBody.querySelectorAll('.attr-row');
                 const attrs = [];
+                const seenNames = new Set();
                 rows.forEach(r => {
                     const name = r.querySelector('.attr-name-input')?.value.trim();
+                    if (!name) return;
+                    const nameLower = name.toLowerCase();
+                    if (seenNames.has(nameLower)) return;
+                    seenNames.add(nameLower);
+
                     const valPills = Array.from(r.querySelectorAll('.tag-pill')).map(p => p.dataset.val.trim()).filter(v => v);
-                    if (name && valPills.length > 0) {
-                        attrs.push({ name: name, values: valPills });
+                    const uniqueVals = [];
+                    const seenVals = new Set();
+                    valPills.forEach(v => {
+                        const vLower = v.toLowerCase();
+                        if (!seenVals.has(vLower)) {
+                            seenVals.add(vLower);
+                            uniqueVals.push(v);
+                        }
+                    });
+
+                    if (name && uniqueVals.length > 0) {
+                        attrs.push({ name: name, values: uniqueVals });
                     }
                 });
                 return attrs;
@@ -6727,7 +6990,15 @@
             }, { passive: true });
 
             // Initialize Attributes & Variants on page load
-            if (window.isEditMode && window.existingProductVariants && window.existingProductVariants.length > 0) {
+            const existingSavedAttrs = window.existingProductAttributes;
+            if (window.isEditMode && existingSavedAttrs && Array.isArray(existingSavedAttrs) && existingSavedAttrs.length > 0) {
+                existingSavedAttrs.forEach(a => {
+                    if (a.name && Array.isArray(a.values) && a.values.length > 0) {
+                        createAttributeRow(a.name, a.values);
+                    }
+                });
+                syncAttributesToVariants();
+            } else if (window.isEditMode && window.existingProductVariants && window.existingProductVariants.length > 0) {
                 const rawVars = window.existingProductVariants;
                 const isMultiVariant = rawVars.length > 1 || (rawVars[0] && ((rawVars[0].size && rawVars[0].size !== '-' && rawVars[0].size !== '') || (rawVars[0].color && rawVars[0].color !== '-' && rawVars[0].color !== '')));
                 
@@ -6921,9 +7192,20 @@
                     btn.disabled = true;
                 });
 
-                const formData = new FormData(form);
+                const formEl = document.getElementById('productForm') || (typeof form !== 'undefined' ? form : null);
+                const formData = new FormData(formEl);
+                const fileInp = document.getElementById('imageInput');
+                if (fileInp && fileInp.files && fileInp.files[0]) {
+                    formData.set('image', fileInp.files[0]);
+                }
+                const definedAttrs = getDefinedAttributes();
+                formData.set('attributes_data', JSON.stringify(definedAttrs));
+                const remInp = document.getElementById('removeImageInput');
+                if (remInp) {
+                    formData.set('remove_image', remInp.value);
+                }
 
-                fetch(form.action, {
+                fetch(formEl.action, {
                     method: 'POST',
                     headers: {
                         'X-Requested-With': 'XMLHttpRequest',
@@ -7372,6 +7654,7 @@
     <script>
         window.initialProductStock = {{ (float) ($product->warehouseStocks ? $product->warehouseStocks->sum('total_pieces') : 0) }};
         window.allUnitsList = {!! json_encode(isset($units) ? $units->pluck('name')->values()->all() : []) !!};
+        window.allUomSets = {!! json_encode(isset($units) ? $units->toArray() : []) !!};
     </script>
     <script src="{{ asset('assets/js/quickbooks_uom.js') . '?v=' . time() }}"></script>
 @endsection
