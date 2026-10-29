@@ -1107,12 +1107,28 @@ class ProductController extends Controller
         if ($request->hasFile('image')) {
             $destDir = public_path('uploads/products');
             if (!file_exists($destDir)) {
-                mkdir($destDir, 0777, true);
+                @mkdir($destDir, 0777, true);
             }
             $file = $request->file('image');
             $filename = time().'_'.uniqid().'.'.$file->getClientOriginalExtension();
             $file->move($destDir, $filename);
+
+            // Also keep a copy in root uploads if running in public_html/root mode
+            $rootUploadsDir = base_path('uploads/products');
+            if (realpath(base_path()) !== realpath(public_path()) && file_exists(base_path('index.php'))) {
+                if (!file_exists($rootUploadsDir)) {
+                    @mkdir($rootUploadsDir, 0777, true);
+                }
+                @copy($destDir . DIRECTORY_SEPARATOR . $filename, $rootUploadsDir . DIRECTORY_SEPARATOR . $filename);
+            }
+
             $imagePath = $filename;
+        } elseif ($request->file('image') && !$request->file('image')->isValid()) {
+            $uploadError = $request->file('image')->getErrorMessage();
+            if ($request->wantsJson()) {
+                return response()->json(['status' => 'error', 'message' => 'Image upload failed: ' . $uploadError . '. Check server upload_max_filesize limit.'], 422);
+            }
+            return redirect()->back()->withErrors(['image' => 'Image upload failed: ' . $uploadError]);
         } else {
             $imagePath = null;
         }
@@ -1302,6 +1318,18 @@ class ProductController extends Controller
                 $productSkyPCode = PCodeService::encode($skyPrice);
                 $productRotPCode = PCodeService::encode($rotPrice);
 
+                $cleanAttributesData = null;
+                if ($request->filled('attributes_data')) {
+                    $rawAttr = $request->attributes_data;
+                    if (is_string($rawAttr)) {
+                        $rawAttr = json_decode($rawAttr, true);
+                        if (is_string($rawAttr)) $rawAttr = json_decode($rawAttr, true);
+                    }
+                    if (is_array($rawAttr) && !empty($rawAttr)) {
+                        $cleanAttributesData = $rawAttr;
+                    }
+                }
+
                 // Create product
                 $product = Product::create([
                     'creater_id' => $userId,
@@ -1320,7 +1348,7 @@ class ProductController extends Controller
                 'model' => $request->model,
                 'image' => $imagePath,
                 'color' => count($variants) > 0 ? json_encode($variants) : ($request->color ? json_encode($request->color) : null),
-                'attributes_data' => $request->filled('attributes_data') ? (is_array($request->attributes_data) ? json_encode($request->attributes_data) : $request->attributes_data) : null,
+                'attributes_data' => $cleanAttributesData,
                 'uom_data' => $request->filled('uom_data') ? (is_array($request->uom_data) ? json_encode($request->uom_data) : $request->uom_data) : null,
                 'purchase_discount_percent' => $request->purchase_discount_percent ?? 0,
                 'sale_discount_percent' => $request->sale_discount_percent ?? 0,
@@ -1409,6 +1437,15 @@ class ProductController extends Controller
                 foreach ($request->file('web_images') as $index => $file) {
                     $fileName = time() . '_' . uniqid() . '.' . $file->getClientOriginalExtension();
                     $file->move(public_path('uploads/products'), $fileName);
+
+                    $rootUploadsDir = base_path('uploads/products');
+                    if (realpath(base_path()) !== realpath(public_path()) && file_exists(base_path('index.php'))) {
+                        if (!file_exists($rootUploadsDir)) {
+                            @mkdir($rootUploadsDir, 0777, true);
+                        }
+                        @copy(public_path('uploads/products') . DIRECTORY_SEPARATOR . $fileName, $rootUploadsDir . DIRECTORY_SEPARATOR . $fileName);
+                    }
+
                     \App\Models\ProductWebImage::create([
                         'product_id' => $product->id,
                         'image_path' => $fileName,
@@ -1592,24 +1629,48 @@ class ProductController extends Controller
         if ($request->hasFile('image')) {
             $destDir = public_path('uploads/products');
             if (!file_exists($destDir)) {
-                mkdir($destDir, 0777, true);
+                @mkdir($destDir, 0777, true);
             }
             $file = $request->file('image');
             $imageName = time().'_'.uniqid().'.'.$file->getClientOriginalExtension();
             $file->move($destDir, $imageName);
+
+            // Also keep a copy in root uploads if running in public_html/root mode
+            $rootUploadsDir = base_path('uploads/products');
+            if (realpath(base_path()) !== realpath(public_path()) && file_exists(base_path('index.php'))) {
+                if (!file_exists($rootUploadsDir)) {
+                    @mkdir($rootUploadsDir, 0777, true);
+                }
+                @copy($destDir . DIRECTORY_SEPARATOR . $imageName, $rootUploadsDir . DIRECTORY_SEPARATOR . $imageName);
+            }
+
             // Delete previous non-demo image if existed
             if ($imagePath && !str_starts_with($imagePath, 'product_') && !str_starts_with($imagePath, 'outfitter_')) {
                 $oldPath = public_path('uploads/products/' . $imagePath);
                 if (file_exists($oldPath)) {
                     @unlink($oldPath);
                 }
+                $oldRootPath = base_path('uploads/products/' . $imagePath);
+                if (file_exists($oldRootPath)) {
+                    @unlink($oldRootPath);
+                }
             }
             $imagePath = $imageName;
+        } elseif ($request->file('image') && !$request->file('image')->isValid()) {
+            $uploadError = $request->file('image')->getErrorMessage();
+            if ($request->wantsJson()) {
+                return response()->json(['status' => 'error', 'message' => 'Image upload failed: ' . $uploadError . '. Check server upload_max_filesize limit.'], 422);
+            }
+            return redirect()->back()->withErrors(['image' => 'Image upload failed: ' . $uploadError]);
         } elseif ($request->input('remove_image') == '1' || $request->input('remove_image') === true) {
             if ($imagePath && !str_starts_with($imagePath, 'product_') && !str_starts_with($imagePath, 'outfitter_')) {
                 $oldPath = public_path('uploads/products/' . $imagePath);
                 if (file_exists($oldPath)) {
                     @unlink($oldPath);
+                }
+                $oldRootPath = base_path('uploads/products/' . $imagePath);
+                if (file_exists($oldRootPath)) {
+                    @unlink($oldRootPath);
                 }
             }
             $imagePath = null;
@@ -1812,6 +1873,16 @@ class ProductController extends Controller
                 $productSkyPCode = PCodeService::encode($skyPrice);
                 $productRotPCode = PCodeService::encode($rotPrice);
 
+                $cleanAttributesData = Product::where('id', $id)->value('attributes_data');
+                if ($request->has('attributes_data')) {
+                    $rawAttr = $request->attributes_data;
+                    if (is_string($rawAttr)) {
+                        $rawAttr = json_decode($rawAttr, true);
+                        if (is_string($rawAttr)) $rawAttr = json_decode($rawAttr, true);
+                    }
+                    $cleanAttributesData = (is_array($rawAttr) && !empty($rawAttr)) ? json_encode($rawAttr) : null;
+                }
+
                 Product::where('id', $id)->update([
                     'creater_id' => $userId,
                     'category_id' => $request->category_id,
@@ -1829,7 +1900,7 @@ class ProductController extends Controller
                 'model' => $request->model,
                 'image' => $imagePath,
                 'color' => $final_color,
-                'attributes_data' => $request->filled('attributes_data') ? (is_array($request->attributes_data) ? json_encode($request->attributes_data) : $request->attributes_data) : Product::where('id', $id)->value('attributes_data'),
+                'attributes_data' => $cleanAttributesData,
                 'uom_data' => $request->filled('uom_data') ? (is_array($request->uom_data) ? json_encode($request->uom_data) : $request->uom_data) : Product::where('id', $id)->value('uom_data'),
                 'purchase_discount_percent' => $request->purchase_discount_percent ?? 0,
                 'sale_discount_percent' => $request->sale_discount_percent ?? 0,
@@ -1896,6 +1967,15 @@ class ProductController extends Controller
                 foreach ($request->file('web_images') as $index => $file) {
                     $fileName = time() . '_' . uniqid() . '.' . $file->getClientOriginalExtension();
                     $file->move(public_path('uploads/products'), $fileName);
+
+                    $rootUploadsDir = base_path('uploads/products');
+                    if (realpath(base_path()) !== realpath(public_path()) && file_exists(base_path('index.php'))) {
+                        if (!file_exists($rootUploadsDir)) {
+                            @mkdir($rootUploadsDir, 0777, true);
+                        }
+                        @copy(public_path('uploads/products') . DIRECTORY_SEPARATOR . $fileName, $rootUploadsDir . DIRECTORY_SEPARATOR . $fileName);
+                    }
+
                     \App\Models\ProductWebImage::create([
                         'product_id' => $id,
                         'image_path' => $fileName,
@@ -3436,7 +3516,13 @@ class ProductController extends Controller
     protected function syncAttributesPayloadToMaster($attributesData)
     {
         try {
-            $payload = is_array($attributesData) ? $attributesData : json_decode($attributesData, true);
+            $payload = $attributesData;
+            if (is_string($payload)) {
+                $payload = json_decode($payload, true);
+            }
+            if (is_string($payload)) {
+                $payload = json_decode($payload, true);
+            }
             if (!is_array($payload)) return;
 
             foreach ($payload as $item) {

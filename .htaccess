@@ -19,6 +19,10 @@
     # Force /vendor and /sale routes to be handled by Laravel's index.php instead of the physical directories
     RewriteRule ^(vendor|sale)($|/.*) index.php [L,QSA]
 
+    # Serve uploads from public/uploads if requested via root /uploads/
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteRule ^uploads/(.*)$ public/uploads/$1 [L]
+
     # Redirect Trailing Slashes If Not A Folder...
     RewriteCond %{REQUEST_FILENAME} !-d
     RewriteCond %{REQUEST_URI} (.+)/$

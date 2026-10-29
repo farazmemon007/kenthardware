@@ -17,6 +17,36 @@ class Product extends Model
         'attributes_data' => 'array',
     ];
 
+    public function getAttributesDataAttribute($value)
+    {
+        if (empty($value)) {
+            return [];
+        }
+        $data = $value;
+        if (is_string($data)) {
+            $data = json_decode($data, true);
+        }
+        if (is_string($data)) {
+            $data = json_decode($data, true);
+        }
+        return is_array($data) ? $data : [];
+    }
+
+    public function setAttributesDataAttribute($value)
+    {
+        if (is_string($value)) {
+            $decoded = json_decode($value, true);
+            if (is_string($decoded)) {
+                $decoded = json_decode($decoded, true);
+            }
+            $this->attributes['attributes_data'] = is_array($decoded) ? json_encode($decoded) : $value;
+        } elseif (is_array($value)) {
+            $this->attributes['attributes_data'] = json_encode($value);
+        } else {
+            $this->attributes['attributes_data'] = null;
+        }
+    }
+
     public function getImageUrlAttribute()
     {
         $img = $this->image ?: $this->web_main_image;
@@ -27,6 +57,9 @@ class Product extends Model
             return $img;
         }
         if (file_exists(public_path('uploads/products/' . $img))) {
+            return asset('uploads/products/' . $img);
+        }
+        if (file_exists(base_path('uploads/products/' . $img))) {
             return asset('uploads/products/' . $img);
         }
         if (file_exists(public_path($img))) {

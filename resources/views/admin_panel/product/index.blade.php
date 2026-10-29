@@ -5554,6 +5554,26 @@ $(document).ready(function () {
 
     function extractProductAttributes(product, variants) {
         let attrMap = {};
+
+        // If product has attributes_data defined, use those real attribute names and values!
+        let aData = product.attributes_data;
+        if (typeof aData === 'string') {
+            try { aData = JSON.parse(aData); } catch(e) {}
+        }
+        if (typeof aData === 'string') {
+            try { aData = JSON.parse(aData); } catch(e) {}
+        }
+        if (Array.isArray(aData) && aData.length > 0) {
+            aData.forEach(a => {
+                if (a.name && Array.isArray(a.values) && a.values.length > 0) {
+                    attrMap[a.name] = a.values;
+                }
+            });
+            if (Object.keys(attrMap).length > 0) {
+                return attrMap;
+            }
+        }
+
         let nameParts = [];
         let hasNamePattern = false;
 

@@ -181,6 +181,7 @@ Route::middleware('auth')->group(function () {
     Route::delete('/product-attributes/{id}', [App\Http\Controllers\ProductAttributeController::class, 'destroy'])->name('product.attributes.destroy');
     Route::post('/product-attributes/{id}/delete', [App\Http\Controllers\ProductAttributeController::class, 'destroy']);
     Route::post('/product-attributes/{id}/values', [App\Http\Controllers\ProductAttributeController::class, 'addValue'])->name('product.attributes.add_value');
+    Route::get('/product-attributes/{id}/check-value-usage', [App\Http\Controllers\ProductAttributeController::class, 'checkValueUsage'])->name('product.attributes.check-value-usage');
 
     // ── Product Import / Export ──
     Route::get('/products/export',   [App\Http\Controllers\ProductImportExportController::class, 'export'])

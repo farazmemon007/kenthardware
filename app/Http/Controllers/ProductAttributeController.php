@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Product;
 use App\Models\ProductAttribute;
 use App\Models\ProductAttributeValue;
 use Illuminate\Http\Request;
@@ -46,6 +47,142 @@ class ProductAttributeController extends Controller
     ];
 
     /**
+     * Check if a specific value of an attribute is used in any products or variants.
+     */
+    public function getValueUsage($attributeName, $valueName)
+    {
+        $valClean = trim((string)$valueName);
+        if ($valClean === '') {
+            return ['in_use' => false, 'count' => 0, 'products' => []];
+        }
+
+        $matchingProducts = Product::where(function($q) use ($valClean) {
+            $q->where('attributes_data', 'like', '%' . $valClean . '%')
+              ->orWhere('color', 'like', '%' . $valClean . '%');
+        })->get(['id', 'item_name', 'attributes_data', 'color']);
+
+        $usedProductNames = [];
+
+        foreach ($matchingProducts as $p) {
+            $isUsed = false;
+            // 1. Check attributes_data
+            $attrsData = $p->attributes_data;
+            if (is_array($attrsData)) {
+                foreach ($attrsData as $item) {
+                    $itemVals = $item['values'] ?? [];
+                    if (!is_array($itemVals)) continue;
+                    foreach ($itemVals as $v) {
+                        $vStr = is_array($v) ? ($v['value'] ?? $v['name'] ?? '') : (string)$v;
+                        if (strcasecmp(trim($vStr), $valClean) === 0) {
+                            $isUsed = true;
+                            break 2;
+                        }
+                    }
+                }
+            }
+
+            // 2. Check variants in color column
+            if (!$isUsed && !empty($p->color)) {
+                $variants = is_string($p->color) ? json_decode($p->color, true) : $p->color;
+                if (is_string($variants)) {
+                    $variants = json_decode($variants, true);
+                }
+                if (is_array($variants)) {
+                    foreach ($variants as $v) {
+                        if (is_array($v)) {
+                            $vName = (string)($v['name'] ?? '');
+                            $vSize = (string)($v['size'] ?? '');
+                            $vColor = (string)($v['color'] ?? '');
+                            if (strcasecmp(trim($vSize), $valClean) === 0 ||
+                                strcasecmp(trim($vColor), $valClean) === 0 ||
+                                stripos($vName, '(' . $valClean . ')') !== false ||
+                                stripos($vName, ' ' . $valClean . ' ') !== false ||
+                                stripos($vName, '/' . $valClean) !== false ||
+                                stripos($vName, $valClean . '/') !== false ||
+                                stripos($vName, ' - ' . $valClean) !== false) {
+                                $isUsed = true;
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
+
+            if ($isUsed) {
+                $usedProductNames[] = $p->item_name;
+            }
+        }
+
+        $uniqueNames = array_values(array_unique(array_filter($usedProductNames)));
+
+        return [
+            'in_use' => count($uniqueNames) > 0,
+            'count' => count($uniqueNames),
+            'products' => array_slice($uniqueNames, 0, 5),
+        ];
+    }
+
+    /**
+     * Check if an attribute is used in any products.
+     */
+    public function getAttributeUsage($attributeName)
+    {
+        $attrClean = trim((string)$attributeName);
+        if ($attrClean === '') {
+            return ['in_use' => false, 'count' => 0, 'products' => []];
+        }
+
+        $matchingProducts = Product::where('attributes_data', 'like', '%' . $attrClean . '%')
+            ->get(['id', 'item_name', 'attributes_data']);
+
+        $usedProductNames = [];
+
+        foreach ($matchingProducts as $p) {
+            $attrsData = $p->attributes_data;
+            if (is_array($attrsData)) {
+                foreach ($attrsData as $item) {
+                    $name = $item['name'] ?? '';
+                    if (strcasecmp(trim($name), $attrClean) === 0) {
+                        $usedProductNames[] = $p->item_name;
+                        break;
+                    }
+                }
+            }
+        }
+
+        $uniqueNames = array_values(array_unique(array_filter($usedProductNames)));
+
+        return [
+            'in_use' => count($uniqueNames) > 0,
+            'count' => count($uniqueNames),
+            'products' => array_slice($uniqueNames, 0, 5),
+        ];
+    }
+
+    /**
+     * Live check if a value is in use.
+     */
+    public function checkValueUsage(Request $request, $id)
+    {
+        $attribute = ProductAttribute::find($id);
+        if (!$attribute) {
+            $attribute = ProductAttribute::whereRaw('LOWER(TRIM(name)) = ?', [strtolower(trim($id))])->first();
+        }
+        $attrName = $attribute ? $attribute->name : (string)$id;
+        $val = trim((string)$request->input('value', ''));
+
+        $usage = $this->getValueUsage($attrName, $val);
+
+        return response()->json([
+            'status' => 'success',
+            'value' => $val,
+            'in_use' => $usage['in_use'],
+            'count' => $usage['count'],
+            'products' => $usage['products'],
+        ]);
+    }
+
+    /**
      * Get all master attributes with values. Seeds presets if empty.
      */
     public function index()
@@ -59,20 +196,73 @@ class ProductAttributeController extends Controller
             $q->orderBy('sequence')->orderBy('id');
         }])->orderBy('id', 'asc')->get();
 
-        $formatted = $attributes->map(function ($attr) {
+        // Build product usage map in memory for ultra-fast lookup (single query)
+        $allProducts = Product::select('id', 'item_name', 'attributes_data', 'color')->get();
+        $productValueMap = []; // [lowercase_val => [product_name => true]]
+        $productAttrMap = [];  // [lowercase_attr => [product_name => true]]
+
+        foreach ($allProducts as $p) {
+            $aData = $p->attributes_data;
+            if (is_array($aData)) {
+                foreach ($aData as $item) {
+                    $aName = strtolower(trim($item['name'] ?? ''));
+                    if ($aName !== '') {
+                        $productAttrMap[$aName][$p->item_name] = true;
+                    }
+                    foreach ($item['values'] ?? [] as $v) {
+                        $vStr = is_array($v) ? ($v['value'] ?? $v['name'] ?? '') : (string)$v;
+                        $vLow = strtolower(trim($vStr));
+                        if ($vLow !== '') {
+                            $productValueMap[$vLow][$p->item_name] = true;
+                        }
+                    }
+                }
+            }
+            if (!empty($p->color)) {
+                $cData = is_string($p->color) ? json_decode($p->color, true) : $p->color;
+                if (is_string($cData)) $cData = json_decode($cData, true);
+                if (is_array($cData)) {
+                    foreach ($cData as $v) {
+                        if (is_array($v)) {
+                            if (!empty($v['size'])) $productValueMap[strtolower(trim($v['size']))][$p->item_name] = true;
+                            if (!empty($v['color'])) $productValueMap[strtolower(trim($v['color']))][$p->item_name] = true;
+                            if (!empty($v['name']) && preg_match('/\((.*?)\)/', $v['name'], $m)) {
+                                foreach (explode('/', $m[1]) as $pPart) {
+                                    $pPart = strtolower(trim($pPart));
+                                    if ($pPart !== '') $productValueMap[$pPart][$p->item_name] = true;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        $formatted = $attributes->map(function ($attr) use ($productValueMap, $productAttrMap) {
+            $aLow = strtolower(trim($attr->name));
+            $attrProds = array_keys($productAttrMap[$aLow] ?? []);
+
             return [
                 'id' => $attr->id,
                 'name' => $attr->name,
                 'display_type' => $attr->display_type,
                 'creation' => $attr->creation_mode,
+                'in_use' => count($attrProds) > 0,
+                'used_count' => count($attrProds),
+                'used_products' => array_slice($attrProds, 0, 5),
                 'default_values' => $attr->values->pluck('value')->toArray(),
-                'values_detail' => $attr->values->map(function ($v) {
+                'values_detail' => $attr->values->map(function ($v) use ($productValueMap) {
+                    $vLow = strtolower(trim($v->value));
+                    $prods = array_keys($productValueMap[$vLow] ?? []);
                     return [
                         'id' => $v->id,
                         'value' => $v->value,
                         'color_hex' => $v->color_hex,
                         'extra_price' => (float)$v->extra_price,
                         'is_custom' => $v->is_custom,
+                        'in_use' => count($prods) > 0,
+                        'used_count' => count($prods),
+                        'used_products' => array_slice($prods, 0, 5),
                     ];
                 }),
             ];
@@ -184,7 +374,7 @@ class ProductAttributeController extends Controller
     }
 
     /**
-     * Update an existing attribute and its values with duplicate check.
+     * Update an existing attribute and its values with duplicate check and usage restriction.
      */
     public function update(Request $request, $id)
     {
@@ -192,14 +382,25 @@ class ProductAttributeController extends Controller
         if (!$attribute) {
             // Also try finding by name if id is a name string
             $attribute = ProductAttribute::whereRaw('LOWER(TRIM(name)) = ?', [strtolower(trim($id))])->first();
-            if (!$attribute) {
-                return response()->json(['status' => 'error', 'message' => 'Attribute not found.'], 404);
-            }
         }
 
-        $rawName = trim((string)$request->input('name', $attribute->name));
+        $rawName = trim((string)$request->input('name', $attribute ? $attribute->name : (string)$id));
         if ($rawName === '') {
             return response()->json(['status' => 'error', 'message' => 'Attribute name is required.'], 422);
+        }
+
+        // If not found, gracefully create it (upsert)
+        if (!$attribute) {
+            $duplicate = ProductAttribute::whereRaw('LOWER(TRIM(name)) = ?', [strtolower($rawName)])->first();
+            if ($duplicate) {
+                $attribute = $duplicate;
+            } else {
+                $attribute = ProductAttribute::create([
+                    'name' => $rawName,
+                    'display_type' => trim((string)$request->input('display_type', 'Radio')) ?: 'Radio',
+                    'creation_mode' => trim((string)$request->input('creation', 'Instantly')) ?: 'Instantly',
+                ]);
+            }
         }
 
         // Duplicate check excluding self
@@ -220,16 +421,67 @@ class ProductAttributeController extends Controller
 
         DB::beginTransaction();
         try {
+            // If renaming attribute name, keep product associations synced
+            $oldAttrName = $attribute->name;
+            if (strtolower($oldAttrName) !== strtolower($rawName)) {
+                $matchingProducts = Product::where('attributes_data', 'like', '%' . $oldAttrName . '%')->get();
+                foreach ($matchingProducts as $mp) {
+                    $mpAttrs = $mp->attributes_data;
+                    if (is_array($mpAttrs)) {
+                        $changed = false;
+                        foreach ($mpAttrs as &$item) {
+                            if (strcasecmp(trim($item['name'] ?? ''), $oldAttrName) === 0) {
+                                $item['name'] = $rawName;
+                                $changed = true;
+                            }
+                        }
+                        if ($changed) {
+                            $mp->attributes_data = $mpAttrs;
+                            $mp->save();
+                        }
+                    }
+                }
+            }
+
             $attribute->name = $rawName;
             $attribute->display_type = $displayType;
             $attribute->creation_mode = $creationMode;
             $attribute->save();
 
-            // If values were supplied, update values list
+            // If values were supplied, update values list with RESTRICTION CHECK
             if ($request->has('values')) {
                 $rawValues = $request->input('values', []);
                 if (is_string($rawValues)) {
                     $rawValues = json_decode($rawValues, true) ?: [];
+                }
+
+                // Check if any previously existing value is being deleted:
+                $existingValRows = ProductAttributeValue::where('product_attribute_id', $attribute->id)->get();
+                $existingValsMap = [];
+                foreach ($existingValRows as $ev) {
+                    $existingValsMap[strtolower(trim($ev->value))] = $ev->value;
+                }
+
+                $newValsLower = [];
+                foreach ($rawValues as $valItem) {
+                    $valName = is_array($valItem) ? trim((string)($valItem['name'] ?? $valItem['value'] ?? '')) : trim((string)$valItem);
+                    if ($valName !== '') {
+                        $newValsLower[] = strtolower($valName);
+                    }
+                }
+
+                // Disallow deletion if value is in use by products
+                foreach ($existingValsMap as $lowVal => $origVal) {
+                    if (!in_array($lowVal, $newValsLower, true)) {
+                        $usage = $this->getValueUsage($attribute->name, $origVal);
+                        if ($usage['in_use']) {
+                            DB::rollBack();
+                            return response()->json([
+                                'status' => 'error',
+                                'message' => "Cannot remove value '{$origVal}' because it is currently in use by {$usage['count']} product(s) (" . implode(', ', $usage['products']) . "). Deleting this value would break existing variants and transactions. Please remove this value from existing products first."
+                            ], 422);
+                        }
+                    }
                 }
 
                 $seenLower = [];
@@ -283,12 +535,12 @@ class ProductAttributeController extends Controller
         } catch (\Throwable $e) {
             DB::rollBack();
             Log::error('Attribute update error: ' . $e->getMessage());
-            return response()->json(['status' => 'error', 'message' => 'Failed to update attribute.'], 500);
+            return response()->json(['status' => 'error', 'message' => 'Failed to update attribute: ' . $e->getMessage()], 500);
         }
     }
 
     /**
-     * Delete an attribute from database.
+     * Delete an attribute from database with usage restriction check.
      */
     public function destroy($id)
     {
@@ -299,6 +551,14 @@ class ProductAttributeController extends Controller
 
         if (!$attribute) {
             return response()->json(['status' => 'error', 'message' => 'Attribute not found.'], 404);
+        }
+
+        $usage = $this->getAttributeUsage($attribute->name);
+        if ($usage['in_use']) {
+            return response()->json([
+                'status' => 'error',
+                'message' => "Cannot delete attribute '{$attribute->name}' because it is currently in use by {$usage['count']} product(s) (" . implode(', ', $usage['products']) . "). Please remove this attribute from products first."
+            ], 422);
         }
 
         $name = $attribute->name;
