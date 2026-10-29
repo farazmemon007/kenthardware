@@ -494,10 +494,17 @@
 
             <form id="saleForm" autocomplete="off">
                 @csrf
+                @method('PUT')
                 <input type="hidden" id="booking_id" name="booking_id" value="{{ $sale->id }}">
                 <input type="hidden" id="action" name="action" value="sale">
                 <input type="hidden" name="cash" value="{{ $sale->cash ?? 0 }}">
+                <input type="hidden" name="card" value="{{ $sale->card ?? 0 }}">
+                <input type="hidden" id="total_extra_cost" name="total_extra_cost" value="{{ $sale->total_extradiscount ?? 0 }}">
                 <input type="hidden" id="totalBalance" value="{{ $sale->total_net ?? 0 }}">
+                <input type="hidden" id="carpenter_id" name="carpenter_id" value="{{ $sale->carpenter_id ?? '' }}">
+                <input type="hidden" id="carpenter_commission_type" name="carpenter_commission_type" value="{{ $sale->carpenter_commission_type ?? 'percentage' }}">
+                <input type="hidden" id="carpenter_commission_rate" name="carpenter_commission_rate" value="{{ $sale->carpenter_commission_rate ?? '0' }}">
+                <input type="hidden" id="allow_insufficient_stock" name="allow_insufficient_stock" value="0">
 
                 {{-- TOP HEADER BAR --}}
                 <div class="d-flex justify-content-between align-items-center mb-2 px-1">
@@ -511,6 +518,12 @@
                         </div>
                     </div>
                     <div class="d-flex align-items-center gap-2">
+                        <button type="button" class="btn btn-sm btn-outline-warning fw-bold d-flex align-items-center gap-1 px-2 py-1" id="btnOpenCarpenterModal" title="Set Carpenter Commission" style="font-size:0.75rem;">
+                            <i class="fas fa-hammer"></i> Carpenter
+                            @if(!empty($sale->carpenter_id))
+                                <span class="badge bg-warning text-dark py-0 px-1 ms-1" style="font-size:0.65rem;">Active</span>
+                            @endif
+                        </button>
                         <span class="badge bg-light text-secondary border px-2 py-1" style="font-size: 0.75rem;">Created: {{ $sale->created_at ? $sale->created_at->format('d/m/Y H:i') : '--' }}</span>
                         <button type="button" class="btn btn-sm btn-light border rounded-2 text-secondary px-2 py-1" title="Calculator"><i class="fas fa-calculator"></i></button>
                         <button type="button" class="btn btn-sm btn-light border rounded-2 text-secondary px-2 py-1" title="Fullscreen" onclick="document.documentElement.requestFullscreen()"><i class="fas fa-expand"></i></button>
@@ -854,13 +867,30 @@
 
                                                     <!-- PRODUCT -->
                                                     <td class="col-product">
-                                                        <select class="form-select product" style="width:100%">
-                                                            @if ($prod)
-                                                                <option value="{{ $item->product_id }}" selected>
-                                                                    {{ $prod->item_name }}{{ $variantLabel }}</option>
+                                                        <div class="d-flex align-items-center gap-1">
+                                                            <div class="flex-grow-1 position-relative">
+                                                                <select class="form-select product" style="width:100%">
+                                                                    @if ($prod)
+                                                                        <option value="{{ $item->product_id }}" selected>
+                                                                            {{ $prod->item_name }}{{ $variantLabel }}</option>
+                                                                    @elseif ($item->is_manual)
+                                                                        <option value="" selected>{{ $item->product_name }} (Outsourced)</option>
+                                                                    @endif
+                                                                </select>
+                                                            </div>
+                                                            <button type="button" class="btn btn-sm btn-outline-primary btn-browse-variants px-1 py-0" title="Browse / Pick Variants" style="height: 28px; width: 28px; font-size: 0.75rem; border-radius: 4px;" tabindex="-1">
+                                                                <i class="fas fa-cubes"></i>
+                                                            </button>
+                                                        </div>
+                                                        <div class="variant-serial-badge-wrapper mt-1 d-flex flex-wrap gap-1 align-items-center">
+                                                            @if(!empty($item->p_code))
+                                                                <span class="badge bg-warning-subtle text-dark border border-warning-subtle font-monospace py-0 px-1 item-pcode-badge" style="font-size: 0.68rem;" title="Secret Cost Code (P-Code)">P: {{ $item->p_code }}</span>
                                                             @endif
-                                                        </select>
+                                                        </div>
+                                                        <input type="hidden" class="item-pcode-hidden" name="p_code[]" value="{{ $item->p_code ?? '' }}">
+                                                        <input type="hidden" class="item-rot-pcode-hidden" name="rot_p_code[]" value="{{ $item->rot_p_code ?? '' }}">
                                                         <input type="hidden" class="product-id-hidden" name="product_id[]" value="{{ $item->product_id }}">
+                                                        <input type="hidden" name="is_manual[]" value="{{ $item->is_manual ? 1 : 0 }}">
                                                         <input type="hidden" class="variant-data-hidden" name="color[]" value="{{ $item->color ?? '' }}">
                                                         <input type="hidden" class="item-code-display" value="{{ $prod->item_code ?? '' }}">
                                                         <input type="hidden" class="size-h" value="{{ $prod->height ?? '-' }}">
@@ -874,6 +904,7 @@
                                                             class="form-control stock text-center input-readonly" readonly
                                                             value="{{ $selStockDisp }}" tabindex="-1">
                                                         <input type="hidden" class="warehouse" name="warehouse_id[]" value="{{ $item->warehouse_id ?? (auth()->user()->warehouse_id ?? 1) }}">
+                                                        <input type="hidden" class="stock" name="stock[]" value="{{ $item->stock ?? '' }}">
                                                         <input type="hidden" class="variant-stock-value" value="{{ $selStockDisp }}">
                                                     </td>
 
@@ -979,8 +1010,21 @@
                                             <tr>
                                                 <td class="text-center fw-bold text-muted row-index" style="vertical-align:middle; font-size:0.75rem;">1</td>
                                                 <td class="col-product">
-                                                    <select class="form-select product" style="width:100%"><option value=""></option></select>
+                                                    <div class="d-flex align-items-center gap-1">
+                                                        <div class="flex-grow-1 position-relative">
+                                                            <select class="form-select product" style="width:100%"><option value=""></option></select>
+                                                        </div>
+                                                        <button type="button" class="btn btn-sm btn-outline-primary btn-browse-variants px-1 py-0" title="Browse / Pick Variants" style="height: 28px; width: 28px; font-size: 0.75rem; border-radius: 4px;" tabindex="-1">
+                                                            <i class="fas fa-cubes"></i>
+                                                        </button>
+                                                    </div>
+                                                    <div class="variant-serial-badge-wrapper mt-1 d-flex flex-wrap gap-1 align-items-center">
+                                                        <span class="badge bg-warning-subtle text-dark border border-warning-subtle font-monospace py-0 px-1 item-pcode-badge d-none" style="font-size: 0.68rem;" title="Secret Cost Code (P-Code)"></span>
+                                                    </div>
+                                                    <input type="hidden" class="item-pcode-hidden" name="p_code[]">
+                                                    <input type="hidden" class="item-rot-pcode-hidden" name="rot_p_code[]">
                                                     <input type="hidden" class="product-id-hidden" name="product_id[]">
+                                                    <input type="hidden" name="is_manual[]" value="0">
                                                     <input type="hidden" class="variant-data-hidden" name="color[]">
                                                     <input type="hidden" class="item-code-display">
                                                     <input type="hidden" class="size-h"><input type="hidden" class="size-w"><input type="hidden" class="size-mode-text">
@@ -988,6 +1032,7 @@
                                                 <td class="col-stock">
                                                     <input type="text" class="form-control stock text-center input-readonly" readonly tabindex="-1">
                                                     <input type="hidden" class="warehouse" name="warehouse_id[]" value="{{ auth()->user()->warehouse_id ?? 1 }}">
+                                                    <input type="hidden" class="stock" name="stock[]" value="">
                                                     <input type="hidden" class="variant-stock-value">
                                                 </td>
                                                 <td style="width:85px;" class="col-qty-wrapper">
@@ -1070,7 +1115,7 @@
                                     <span class="text-danger fw-bold d-flex align-items-center gap-1" style="font-size:0.76rem;"><i class="fas fa-hand-holding-usd"></i> Change A/C</span>
                                     <select class="form-select form-select-sm bg-white fw-bold text-danger border-danger" name="change_account_id" id="changeAccountId" style="width: 135px; font-size:0.75rem; height: 28px; padding: 2px 6px;">
                                         @foreach ($accounts as $acc)
-                                            <option value="{{ $acc->id }}" {{ ($sale->change_account_id == $acc->id || str_contains(strtolower($acc->title), 'cash')) ? 'selected' : '' }}>{{ $acc->title }}</option>
+                                            <option value="{{ $acc->id }}" {{ (($savedChangeAccountId ?? $sale->change_account_id) == $acc->id || str_contains(strtolower($acc->title), 'cash')) ? 'selected' : '' }}>{{ $acc->title }}</option>
                                         @endforeach
                                     </select>
                                 </div>
@@ -1084,14 +1129,29 @@
                                 </div>
 
                                 <div id="rvWrapper" class="mb-3">
-                                    <div class="d-flex gap-2 align-items-center mb-2 rv-row">
-                                        <select class="form-select form-select-sm rv-account bg-light fw-bold" name="receipt_account_id[]" style="font-size:0.78rem;">
-                                            @foreach ($accounts as $acc)
-                                                <option value="{{ $acc->id }}" {{ str_contains(strtolower($acc->title), 'cash') || str_contains(strtolower($acc->title), 'easypaisa') ? 'selected' : '' }}>{{ $acc->title }}</option>
-                                            @endforeach
-                                        </select>
-                                        <input type="number" step="0.01" class="form-control form-control-sm text-end rv-amount fw-bold" name="receipt_amount[]" value="{{ $sale->cash > 0 ? $sale->cash : '' }}" placeholder="0.00" style="width: 110px; font-size:0.8rem;">
-                                    </div>
+                                    @if(isset($receiptLines) && count($receiptLines) > 0)
+                                        @foreach ($receiptLines as $rLine)
+                                            <div class="d-flex gap-2 align-items-center mb-2 rv-row">
+                                                <select class="form-select form-select-sm rv-account bg-light fw-bold" name="receipt_account_id[]" style="font-size:0.78rem;">
+                                                    @foreach ($accounts as $acc)
+                                                        <option value="{{ $acc->id }}" {{ $acc->id == $rLine['account_id'] ? 'selected' : '' }}>{{ $acc->title }}</option>
+                                                    @endforeach
+                                                </select>
+                                                <input type="number" step="0.01" class="form-control form-control-sm text-end rv-amount fw-bold" name="receipt_amount[]" value="{{ $rLine['amount'] > 0 ? $rLine['amount'] : '' }}" placeholder="0.00" style="width: 110px; font-size:0.8rem;">
+                                                <button type="button" class="btn btn-outline-danger btn-sm btnRemRV px-2 py-0" style="font-size: 0.75rem; height: 28px;" title="Remove">&times;</button>
+                                            </div>
+                                        @endforeach
+                                    @else
+                                        <div class="d-flex gap-2 align-items-center mb-2 rv-row">
+                                            <select class="form-select form-select-sm rv-account bg-light fw-bold" name="receipt_account_id[]" style="font-size:0.78rem;">
+                                                @foreach ($accounts as $acc)
+                                                    <option value="{{ $acc->id }}" {{ str_contains(strtolower($acc->title), 'cash') || str_contains(strtolower($acc->title), 'easypaisa') ? 'selected' : '' }}>{{ $acc->title }}</option>
+                                                @endforeach
+                                            </select>
+                                            <input type="number" step="0.01" class="form-control form-control-sm text-end rv-amount fw-bold" name="receipt_amount[]" value="{{ ($sale->cash ?? 0) > 0 ? $sale->cash : '' }}" placeholder="0.00" style="width: 110px; font-size:0.8rem;">
+                                            <button type="button" class="btn btn-outline-danger btn-sm btnRemRV px-2 py-0" style="font-size: 0.75rem; height: 28px;" title="Remove">&times;</button>
+                                        </div>
+                                    @endif
                                 </div>
 
                                 <button type="button" class="btn btn-save-complete w-100 mt-auto py-2 d-flex align-items-center justify-content-center gap-2" id="btnSaveAndComplete">
@@ -1112,8 +1172,8 @@
                     <div class="d-flex align-items-center gap-2">
                         <span class="text-muted fw-bold" style="font-size:0.75rem; text-transform:uppercase; letter-spacing:0.5px;">Discount (Rs.)</span>
                         <div class="input-group input-group-sm" style="width: 120px;">
-                            <input type="number" class="form-control text-end fw-bold text-danger" id="walkinDiscountRs" value="{{ $sale->total_extradiscount ?? 0 }}" placeholder="0">
-                            <span class="input-group-text bg-light text-muted fw-bold" style="font-size:0.75rem;">%</span>
+                            <input type="number" step="any" class="form-control text-end fw-bold text-danger" name="total_extra_cost" id="walkinDiscountRs" value="{{ $sale->total_extradiscount ?? 0 }}" placeholder="0">
+                            <span class="input-group-text bg-light text-muted fw-bold" style="font-size:0.75rem;">Rs</span>
                         </div>
                     </div>
 
@@ -1131,7 +1191,7 @@
                         <span class="text-danger fw-bold" style="font-size:0.76rem;">Change A/C:</span>
                         <select class="form-select form-select-sm bg-light fw-bold text-danger border-danger" id="bottomChangeAccountId" style="width: 135px; font-size:0.75rem; height: 30px; padding: 2px 6px;">
                             @foreach ($accounts as $acc)
-                                <option value="{{ $acc->id }}" {{ ($sale->change_account_id == $acc->id || str_contains(strtolower($acc->title), 'cash')) ? 'selected' : '' }}>{{ $acc->title }}</option>
+                                <option value="{{ $acc->id }}" {{ (($savedChangeAccountId ?? $sale->change_account_id) == $acc->id || str_contains(strtolower($acc->title), 'cash')) ? 'selected' : '' }}>{{ $acc->title }}</option>
                             @endforeach
                         </select>
                     </div>
@@ -1245,6 +1305,187 @@
 
     {{-- Quick Add Product Modal --}}
     @include('admin_panel.partials.quick_add_product_modal')
+
+    {{-- Modal: Carpenter Commission --}}
+    <div class="modal fade" id="modalCarpenterCommission" tabindex="-1" aria-hidden="true" style="z-index: 1060;">
+        <div class="modal-dialog modal-dialog-centered" style="max-width: 430px;">
+            <div class="modal-content border-0 shadow-lg" style="border-radius: 10px; overflow: hidden;">
+                <div class="modal-header text-white py-2 px-3" style="background: linear-gradient(135deg, #1f2937 0%, #111827 100%);">
+                    <div class="d-flex align-items-center gap-2">
+                        <i class="fas fa-hammer text-warning"></i>
+                        <div>
+                            <h6 class="modal-title fw-bold mb-0 text-white" style="font-size: 14px;">Carpenter Commission</h6>
+                            <small class="text-white-50" style="font-size: 10.5px;">Set hidden backend commission</small>
+                        </div>
+                    </div>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body p-3" style="background: #f8fafc;">
+                    <div class="mb-3">
+                        <label class="form-label fw-bold text-dark mb-1" style="font-size: 12px;">
+                            <i class="fas fa-user-tie text-primary me-1"></i> Carpenter Name
+                        </label>
+                        <div class="input-group input-group-sm">
+                            <select id="modal_carpenter_id" class="form-select form-select-sm fw-bold">
+                                <option value="">-- No Carpenter / None --</option>
+                                @if(isset($carpenters))
+                                    @foreach($carpenters as $carp)
+                                        <option value="{{ $carp->id }}" 
+                                                data-type="{{ $carp->default_commission_type }}" 
+                                                data-rate="{{ $carp->default_commission_rate }}"
+                                                data-name="{{ $carp->name }}"
+                                                data-phone="{{ $carp->phone }}"
+                                                {{ ($sale->carpenter_id == $carp->id) ? 'selected' : '' }}>
+                                            {{ $carp->name }} {{ $carp->phone ? '('.$carp->phone.')' : '' }}
+                                        </option>
+                                    @endforeach
+                                @endif
+                            </select>
+                            <button type="button" class="btn btn-outline-primary fw-bold" id="btnOpenAddCarpenterModal" title="Add New Carpenter">
+                                <i class="fas fa-plus"></i> New
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="row g-2 mb-3">
+                        <div class="col-6">
+                            <label class="form-label fw-bold text-dark mb-1" style="font-size: 12px;">
+                                <i class="fas fa-percentage text-success me-1"></i> Commission Type
+                            </label>
+                            <select id="modal_carpenter_comm_type" class="form-select form-select-sm fw-bold">
+                                <option value="percentage" {{ ($sale->carpenter_commission_type ?? 'percentage') === 'percentage' ? 'selected' : '' }}>Percentage (%)</option>
+                                <option value="fixed" {{ ($sale->carpenter_commission_type ?? '') === 'fixed' ? 'selected' : '' }}>Fixed Rupees (Rs.)</option>
+                            </select>
+                        </div>
+                        <div class="col-6">
+                            <label class="form-label fw-bold text-dark mb-1" style="font-size: 12px;">
+                                <i class="fas fa-coins text-warning me-1"></i> Commission Value
+                            </label>
+                            <div class="input-group input-group-sm">
+                                <input type="number" step="any" min="0" class="form-control form-control-sm fw-bold text-end" id="modal_carpenter_comm_rate" value="{{ $sale->carpenter_commission_rate ?? '0' }}" placeholder="0">
+                                <span class="input-group-text bg-white fw-bold text-muted" id="modal_comm_unit_symbol">%</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="p-2 rounded bg-white border mb-2" style="font-size: 12px;">
+                        <div class="d-flex justify-content-between mb-1">
+                            <span class="text-muted">Sale Net Total:</span>
+                            <span class="fw-bold text-dark" id="modal_carp_sale_total">Rs. 0.00</span>
+                        </div>
+                        <div class="d-flex justify-content-between">
+                            <span class="text-muted">Estimated Commission:</span>
+                            <span class="fw-bold text-success" id="modal_carp_est_commission">Rs. 0.00</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer py-2 px-3 bg-light border-top d-flex justify-content-between">
+                    <button type="button" class="btn btn-outline-danger btn-sm fw-bold px-3" id="btnClearCarpenterCommission">
+                        <i class="fas fa-trash-alt me-1"></i> Clear
+                    </button>
+                    <div class="d-flex gap-2">
+                        <button type="button" class="btn btn-secondary btn-sm fw-bold px-3" data-bs-dismiss="modal">Close</button>
+                        <button type="button" class="btn btn-warning text-dark btn-sm fw-bold px-3 shadow-sm" id="btnApplyCarpenterCommission">
+                            <i class="fas fa-check me-1"></i> Apply
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {{-- Modal: Quick Add Carpenter --}}
+    <div class="modal fade" id="modalQuickAddCarpenter" tabindex="-1" aria-hidden="true" style="z-index: 1065;">
+        <div class="modal-dialog modal-dialog-centered" style="max-width: 380px;">
+            <div class="modal-content border-0 shadow-lg" style="border-radius: 10px; overflow: hidden;">
+                <div class="modal-header bg-dark text-white py-2 px-3">
+                    <h6 class="modal-title fw-bold mb-0 text-white" style="font-size: 13.5px;"><i class="fas fa-user-plus me-1 text-warning"></i> Add New Carpenter</h6>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body p-3 bg-light">
+                    <form id="formQuickAddCarpenter">
+                        <div class="mb-2">
+                            <label class="form-label fw-bold text-dark mb-1" style="font-size: 12px;">Carpenter Name <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control form-control-sm fw-bold" id="quick_carp_name" required placeholder="Carpenter Full Name">
+                        </div>
+                        <div class="mb-2">
+                            <label class="form-label fw-bold text-dark mb-1" style="font-size: 12px;">Mobile / Phone</label>
+                            <input type="text" class="form-control form-control-sm" id="quick_carp_phone" placeholder="0300-1234567">
+                        </div>
+                        <div class="row g-2 mb-2">
+                            <div class="col-6">
+                                <label class="form-label fw-bold text-dark mb-1" style="font-size: 12px;">Comm. Type</label>
+                                <select class="form-select form-select-sm" id="quick_carp_type">
+                                    <option value="percentage">Percentage (%)</option>
+                                    <option value="fixed">Fixed (Rs.)</option>
+                                </select>
+                            </div>
+                            <div class="col-6">
+                                <label class="form-label fw-bold text-dark mb-1" style="font-size: 12px;">Default Rate</label>
+                                <input type="number" step="any" min="0" class="form-control form-control-sm text-end" id="quick_carp_rate" value="5" placeholder="5">
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer py-2 px-3 bg-light border-top d-flex justify-content-between">
+                    <button type="button" class="btn btn-secondary btn-sm" id="btnCancelQuickCarpenter">Cancel</button>
+                    <button type="button" class="btn btn-success btn-sm fw-bold px-3" id="btnSaveQuickCarpenter">
+                        <i class="fas fa-save me-1"></i> Save Carpenter
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {{-- Modal: Variant Picker --}}
+    <div class="modal fade" id="modalVariantPicker" tabindex="-1" aria-hidden="true" style="z-index: 1060;">
+        <div class="modal-dialog modal-dialog-centered" style="max-width: 650px;">
+            <div class="modal-content border-0 shadow-lg" style="border-radius: 8px; overflow: hidden;">
+                <div class="modal-header py-2 px-3 text-white d-flex align-items-center justify-content-between" style="background: linear-gradient(180deg, #714b67 0%, #53334c 100%);">
+                    <div class="d-flex align-items-center gap-2">
+                        <i class="fas fa-layer-group text-warning"></i>
+                        <div>
+                            <h6 class="modal-title fw-bold mb-0 text-white" id="pickerModalProductTitle">Select Product Variant</h6>
+                            <small class="text-white-50" id="pickerModalProductSubtitle" style="font-size: 11px;"></small>
+                        </div>
+                    </div>
+                    <button type="button" class="btn btn-link text-white p-0 text-decoration-none shadow-none" data-bs-dismiss="modal" aria-label="Close" style="font-size: 20px; line-height: 1; opacity: 0.85; cursor: pointer;">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                <div class="modal-body p-3 bg-light">
+                    <div id="pickerTableContainer">
+                        <div class="input-group input-group-sm mb-2">
+                            <span class="input-group-text bg-white"><i class="fas fa-search text-muted"></i></span>
+                            <input type="text" id="variantPickerSearchInput" class="form-control" placeholder="Filter variant by size, color, serial no...">
+                        </div>
+                        <div class="table-responsive bg-white border rounded" style="max-height: 340px; overflow-y: auto;">
+                            <table class="table table-hover table-sm align-middle mb-0" id="variantPickerTable">
+                                <thead class="table-light sticky-top" style="font-size: 11px;">
+                                    <tr>
+                                        <th class="text-center" style="width: 85px;">Item #</th>
+                                        <th class="text-center" style="width: 95px;">Serial No</th>
+                                        <th>Variant / Attribute</th>
+                                        <th class="text-center" style="width: 80px;">Size</th>
+                                        <th class="text-center" style="width: 80px;">Color</th>
+                                        <th class="text-center" style="width: 80px;">Stock</th>
+                                        <th class="text-end" style="width: 90px;">Price</th>
+                                        <th class="text-center" style="width: 80px;">Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="variantPickerTableBody">
+                                    <tr><td colspan="8" class="text-center py-4 text-muted">Loading variants...</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer py-2 px-3 bg-light border-top d-flex justify-content-end">
+                    <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
 @endsection
 
 @section('js')
@@ -1382,16 +1623,162 @@
             });
 
             $('#btnPrint').on('click', function() {
-                ensureSaved().then(id => window.open('{{ url('sales') }}/' + id + '/invoice', '_blank'));
+                ensureSaved().then(res => {
+                    const id = (res && (res.booking_id || res.sale_id)) ? (res.booking_id || res.sale_id) : '{{ $sale->id }}';
+                    window.open('{{ url('sales') }}/' + id + '/invoice', '_blank');
+                });
             });
             $('#btnEstimate').on('click', function() {
-                ensureSaved().then(id => window.open('{{ url('sales') }}/' + id + '/invoice?type=estimate', '_blank'));
+                ensureSaved().then(res => {
+                    const id = (res && (res.booking_id || res.sale_id)) ? (res.booking_id || res.sale_id) : '{{ $sale->id }}';
+                    window.open('{{ url('sales') }}/' + id + '/invoice?type=estimate', '_blank');
+                });
             });
             $('#btnPrint2').on('click', function() {
-                ensureSaved().then(id => window.open('{{ url('sales') }}/' + id + '/recepit', '_blank'));
+                ensureSaved().then(res => {
+                    const id = (res && (res.booking_id || res.sale_id)) ? (res.booking_id || res.sale_id) : '{{ $sale->id }}';
+                    window.open('{{ url('sales') }}/' + id + '/recepit', '_blank');
+                });
             });
             $('#btnDcThermal').on('click', function() {
-                ensureSaved().then(id => window.open('{{ url('sales') }}/' + id + '/dc-thermal', '_blank'));
+                ensureSaved().then(res => {
+                    const id = (res && (res.booking_id || res.sale_id)) ? (res.booking_id || res.sale_id) : '{{ $sale->id }}';
+                    window.open('{{ url('sales') }}/' + id + '/dc-thermal', '_blank');
+                });
+            });
+
+            // ══════════════════════════════════════════════════════════════
+            // CARPENTER COMMISSION MODAL & EVENT HANDLERS
+            // ══════════════════════════════════════════════════════════════
+            $('#btnOpenCarpenterModal').on('click', function(e) {
+                e.preventDefault();
+                const currentCId = $('#carpenter_id').val() || '';
+                const currentType = $('#carpenter_commission_type').val() || 'percentage';
+                const currentRate = parseFloat($('#carpenter_commission_rate').val()) || 0;
+
+                $('#modal_carpenter_id').val(currentCId);
+                $('#modal_carpenter_comm_type').val(currentType);
+                $('#modal_carpenter_comm_rate').val(currentRate);
+                $('#modal_comm_unit_symbol').text(currentType === 'fixed' ? 'Rs.' : '%');
+
+                updateCarpenterPreview();
+                $('#modalCarpenterCommission').modal('show');
+            });
+
+            function updateCarpenterPreview() {
+                let total = toNum($('#walkinNetTotal').text());
+                const type = $('#modal_carpenter_comm_type').val();
+                const val = parseFloat($('#modal_carpenter_comm_rate').val()) || 0;
+
+                let estComm = (type === 'percentage') ? ((total * val) / 100) : val;
+
+                $('#modal_carp_sale_total').text('Rs. ' + total.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }));
+                $('#modal_carp_est_commission').text('Rs. ' + estComm.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }));
+            }
+
+            $('#modal_carpenter_id').on('change', function() {
+                const $opt = $(this).find('option:selected');
+                if ($opt.val()) {
+                    const type = $opt.data('type') || 'percentage';
+                    const rate = parseFloat($opt.data('rate')) || 0;
+                    $('#modal_carpenter_comm_type').val(type);
+                    $('#modal_carpenter_comm_rate').val(rate);
+                    $('#modal_comm_unit_symbol').text(type === 'fixed' ? 'Rs.' : '%');
+                }
+                updateCarpenterPreview();
+            });
+
+            $('#modal_carpenter_comm_type').on('change', function() {
+                const type = $(this).val();
+                $('#modal_comm_unit_symbol').text(type === 'fixed' ? 'Rs.' : '%');
+                updateCarpenterPreview();
+            });
+
+            $('#modal_carpenter_comm_rate').on('input', function() {
+                updateCarpenterPreview();
+            });
+
+            $('#btnApplyCarpenterCommission').on('click', function() {
+                const cId = $('#modal_carpenter_id').val();
+                const cType = $('#modal_carpenter_comm_type').val();
+                const cRate = parseFloat($('#modal_carpenter_comm_rate').val()) || 0;
+
+                if (cId && parseInt(cId) > 0) {
+                    $('#carpenter_id').val(cId);
+                    $('#carpenter_commission_type').val(cType);
+                    $('#carpenter_commission_rate').val(cRate);
+                    $('#btnOpenCarpenterModal').html('<i class="fas fa-hammer"></i> Carpenter <span class="badge bg-warning text-dark py-0 px-1 ms-1" style="font-size:0.65rem;">Active</span>');
+                } else {
+                    $('#carpenter_id').val('');
+                    $('#carpenter_commission_type').val('percentage');
+                    $('#carpenter_commission_rate').val('0');
+                    $('#btnOpenCarpenterModal').html('<i class="fas fa-hammer"></i> Carpenter');
+                }
+
+                $('#modalCarpenterCommission').modal('hide');
+            });
+
+            $('#btnClearCarpenterCommission').on('click', function() {
+                $('#modal_carpenter_id').val('');
+                $('#modal_carpenter_comm_rate').val('0');
+                $('#btnApplyCarpenterCommission').trigger('click');
+            });
+
+            // Quick Add Carpenter Modal Handlers
+            $('#btnOpenAddCarpenterModal').on('click', function() {
+                $('#modalCarpenterCommission').modal('hide');
+                $('#formQuickAddCarpenter')[0].reset();
+                $('#modalQuickAddCarpenter').modal('show');
+            });
+
+            $('#btnCancelQuickCarpenter').on('click', function() {
+                $('#modalQuickAddCarpenter').modal('hide');
+                $('#modalCarpenterCommission').modal('show');
+            });
+
+            $('#btnSaveQuickCarpenter').on('click', function() {
+                const name = $('#quick_carp_name').val().trim();
+                if (!name) {
+                    Swal.fire('Required', 'Please enter Carpenter Name.', 'warning');
+                    return;
+                }
+
+                const phone = $('#quick_carp_phone').val().trim();
+                const type = $('#quick_carp_type').val();
+                const rate = parseFloat($('#quick_carp_rate').val()) || 0;
+
+                const $btn = $(this);
+                $btn.prop('disabled', true).html('<i class="fas fa-spinner fa-spin me-1"></i> Saving...');
+
+                $.ajax({
+                    url: "{{ route('carpenters.ajax_store') }}",
+                    type: 'POST',
+                    data: {
+                        _token: '{{ csrf_token() }}',
+                        name: name,
+                        phone: phone,
+                        default_commission_type: type,
+                        default_commission_rate: rate
+                    },
+                    success: function(res) {
+                        $btn.prop('disabled', false).html('<i class="fas fa-save me-1"></i> Save Carpenter');
+                        if (res.success && res.carpenter) {
+                            const c = res.carpenter;
+                            const phoneText = c.phone ? ` (${c.phone})` : '';
+                            const newOpt = `<option value="${c.id}" data-type="${c.default_commission_type}" data-rate="${c.default_commission_rate}" data-name="${c.name}" selected>${c.name}${phoneText}</option>`;
+                            $('#modal_carpenter_id').append(newOpt);
+                            $('#modal_carpenter_id').val(c.id).trigger('change');
+                            $('#modalQuickAddCarpenter').modal('hide');
+                            $('#modalCarpenterCommission').modal('show');
+                        } else {
+                            Swal.fire('Error', res.message || 'Failed to save carpenter.', 'error');
+                        }
+                    },
+                    error: function(xhr) {
+                        $btn.prop('disabled', false).html('<i class="fas fa-save me-1"></i> Save Carpenter');
+                        Swal.fire('Error', 'Failed to save carpenter.', 'error');
+                    }
+                });
             });
 
             // ══════════════════════════════════════════════════════════════

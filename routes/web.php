@@ -205,6 +205,7 @@ Route::middleware('auth')->group(function () {
 
     // QuickBooks POS: Style Matrix Update & Physical Inventory Reconciliation
     Route::post('/products/{id}/update-style', [ProductController::class, 'updateStyle'])->name('products.update_style');
+    Route::post('/products/{id}/update-attribute-configurations', [ProductController::class, 'updateAttributeConfigurations'])->name('products.update_attribute_configurations');
     Route::post('/products/physical-inventory/apply', [ProductController::class, 'applyPhysicalInventory'])->name('products.physical_inventory.apply');
     Route::get('/products/cycle-count/location/{warehouse_id}', [ProductController::class, 'getCycleCountByLocation'])->name('products.cycle_count.by_location');
     Route::get('/products/cycle-count/due-items', [ProductController::class, 'getDueCycleCountItems'])->name('products.cycle_count.due_items');
@@ -569,6 +570,7 @@ Route::middleware('auth')->group(function () {
 
     Route::get('report/product-sale-customer-wise', [ReportingController::class, 'product_sale_customer_wise_report'])->middleware('permission:sale.report.view')->name('report.product_sale_customer_wise');
     Route::get('report/product-sale-customer-wise/fetch', [ReportingController::class, 'fetchProductSaleCustomerWise'])->middleware('permission:sale.report.view')->name('report.product_sale_customer_wise.fetch');
+    Route::get('report/product-sale-customer-wise/export', [ReportingController::class, 'exportProductSaleCustomerWise'])->middleware('permission:sale.report.view')->name('report.product_sale_customer_wise.export');
 
     Route::get('report/customer/ledger', [ReportingController::class, 'customer_ledger_report'])->middleware('permission:customer.ledger.view')->name('report.customer.ledger');
     Route::get('report/customer-ledger/fetch', [ReportingController::class, 'fetch_customer_ledger'])->middleware('permission:customer.ledger.view')->name('report.customer.ledger.fetch');

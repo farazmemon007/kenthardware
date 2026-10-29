@@ -1677,39 +1677,339 @@
     }
 
     /* ==========================================================
-       QUICKBOOKS / ODOO STYLE UOM MODAL (IMAGE & ERP STYLE)
+       QUICKBOOKS / ODOO STYLE UOM MODAL (POLISHED UI & NO OVERLAP)
        ========================================================== */
+    #qbChooseUomModalAddSale .modal-dialog {
+        max-width: 485px !important;
+        width: 100% !important;
+        margin: 1.75rem auto !important;
+    }
+    #qbChooseUomModalAddSale .modal-content {
+        border-radius: 10px !important;
+        overflow: hidden !important;
+        border: 1.5px solid #1e3a5f !important;
+        box-shadow: 0 16px 36px rgba(15, 23, 42, 0.25) !important;
+        background: #ffffff !important;
+    }
+    .qb-uom-modal-header {
+        background: linear-gradient(135deg, #1e3a5f 0%, #0f172a 100%);
+        padding: 11px 16px;
+        color: #ffffff;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+    .qb-uom-modal-header .modal-title-text {
+        font-size: 14px;
+        font-weight: 700;
+        color: #ffffff;
+        line-height: 1.2;
+    }
+    .qb-uom-modal-header .modal-subtitle-text {
+        font-size: 11px;
+        color: #94a3b8;
+        line-height: 1.2;
+        margin-top: 2px;
+    }
+    .qb-uom-modal-header .btn-close-custom {
+        background: transparent;
+        border: none;
+        color: #ffffff;
+        font-size: 18px;
+        line-height: 1;
+        opacity: 0.8;
+        cursor: pointer;
+        padding: 4px;
+        transition: opacity 0.15s ease;
+    }
+    .qb-uom-modal-header .btn-close-custom:hover {
+        opacity: 1;
+    }
+
+    /* Product Specs Box */
+    .qb-uom-product-info-box {
+        background: #ffffff;
+        border: 1px solid #e2e8f0;
+        border-radius: 8px;
+        padding: 9px 13px;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+        margin-bottom: 12px;
+    }
+    .qb-uom-spec-table {
+        width: 100%;
+        margin-bottom: 0 !important;
+        border-collapse: separate;
+        border-spacing: 0 4px;
+    }
+    .qb-uom-spec-table td.spec-lbl {
+        width: 30% !important;
+        font-size: 12.5px !important;
+        color: #64748b !important;
+        font-weight: 600 !important;
+        text-align: left !important;
+        padding: 2px 4px !important;
+        vertical-align: middle !important;
+        white-space: nowrap !important;
+    }
+    .qb-uom-spec-table td.spec-val {
+        width: 70% !important;
+        font-size: 13.5px !important;
+        font-weight: 700 !important;
+        color: #0f172a !important;
+        padding: 2px 4px !important;
+        vertical-align: middle !important;
+        word-break: break-word !important;
+    }
+
+    /* Unit Cards Container */
+    #qbAddSaleModalUnitsContainer {
+        display: flex;
+        flex-direction: column;
+        max-height: 310px;
+        overflow-y: auto;
+        padding: 2px;
+    }
+    #qbAddSaleModalUnitsContainer::-webkit-scrollbar {
+        width: 6px;
+    }
+    #qbAddSaleModalUnitsContainer::-webkit-scrollbar-thumb {
+        background: #cbd5e1;
+        border-radius: 3px;
+    }
+
+    /* Unit Card Item */
     .qb-uom-card-item {
         background: #ffffff;
-        border: 1.5px solid #cbd5e1;
-        border-radius: 6px;
-        padding: 9px 12px;
+        border: 1.5px solid #e2e8f0;
+        border-radius: 8px;
+        padding: 10px 14px;
+        margin-bottom: 8px;
         cursor: pointer;
-        transition: all 0.15s ease-in-out;
+        transition: all 0.16s ease-in-out;
         display: flex;
         justify-content: space-between;
         align-items: center;
         user-select: none;
+        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+        position: relative;
+    }
+    .qb-uom-card-item:last-child {
+        margin-bottom: 0;
     }
     .qb-uom-card-item:hover {
-        border-color: #3b82f6;
+        border-color: #93c5fd;
         background: #f8fafc;
         transform: translateY(-1px);
-        box-shadow: 0 2px 6px rgba(0,0,0,0.06);
+        box-shadow: 0 3px 8px rgba(37, 99, 235, 0.08);
     }
     .qb-uom-card-item.active {
-        background: #eff6ff !important;
+        background: #f0f7ff !important;
         border-color: #2563eb !important;
-        border-width: 2px !important;
-        box-shadow: 0 0 0 3px rgba(37,99,235,0.15) !important;
+        box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.18), 0 2px 6px rgba(37, 99, 235, 0.10) !important;
+    }
+
+    /* Card Left Zone (Radio + Info) */
+    .qb-uom-left-zone {
+        display: flex;
+        align-items: center;
+        min-width: 0;
+        flex: 1 1 auto;
+    }
+    .qb-uom-radio-wrap {
+        width: 24px;
+        height: 24px;
+        min-width: 24px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-right: 12px;
+        flex-shrink: 0;
+    }
+    .qb-uom-radio-wrap i.qb-uom-check-icon {
+        font-size: 19px;
+        line-height: 1;
+        transition: color 0.15s ease, transform 0.15s ease;
+    }
+    .qb-uom-check-icon.far {
+        color: #94a3b8 !important;
+    }
+    .qb-uom-card-item:hover .qb-uom-check-icon.far {
+        color: #3b82f6 !important;
+    }
+    .qb-uom-card-item.active .qb-uom-check-icon.fas {
+        color: #2563eb !important;
+        transform: scale(1.05);
+    }
+
+    /* Info Wrap */
+    .qb-uom-info-wrap {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        min-width: 0;
+    }
+    .qb-uom-name-badge-row {
+        display: flex;
+        align-items: center;
+        flex-wrap: wrap;
+        line-height: 1.2;
+    }
+    .qb-uom-unit-name {
+        font-weight: 700;
+        font-size: 15.5px;
+        color: #1e293b;
+        margin-right: 8px;
+        letter-spacing: -0.2px;
+        transition: color 0.15s ease;
     }
     .qb-uom-card-item.active .qb-uom-unit-name {
         color: #1e40af !important;
     }
 
+    /* Ratio Badge */
+    .qb-uom-ratio-badge {
+        display: inline-flex;
+        align-items: center;
+        font-size: 11px;
+        font-weight: 600;
+        padding: 2.5px 8px;
+        border-radius: 6px;
+        line-height: 1.2;
+        background: #f1f5f9;
+        color: #475569;
+        border: 1px solid #cbd5e1;
+        transition: all 0.15s ease;
+        white-space: nowrap;
+    }
+    .qb-uom-card-item.active .qb-uom-ratio-badge,
+    .qb-uom-ratio-badge.active {
+        background: #2563eb !important;
+        color: #ffffff !important;
+        border-color: #1d4ed8 !important;
+    }
+
+    /* Default Sell Badge */
+    .qb-uom-default-badge {
+        display: inline-flex;
+        align-items: center;
+        font-size: 10px;
+        font-weight: 700;
+        padding: 2px 7px;
+        border-radius: 5px;
+        line-height: 1.2;
+        background: #ecfdf5;
+        color: #047857;
+        border: 1px solid #a7f3d0;
+        margin-left: 6px;
+        white-space: nowrap;
+        text-transform: uppercase;
+        letter-spacing: 0.3px;
+    }
+
+    /* Barcode Row (Fixed Overlap!) */
+    .qb-uom-barcode-row {
+        display: inline-flex;
+        align-items: center;
+        margin-top: 5px;
+        font-family: SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+        font-size: 11px;
+        color: #475569;
+        background: #f8fafc;
+        border: 1px solid #e2e8f0;
+        border-radius: 4px;
+        padding: 2px 8px;
+        line-height: 1.2;
+        max-width: fit-content;
+        transition: all 0.15s ease;
+    }
+    .qb-uom-barcode-row i {
+        margin-right: 6px;
+        font-size: 11px;
+        color: #64748b;
+    }
+    .qb-uom-card-item.active .qb-uom-barcode-row {
+        background: #dbeafe !important;
+        border-color: #bfdbfe !important;
+        color: #1e40af !important;
+    }
+    .qb-uom-card-item.active .qb-uom-barcode-row i {
+        color: #2563eb !important;
+    }
+
+    /* Price Column (Right Zone) */
+    .qb-uom-price-col {
+        text-align: right;
+        flex-shrink: 0;
+        margin-left: 16px;
+    }
+    .qb-uom-price-val {
+        display: flex;
+        align-items: baseline;
+        justify-content: flex-end;
+        line-height: 1.2;
+    }
+    .qb-uom-currency {
+        font-size: 12px;
+        font-weight: 600;
+        color: #64748b;
+        margin-right: 4px;
+        transition: color 0.15s ease;
+    }
+    .qb-uom-amount {
+        font-size: 16.5px;
+        font-weight: 800;
+        font-family: SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+        color: #0f172a;
+        transition: color 0.15s ease;
+    }
+    .qb-uom-card-item.active .qb-uom-currency {
+        color: #2563eb;
+    }
+    .qb-uom-card-item.active .qb-uom-amount {
+        color: #1e40af !important;
+    }
+    .qb-uom-stock-hint {
+        font-size: 11px;
+        color: #64748b;
+        margin-top: 3px;
+        white-space: nowrap;
+    }
+    .qb-uom-stock-hint i {
+        font-size: 10px;
+        margin-right: 4px;
+        color: #94a3b8;
+    }
+
+    #btnCancelQbAddSaleUom:hover {
+        background: #f1f5f9 !important;
+        border-color: #94a3b8 !important;
+        color: #1e293b !important;
+    }
+    #btnConfirmQbAddSaleUomChoice:hover {
+        background: #1d4ed8 !important;
+        border-color: #1d4ed8 !important;
+        box-shadow: 0 4px 12px rgba(30,64,175,0.35) !important;
+    }
+
     /* ==========================================================
        ZERO ITEM PRICE MODAL (IMAGE 2 REPLICA)
        ========================================================== */
+    #modalZeroPriceItem .modal-dialog {
+        max-width: 450px !important;
+        width: 100% !important;
+        margin: 1.75rem auto !important;
+    }
+    #modalZeroPriceItem #zpNewPriceInput {
+        max-width: 150px !important;
+        width: 150px !important;
+        flex: 0 0 150px !important;
+    }
+    #modalQtyEntry .modal-dialog {
+        max-width: 485px !important;
+        width: 100% !important;
+        margin: 1.75rem auto !important;
+    }
+
     .qb-zero-price-header {
         background: linear-gradient(180deg, #3264a8 0%, #204a82 100%);
         color: #ffffff;
@@ -2532,11 +2832,11 @@
                 <button type="button" class="qb-pay-tab" data-method="debit" title="100% Bank / Card"><i class="fas fa-credit-card me-1"></i> Debit</button>
                 <button type="button" class="qb-pay-tab" data-method="check" title="100% Bank Check"><i class="fas fa-money-check me-1"></i> Check</button>
                 <button type="button" class="qb-pay-tab" data-method="gift" title="100% Gift Card"><i class="fas fa-gift me-1"></i> Gift</button>
-                <button type="button" class="qb-pay-tab" data-method="account" title="100% Customer Ledger / Khata (Main Customer Only)"><i class="fas fa-book me-1"></i> Account</button>
+                <button type="button" class="qb-pay-tab" data-method="account" title="100% Customer Ledger (Main Customer Only)"><i class="fas fa-book me-1"></i> Account</button>
                 <button type="button" class="qb-pay-tab" data-method="split" style="background: linear-gradient(180deg, #38bdf8 0%, #0284c7 100%); border-color: #0369a1;" title="Split Payment Across Accounts"><i class="fas fa-random me-1"></i> Split</button>
 
                 <div class="ms-2 d-inline-flex align-items-center">
-                    <span class="badge bg-white text-dark border px-2 py-1 shadow-sm d-inline-flex align-items-center" style="font-size:11px; cursor:pointer;" onclick="openPaymentAccountSelectorModal()" title="Click to view / split payment across Chart of Accounts & Khata">
+                    <span class="badge bg-white text-dark border px-2 py-1 shadow-sm d-inline-flex align-items-center" style="font-size:11px; cursor:pointer;" onclick="openPaymentAccountSelectorModal()" title="Click to view / split payment across Chart of Accounts & Ledger">
                         <span id="qbActiveAccountBadge"><i class="fas fa-wallet text-success me-1"></i> Account: <strong>Shop Cash</strong></span>
                         <i class="fas fa-cog ms-2 text-primary" style="font-size:10px;"></i>
                     </span>
@@ -2836,7 +3136,7 @@
                                 <span class="qb-hero-cust-badge" id="qbModalCustName">Walk-in Customer</span>
                             </div>
                             <div class="d-flex justify-content-between align-items-center">
-                                <span class="text-white-50 small fw-bold"><i class="fas fa-history me-1"></i> Previous Khata Bal:</span>
+                                <span class="text-white-50 small fw-bold"><i class="fas fa-history me-1"></i> Previous Ledger Bal:</span>
                                 <span class="qb-hero-bal-val" id="qbModalCustPrevBal">Rs. 0.00</span>
                             </div>
                         </div>
@@ -2853,7 +3153,7 @@
                         <i class="fas fa-university me-1"></i> 100% Bank / Card
                     </button>
                     <button type="button" class="qb-preset-btn qb-preset-khata" data-preset="full_khata" id="qbPresetKhataBtn">
-                        <i class="fas fa-book me-1"></i> 100% Khata (Udhar)
+                        <i class="fas fa-book me-1"></i> 100% Ledger
                     </button>
                     <button type="button" class="qb-preset-btn qb-preset-split" data-preset="split_cash_bank">
                         <i class="fas fa-balance-scale me-1"></i> 50/50 Cash + Bank
@@ -2941,7 +3241,7 @@
                         </div>
                     </div>
 
-                    {{-- 3. Customer Khata / Ledger (Due) Card --}}
+                    {{-- 3. Customer Ledger (Due) Card --}}
                     <div class="col-md-4" id="qbKhataCardCol">
                         <div class="qb-tender-col-card qb-tender-card-khata">
                             <div class="qb-tender-header">
@@ -2984,7 +3284,7 @@
                         </div>
                         <span class="qb-rec-operator">=</span>
                         <div class="qb-rec-item">
-                            <span class="qb-rec-lbl">Due on Khata</span>
+                            <span class="qb-rec-lbl">Due on Ledger</span>
                             <span class="qb-rec-val text-warning-emphasis" id="qbBalDueKhata">Rs. 0.00</span>
                         </div>
                     </div>
@@ -2995,7 +3295,7 @@
                     </div>
                 </div>
                 <div id="qbWalkinKhataWarning" class="alert alert-danger py-1 px-2 mb-0 small d-none" style="font-size: 11px; border-radius: 6px;">
-                    <i class="fas fa-exclamation-triangle me-1"></i> <strong>Walk-in Customer:</strong> Unpaid Khata balance is not allowed. Please select a registered customer or pay 100% in Cash/Bank.
+                    <i class="fas fa-exclamation-triangle me-1"></i> <strong>Walk-in Customer:</strong> Unpaid Ledger balance is not allowed. Please select a registered customer or pay 100% in Cash/Bank.
                 </div>
             </div>
 
@@ -3293,7 +3593,7 @@
                 <div class="alert alert-warning border border-warning-subtle py-2 px-3 small mb-3 text-dark d-flex align-items-start gap-2 shadow-sm" style="background-color: #fffbeb; font-size: 11.5px; border-radius: 6px;">
                     <i class="fas fa-info-circle text-warning fs-6 mt-1"></i>
                     <div>
-                        <strong>One-Time POS Customer:</strong> Ye details sirf is sale invoice aur reporting ke liye hain. Ye aap ke <u>Customer Master Directory</u> ya <u>Chart of Accounts (Khata)</u> me save <b>nahi</b> hongi.
+                        <strong>One-Time POS Customer:</strong> Ye details sirf is sale invoice aur reporting ke liye hain. Ye aap ke <u>Customer Master Directory</u> ya <u>Chart of Accounts (Ledger)</u> me save <b>nahi</b> hongi.
                     </div>
                 </div>
 
@@ -3554,7 +3854,8 @@
                         <table class="table table-hover table-sm align-middle mb-0" id="variantPickerTable">
                             <thead class="table-light sticky-top" style="font-size: 11px;">
                                 <tr>
-                                    <th class="text-center" style="width: 100px;">Serial No</th>
+                                    <th class="text-center" style="width: 85px;">Item #</th>
+                                    <th class="text-center" style="width: 95px;">Serial No</th>
                                     <th>Variant / Attribute</th>
                                     <th class="text-center" style="width: 80px;">Size</th>
                                     <th class="text-center" style="width: 80px;">Color</th>
@@ -3565,7 +3866,7 @@
                                 </tr>
                             </thead>
                             <tbody id="variantPickerTableBody">
-                                <tr><td colspan="8" class="text-center py-4 text-muted">Loading variants...</td></tr>
+                                <tr><td colspan="9" class="text-center py-4 text-muted">Loading variants...</td></tr>
                             </tbody>
                         </table>
                     </div>
@@ -3765,57 +4066,63 @@
 
 <!-- QUICKBOOKS DESKTOP POS & ODOO ERP: CHOOSE UNIT OF MEASURE MODAL (ADD SALE) -->
 <div class="modal fade" id="qbChooseUomModalAddSale" tabindex="-1" data-bs-backdrop="static" data-bs-keyboard="false" aria-hidden="true" style="z-index: 1080;">
-    <div class="modal-dialog modal-dialog-centered" style="max-width: 460px;">
-        <div class="modal-content border-0 shadow-lg" style="border-radius: 6px; overflow: hidden; border: 1.5px solid #1e3a5f;">
-            <div class="qb-zero-price-header d-flex justify-content-between align-items-center" style="background: linear-gradient(180deg, #1e3a5f 0%, #152942 100%); padding: 8px 14px;">
-                <span class="fw-bold d-flex align-items-center" style="font-size: 13.5px; color: #fff;">
-                    <i class="fas fa-layer-group me-2 text-warning"></i> Select Unit of Measure (UoM)
-                </span>
-                <button type="button" class="btn btn-link text-white p-0 text-decoration-none shadow-none" id="btnUomModalClose" style="font-size: 18px; line-height: 1; opacity: 0.85; cursor: pointer;">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="qb-uom-modal-header">
+                <div class="d-flex align-items-center">
+                    <div style="width: 32px; height: 32px; border-radius: 8px; background: rgba(255, 255, 255, 0.12); display: flex; align-items: center; justify-content: center; margin-right: 12px; flex-shrink: 0;">
+                        <i class="fas fa-layer-group text-warning" style="font-size: 15px;"></i>
+                    </div>
+                    <div>
+                        <div class="modal-title-text">Select Unit of Measure (UoM)</div>
+                        <div class="modal-subtitle-text">Choose selling unit, conversion ratio & price</div>
+                    </div>
+                </div>
+                <button type="button" class="btn-close-custom" id="btnUomModalClose" title="Close (Esc)">
                     <i class="fas fa-times"></i>
                 </button>
             </div>
-            <div class="modal-body p-3" style="background: #eef2f8;">
-                <div class="qb-zero-price-box mb-2.5">
-                    <table class="qb-modal-spec-table">
+            <div class="modal-body p-3" style="background: #f1f5f9;">
+                <div class="qb-uom-product-info-box">
+                    <table class="qb-uom-spec-table">
                         <tr>
-                            <td class="spec-label" style="width: 32%;">Item Name</td>
-                            <td class="spec-value fw-bold text-primary" id="qbAddSaleModalProductName">-</td>
+                            <td class="spec-lbl">Item Name:</td>
+                            <td class="spec-val text-primary" id="qbAddSaleModalProductName">-</td>
                         </tr>
                         <tr id="qbAddSaleModalSkuRow">
-                            <td class="spec-label">Item # / SKU</td>
-                            <td class="spec-value font-monospace" id="qbAddSaleModalProductSku">-</td>
+                            <td class="spec-lbl">Item # / SKU:</td>
+                            <td class="spec-val font-monospace" id="qbAddSaleModalProductSku">-</td>
                         </tr>
                         <tr id="qbAddSaleModalVariantRow">
-                            <td class="spec-label">Variant / Size</td>
-                            <td class="spec-value" id="qbAddSaleModalProductVariant">-</td>
+                            <td class="spec-lbl">Variant / Size:</td>
+                            <td class="spec-val" id="qbAddSaleModalProductVariant">-</td>
                         </tr>
                         <tr>
-                            <td class="spec-label">Stock on Hand</td>
-                            <td class="spec-value text-success fw-bold" id="qbAddSaleModalProductStock">-</td>
+                            <td class="spec-lbl">Stock on Hand:</td>
+                            <td class="spec-val text-success fw-bold" id="qbAddSaleModalProductStock">-</td>
                         </tr>
                     </table>
                 </div>
 
                 <div class="d-flex justify-content-between align-items-center mb-2 px-1">
-                    <span class="text-dark fw-bold" style="font-size: 12px;">
-                        <i class="fas fa-boxes me-1 text-primary"></i> Choose Unit to Sell:
+                    <span class="fw-bold" style="font-size: 12.5px; color: #1e293b;">
+                        <i class="fas fa-boxes text-primary" style="margin-right: 6px;"></i> Available Units:
                     </span>
-                    <span class="text-muted" style="font-size: 10.5px;">
-                        <kbd>↑</kbd> <kbd>↓</kbd> / Double-Click
+                    <span class="text-muted" style="font-size: 11px;">
+                        <kbd style="background: #e2e8f0; color: #334155; border: 1px solid #cbd5e1; border-radius: 4px; padding: 2px 6px; font-size: 10px; font-weight: 600;">↑</kbd> <kbd style="background: #e2e8f0; color: #334155; border: 1px solid #cbd5e1; border-radius: 4px; padding: 2px 6px; font-size: 10px; font-weight: 600;">↓</kbd> / Double-Click to Apply
                     </span>
                 </div>
 
-                <div class="d-flex flex-column gap-2" id="qbAddSaleModalUnitsContainer" style="max-height: 290px; overflow-y: auto;">
+                <div id="qbAddSaleModalUnitsContainer">
                     <!-- Populated dynamically via JS -->
                 </div>
             </div>
-            <div class="modal-footer py-2 px-3 bg-light border-top d-flex justify-content-between align-items-center">
-                <button type="button" class="btn btn-outline-secondary btn-sm px-3" id="btnCancelQbAddSaleUom">
-                    <i class="fas fa-times me-1"></i> Cancel
+            <div class="modal-footer py-2.5 px-3 bg-white border-top d-flex justify-content-between align-items-center" style="border-top: 1px solid #e2e8f0 !important;">
+                <button type="button" class="btn btn-outline-secondary px-3 py-1.5" id="btnCancelQbAddSaleUom" style="border-radius: 6px; font-weight: 600; font-size: 13px; color: #475569; background: #ffffff; border: 1.5px solid #cbd5e1; transition: all 0.15s ease;">
+                    <i class="fas fa-times" style="margin-right: 6px;"></i> Cancel
                 </button>
-                <button type="button" class="btn btn-primary btn-sm px-4 fw-bold" id="btnConfirmQbAddSaleUomChoice" style="background: #1e40af; border-color: #1e40af;">
-                    <i class="fas fa-arrow-right me-1"></i> Continue to Price
+                <button type="button" class="btn btn-primary px-4 py-1.5 fw-bold" id="btnConfirmQbAddSaleUomChoice" style="background: #1e40af; border: 1.5px solid #1e40af; border-radius: 6px; box-shadow: 0 2px 6px rgba(30,64,175,0.25); font-size: 13px; display: inline-flex; align-items: center; transition: all 0.15s ease;">
+                    <i class="fas fa-arrow-right" style="margin-right: 6px;"></i> Continue to Price
                 </button>
             </div>
         </div>
@@ -3824,7 +4131,7 @@
 
 {{-- Modal 10: Item Price Entry / Zero Item Price (Image 1 & 2 Replica) --}}
 <div class="modal fade" id="modalZeroPriceItem" tabindex="-1" data-bs-backdrop="static" data-bs-keyboard="false" aria-hidden="true" style="z-index: 1070;">
-    <div class="modal-dialog modal-dialog-centered" style="max-width: 450px;">
+    <div class="modal-dialog modal-dialog-centered" style="max-width: 450px !important; width: 100% !important;">
         <div class="modal-content border-0 shadow-lg" style="border-radius: 6px; overflow: hidden; border: 1.5px solid #1e3a5f;">
             <div class="qb-zero-price-header d-flex justify-content-between align-items-center">
                 <span id="zpModalTitle" class="fw-bold" style="font-size: 14px;">Item Price</span>
@@ -3883,8 +4190,8 @@
 
                 {{-- Price Input Field --}}
                 <div class="d-flex align-items-center justify-content-center gap-2 mb-1.5">
-                    <label class="fw-bold text-dark mb-0" style="font-size: 13.5px;">New Price</label>
-                    <input type="number" step="any" id="zpNewPriceInput" class="form-control form-control-sm text-end fw-bold fs-6" style="max-width: 150px; border: 1.5px solid #1e3a5f; height: 36px; border-radius: 4px;" placeholder="0.00" min="0">
+                    <label class="fw-bold text-dark mb-0 text-nowrap" style="font-size: 13.5px; white-space: nowrap;">New Price</label>
+                    <input type="number" step="any" id="zpNewPriceInput" class="form-control form-control-sm text-end fw-bold fs-6" style="max-width: 150px !important; width: 150px !important; flex: 0 0 150px !important; border: 1.5px solid #1e3a5f; height: 36px; border-radius: 4px;" placeholder="0.00" min="0">
                 </div>
 
                 {{-- Root Price & ROT Code Info (Hidden as requested) --}}
@@ -3924,7 +4231,7 @@
 
 {{-- Modal 11: Insufficient Quantity / Enter Quantity (Image 3 Replica) --}}
 <div class="modal fade" id="modalQtyEntry" tabindex="-1" data-backdrop="static" data-bs-backdrop="static" data-keyboard="false" data-bs-keyboard="false" aria-hidden="true" style="z-index: 1075;">
-    <div class="modal-dialog modal-dialog-centered" style="max-width: 485px;">
+    <div class="modal-dialog modal-dialog-centered" style="max-width: 485px !important; width: 100% !important;">
         <div class="modal-content border-0 shadow-lg" style="border-radius: 6px; overflow: hidden; border: 1.5px solid #1e3a5f;">
             <div id="qeModalHeader" class="qb-insufficient-header">
                 <span id="qeModalTitle" class="fw-bold" style="font-size: 14px;">Insufficient Quantity</span>
@@ -5280,11 +5587,11 @@ $(document).ready(function() {
 
         let balBadge = '';
         if (prev > 0) {
-            balBadge = `<span class="badge bg-danger-subtle text-danger border border-danger-subtle ms-1">Khata: Rs. ${prev.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})} (Dues)</span>`;
+            balBadge = `<span class="badge bg-danger-subtle text-danger border border-danger-subtle ms-1">Ledger: Rs. ${prev.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})} (Dues)</span>`;
         } else if (prev < 0) {
-            balBadge = `<span class="badge bg-success-subtle text-success border border-success-subtle ms-1">Khata: Rs. ${Math.abs(prev).toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})} (Advance)</span>`;
+            balBadge = `<span class="badge bg-success-subtle text-success border border-success-subtle ms-1">Ledger: Rs. ${Math.abs(prev).toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})} (Advance)</span>`;
         } else {
-            balBadge = `<span class="badge bg-light text-muted border ms-1">Khata: Rs. 0.00</span>`;
+            balBadge = `<span class="badge bg-light text-muted border ms-1">Ledger: Rs. 0.00</span>`;
         }
 
         $('#qbCustomerDetailsText').html(`[Code: ${c.customer_id || '-'}] | Mobile: ${c.mobile || '-'} ${balBadge}`);
@@ -6707,13 +7014,13 @@ $(document).ready(function() {
         let badgeHtml = '';
         if (isNetRefund) {
             if (orderPaymentAllocation.method === 'split') {
-                badgeHtml = `<i class="fas fa-random text-primary me-1"></i> Refund Split: <strong>Cash Rs. ${orderPaymentAllocation.cashAmount.toFixed(0)} | Bank Rs. ${orderPaymentAllocation.bankAmount.toFixed(0)} | Khata Rs. ${orderPaymentAllocation.khataAmount.toFixed(0)}</strong>`;
+                badgeHtml = `<i class="fas fa-random text-primary me-1"></i> Refund Split: <strong>Cash Rs. ${orderPaymentAllocation.cashAmount.toFixed(0)} | Bank Rs. ${orderPaymentAllocation.bankAmount.toFixed(0)} | Ledger Rs. ${orderPaymentAllocation.khataAmount.toFixed(0)}</strong>`;
             } else if (orderPaymentAllocation.method === 'cash') {
                 badgeHtml = `<i class="fas fa-hand-holding-usd text-success me-1"></i> Cash Refund: <strong>${cashTitle} (Rs. ${orderPaymentAllocation.cashAmount.toFixed(2)})</strong>`;
             } else if (orderPaymentAllocation.method === 'debit' || orderPaymentAllocation.method === 'check' || orderPaymentAllocation.method === 'gift') {
                 badgeHtml = `<i class="fas fa-university text-primary me-1"></i> Bank Refund: <strong>${bankTitle} (Rs. ${orderPaymentAllocation.bankAmount.toFixed(2)})</strong>`;
             } else if (orderPaymentAllocation.method === 'account' || orderPaymentAllocation.method === 'credit') {
-                badgeHtml = `<i class="fas fa-book text-warning me-1"></i> Credit to Ledger: <strong>${custName} Khata (Rs. ${orderPaymentAllocation.khataAmount.toFixed(2)})</strong>`;
+                badgeHtml = `<i class="fas fa-book text-warning me-1"></i> Credit to Ledger: <strong>${custName} Ledger (Rs. ${orderPaymentAllocation.khataAmount.toFixed(2)})</strong>`;
             }
         } else {
             if (orderPaymentAllocation.method === 'split') {
@@ -6724,12 +7031,12 @@ $(document).ready(function() {
                 badgeHtml = `<i class="fas fa-university text-primary me-1"></i> Bank: <strong>${bankTitle} (Rs. ${orderPaymentAllocation.bankAmount.toFixed(2)})</strong>`;
             } else if (orderPaymentAllocation.method === 'credit') {
                 if (isWalkin) {
-                    badgeHtml = `<i class="fas fa-file-invoice text-warning me-1"></i> Credit (Khata): <strong>Select Customer (Rs. ${orderPaymentAllocation.khataAmount.toFixed(2)})</strong>`;
+                    badgeHtml = `<i class="fas fa-file-invoice text-warning me-1"></i> Credit (Ledger): <strong>Select Customer (Rs. ${orderPaymentAllocation.khataAmount.toFixed(2)})</strong>`;
                 } else {
-                    badgeHtml = `<i class="fas fa-file-invoice text-warning me-1"></i> Credit: <strong>${custName} Khata (Rs. ${orderPaymentAllocation.khataAmount.toFixed(2)})</strong>`;
+                    badgeHtml = `<i class="fas fa-file-invoice text-warning me-1"></i> Credit: <strong>${custName} Ledger (Rs. ${orderPaymentAllocation.khataAmount.toFixed(2)})</strong>`;
                 }
             } else if (orderPaymentAllocation.method === 'account') {
-                badgeHtml = `<i class="fas fa-book text-warning me-1"></i> Account: <strong>${custName} Khata (Rs. ${orderPaymentAllocation.khataAmount.toFixed(2)})</strong>`;
+                badgeHtml = `<i class="fas fa-book text-warning me-1"></i> Account: <strong>${custName} Ledger (Rs. ${orderPaymentAllocation.khataAmount.toFixed(2)})</strong>`;
             } else {
                 badgeHtml = `<i class="fas fa-book text-secondary me-1"></i> Account: <strong>${cashTitle}</strong>`;
             }
@@ -6757,10 +7064,10 @@ $(document).ready(function() {
 
         if (isNetRefund) {
             $('.qb-hero-lbl').html('<i class="fas fa-undo me-1 text-danger"></i> Total Net Refund to Customer');
-            $('#qbModalCustKhataTarget').text(isWalkin ? '⚠️ No Khata for Walk-in (Refund via Cash/Bank)' : (custName + ' Khata (Credit Note)'));
+            $('#qbModalCustKhataTarget').text(isWalkin ? '⚠️ No Ledger for Walk-in (Refund via Cash/Bank)' : (custName + ' Ledger (Credit Note)'));
             $('.qb-tender-title-wrap .qb-tender-title').eq(0).text('Cash Refund');
             $('.qb-tender-title-wrap .qb-tender-title').eq(1).text('Bank Refund');
-            $('.qb-tender-title-wrap .qb-tender-title').eq(2).text('Credit to Khata');
+            $('.qb-tender-title-wrap .qb-tender-title').eq(2).text('Credit to Ledger');
             $('.qb-tender-card-cash .qb-tender-field-lbl').eq(0).text('Refund from Cash:');
             $('.qb-tender-card-cash .qb-tender-field-lbl').eq(1).text('Cash Paid Out:');
             $('.qb-tender-card-bank .qb-tender-field-lbl').eq(0).text('Refund from Bank:');
@@ -6769,11 +7076,11 @@ $(document).ready(function() {
             $('.qb-preset-title').html('<i class="fas fa-undo text-warning me-1"></i> Refund Presets:');
             $('.qb-preset-cash').html('<i class="fas fa-money-bill-wave me-1"></i> 100% Cash Refund');
             $('.qb-preset-bank').html('<i class="fas fa-university me-1"></i> 100% Bank Refund');
-            $('.qb-preset-khata').html('<i class="fas fa-book me-1"></i> 100% Khata Credit');
+            $('.qb-preset-khata').html('<i class="fas fa-book me-1"></i> 100% Ledger Credit');
             $('.qb-preset-split').html('<i class="fas fa-balance-scale me-1"></i> 50/50 Cash + Bank');
         } else {
             $('.qb-hero-lbl').html('<i class="fas fa-file-invoice-dollar me-1"></i> Net Invoice Payable');
-            $('#qbModalCustKhataTarget').text(isWalkin ? '⚠️ No Khata (Walk-in Customer)' : (custName + ' Khata'));
+            $('#qbModalCustKhataTarget').text(isWalkin ? '⚠️ No Ledger (Walk-in Customer)' : (custName + ' Ledger'));
             $('.qb-tender-title-wrap .qb-tender-title').eq(0).text('Cash Tender');
             $('.qb-tender-title-wrap .qb-tender-title').eq(1).text('Bank / Account');
             $('.qb-tender-title-wrap .qb-tender-title').eq(2).text('Ledger');
@@ -6785,7 +7092,7 @@ $(document).ready(function() {
             $('.qb-preset-title').html('<i class="fas fa-bolt text-warning me-1"></i> Quick Presets:');
             $('.qb-preset-cash').html('<i class="fas fa-money-bill-wave me-1"></i> 100% Cash');
             $('.qb-preset-bank').html('<i class="fas fa-university me-1"></i> 100% Bank / Card');
-            $('.qb-preset-khata').html('<i class="fas fa-book me-1"></i> 100% Khata (Udhar)');
+            $('.qb-preset-khata').html('<i class="fas fa-book me-1"></i> 100% Ledger');
             $('.qb-preset-split').html('<i class="fas fa-balance-scale me-1"></i> 50/50 Cash + Bank');
         }
 
@@ -6878,11 +7185,11 @@ $(document).ready(function() {
         if (isNetRefund) {
             $('.qb-rec-lbl').eq(0).text('Total Net Refund');
             $('.qb-rec-lbl').eq(1).text('Cash + Bank Out');
-            $('.qb-rec-lbl').eq(2).text('Credit to Khata');
+            $('.qb-rec-lbl').eq(2).text('Credit to Ledger');
         } else {
             $('.qb-rec-lbl').eq(0).text('Total Net Bill');
             $('.qb-rec-lbl').eq(1).text('Paid Upfront');
-            $('.qb-rec-lbl').eq(2).text('Due on Khata');
+            $('.qb-rec-lbl').eq(2).text('Due on Ledger');
         }
 
         $('#qbBalTotalBill').text('Rs. ' + totalBill.toFixed(2));
@@ -6897,7 +7204,7 @@ $(document).ready(function() {
             $('#btnApplySplitPayment').prop('disabled', true);
             $('#qbBalStatusBadge').html(`
                 <span class="badge bg-danger text-white fw-bold px-2 py-1 shadow-sm" style="font-size: 11px;">
-                    <i class="fas fa-times-circle me-1"></i> ${isNetRefund ? 'Walk-in cannot credit Khata (Pay via Cash or Bank)' : 'Walk-in cannot have Khata Due'}
+                    <i class="fas fa-times-circle me-1"></i> ${isNetRefund ? 'Walk-in cannot credit Ledger (Pay via Cash or Bank)' : 'Walk-in cannot have Ledger Due'}
                 </span>
             `);
             return false;
@@ -6917,7 +7224,7 @@ $(document).ready(function() {
             $('#btnApplySplitPayment').prop('disabled', false);
             let fillBtns = '';
             if (!isWalkin) {
-                fillBtns += `<button type="button" class="btn btn-xs btn-outline-warning text-dark py-0 px-2 fw-bold" onclick="autoFillRemainder('khata')" title="Allocate remainder to Khata">+ Khata Rs. ${diff.toFixed(2)}</button>`;
+                fillBtns += `<button type="button" class="btn btn-xs btn-outline-warning text-dark py-0 px-2 fw-bold" onclick="autoFillRemainder('khata')" title="Allocate remainder to Ledger">+ Ledger Rs. ${diff.toFixed(2)}</button>`;
             }
             fillBtns += `<button type="button" class="btn btn-xs btn-outline-success py-0 px-2 fw-bold ms-1" onclick="autoFillRemainder('cash')" title="Allocate remainder to Cash">+ Cash Rs. ${diff.toFixed(2)}</button>`;
             fillBtns += `<button type="button" class="btn btn-xs btn-outline-primary py-0 px-2 fw-bold ms-1" onclick="autoFillRemainder('bank')" title="Allocate remainder to Bank">+ Bank Rs. ${diff.toFixed(2)}</button>`;
@@ -6966,7 +7273,7 @@ $(document).ready(function() {
 
         if (target === 'khata') {
             if (isWalkin) {
-                Swal.fire('Customer Required', 'Walk-in customers cannot have unpaid Khata. Please select a registered customer first.', 'warning');
+                Swal.fire('Customer Required', 'Walk-in customers cannot have unpaid Ledger. Please select a registered customer first.', 'warning');
                 return;
             }
             const rem = Math.max(0, totalBill - cash - bank);
@@ -6998,7 +7305,7 @@ $(document).ready(function() {
             $('#qbSplitKhataInput').val('0.00');
         } else if (p === 'full_khata') {
             if (isWalkin) {
-                Swal.fire('Customer Required', 'Walk-in customers cannot have Khata ledger balance. Please select a registered customer first.', 'warning');
+                Swal.fire('Customer Required', 'Walk-in customers cannot have ledger balance. Please select a registered customer first.', 'warning');
                 return;
             }
             $('#qbSplitCashInput').val('0.00');
@@ -7032,7 +7339,7 @@ $(document).ready(function() {
             $('#qbSplitKhataInput').val('0.00');
         } else if (dest === 'khata') {
             if (isWalkin) {
-                Swal.fire('Customer Required', 'Walk-in customers cannot have Khata ledger balance. Please select a registered customer first.', 'warning');
+                Swal.fire('Customer Required', 'Walk-in customers cannot have ledger balance. Please select a registered customer first.', 'warning');
                 return;
             }
             $('#qbSplitCashInput').val('0.00');
@@ -7053,7 +7360,7 @@ $(document).ready(function() {
         const bankAccId = $('#qbSplitBankAccountId').val();
 
         if (isWalkin && khata > 0.009) {
-            Swal.fire('Customer Required', isNetRefund ? 'Walk-in customers cannot credit refund to Khata. Please select a registered customer or refund via Cash/Bank.' : 'Walk-in customers cannot have unpaid Khata. Please select a registered customer or pay 100% in Cash/Bank.', 'warning');
+            Swal.fire('Customer Required', isNetRefund ? 'Walk-in customers cannot credit refund to Ledger. Please select a registered customer or refund via Cash/Bank.' : 'Walk-in customers cannot have unpaid Ledger. Please select a registered customer or pay 100% in Cash/Bank.', 'warning');
             return;
         }
 
@@ -7134,8 +7441,8 @@ $(document).ready(function() {
                 Swal.fire({
                     title: 'Customer Required',
                     text: isNetRefund
-                        ? 'Walk-in customer ke khata me refund add nahi ho sakta kyunki walk-in ka khata nahi hota. Cash wapas karein ya bank se transfer karein, ya customer select karein.'
-                        : 'Account (Khata) sale sirf registered / main customer ke liye hai. Walk-in customer ko pori payment karni hogi. Barah-e-karam pehle customer select karein.',
+                        ? 'Walk-in customer ke ledger me refund add nahi ho sakta kyunki walk-in ka ledger nahi hota. Cash wapas karein ya bank se transfer karein, ya customer select karein.'
+                        : 'Account (Ledger) sale sirf registered / main customer ke liye hai. Walk-in customer ko pori payment karni hogi. Barah-e-karam pehle customer select karein.',
                     icon: 'warning',
                     confirmButtonText: '<i class="fas fa-user-plus me-1"></i> Select Customer',
                     confirmButtonColor: '#2563eb'
@@ -7175,8 +7482,8 @@ $(document).ready(function() {
                 Swal.fire({
                     title: 'Customer Required for Credit',
                     text: isNetRefund
-                        ? 'Walk-in customer ka khata nahi hota. Barah-e-karam Cash ya Bank refund select karein.'
-                        : 'Credit / Khata sale sirf registered / main customer ke liye hai. Walk-in customer ko pori payment karni hogi.',
+                        ? 'Walk-in customer ka ledger nahi hota. Barah-e-karam Cash ya Bank refund select karein.'
+                        : 'Credit / Ledger sale sirf registered / main customer ke liye hai. Walk-in customer ko pori payment karni hogi.',
                     icon: 'warning',
                     confirmButtonText: '<i class="fas fa-user-plus me-1"></i> Select Customer',
                     confirmButtonColor: '#2563eb'
@@ -7321,10 +7628,21 @@ $(document).ready(function() {
             const safeName = escapeHtml(itemName);
             const skuText = p.sku || p.item_code || ('#' + p.id);
             const safeSku = escapeHtml(skuText);
+            const itemNum = (p.item_number && p.item_number !== '-' && p.item_number !== '') ? p.item_number : '';
             const skyP = (p.sky_p_code || p.p_code || (window.encodeToPCode ? window.encodeToPCode(p.sale_price_per_piece || p.price || 0) : '')).trim();
             const rotP = (p.rot_p_code || (window.encodeToPCode ? window.encodeToPCode(p.wholesale_price || 0) : '')).trim();
             const combP = window.formatCombinedPCode ? window.formatCombinedPCode(skyP, rotP) : (skyP && rotP ? `${skyP}-${rotP}` : (skyP || rotP));
             const pCodeBadge = combP ? `<span class="qb-card-pcode" title="P-Code: ${escapeHtml(combP)}">P: <strong>${escapeHtml(combP)}</strong></span>` : '';
+
+            // Check if any variant number matched current search
+            const currentQ = ($('#qbCatalogSearchInput').val() || '').toLowerCase().trim();
+            let matchedVarBadge = '';
+            if (currentQ && Array.isArray(p.variant_numbers)) {
+                const matchedV = p.variant_numbers.find(vn => String(vn).toLowerCase().includes(currentQ));
+                if (matchedV) {
+                    matchedVarBadge = `<span class="badge" style="background: #1e3a8a; color: #fff; font-size: 9.5px; font-weight: 700; padding: 2px 5px;" title="Matched Variant #${escapeHtml(matchedV)}">Var #${escapeHtml(matchedV)}</span>`;
+                }
+            }
 
             const imgUrl = (p.image && typeof p.image === 'string') ? escapeHtml(p.image) : '';
             const bgHtml = imgUrl 
@@ -7342,7 +7660,8 @@ $(document).ready(function() {
                     </div>
                     <div class="qb-card-title" title="${safeName}">${safeName}</div>
                     <div class="d-flex align-items-center justify-content-between mt-auto mb-1" style="gap: 4px; flex-wrap: wrap; position: relative; z-index: 2;">
-                        <span class="qb-card-sku">#${safeSku}</span>
+                        <span class="qb-card-sku">#${escapeHtml(itemNum || safeSku)}</span>
+                        ${matchedVarBadge}
                         ${pCodeBadge}
                     </div>
                     <div class="qb-card-price">Rs. ${price}</div>
@@ -7399,22 +7718,99 @@ $(document).ready(function() {
         loadCatalogProducts(catId);
     });
 
-    // Catalog Search Filter Handler
+    // Catalog Search Filter Handler with Variant & Server-side Support
+    let qbCatalogSearchDebounce = null;
     $('#qbCatalogSearchInput').on('input', function() {
         const q = $(this).val().toLowerCase().trim();
+        clearTimeout(qbCatalogSearchDebounce);
+
         if (!q) {
             renderCatalogProducts(catalogProductsCache);
             return;
         }
-        const filtered = catalogProductsCache.filter(p => {
+
+        // 1. Instant local filter against loaded cache
+        const filtered = (catalogProductsCache || []).filter(p => {
             const name = (p.name || p.item_name || '').toLowerCase();
             const sku = (p.sku || p.item_code || '').toLowerCase();
+            const itemNum = (p.item_number || '').toLowerCase();
             const skyP = (p.sky_p_code || p.p_code || '').toLowerCase();
             const rotP = (p.rot_p_code || '').toLowerCase();
             const combP = (window.formatCombinedPCode ? window.formatCombinedPCode(skyP, rotP) : `${skyP}-${rotP}`).toLowerCase();
-            return name.includes(q) || sku.includes(q) || skyP.includes(q) || rotP.includes(q) || combP.includes(q);
+
+            // Match base product fields
+            if (name.includes(q) || sku.includes(q) || itemNum.includes(q) || skyP.includes(q) || rotP.includes(q) || combP.includes(q)) {
+                return true;
+            }
+
+            // Match unique variant numbers!
+            if (Array.isArray(p.variant_numbers)) {
+                if (p.variant_numbers.some(vn => String(vn).toLowerCase().includes(q))) {
+                    return true;
+                }
+            }
+
+            // Match variant items
+            if (Array.isArray(p.variant_items)) {
+                if (p.variant_items.some(v => 
+                    String(v.item_number || '').toLowerCase().includes(q) ||
+                    String(v.serial_no || '').toLowerCase().includes(q) ||
+                    String(v.color || '').toLowerCase().includes(q) ||
+                    String(v.size || '').toLowerCase().includes(q)
+                )) {
+                    return true;
+                }
+            }
+
+            // Fallback match in color JSON string
+            if (p.color && typeof p.color === 'string' && p.color.toLowerCase().includes(q)) {
+                return true;
+            }
+
+            return false;
         });
+
+        // Priority sort: exact matches on variant number or item number come first
+        filtered.sort((a, b) => {
+            const aExactVar = Array.isArray(a.variant_numbers) && a.variant_numbers.some(vn => String(vn).toLowerCase() === q);
+            const bExactVar = Array.isArray(b.variant_numbers) && b.variant_numbers.some(vn => String(vn).toLowerCase() === q);
+            const aExactItem = (a.item_number || '').toLowerCase() === q;
+            const bExactItem = (b.item_number || '').toLowerCase() === q;
+
+            if ((aExactVar || aExactItem) && !(bExactVar || bExactItem)) return -1;
+            if (!(aExactVar || aExactItem) && (bExactVar || bExactItem)) return 1;
+            return 0;
+        });
+
         renderCatalogProducts(filtered);
+
+        // 2. Debounced server-side query to search across entire product database
+        qbCatalogSearchDebounce = setTimeout(() => {
+            const activeVal = $('#qbCatalogSearchInput').val().toLowerCase().trim();
+            if (activeVal !== q) return;
+
+            $.ajax({
+                url: '{{ route('sale.products_by_category', [], false) }}',
+                type: 'GET',
+                data: { 
+                    category_id: 'all', 
+                    search: q 
+                },
+                dataType: 'json',
+                success: function(res) {
+                    if (res && res.products && $('#qbCatalogSearchInput').val().toLowerCase().trim() === q) {
+                        const mergedMap = new Map();
+                        // Priority to server results sorted by relevance
+                        res.products.forEach(p => mergedMap.set(p.id, p));
+                        filtered.forEach(p => {
+                            if (!mergedMap.has(p.id)) mergedMap.set(p.id, p);
+                        });
+                        const merged = Array.from(mergedMap.values());
+                        renderCatalogProducts(merged);
+                    }
+                }
+            });
+        }, 280);
     });
 
     // Catalog Product Card Click Handler
@@ -7515,7 +7911,14 @@ $(document).ready(function() {
         $('#pickerTableContainer').addClass('d-none');
         $('#btnPickerAddMatrixVariant').prop('disabled', true).html('<i class="fas fa-check me-1"></i> Add Variant');
         $('#pickerSelectedVariantInfo').html('<span class="text-muted small"><i class="fas fa-info-circle me-1 text-primary"></i> Select options above to view availability</span>');
-        $('#variantPickerSearchInput').val('');
+        
+        const catSearchVal = ($('#qbCatalogSearchInput').val() || '').trim();
+        if (catSearchVal) {
+            $('#variantPickerSearchInput').val(catSearchVal);
+            $('#btnPickerModeTable').trigger('click');
+        } else {
+            $('#variantPickerSearchInput').val('');
+        }
 
         $('#modalVariantPicker').modal('show');
 
@@ -7552,8 +7955,17 @@ $(document).ready(function() {
                 v.stock_pieces = parseFloat(v.stock_pieces !== undefined ? v.stock_pieces : (v.stock || 0));
             });
 
-            // Render Table View
-            renderVariantRows(currentMatrixVariants, fullProduct);
+            // Render Table View (with filter if search query present)
+            if (catSearchVal) {
+                const qLower = catSearchVal.toLowerCase();
+                const filtered = currentMatrixVariants.filter(v => {
+                    const str = JSON.stringify(v).toLowerCase();
+                    return str.includes(qLower);
+                });
+                renderVariantRows(filtered.length ? filtered : currentMatrixVariants, fullProduct);
+            } else {
+                renderVariantRows(currentMatrixVariants, fullProduct);
+            }
 
             // Render Odoo Matrix View
             renderMatrixPickerView(fullProduct, currentMatrixVariants);
@@ -7901,7 +8313,7 @@ $(document).ready(function() {
         const $tbody = $('#variantPickerTableBody').empty();
         if (!variants || !variants.length) {
             $tbody.html(`
-                <tr><td colspan="8" class="text-center py-4 text-muted">No variants available for this item.</td></tr>
+                <tr><td colspan="9" class="text-center py-4 text-muted">No variants available for this item.</td></tr>
             `);
             return;
         }
@@ -7916,6 +8328,7 @@ $(document).ready(function() {
                 }
             }
 
+            const itemNum = v.item_number || (vData && vData.item_number) || '';
             const size = (vData && vData.size) ? vData.size : (v.size || '-');
             const color = (vData && vData.color) ? vData.color : (v.color || '-');
             const serialNo = v.serial_no || (vData && vData.serial_no) || '-';
@@ -7929,6 +8342,7 @@ $(document).ready(function() {
 
             const tr = `
                 <tr>
+                    <td class="text-center font-monospace">${itemNum ? `<span class="badge" style="background:#1e3a8a; color:#fff; font-family:monospace; font-size:11px; padding:2px 6px;">#${escapeHtml(itemNum)}</span>` : '<span class="text-muted">-</span>'}</td>
                     <td class="text-center font-monospace">${escapeHtml(serialNo)}</td>
                     <td><strong>${escapeHtml(v.name || (productBase ? productBase.item_name || productBase.name : 'Variant'))}</strong></td>
                     <td class="text-center">${escapeHtml(size)}</td>
@@ -8735,7 +9149,7 @@ $(document).ready(function() {
                     const currentPosCustId = $('#customerSelect').val();
                     const isSameCustomer = (String(currentPosCustId) === String(res.customer.id));
 
-                    metaHtml += ` | <strong>Customer:</strong> <span class="badge bg-primary-subtle text-primary border">${res.customer.customer_name}</span> (Khata: Rs. ${custBal.toFixed(2)})`;
+                    metaHtml += ` | <strong>Customer:</strong> <span class="badge bg-primary-subtle text-primary border">${res.customer.customer_name}</span> (Ledger: Rs. ${custBal.toFixed(2)})`;
                     
                     if (!isSameCustomer) {
                         metaHtml += ` <button type="button" class="btn btn-xs btn-outline-success ms-2 py-0 px-2 fw-bold btn-adopt-return-customer" style="font-size: 11px;">
@@ -8852,7 +9266,7 @@ $(document).ready(function() {
         if (window.lastSearchedReturnCustomer) {
             setCustomer(window.lastSearchedReturnCustomer);
             if (typeof showAlert === 'function') {
-                showAlert('success', `POS customer switched to ${window.lastSearchedReturnCustomer.customer_name}. Refund can now be credited to Khata or refunded via Cash/Bank.`);
+                showAlert('success', `POS customer switched to ${window.lastSearchedReturnCustomer.customer_name}. Refund can now be credited to Ledger or refunded via Cash/Bank.`);
             }
             $(this).removeClass('btn-outline-success').addClass('btn-success disabled').html('<i class="fas fa-check me-1"></i> Switched');
         }
@@ -8927,7 +9341,7 @@ $(document).ready(function() {
             return;
         }
 
-        // Validate credit / unpaid Khata balance with walk-in customer
+        // Validate credit / unpaid Ledger balance with walk-in customer
         const isWalkin = ($('#is_walkin').val() === '1');
 
         // Walk-in name required validation before submit
@@ -8951,7 +9365,7 @@ $(document).ready(function() {
         if (actionType === 'sale' && isWalkin && (unpaidKhata > 0.05 || currentActivePaymentMethod === 'account')) {
             Swal.fire({
                 title: 'Customer Required',
-                text: 'Account / Khata sale sirf registered / main customer ke liye hai. Walk-in customer ko pori payment karni hogi. Barah-e-karam pehle customer select karein.',
+                text: 'Account / Ledger sale sirf registered / main customer ke liye hai. Walk-in customer ko pori payment karni hogi. Barah-e-karam pehle customer select karein.',
                 icon: 'warning',
                 confirmButtonText: '<i class="fas fa-user-plus me-1"></i> Select Customer',
                 confirmButtonColor: '#2563eb'
@@ -9711,6 +10125,50 @@ $(document).ready(function() {
     let activeUomAddSaleRowUid = null;
     let selectedAddSaleUomChoice = null;
 
+    function buildQbUomCardHtml(u, idx, isSelected, ratioText, uRatio, uPrice, uCost, isDefaultSell, stockInUnit) {
+        return `
+            <div class="qb-uom-card-item ${isSelected ? 'active' : ''}" 
+                 data-unit-name="${escapeHtml(u.name)}" 
+                 data-ratio="${uRatio}" 
+                 data-price="${uPrice}" 
+                 data-cost="${uCost}" 
+                 data-barcode="${escapeHtml(u.barcode || u.upc || '')}" 
+                 data-index="${idx}">
+                <div class="qb-uom-left-zone">
+                    <div class="qb-uom-radio-wrap">
+                        <i class="${isSelected ? 'fas fa-check-circle text-primary' : 'far fa-circle text-muted'} qb-uom-check-icon"></i>
+                    </div>
+                    <div class="qb-uom-info-wrap">
+                        <div class="qb-uom-name-badge-row">
+                            <span class="qb-uom-unit-name">${escapeHtml(u.name)}</span>
+                            <span class="qb-uom-ratio-badge ${isSelected ? 'active' : ''}">
+                                ${ratioText}
+                            </span>
+                            ${isDefaultSell ? '<span class="qb-uom-default-badge">Default Sell</span>' : ''}
+                        </div>
+                        ${u.barcode ? `
+                            <div class="qb-uom-barcode-row">
+                                <i class="fas fa-barcode"></i>
+                                <span>${escapeHtml(u.barcode)}</span>
+                            </div>
+                        ` : ''}
+                    </div>
+                </div>
+                <div class="qb-uom-price-col">
+                    <div class="qb-uom-price-val">
+                        <span class="qb-uom-currency">Rs.</span>
+                        <span class="qb-uom-amount">${uPrice.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}</span>
+                    </div>
+                    ${(stockInUnit !== undefined && stockInUnit !== null) ? `
+                        <div class="qb-uom-stock-hint">
+                            <i class="fas fa-boxes"></i> Avail: <b>${stockInUnit}</b> ${escapeHtml(u.name)}
+                        </div>
+                    ` : ''}
+                </div>
+            </div>
+        `;
+    }
+
     // Open UoM Modal during Item Addition Pipeline (Step 0)
     function showChooseUomModal(meta) {
         activeUomAddSaleRowUid = null; // New item pipeline mode
@@ -9780,44 +10238,15 @@ $(document).ready(function() {
                 };
             }
 
-            const cardHtml = `
-                <div class="qb-uom-card-item ${isSelected ? 'active' : ''}" 
-                     data-unit-name="${escapeHtml(u.name)}" 
-                     data-ratio="${uRatio}" 
-                     data-price="${uPrice}" 
-                     data-cost="${uCost}" 
-                     data-barcode="${escapeHtml(u.barcode || u.upc || '')}" 
-                     data-index="${idx}">
-                    <div class="d-flex align-items-center gap-2">
-                        <i class="${isSelected ? 'fas fa-check-circle text-primary' : 'far fa-circle text-secondary'} fs-5 flex-shrink-0 qb-uom-check-icon"></i>
-                        <div>
-                            <div class="d-flex align-items-center flex-wrap gap-1">
-                                <span class="fw-bold text-dark fs-6 qb-uom-unit-name">${escapeHtml(u.name)}</span>
-                                <span class="badge ${isSelected ? 'bg-primary text-white' : 'bg-light text-secondary border'}" style="font-size: 10px;">
-                                    ${ratioText}
-                                </span>
-                                ${isDefaultSell ? '<span class="badge bg-success-subtle text-success border border-success-subtle" style="font-size:9.5px;">Default Sell</span>' : ''}
-                            </div>
-                            ${u.barcode ? `<div class="text-muted font-monospace" style="font-size: 10px;"><i class="fas fa-barcode me-1"></i>${escapeHtml(u.barcode)}</div>` : ''}
-                        </div>
-                    </div>
-                    <div class="text-end flex-shrink-0 ms-2">
-                        <div class="fw-bold font-monospace fs-6 ${isSelected ? 'text-primary' : 'text-dark'}">
-                            Rs. ${uPrice.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}
-                        </div>
-                        <small class="text-muted" style="font-size: 10.5px;">
-                            Avail: <b>${stockInUnit}</b> ${escapeHtml(u.name)}
-                        </small>
-                    </div>
-                </div>
-            `;
+            const cardHtml = buildQbUomCardHtml(u, idx, isSelected, ratioText, uRatio, uPrice, uCost, isDefaultSell, stockInUnit);
             $container.append(cardHtml);
         });
 
         if (!defaultUnitChoice && meta.uomUnits.length > 0) {
             const firstCard = $container.find('.qb-uom-card-item').first();
             firstCard.addClass('active');
-            firstCard.find('.qb-uom-check-icon').removeClass('far fa-circle text-secondary').addClass('fas fa-check-circle text-primary');
+            firstCard.find('.qb-uom-check-icon').removeClass('far fa-circle text-muted').addClass('fas fa-check-circle text-primary');
+            firstCard.find('.qb-uom-ratio-badge').addClass('active');
             defaultUnitChoice = {
                 name: firstCard.data('unit-name'),
                 ratio: parseFloat(firstCard.data('ratio')) || 1,
@@ -9829,7 +10258,7 @@ $(document).ready(function() {
 
         selectedAddSaleUomChoice = defaultUnitChoice;
 
-        $('#btnConfirmQbAddSaleUomChoice').html('<i class="fas fa-arrow-right me-1"></i> Continue to Price');
+        $('#btnConfirmQbAddSaleUomChoice').html('<i class="fas fa-arrow-right" style="margin-right: 6px;"></i> Continue to Price');
         $('#qbChooseUomModalAddSale').modal('show');
         $('#qbChooseUomModalAddSale').one('shown.bs.modal', function() {
             $('#btnConfirmQbAddSaleUomChoice').focus();
@@ -9891,49 +10320,27 @@ $(document).ready(function() {
                 };
             }
 
-            const cardHtml = `
-                <div class="qb-uom-card-item ${isSelected ? 'active' : ''}" 
-                     data-unit-name="${escapeHtml(u.name)}" 
-                     data-ratio="${uRatio}" 
-                     data-price="${uPrice}" 
-                     data-cost="${uCost}" 
-                     data-barcode="${escapeHtml(u.barcode || u.upc || '')}" 
-                     data-index="${idx}">
-                    <div class="d-flex align-items-center gap-2">
-                        <i class="${isSelected ? 'fas fa-check-circle text-primary' : 'far fa-circle text-secondary'} fs-5 flex-shrink-0 qb-uom-check-icon"></i>
-                        <div>
-                            <div class="d-flex align-items-center flex-wrap gap-1">
-                                <span class="fw-bold text-dark fs-6 qb-uom-unit-name">${escapeHtml(u.name)}</span>
-                                <span class="badge ${isSelected ? 'bg-primary text-white' : 'bg-light text-secondary border'}" style="font-size: 10px;">
-                                    ${ratioText}
-                                </span>
-                            </div>
-                            ${u.barcode ? `<div class="text-muted font-monospace" style="font-size: 10px;"><i class="fas fa-barcode me-1"></i>${escapeHtml(u.barcode)}</div>` : ''}
-                        </div>
-                    </div>
-                    <div class="text-end flex-shrink-0 ms-2">
-                        <div class="fw-bold font-monospace fs-6 ${isSelected ? 'text-primary' : 'text-dark'}">
-                            Rs. ${uPrice.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}
-                        </div>
-                    </div>
-                </div>
-            `;
+            const cardHtml = buildQbUomCardHtml(u, idx, isSelected, ratioText, uRatio, uPrice, uCost, false, null);
             $container.append(cardHtml);
         });
 
-        $('#btnConfirmQbAddSaleUomChoice').html('<i class="fas fa-check me-1"></i> Apply Unit Change');
+        $('#btnConfirmQbAddSaleUomChoice').html('<i class="fas fa-check" style="margin-right: 6px;"></i> Apply Unit Change');
         $('#qbChooseUomModalAddSale').modal('show');
     });
 
     // Card selection click
     $(document).on('click', '.qb-uom-card-item', function() {
         $('#qbAddSaleModalUnitsContainer .qb-uom-card-item').removeClass('active');
-        $('#qbAddSaleModalUnitsContainer .qb-uom-check-icon').removeClass('fas fa-check-circle text-primary').addClass('far fa-circle text-secondary');
-        $('#qbAddSaleModalUnitsContainer .badge.bg-primary').removeClass('bg-primary text-white').addClass('bg-light text-secondary border');
+        $('#qbAddSaleModalUnitsContainer .qb-uom-check-icon')
+            .removeClass('fas fa-check-circle text-primary')
+            .addClass('far fa-circle text-muted');
+        $('#qbAddSaleModalUnitsContainer .qb-uom-ratio-badge').removeClass('active');
 
         $(this).addClass('active');
-        $(this).find('.qb-uom-check-icon').removeClass('far fa-circle text-secondary').addClass('fas fa-check-circle text-primary');
-        $(this).find('.badge').first().removeClass('bg-light text-secondary border').addClass('bg-primary text-white');
+        $(this).find('.qb-uom-check-icon')
+            .removeClass('far fa-circle text-muted')
+            .addClass('fas fa-check-circle text-primary');
+        $(this).find('.qb-uom-ratio-badge').addClass('active');
 
         selectedAddSaleUomChoice = {
             name: $(this).data('unit-name'),

@@ -185,12 +185,12 @@
         if (rotCode === '---' || rotCode === '-') rotCode = '';
 
         if (skyCode && rotCode) {
-            if (skyCode.indexOf(rotCode) !== -1) {
+            if (skyCode.indexOf('-') !== -1 && (!rotCode || rotCode === skyCode)) {
                 return skyCode.replace(/\s*-\s*/g, '-');
             }
             return `${skyCode}-${rotCode}`;
         }
-        return skyCode || rotCode || '';
+        return skyCode || rotCode || '---';
     };
 
     /**

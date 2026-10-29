@@ -109,13 +109,14 @@ class PCodeService
         if ($rotCode === '---' || $rotCode === '-') $rotCode = '';
 
         if (!empty($skyCode) && !empty($rotCode)) {
-            if (str_contains($skyCode, $rotCode)) {
+            // If skyCode already contains a combined format with hyphen and rotCode is identical or empty, avoid duplicating
+            if (str_contains($skyCode, '-') && ($rotCode === '' || $rotCode === $skyCode)) {
                 return preg_replace('/\s*-\s*/', '-', $skyCode);
             }
             return "{$skyCode}-{$rotCode}";
         }
 
-        return $skyCode ?: $rotCode;
+        return $skyCode ?: ($rotCode ?: '---');
     }
 
     /**

@@ -196,7 +196,7 @@
         }
 
         /* ══════════════════════════════════════════════════════════
-           EXACT 38mm x 26mm LABEL BOX (MATCHING PHOTO EXACTLY)
+           EXACT 38mm x 26mm LABEL BOX (3 LINES: SERIAL, PCODE, LOCATION)
            ══════════════════════════════════════════════════════════ */
         .label-sticker {
             width: 38mm;
@@ -208,10 +208,10 @@
             background: #ffffff;
             border: {{ $layout === 'a4' ? '0.5px dashed #94a3b8' : '1px dashed #cbd5e1' }};
             border-radius: 2px;
-            padding: 1.4mm 2.2mm 1mm 2.2mm;
+            padding: 2.2mm 2mm;
             display: flex;
             flex-direction: column;
-            justify-content: space-between;
+            justify-content: space-evenly;
             align-items: center;
             text-align: center;
             overflow: hidden;
@@ -222,23 +222,9 @@
             -webkit-font-smoothing: antialiased;
         }
 
-        /* Line 1: Product Name & Variant */
-        .sticker-line-1 {
-            font-size: 8.5pt;
-            font-weight: 700;
-            color: #000000;
-            width: 100%;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            text-align: center;
-            line-height: 1.15;
-            letter-spacing: -0.1px;
-        }
-
-        /* Serial No: directly below Product Name in larger bold font */
+        /* Line 1: Unique Variant Serial No */
         .sticker-line-serial {
-            font-size: 11pt;
+            font-size: 13.5pt;
             font-weight: 900;
             color: #000000;
             width: 100%;
@@ -250,9 +236,9 @@
             letter-spacing: 0.3px;
         }
 
-        /* Line 2: PCODE - ROOT */
+        /* Line 2: P-CODE */
         .sticker-line-2 {
-            font-size: 9.8pt;
+            font-size: 11.5pt;
             font-weight: 800;
             color: #000000;
             width: 100%;
@@ -266,7 +252,7 @@
 
         /* Line 3: LOCATION */
         .sticker-line-3 {
-            font-size: 8.5pt;
+            font-size: 10pt;
             font-weight: 700;
             color: #000000;
             width: 100%;
@@ -275,18 +261,6 @@
             text-overflow: ellipsis;
             text-align: center;
             line-height: 1.15;
-        }
-
-        /* Line 4: Store Name in script font (Kent Hardware) */
-        .sticker-line-4 {
-            text-align: center;
-            width: 100%;
-            font-family: 'Caveat', 'Segoe Script', 'Brush Script MT', cursive;
-            font-size: 11pt;
-            font-weight: 700;
-            color: #000000;
-            line-height: 1;
-            letter-spacing: 0.3px;
         }
 
         /* ══════════════════════════════════════════════════════════
@@ -339,7 +313,11 @@
                     break-inside: avoid !important;
                     margin: 0 !important;
                     overflow: hidden !important;
-                    padding: 1.4mm 2.2mm 1mm 2.2mm !important;
+                    padding: 2.2mm 2mm !important;
+                    display: flex !important;
+                    flex-direction: column !important;
+                    justify-content: space-evenly !important;
+                    align-items: center !important;
                 }
             }
         @else
@@ -385,7 +363,11 @@
                     break-inside: avoid !important;
                     margin: 0 !important;
                     overflow: hidden !important;
-                    padding: 1.4mm 2.2mm 1mm 2.2mm !important;
+                    padding: 2.2mm 2mm !important;
+                    display: flex !important;
+                    flex-direction: column !important;
+                    justify-content: space-evenly !important;
+                    align-items: center !important;
                 }
             }
         @endif
@@ -446,31 +428,19 @@
     <div class="labels-preview-wrap">
         @forelse($labelsToPrint as $label)
             <div class="label-sticker">
-                <!-- Line 1: Product Name & Variant -->
-                <div class="sticker-line-1">
-                    {{ $label['line_1'] }}
+                <!-- Line 1: Unique Variant Serial No -->
+                <div class="sticker-line-serial">
+                    {{ $label['serial_no'] ?: ($label['code_serial'] ?: '—') }}
                 </div>
 
-                <!-- Serial No (larger font directly below Line 1) -->
-                @if(!empty($label['serial_no']))
-                    <div class="sticker-line-serial">
-                        {{ $label['serial_no'] }}
-                    </div>
-                @endif
-
-                <!-- Line 2: PCODE - ROOT -->
+                <!-- Line 2: P-CODE -->
                 <div class="sticker-line-2">
-                    {{ $label['line_2'] }}
+                    {{ $label['line_2'] ?: '—' }}
                 </div>
 
                 <!-- Line 3: LOCATION -->
                 <div class="sticker-line-3">
                     {{ $label['line_3'] ?: '—' }}
-                </div>
-
-                <!-- Line 4: Kent Hardware (Cursive) -->
-                <div class="sticker-line-4">
-                    {{ $companyName }}
                 </div>
             </div>
         @empty

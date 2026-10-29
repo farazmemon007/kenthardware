@@ -20,6 +20,10 @@ class ReportingController extends Controller
                 products.id,
                 products.item_code,
                 products.item_name,
+                products.item_number,
+                products.color,
+                products.is_part,
+                products.is_assembled,
                 COALESCE(brands.name, "") as brand_name,
                 COALESCE(units.name, "") as unit_name,
                 COALESCE(soh.onhand_qty, 0) as onhand_qty
@@ -59,6 +63,9 @@ class ReportingController extends Controller
         $reportMode  = $request->report_mode ?: 'summary'; // 'summary' vs 'ledger'
         $dateFrom    = $request->date_from;
         $dateTo      = $request->date_to;
+        $itemNumber  = trim((string)$request->input('item_number', ''));
+        $itemNumber  = ltrim($itemNumber, '#');
+        $itemNumber  = trim($itemNumber);
 
         $productsQuery = Product::with(['warehouseStocks', 'unit', 'category_relation']);
 
@@ -67,6 +74,13 @@ class ReportingController extends Controller
         }
         if ($categoryId && $categoryId !== 'all') {
             $productsQuery->where('category_id', $categoryId);
+        }
+
+        if ($itemNumber !== '') {
+            $productsQuery->where(function($q) use ($itemNumber) {
+                $q->where('item_number', 'like', "%{$itemNumber}%")
+                  ->orWhere('color', 'like', "%{$itemNumber}%");
+            });
         }
 
         // Unit Mode Filter
@@ -273,6 +287,15 @@ class ReportingController extends Controller
                     $vColor = $v['color'] ?? '-';
                     $vKey = trim($vName) . '|' . trim($vSize) . '|' . trim($vColor);
 
+                    $vItemNumber = trim((string)($v['item_number'] ?? ($v['item_no'] ?? '')));
+                    if ($vItemNumber === '') {
+                        $vItemNumber = trim((string)($product->item_number ?? ''));
+                    }
+
+                    if ($itemNumber !== '' && stripos($vItemNumber, $itemNumber) === false) {
+                        continue;
+                    }
+
                     if ($variantKey && $variantKey !== 'all' && $variantKey !== '') {
                         if ($vKey !== trim($variantKey) && trim($v['name'] ?? '') !== trim($variantKey)) {
                             continue;
@@ -427,6 +450,7 @@ class ReportingController extends Controller
                     $rows[] = [
                         'id'              => $product->id,
                         'item_code'       => $product->item_code,
+                        'item_number'     => $vItemNumber,
                         'item_name'       => $vName . ' (' . $vSize . ' | ' . $vColor . ')',
                         'category_name'   => $product->category_relation->name ?? 'Standard',
                         'unit_name'       => $vUnitName,
@@ -451,6 +475,11 @@ class ReportingController extends Controller
                 }
             } else {
                 // Product has no variants
+                $pItemNumber = trim((string)($product->item_number ?? ''));
+                if ($itemNumber !== '' && stripos($pItemNumber, $itemNumber) === false) {
+                    continue;
+                }
+
                 if ($variantKey && $variantKey !== 'all' && $variantKey !== '') {
                     continue;
                 }
@@ -553,6 +582,7 @@ class ReportingController extends Controller
                 $rows[] = [
                     'id'              => $product->id,
                     'item_code'       => $product->item_code,
+                    'item_number'     => $pItemNumber,
                     'item_name'       => $product->item_name,
                     'category_name'   => $product->category_relation->name ?? 'Standard',
                     'unit_name'       => $unitName,
@@ -611,16 +641,19 @@ class ReportingController extends Controller
                         $vSize = $v['size'] ?? '-';
                         $vColor = $v['color'] ?? '-';
                         $vKey = trim($vName) . '|' . trim($vSize) . '|' . trim($vColor);
-                        $vText = $vName . ' (' . $vSize . ' | ' . $vColor . ')';
+                        $vItemNumber = trim((string)($v['item_number'] ?? ($v['item_no'] ?? '')));
+                        $numPrefix = !empty($vItemNumber) ? "[#{$vItemNumber}] " : '';
+                        $vText = $numPrefix . $vName . ' (' . $vSize . ' | ' . $vColor . ')';
                         if (!empty($v['barcode'])) {
                             $vText .= ' - [' . $v['barcode'] . ']';
                         }
                         $variants[] = [
-                            'key'   => $vKey,
-                            'name'  => $vName,
-                            'size'  => $vSize,
-                            'color' => $vColor,
-                            'text'  => $vText,
+                            'key'         => $vKey,
+                            'name'        => $vName,
+                            'item_number' => $vItemNumber,
+                            'size'        => $vSize,
+                            'color'       => $vColor,
+                            'text'        => $vText,
                         ];
                     }
                 }
@@ -2924,6 +2957,121 @@ class ReportingController extends Controller
      */
     public function fetchProductSaleCustomerWise(Request $request)
     {
+        $data = $this->getProductSaleCustomerWiseData($request);
+        return response()->json([
+            'summary' => $data['summary'],
+            'customers' => $data['customers']
+        ]);
+    }
+
+    /**
+     * Export Product Sale Customer Wise Report Data as CSV / Excel
+     */
+    public function exportProductSaleCustomerWise(Request $request)
+    {
+        $data = $this->getProductSaleCustomerWiseData($request);
+        $filename = 'Product_Sale_Customer_Wise_' . date('Y-m-d_His') . '.csv';
+
+        $callback = function () use ($data) {
+            $file = fopen('php://output', 'w');
+            // Write UTF-8 BOM for Microsoft Excel compatibility
+            fprintf($file, chr(0xEF) . chr(0xBB) . chr(0xBF));
+
+            fputcsv($file, [
+                'Customer Code',
+                'Customer Name',
+                'Customer Phone',
+                'Customer City/Address',
+                'Product Code',
+                'Product Name',
+                'Brand',
+                'Category',
+                'Sold Qty',
+                'Avg Price',
+                'Gross Amount',
+                'Return Qty',
+                'Return Amount',
+                'Net Qty',
+                'Net Amount'
+            ]);
+
+            foreach ($data['customers'] as $cust) {
+                foreach ($cust['products'] as $p) {
+                    fputcsv($file, [
+                        $cust['customer_code'],
+                        $cust['customer_name'],
+                        $cust['customer_mobile'],
+                        $cust['customer_city'],
+                        $p['product_code'],
+                        $p['product_name'],
+                        $p['brand_name'],
+                        $p['category_name'],
+                        $p['sold_qty'],
+                        number_format($p['avg_price'], 2, '.', ''),
+                        number_format($p['gross_amount'], 2, '.', ''),
+                        $p['return_qty'],
+                        number_format($p['return_amount'], 2, '.', ''),
+                        $p['net_qty'],
+                        number_format($p['net_amount'], 2, '.', ''),
+                    ]);
+                }
+
+                // Subtotal per Customer
+                fputcsv($file, [
+                    $cust['customer_code'],
+                    'SUBTOTAL (' . $cust['customer_name'] . ')',
+                    '',
+                    '',
+                    '',
+                    '',
+                    '',
+                    '',
+                    $cust['sold_qty'],
+                    '',
+                    number_format($cust['gross_amount'], 2, '.', ''),
+                    $cust['return_qty'],
+                    number_format($cust['return_amount'], 2, '.', ''),
+                    $cust['net_qty'],
+                    number_format($cust['net_amount'], 2, '.', ''),
+                ]);
+            }
+
+            // Grand Total Row
+            if (isset($data['summary']['raw_total_sold_qty'])) {
+                fputcsv($file, []);
+                fputcsv($file, [
+                    'GRAND TOTAL',
+                    'Total Customers: ' . $data['summary']['total_customers'],
+                    '',
+                    '',
+                    '',
+                    '',
+                    '',
+                    '',
+                    $data['summary']['raw_total_sold_qty'],
+                    '',
+                    number_format($data['summary']['raw_total_gross_amount'], 2, '.', ''),
+                    $data['summary']['raw_total_return_qty'],
+                    number_format($data['summary']['raw_total_return_amount'], 2, '.', ''),
+                    $data['summary']['raw_total_net_qty'],
+                    number_format($data['summary']['raw_total_net_sale_amount'], 2, '.', ''),
+                ]);
+            }
+
+            fclose($file);
+        };
+
+        return response()->stream($callback, 200, [
+            'Content-Type'        => 'text/csv; charset=UTF-8',
+            'Content-Disposition' => "attachment; filename=\"{$filename}\"",
+        ]);
+    }
+
+    /**
+     * Helper to retrieve and aggregate customer-wise sales and returns data
+     */
+    private function getProductSaleCustomerWiseData(Request $request)
+    {
         $fromDate = $request->from_date;
         $toDate   = $request->to_date;
 
@@ -3116,11 +3264,17 @@ class ReportingController extends Controller
             'gross_amount' => 'Rs ' . number_format($totalGrossAmount, 2),
             'return_amount' => 'Rs ' . number_format($totalReturnAmount, 2),
             'net_sale_amount' => 'Rs ' . number_format($totalNetSaleAmount, 2),
+            'raw_total_sold_qty' => $totalSoldQty,
+            'raw_total_return_qty' => $totalReturnQty,
+            'raw_total_net_qty' => $totalNetQty,
+            'raw_total_gross_amount' => $totalGrossAmount,
+            'raw_total_return_amount' => $totalReturnAmount,
+            'raw_total_net_sale_amount' => $totalNetSaleAmount,
         ];
 
-        return response()->json([
+        return [
             'summary' => $summary,
             'customers' => array_values($grouped)
-        ]);
+        ];
     }
 }

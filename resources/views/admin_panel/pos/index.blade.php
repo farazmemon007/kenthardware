@@ -1866,7 +1866,7 @@
                             data-unit-name="${u.name}" 
                             data-ratio="${ratioVal}" 
                             data-price="${u.price || 0}"
-                            style="border-radius: 6px; transition: all 0.15s ease;">
+                            style="border-radius: 6px; transition: all 0.15s ease; margin-bottom: 8px;">
                         <div class="d-flex justify-content-between align-items-center">
                             <div>
                                 <span class="fw-bold fs-6">${u.name}</span>

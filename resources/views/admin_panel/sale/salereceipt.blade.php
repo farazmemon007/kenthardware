@@ -582,13 +582,13 @@
             @if(!$isWalkin)
                 @if(!$isRefundSlip && $dueOnThisBill > 0)
                 <div class="tot-row" style="color: #c0392b; font-weight: 600;">
-                    <span>Due on Khata:</span>
+                    <span>Due on Ledger:</span>
                     <span>Rs. {{ number_format($dueOnThisBill, 0) }}</span>
                 </div>
                 @endif
                 @if($isRefundSlip && $refundCreditedToKhata > 0)
                 <div class="tot-row" style="color: #27ae60; font-weight: 600;">
-                    <span>Credited to Khata:</span>
+                    <span>Credited to Ledger:</span>
                     <span>Rs. {{ number_format($refundCreditedToKhata, 0) }}</span>
                 </div>
                 @endif

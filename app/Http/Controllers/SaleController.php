@@ -1050,7 +1050,7 @@ class SaleController extends Controller
     {
         // 1. Fetch Sale with relations (including nested items.product for pre-fill)
         // Eager load warehouseStocks to display stock in edit view
-        $sale = Sale::with(['items.product.warehouseStocks', 'customer_relation'])->findOrFail($id);
+        $sale = Sale::with(['items.product.warehouseStocks', 'customer_relation', 'carpenter'])->findOrFail($id);
 
         if (in_array($sale->sale_status, ['cancelled', 'returned'])) {
             return redirect()->route('sale.index')->with('error', 'Cannot edit a '.$sale->sale_status.' sale.');
@@ -1063,6 +1063,9 @@ class SaleController extends Controller
         $defaultSeries = $allSeries->where('is_default', 1)->first() ?: $allSeries->first();
         $activePrefix = $defaultSeries ? $defaultSeries->prefix : 'INV';
         $recentProducts = Product::latest()->take(12)->get();
+        $salesOfficers = \App\Models\SalesOfficer::orderBy('name')->get();
+        $vendors = \App\Models\Vendor::orderBy('name')->get();
+        $carpenters = \App\Models\Carpenter::active()->orderBy('name')->get();
 
         // Filter accounts (Cash/Bank) for Receipt Voucher
         $accounts = \App\Models\Account::whereHas('head', function($q) {
@@ -1071,11 +1074,57 @@ class SaleController extends Controller
             ->orderBy('title')
             ->get();
 
+        // Find existing receipt voucher details to pre-populate payment rows accurately
+        $receiptVoucher = \App\Models\VoucherMaster::where('remarks', 'like', "%#{$sale->invoice_no}%")
+            ->where('voucher_type', \App\Models\VoucherMaster::TYPE_RECEIPT)
+            ->with('details.account')
+            ->first();
+
+        $receiptLines = [];
+        $savedChangeAccountId = $sale->change_account_id;
+
+        if ($receiptVoucher && $receiptVoucher->details->count() > 0) {
+            foreach ($receiptVoucher->details as $d) {
+                if ((float)$d->debit > 0) {
+                    $receiptLines[] = [
+                        'account_id' => $d->account_id,
+                        'amount' => (float)$d->debit,
+                    ];
+                } elseif ((float)$d->credit > 0 && stripos($d->narration, 'change') !== false) {
+                    $savedChangeAccountId = $d->account_id;
+                }
+            }
+        }
+
+        // Fallback if no voucher details found, but sale has cash or card recorded
+        if (empty($receiptLines)) {
+            $balanceService = app(\App\Services\BalanceService::class);
+            $cashAccId = $balanceService->getCashAccountId();
+            $bankAccId = $balanceService->getBankAccountId();
+
+            if ((float)$sale->cash > 0) {
+                $receiptLines[] = [
+                    'account_id' => $cashAccId,
+                    'amount' => (float)$sale->cash,
+                ];
+            }
+            if ((float)$sale->card > 0) {
+                $receiptLines[] = [
+                    'account_id' => $bankAccId,
+                    'amount' => (float)$sale->card,
+                ];
+            }
+        }
+
         // 3. Reuse nextInvoiceNumber var for current invoice no (view expects this variable name)
         $nextInvoiceNumber = $sale->invoice_no;
 
         // 4. Return the Edit Sale View
-        return view('admin_panel.sale.edit_sale', compact('warehouse', 'customer', 'nextInvoiceNumber', 'accounts', 'sale', 'recentProducts', 'allSeries', 'activePrefix'));
+        return view('admin_panel.sale.edit_sale', compact(
+            'warehouse', 'customer', 'nextInvoiceNumber', 'accounts',
+            'sale', 'recentProducts', 'allSeries', 'activePrefix',
+            'carpenters', 'salesOfficers', 'vendors', 'receiptLines', 'savedChangeAccountId'
+        ));
     }
 
     public function updatesale(Request $request, $id)
@@ -1318,8 +1367,10 @@ class SaleController extends Controller
 
             $sale->save(); // Save first to get ID
 
-            // Increment Invoice Series counter if matching series prefix
-            \App\Models\InvoiceSeries::incrementCounterForInvoice($sale->invoice_no);
+            if ($isNew) {
+                // Increment Invoice Series counter if matching series prefix
+                \App\Models\InvoiceSeries::incrementCounterForInvoice($sale->invoice_no);
+            }
 
             // 3. Process Items
             // Delete old items if updating
@@ -1679,7 +1730,7 @@ class SaleController extends Controller
                         } elseif (in_array($paymentMethod, ['credit', 'account'])) {
                             if ($isWalkin) {
                                 throw \Illuminate\Validation\ValidationException::withMessages([
-                                    'customer' => 'Walk-in customers cannot have refund credited to Khata/Ledger. Please select a registered customer or refund via Cash/Bank.'
+                                    'customer' => 'Walk-in customers cannot have refund credited to Ledger. Please select a registered customer or refund via Cash/Bank.'
                                 ]);
                             }
                             $refundKhata = $netRefundAmount;
@@ -1690,7 +1741,7 @@ class SaleController extends Controller
 
                     if ($isWalkin && $refundKhata > 0.009) {
                         throw \Illuminate\Validation\ValidationException::withMessages([
-                            'customer' => 'Walk-in customers cannot have refund credited to Khata/Ledger. Please select a registered customer or refund via Cash/Bank.'
+                            'customer' => 'Walk-in customers cannot have refund credited to Ledger. Please select a registered customer or refund via Cash/Bank.'
                         ]);
                     }
 
@@ -1709,7 +1760,7 @@ class SaleController extends Controller
                     if (in_array($paymentMethod, ['credit', 'account']) && $totalPaid <= 0.009 && $netPayable > 0) {
                         if ($isWalkin) {
                             throw \Illuminate\Validation\ValidationException::withMessages([
-                                'customer' => 'Account / Credit sale (Udhar) requires a registered customer to record in ledger. Please select or add a customer.'
+                                'customer' => 'Account / Credit sale requires a registered customer to record in ledger. Please select or add a customer.'
                             ]);
                         }
                         $sale->cash = 0;
@@ -1736,7 +1787,7 @@ class SaleController extends Controller
                             if ($isWalkin) {
                                 $unpaidAmt = number_format(abs($sale->change), 2);
                                 throw \Illuminate\Validation\ValidationException::withMessages([
-                                    'customer' => "Walk-in customers cannot have unpaid balance on Khata (Rs. {$unpaidAmt}). Please select a registered customer or pay 100% upfront."
+                                    'customer' => "Walk-in customers cannot have unpaid balance on Ledger (Rs. {$unpaidAmt}). Please select a registered customer or pay 100% upfront."
                                 ]);
                             }
                         }
@@ -1774,6 +1825,9 @@ class SaleController extends Controller
                 $sale->carpenter_commission_amount = $commAmount;
                 $sale->save();
 
+                $existingComm = \App\Models\CarpenterCommission::where('sale_id', $sale->id)->first();
+                $commStatus = $existingComm ? $existingComm->status : 'pending';
+
                 \App\Models\CarpenterCommission::updateOrCreate(
                     ['sale_id' => $sale->id],
                     [
@@ -1783,7 +1837,7 @@ class SaleController extends Controller
                         'sale_amount' => $netBill,
                         'commission_amount' => $commAmount,
                         'effective_percentage' => $effectivePercent,
-                        'status' => 'pending',
+                        'status' => $commStatus,
                     ]
                 );
             } elseif ($request->has('carpenter_id') && empty($carpenterId)) {
@@ -3108,7 +3162,12 @@ class SaleController extends Controller
         $journalService = app(\App\Services\JournalEntryService::class);
 
         // Find all VoucherMaster records related to this sale (JV and RV)
-        $vouchers = \App\Models\VoucherMaster::where('remarks', 'like', "%#{$sale->invoice_no}%")->get();
+        // Exact regex matching ensures we do not accidentally match #INV-1 against #INV-10
+        $vouchers = \App\Models\VoucherMaster::where('remarks', 'like', "%#{$sale->invoice_no}%")->get()
+            ->filter(function($v) use ($sale) {
+                return preg_match('/#\s*' . preg_quote($sale->invoice_no, '/') . '(?!\d)/i', $v->remarks);
+            });
+
         foreach ($vouchers as $voucher) {
             // Reverse account balances and delete journal entries
             $journalService->reverseEntriesForSource($voucher);
@@ -3120,22 +3179,33 @@ class SaleController extends Controller
             $voucher->delete();
         }
 
+        // Reverse any direct journal entries attached directly to $sale
+        $journalService->reverseEntriesForSource($sale);
+
+        // Delete any customer payment vouchers logged for this invoice
+        \App\Models\CustomerPayment::where('note', 'like', "%#{$sale->invoice_no}%")->delete();
+
         // 3. Rollback Legacy Customer Ledger & Customer Master Balance
-        $ledgerEntries = \App\Models\CustomerLedger::where('customer_id', $sale->customer_id)
-            ->where('description', 'like', "%#{$sale->invoice_no}%")
-            ->get();
+        if ($sale->customer_id) {
+            $ledgerEntries = \App\Models\CustomerLedger::where('customer_id', $sale->customer_id)
+                ->where('description', 'like', "%#{$sale->invoice_no}%")
+                ->get()
+                ->filter(function($l) use ($sale) {
+                    return preg_match('/#\s*' . preg_quote($sale->invoice_no, '/') . '(?!\d)/i', $l->description);
+                });
 
-        $totalNetImpact = 0;
-        foreach ($ledgerEntries as $entry) {
-            $totalNetImpact += ($entry->closing_balance - $entry->previous_balance);
-            $entry->delete();
-        }
+            $totalNetImpact = 0;
+            foreach ($ledgerEntries as $entry) {
+                $totalNetImpact += ($entry->closing_balance - $entry->previous_balance);
+                $entry->delete();
+            }
 
-        if ($totalNetImpact != 0) {
-            $cust = \App\Models\Customer::find($sale->customer_id);
-            if ($cust) {
-                $cust->previous_balance -= $totalNetImpact;
-                $cust->save();
+            if ($totalNetImpact != 0) {
+                $cust = \App\Models\Customer::find($sale->customer_id);
+                if ($cust) {
+                    $cust->previous_balance -= $totalNetImpact;
+                    $cust->save();
+                }
             }
         }
     }

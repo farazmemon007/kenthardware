@@ -1297,7 +1297,7 @@
                                     </div>
                                     <div>
                                         <div class="qb-modal-title">Add New Financial Account</div>
-                                        <div class="qb-modal-subtitle">Bank, Cash, or Khata Ledger Account</div>
+                                        <div class="qb-modal-subtitle">Bank, Cash, or Ledger Account</div>
                                     </div>
                                 </div>
                                 <button type="button" class="qb-modal-close" data-dismiss="modal" data-bs-dismiss="modal" aria-label="Close">

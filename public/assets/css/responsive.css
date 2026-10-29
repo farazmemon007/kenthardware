@@ -167,9 +167,15 @@ table.dataTable {
 .form-control,
 .form-select,
 .select2-container {
-    width: 100% !important;
-    max-width: 100% !important;
-    box-sizing: border-box !important;
+    box-sizing: border-box;
+}
+
+@media (max-width: 767px) {
+    .form-control:not(.keep-width),
+    .form-select:not(.keep-width) {
+        width: 100% !important;
+        max-width: 100% !important;
+    }
 }
 
 /* Select2 responsive */
@@ -203,9 +209,11 @@ table.dataTable {
 /* ============================================================
    8. MODALS - RESPONSIVE
 ============================================================ */
-.modal-dialog {
-    max-width: 95vw !important;
-    margin: 10px auto !important;
+@media (max-width: 767px) {
+    .modal-dialog {
+        max-width: 95vw !important;
+        margin: 10px auto !important;
+    }
 }
 
 .modal-body {
@@ -426,8 +434,8 @@ td, th {
     }
 
     /* DataTable length and filter */
-    .dataTables_length,
-    .dataTables_filter {
+    .dataTables_length:not(.qb-dt-len):not(.keep-inline),
+    .dataTables_filter:not(.qb-dt-filter):not(.keep-inline) {
         text-align: left !important;
         margin-bottom: 8px !important;
     }
@@ -540,14 +548,14 @@ td, th {
     }
 
     /* DataTable controls stacking */
-    .dataTables_length,
-    .dataTables_filter {
+    .dataTables_length:not(.qb-dt-len):not(.keep-inline),
+    .dataTables_filter:not(.qb-dt-filter):not(.keep-inline) {
         display: block !important;
         width: 100% !important;
         text-align: left !important;
         margin-bottom: 8px !important;
     }
-    .dataTables_filter input {
+    .dataTables_filter:not(.qb-dt-filter):not(.keep-inline) input {
         width: 100% !important;
         max-width: 100% !important;
     }
@@ -2023,6 +2031,43 @@ body.drawer-open {
 .qb-table-card .table {
     display: table !important; /* Reset to proper table */
     overflow-x: visible !important;
+}
+
+.main-content .table thead,
+.main-content-inner .table thead,
+.app-page-body .table thead,
+.card-body .table thead,
+.qb-table-card .table thead {
+    display: table-header-group !important;
+}
+
+.main-content .table tbody,
+.main-content-inner .table tbody,
+.app-page-body .table tbody,
+.card-body .table tbody,
+.qb-table-card .table tbody {
+    display: table-row-group !important;
+}
+
+.main-content .table tr,
+.main-content-inner .table tr,
+.app-page-body .table tr,
+.card-body .table tr,
+.qb-table-card .table tr {
+    display: table-row !important;
+}
+
+.main-content .table th,
+.main-content .table td,
+.main-content-inner .table th,
+.main-content-inner .table td,
+.app-page-body .table th,
+.app-page-body .table td,
+.card-body .table th,
+.card-body .table td,
+.qb-table-card .table th,
+.qb-table-card .table td {
+    display: table-cell !important;
 }
 
 /* Instead: wrap parent divs handle the scrolling */

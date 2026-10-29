@@ -1082,11 +1082,12 @@
               let stock = repo.stock !== undefined ? repo.stock : 0;
               let sku = repo.sku || 'N/A';
               let badgeClass = stock > 0 ? 'bg-success' : 'bg-danger';
+              let itemNumBadge = repo.item_number ? `<span class="badge bg-primary font-monospace me-1" style="font-size:10px; padding: 2px 6px;">#${repo.item_number}</span>` : '';
 
               return $(`
               <div class="clearfix">
                   <div class="float-start">
-                      <div class="fw-bold">${repo.name || repo.text}</div>
+                      <div class="fw-bold">${itemNumBadge}${repo.name || repo.text}</div>
                       <small class="text-muted">SKU: ${sku}</small>
                   </div>
                   <div class="float-end">

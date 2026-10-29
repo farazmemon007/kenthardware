@@ -7,12 +7,12 @@
         if (skyCode === '---' || skyCode === '-') skyCode = '';
         if (rotCode === '---' || rotCode === '-') rotCode = '';
         if (skyCode && rotCode) {
-            if (skyCode.indexOf(rotCode) !== -1) {
+            if (skyCode.indexOf('-') !== -1 && (!rotCode || rotCode === skyCode)) {
                 return skyCode.replace(/\s*-\s*/g, '-');
             }
             return `${skyCode}-${rotCode}`;
         }
-        return skyCode || rotCode || '';
+        return skyCode || rotCode || '---';
     };
 
     let lastSelectedPriceMode = 'retail';
@@ -112,11 +112,12 @@
         const repoRot = repo.rot_p_code || '';
         const repoComb = window.formatCombinedPCode ? window.formatCombinedPCode(repoSky, repoRot) : (repoSky && repoRot ? `${repoSky}-${repoRot}` : (repoSky || repoRot));
         let pCodeBadge = repoComb ? `<span class="badge bg-warning-subtle text-dark border border-warning-subtle font-monospace ms-1" style="font-size:10px;" title="P-Code: ${repoComb}">P: ${repoComb}</span>` : '';
+        let itemNumBadge = repo.item_number ? `<span class="badge bg-primary font-monospace me-1" style="font-size:10px; padding: 2px 6px;">#${repo.item_number}</span>` : '';
 
         return $(`
         <div class="clearfix">
             <div class="float-start">
-                <div class="fw-bold">${repo.name || repo.text} ${pCodeBadge}</div>
+                <div class="fw-bold">${itemNumBadge}${repo.name || repo.text} ${pCodeBadge}</div>
                 <small class="text-muted">SKU: ${sku}</small>
             </div>
             <div class="float-end">
@@ -512,7 +513,7 @@
             if (gross <= 0 && net > 0) gross = net + dam;
 
             // Piece calc: use total-pieces field (already computed)
-            const pieces = parseInt($r.find('.total-pieces').val()) || 0;
+            const pieces = parseFloat($r.find('.total-pieces').val()) || 0;
 
             tQty += pieces;
             tGross += gross;
@@ -520,23 +521,19 @@
             tNet += net;
         });
 
-        const isWalkin = $('#is_walkin').val() === '1';
-        
-        let orderDisc = 0;
-        if (isWalkin) {
-            orderDisc = toNum($('#walkinDiscountRs').val());
-            $('#discountPercent').val(0); // clear percent
-        } else {
-            const orderPct = toNum($('#discountPercent').val());
+        let orderDisc = toNum($('#walkinDiscountRs').val());
+        const orderPct = toNum($('#discountPercent').val());
+        if (orderPct > 0 && orderDisc === 0) {
             orderDisc = (tNet * orderPct) / 100;
         }
+        $('#total_extra_cost').val(orderDisc.toFixed(2));
 
         const prev = toNum($('#previousBalance').val());
         const receipts = toNum($('#receiptsTotal').text());
         const payable = Math.max(0, tNet - orderDisc + prev - receipts);
         const currentInvoiceTotal = Math.max(0, tNet - orderDisc);
 
-        $('#tQty').text(tQty.toFixed(0));
+        $('#tQty').text(tQty % 1 === 0 ? tQty.toFixed(0) : tQty.toFixed(2));
         $('#tGross').text(tGross.toFixed(2));
         $('#tLineDisc').text(tLineDisc.toFixed(2));
         $('#tSub').text(tNet.toFixed(2));
@@ -665,19 +662,26 @@
             let method = 'POST';
             if (existing) {
                 url = '{{ route('sales.update', ':id') }}'.replace(':id', existing);
-                method = 'PUT';
+                method = 'POST';
             }
 
-            $('#btnSave, #btnQuotation, #btnHeaderPosted, #btnPosted').prop('disabled', true);
+            const $saveBtns = $('#btnSave, #btnQuotation, #btnHeaderPosted, #btnPosted, #btnSaveAndComplete, #btnSaveAndComplete2, #btnHeaderSaveSale');
+            $saveBtns.prop('disabled', true);
+
+            let formData = serializeForm();
+            if (existing && !formData.includes('_method=')) {
+                formData += '&_method=PUT';
+            }
 
             $.ajax({
                 url: url,
-                type: method,
-                data: serializeForm(),
+                type: 'POST',
+                data: formData,
                 success: function(res) {
-                    $('#btnSave, #btnQuotation, #btnHeaderPosted, #btnPosted').prop('disabled', false);
-                    if (res?.ok) {
-                        const bid = res.booking_id || existing;
+                    $saveBtns.prop('disabled', false);
+                    $('#allow_insufficient_stock').val('0');
+                    if (res?.ok || res?.success) {
+                        const bid = res.booking_id || res.sale_id || existing;
                         $('#booking_id').val(bid);
                         if ($('#action').val() === 'booking') {
                             Swal.fire({
@@ -698,23 +702,74 @@
                         }
                         resolve(res);
                     } else {
-                        Swal.fire('Error', res.msg || 'Save failed', 'error');
+                        Swal.fire('Error', res.msg || res.message || 'Save failed', 'error');
                         reject(res);
                     }
                 },
                 error: function(xhr) {
-                    $('#btnSave, #btnHeaderPosted, #btnPosted').prop('disabled', false);
+                    $saveBtns.prop('disabled', false);
                     let errMsg = 'Save error';
-                    if (xhr.responseJSON && xhr.responseJSON.message) {
-                        errMsg = xhr.responseJSON.message;
+                    let isInsufficientStock = false;
+                    if (xhr.responseJSON) {
+                        if (xhr.responseJSON.message) {
+                            errMsg = xhr.responseJSON.message;
+                        } else if (xhr.responseJSON.errors) {
+                            errMsg = Object.values(xhr.responseJSON.errors).flat().join('<br>');
+                        }
+                        if (xhr.responseJSON.insufficient_stock || errMsg.toLowerCase().includes('insufficient stock')) {
+                            isInsufficientStock = true;
+                        }
                     } else if (xhr.responseText) {
                         try {
                             let resp = JSON.parse(xhr.responseText);
                             if (resp.message) errMsg = resp.message;
+                            if (resp.insufficient_stock || errMsg.toLowerCase().includes('insufficient stock')) {
+                                isInsufficientStock = true;
+                            }
                         } catch(e) {}
                     }
-                    Swal.fire('Error', errMsg, 'error');
-                    reject(xhr);
+
+                    if (isInsufficientStock) {
+                        Swal.fire({
+                            title: 'Insufficient Stock Warning',
+                            html: `
+                                <div class="text-center py-1">
+                                    <div class="alert alert-warning py-2 px-3 text-dark fw-bold mb-3 text-start" style="font-size: 13px; border-radius: 6px; background-color: #fff3cd; border: 1px solid #ffeeba;">
+                                        <i class="fas fa-exclamation-triangle text-warning me-2"></i> ${errMsg}
+                                    </div>
+                                    <div style="font-size: 15px; font-weight: 700; color: #1e293b; margin-bottom: 5px;">
+                                        Aapke paas inventory me stock mojood nahi hai.
+                                    </div>
+                                    <div style="font-size: 14px; font-weight: 700; color: #dc2626;">
+                                        Do you still want to sell / update?
+                                    </div>
+                                    <div class="text-muted small mt-2" style="font-size: 11px;">
+                                        Agar aap <strong>Yes, Proceed Anyway</strong> karenge to negative stock update ho jayega aur invoice save ho jayegi.
+                                    </div>
+                                </div>
+                            `,
+                            icon: 'warning',
+                            showCancelButton: true,
+                            confirmButtonText: '<i class="fas fa-check-circle me-1"></i> Yes, Proceed Anyway',
+                            cancelButtonText: '<i class="fas fa-times-circle me-1"></i> No, Cancel',
+                            confirmButtonColor: '#16a34a',
+                            cancelButtonColor: '#64748b',
+                            reverseButtons: true,
+                            focusConfirm: true,
+                            allowOutsideClick: false
+                        }).then((result) => {
+                            if (result.isConfirmed) {
+                                $('#allow_insufficient_stock').val('1');
+                                ensureSaved().then(resolve).catch(reject);
+                            } else {
+                                $('#allow_insufficient_stock').val('0');
+                                reject(xhr);
+                            }
+                        });
+                    } else {
+                        Swal.fire('Error', errMsg, 'error');
+                        reject(xhr);
+                    }
                 }
             });
         });
@@ -774,9 +829,10 @@
             const $r = $(this);
             const prod = $r.find('.product-id-hidden').val();
             const wh = $r.find('.warehouse').val();
-            const cartons = parseInt($r.find('.carton-qty').val()) || 0;
-            const loose   = parseInt($r.find('.loose-pcs-input').val()) || 0;
-            const qty = cartons + loose;
+            const cartons = parseFloat($r.find('.carton-qty').val()) || 0;
+            const loose   = parseFloat($r.find('.loose-pcs-input').val()) || 0;
+            const pieces  = parseFloat($r.find('.total-pieces').val()) || 0;
+            const qty = Math.max(cartons + loose, pieces);
             if ((qty <= 0) || ((!prod || prod === '') && (!wh || wh === ''))) {
                 if ($('#salesTableBody tr').length > 1) {
                     $r.remove();
@@ -786,6 +842,7 @@
                     $r.find('input').val('');
                     $r.find('.carton-qty').val(0);
                     $r.find('.loose-pcs-input').val(0);
+                    $r.find('.total-pieces').val(0);
                     $r.find('.stock').val('');
                     $r.find('.sales-amount').val('0');
                 }
@@ -1939,12 +1996,26 @@
 
         window.recomputeReceipts = function() {
             let sum = 0;
-            $('.rv-amount').each(function() {
-                sum += toNum($(this).val());
+            let cashSum = 0;
+            let cardSum = 0;
+
+            $('.rv-row').each(function() {
+                const amt = toNum($(this).find('.rv-amount').val());
+                const accText = $(this).find('.rv-account option:selected').text().toLowerCase();
+                sum += amt;
+                if (accText.includes('cash') || accText.includes('easypaisa') || accText.includes('jazzcash')) {
+                    cashSum += amt;
+                } else {
+                    cardSum += amt;
+                }
             });
+
             $('#receiptsTotal').text(sum.toFixed(2));
+            $('#bottomPaymentsTotal').text(sum.toFixed(2));
+            $('input[name="cash"]').val(cashSum.toFixed(2));
+            $('input[name="card"]').val(cardSum.toFixed(2));
             updateGrandTotals();
-        }
+        };
 
         // --- Sidebar Direct Add Product ---
         $(document).on('click', '.add-product-direct-btn', function() {
@@ -2008,7 +2079,7 @@
         });
 
         // --- Save & Complete (F9) Handler ---
-        $('#btnSaveAndComplete, #btnHeaderSaveSale').on('click', function() {
+        $('#btnSaveAndComplete, #btnHeaderSaveSale, #btnSaveAndComplete2').on('click', function() {
             $('#btnPosted').trigger('click');
         });
 

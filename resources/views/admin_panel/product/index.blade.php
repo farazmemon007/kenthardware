@@ -277,8 +277,8 @@
     #productTable tbody td, #modalVariantTable tbody td {
         padding: 5px 8px !important;
         border: none !important;
-        border-bottom: 1px solid #e2e8f0 !important;
-        border-right: 1px solid #f1f5f9 !important;
+        border-bottom: 1px solid #c8d7e6 !important;
+        border-right: 1px solid #cbd8e7 !important;
         color: #1e293b;
         vertical-align: middle;
         font-size: 12px;
@@ -298,9 +298,9 @@
         overflow: visible;
         word-break: break-word;
     }
-    /* Alternating Zebra Striping ("strip wale") */
+    /* Alternating Zebra Striping ("strip wale") - Distinct Darker QuickBooks Cool Blue */
     #productTable tbody tr:nth-child(even) td, #modalVariantTable tbody tr:nth-child(even) td {
-        background-color: #f8fafc !important;
+        background-color: #dbe7f4 !important; /* Distinct Darker QuickBooks Cool Blue Stripe */
     }
     #productTable tbody tr:nth-child(odd) td, #modalVariantTable tbody tr:nth-child(odd) td {
         background-color: #ffffff !important;
@@ -346,7 +346,7 @@
         font-size: 10px; font-weight: 600; color: #475569;
         display: inline-flex; align-items: center; gap: 2px;
     }
-    .item-code { font-family: 'Courier New', monospace; background: #f8fafc; border: 1px solid var(--erp-border); border-radius: 3px; padding: 0 4px; font-size: 10.5px; font-weight: 700; color: #334155; }
+    .item-code { font-family: 'Courier New', monospace; background: #ffffff; border: 1px solid #cbd5e1; border-radius: 3px; padding: 0 4px; font-size: 10.5px; font-weight: 700; color: #334155; }
 
     /* Stock badge */
     .stock-badge {
@@ -715,10 +715,10 @@
         background: #ffffff;
         border: 1px solid #000000;
         border-radius: 6px;
-        padding: 9px 12px 6px 12px;
+        padding: 12px 10px;
         display: flex;
         flex-direction: column;
-        justify-content: space-between;
+        justify-content: space-evenly;
         align-items: center;
         text-align: center;
         overflow: hidden;
@@ -727,23 +727,9 @@
         font-family: Arial, "Helvetica Neue", Helvetica, sans-serif;
     }
 
-    /* Line 1: Product & Variant */
-    .label-sticker-preview .sticker-line-1 {
-        font-size: 11.5px;
-        font-weight: 700;
-        color: #000000;
-        width: 100%;
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        text-align: center;
-        line-height: 1.2;
-        letter-spacing: -0.2px;
-    }
-
-    /* Serial No: directly below Product Name in larger bold font */
+    /* Line 1: Unique Variant Serial No */
     .label-sticker-preview .sticker-line-serial {
-        font-size: 14.5px;
+        font-size: 18px;
         font-weight: 900;
         color: #000000;
         width: 100%;
@@ -752,12 +738,12 @@
         text-overflow: ellipsis;
         text-align: center;
         line-height: 1.2;
-        letter-spacing: 0.3px;
+        letter-spacing: 0.5px;
     }
 
-    /* Line 2: PCODE - ROOT */
+    /* Line 2: P-CODE */
     .label-sticker-preview .sticker-line-2 {
-        font-size: 13px;
+        font-size: 15px;
         font-weight: 800;
         color: #000000;
         width: 100%;
@@ -771,7 +757,7 @@
 
     /* Line 3: LOCATION */
     .label-sticker-preview .sticker-line-3 {
-        font-size: 11.5px;
+        font-size: 13px;
         font-weight: 700;
         color: #000000;
         width: 100%;
@@ -780,18 +766,6 @@
         text-overflow: ellipsis;
         text-align: center;
         line-height: 1.2;
-    }
-
-    /* Line 4: Store Name in script font (Kent Hardware) */
-    .label-sticker-preview .sticker-line-4 {
-        text-align: center;
-        width: 100%;
-        font-family: 'Caveat', 'Segoe Script', 'Brush Script MT', cursive;
-        font-size: 16px;
-        font-weight: 700;
-        color: #000000;
-        line-height: 1;
-        letter-spacing: 0.2px;
     }
 
     .lbl-var-row {
@@ -979,14 +953,11 @@
         display: flex;
     }
 
-    /* Selected Table Row */
-    #productTable tbody tr.row-qb-selected {
-        background-color: #eff6ff !important;
-        border-left: 4px solid #2563eb !important;
-    }
+    /* Selected Table Row (QuickBooks Desktop Sky Blue) */
     #productTable tbody tr.row-qb-selected td {
-        color: #0f172a !important;
-        font-weight: 500;
+        background-color: #93c5fd !important;
+        color: #1e3a8a !important;
+        font-weight: 700;
     }
 
     /* ── Details Drawer Interior ── */
@@ -2285,7 +2256,7 @@
         border-right: none !important;
     }
     #qbPiTable tbody tr:nth-child(even) td {
-        background-color: #fafbfd !important;
+        background-color: #dbe7f4 !important; /* Distinct Darker QuickBooks Cool Blue Stripe */
     }
     #qbPiTable tbody tr:nth-child(odd) td {
         background-color: #ffffff !important;
@@ -4575,29 +4546,19 @@
                             <div class="card-body p-3 d-flex flex-column align-items-center justify-content-center" style="min-height: 200px; background: #f8fafc;">
                                 <!-- Realistic Sticker Card with subtle drop shadow -->
                                 <div id="lblLivePreviewBox" class="label-sticker-preview shadow-sm">
-                                    <!-- Line 1: Product & Variant -->
-                                    <div class="sticker-line-1" id="lblPrevLine1">
-                                        CAT - SCAT - 001
-                                    </div>
-
-                                    <!-- Serial No: Directly below Line 1 in larger bold font -->
+                                    <!-- Line 1: Unique Item Number (#20226) -->
                                     <div class="sticker-line-serial" id="lblPrevSerial">
-                                        T1-0003
+                                        #20226
                                     </div>
 
-                                    <!-- Line 2: PCODE - ROOT -->
+                                    <!-- Line 2: SKY-ROOT CODE -->
                                     <div class="sticker-line-2" id="lblPrevLine2">
-                                        PCODE - ROOT
+                                        A.DB-A.DB
                                     </div>
 
                                     <!-- Line 3: LOCATION -->
                                     <div class="sticker-line-3" id="lblPrevLine3">
                                         LOCATION
-                                    </div>
-
-                                    <!-- Line 4: Store Name in script font (Kent Hardware) -->
-                                    <div class="sticker-line-4" id="lblPrevStoreName">
-                                        Kent Hardware
                                     </div>
                                 </div>
                                 <small class="text-muted mt-2 text-center" style="font-size: 10.5px;">Click any row on the left to preview its sticker</small>
@@ -6183,7 +6144,8 @@ $(document).ready(function () {
                 const rotPCode = (window.encodeToPCode && rotPrice !== undefined) ? window.encodeToPCode(rotPrice) : (v.rot_p_code || '---');
 
                 const location = v.location ? v.location.trim() : (v.rack_shelf ? v.rack_shelf.trim() : (product.remarks ? product.remarks.trim() : ''));
-                const serial = v.serial_no ? v.serial_no.trim() : '';
+                const vItemNum = (v.item_number && String(v.item_number).trim()) || (v.item_no && String(v.item_no).trim()) || (product.item_number && String(product.item_number).trim()) || (v.serial_no && String(v.serial_no).trim()) || '';
+                const displayBadgeNum = vItemNum ? (String(vItemNum).startsWith('#') ? String(vItemNum) : '#' + String(vItemNum)) : '';
 
                 let vName = v.name || v.variant_name || '';
                 let cleanPart = '';
@@ -6208,7 +6170,7 @@ $(document).ready(function () {
                         <td class="align-middle">
                             <div class="d-flex align-items-center flex-wrap" style="line-height: 1.25;">
                                 <span class="fw-bold text-dark" style="font-size: 12.5px;">${escapeHtml(displayVarTitle)}</span>
-                                ${serial ? `<span class="badge" style="background: #eff6ff; color: #2563eb; border: 1px solid #bfdbfe; font-family: monospace; font-size: 10px; margin-left: 6px; padding: 1.5px 5px; border-radius: 4px; font-weight: 700;">#${escapeHtml(serial)}</span>` : ''}
+                                ${displayBadgeNum ? `<span class="badge bg-primary text-white font-monospace" style="font-size: 10px; margin-left: 6px; padding: 1.5px 5.5px; border-radius: 4px; font-weight: 700;">${escapeHtml(displayBadgeNum)}</span>` : ''}
                             </div>
                         </td>
                         <td class="text-center align-middle font-monospace" style="font-size: 11px; white-space: nowrap;">
@@ -6279,7 +6241,7 @@ $(document).ready(function () {
         let skyCode = '---';
         let rotCode = '---';
         let location = '';
-        let serial = '';
+        let itemNum = '';
         let barcodeVal = currentLabelProduct.barcode_path || currentLabelProduct.item_code || '';
 
         if (variantIdx !== 'master' && currentLabelVariants && currentLabelVariants[variantIdx]) {
@@ -6290,8 +6252,8 @@ $(document).ready(function () {
             skyCode = (window.encodeToPCode && salePrice) ? window.encodeToPCode(salePrice) : (v.sky_p_code || v.p_code || '---');
             rotCode = (window.encodeToPCode && rotPrice !== undefined) ? window.encodeToPCode(rotPrice) : (v.rot_p_code || '---');
             location = v.location ? v.location.trim() : (v.rack_shelf ? v.rack_shelf.trim() : (currentLabelProduct.remarks ? currentLabelProduct.remarks.trim() : ''));
-            serial = v.serial_no ? v.serial_no.trim() : '';
-            barcodeVal = v.barcode || serial || currentLabelProduct.barcode_path || currentLabelProduct.item_code;
+            itemNum = (v.item_number && String(v.item_number).trim()) || (v.item_no && String(v.item_no).trim()) || (currentLabelProduct.item_number && String(currentLabelProduct.item_number).trim()) || (v.serial_no && String(v.serial_no).trim()) || '';
+            barcodeVal = v.barcode || itemNum || currentLabelProduct.barcode_path || currentLabelProduct.item_code;
 
             let origName = v.name || v.variant_name || '';
             let cleanPart = '';
@@ -6316,6 +6278,7 @@ $(document).ready(function () {
             skyCode = (window.encodeToPCode && basePrice) ? window.encodeToPCode(basePrice) : (currentLabelProduct.p_code || '---');
             rotCode = (window.encodeToPCode && baseRotPrice !== undefined) ? window.encodeToPCode(baseRotPrice) : (currentLabelProduct.rot_p_code || '---');
             location = currentLabelProduct.remarks ? currentLabelProduct.remarks.trim() : '';
+            itemNum = (currentLabelProduct.item_number && String(currentLabelProduct.item_number).trim()) || currentLabelProduct.model || currentLabelProduct.item_code || '';
             vName = '';
         }
 
@@ -6329,7 +6292,8 @@ $(document).ready(function () {
         }
 
         // Serial / Code
-        const codeOrSerial = serial || currentLabelProduct.model || currentLabelProduct.item_code || '';
+        const codeOrSerial = itemNum || currentLabelProduct.model || currentLabelProduct.item_code || '';
+        const displayItemNum = itemNum ? (String(itemNum).startsWith('#') ? String(itemNum) : '#' + String(itemNum)) : '—';
 
         // Line 1: Product Name & Variant Name
         let line1 = pName;
@@ -6340,12 +6304,16 @@ $(document).ready(function () {
             line1 = cleanV ? `${pName} - ${cleanV}` : pName;
         }
 
-        // Line 2: PCODE - ROOT
+        // Line 2: SKY - ROOT CODE (Format: sky-root, e.g. A.DB-A.DB)
         let line2 = '---';
         const hasSky = skyCode && skyCode !== '---';
         const hasRot = rotCode && rotCode !== '---';
         if (hasSky && hasRot) {
-            line2 = window.formatCombinedPCode ? window.formatCombinedPCode(skyCode, rotCode) : `${skyCode}-${rotCode}`;
+            if (skyCode.indexOf('-') !== -1 && (!rotCode || rotCode === skyCode)) {
+                line2 = skyCode;
+            } else {
+                line2 = `${skyCode}-${rotCode}`;
+            }
         } else if (hasSky) {
             line2 = skyCode;
         } else if (hasRot) {
@@ -6355,15 +6323,10 @@ $(document).ready(function () {
         // Line 3: LOCATION
         const line3 = location || '—';
 
-        $('#lblPrevLine1').text(line1);
-        if (codeOrSerial) {
-            $('#lblPrevSerial').text(codeOrSerial).show();
-        } else {
-            $('#lblPrevSerial').hide();
-        }
+        // 3-Line Sticker: Line 1 = Unique Variant Item Number (e.g. #20226 / #20233), Line 2 = P-Code, Line 3 = Location
+        $('#lblPrevSerial').text(displayItemNum);
         $('#lblPrevLine2').text(line2);
         $('#lblPrevLine3').text(line3);
-        $('#lblPrevStoreName').text('Kent Hardware');
 
         // Update Open Print Sheet href
         const printUrl = buildPrintUrl(currentLabelProduct.id, false);

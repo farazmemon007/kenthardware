@@ -128,12 +128,26 @@ class ProductController extends Controller
                     }
                 }
             });
+
+            // Priority relevance ordering when searching by term
+            $exactItemNumJson1 = '%"item_number":"' . $term . '"%';
+            $exactItemNumJson2 = '%"item_no":"' . $term . '"%';
+            $query->orderByRaw("
+                CASE 
+                    WHEN item_number = ? THEN 1
+                    WHEN color LIKE ? OR color LIKE ? THEN 2
+                    WHEN item_code = ? THEN 3
+                    WHEN item_number LIKE ? THEN 4
+                    WHEN item_name LIKE ? THEN 5
+                    ELSE 6
+                END ASC
+            ", [$term, $exactItemNumJson1, $exactItemNumJson2, $term, "{$term}%", "{$term}%"]);
         }
 
-        $perPage = !empty($productId) ? 50 : 10;
+        $perPage = !empty($productId) ? 50 : (!empty($term) ? 40 : 10);
         $products = $query->paginate($perPage); // Lazy loading
 
-        $results = $products->getCollection()->flatMap(function ($p) {
+        $results = $products->getCollection()->flatMap(function ($p) use ($term, $productId) {
             $stockPieces = (float) ($p->warehouse_stocks_sum_total_pieces ?? 0);
             $ppb = $p->pieces_per_box > 0 ? $p->pieces_per_box : 1;
 
@@ -515,11 +529,19 @@ class ProductController extends Controller
         if (!empty($term)) {
             $termLower = strtolower(trim($term));
             $results = $results->sortByDesc(function ($item) use ($termLower) {
-                $itemNum = strtolower($item['item_number'] ?? '');
-                if ($itemNum === $termLower) return 1000;
-                if (strtolower($item['serial_no'] ?? '') === $termLower) return 900;
-                if (strtolower($item['sku'] ?? '') === $termLower) return 800;
-                if ($itemNum !== '' && str_starts_with($itemNum, $termLower)) return 500;
+                $itemNum = strtolower(trim((string)($item['item_number'] ?? '')));
+                $serial = strtolower(trim((string)($item['serial_no'] ?? '')));
+                $sku = strtolower(trim((string)($item['sku'] ?? '')));
+                $name = strtolower(trim((string)($item['name'] ?? '')));
+
+                if ($itemNum !== '' && $itemNum === $termLower) return 1000;
+                if ($serial !== '' && $serial === $termLower) return 900;
+                if ($sku !== '' && $sku === $termLower) return 800;
+                if ($itemNum !== '' && str_starts_with($itemNum, $termLower)) return 600;
+                if ($serial !== '' && str_starts_with($serial, $termLower)) return 500;
+                if ($sku !== '' && str_starts_with($sku, $termLower)) return 400;
+                if ($itemNum !== '' && str_contains($itemNum, $termLower)) return 300;
+                if (str_starts_with($name, $termLower)) return 200;
                 return 100;
             })->values();
         }
@@ -834,22 +856,71 @@ class ProductController extends Controller
     public function getProductsByCategory(Request $request)
     {
         $categoryId = $request->get('category_id');
+        $search = trim((string)($request->get('search') ?? $request->get('q') ?? ''));
+
         $query = Product::where('is_active', true)
-            ->select('id', 'item_name', 'item_code', 'sale_price_per_piece', 'color', 'p_code', 'category_id', 'image', 'web_main_image')
+            ->select('id', 'item_name', 'item_code', 'item_number', 'sale_price_per_piece', 'wholesale_price', 'color', 'p_code', 'rot_p_code', 'category_id', 'image', 'web_main_image')
             ->withSum('warehouseStocks', 'total_pieces');
+
         if ($categoryId && $categoryId !== 'all') {
             $query->where('category_id', $categoryId);
         }
-        $products = $query->orderBy('item_name')->limit(120)->get();
+
+        if (!empty($search)) {
+            $query->where(function ($q) use ($search) {
+                $q->where('item_name', 'like', "%{$search}%")
+                    ->orWhere('item_code', 'like', "%{$search}%")
+                    ->orWhere('item_number', 'like', "%{$search}%")
+                    ->orWhere('p_code', 'like', "%{$search}%")
+                    ->orWhere('rot_p_code', 'like', "%{$search}%")
+                    ->orWhere('barcode_path', 'like', "%{$search}%")
+                    ->orWhere('color', 'like', "%{$search}%");
+            });
+
+            // Priority ordering for search by variant item number / SKU / name
+            $exactItemNumJson1 = '%"item_number":"' . $search . '"%';
+            $exactItemNumJson2 = '%"item_no":"' . $search . '"%';
+            $query->orderByRaw("
+                CASE 
+                    WHEN item_number = ? THEN 1
+                    WHEN color LIKE ? OR color LIKE ? THEN 2
+                    WHEN item_code = ? THEN 3
+                    WHEN item_number LIKE ? THEN 4
+                    WHEN item_name LIKE ? THEN 5
+                    ELSE 6
+                END ASC
+            ", [$search, $exactItemNumJson1, $exactItemNumJson2, $search, "{$search}%", "{$search}%"]);
+        } else {
+            $query->orderBy('item_name');
+        }
+
+        $limit = !empty($search) ? 100 : 500;
+        $products = $query->limit($limit)->get();
 
         $result = $products->map(function ($p) {
             $stock = (float) ($p->warehouse_stocks_sum_total_pieces ?? 0);
             $hasVariants = false;
+            $variantNumbers = [];
+            $variantItems = [];
+
             if ($p->color) {
                 try {
-                    $parsed = json_decode($p->color, true);
+                    $parsed = is_string($p->color) ? json_decode($p->color, true) : $p->color;
                     if (is_array($parsed) && count($parsed) > 0 && isset($parsed[0]['name'])) {
                         $hasVariants = true;
+                        foreach ($parsed as $v) {
+                            $vNum = trim((string)($v['item_number'] ?? ($v['item_no'] ?? '')));
+                            if ($vNum !== '') {
+                                $variantNumbers[] = $vNum;
+                            }
+                            $variantItems[] = [
+                                'item_number' => $vNum,
+                                'serial_no' => $v['serial_no'] ?? '',
+                                'name' => $v['name'] ?? '',
+                                'color' => $v['color'] ?? '',
+                                'size' => $v['size'] ?? '',
+                            ];
+                        }
                     }
                 } catch (\Exception $e) {}
             }
@@ -866,15 +937,23 @@ class ProductController extends Controller
                 }
             }
 
+            $rotPCode = !empty($p->rot_p_code) ? $p->rot_p_code : PCodeService::encode($p->wholesale_price ?? 0);
+
             return [
                 'id' => $p->id,
                 'name' => $p->item_name,
                 'sku' => $p->item_code ?? '',
+                'item_number' => (string)($p->item_number ?? ''),
+                'variant_numbers' => $variantNumbers,
+                'variant_items' => $variantItems,
                 'price' => (float) ($p->sale_price_per_piece ?? 0),
                 'stock' => $stock,
                 'stock_pieces' => $stock,
                 'has_variants' => $hasVariants,
+                'color' => $p->color,
                 'p_code' => $p->p_code ?? '',
+                'sky_p_code' => $p->p_code ?? '',
+                'rot_p_code' => $rotPCode,
                 'category_id' => $p->category_id,
                 'image' => $imageUrl,
             ];
@@ -2259,6 +2338,26 @@ class ProductController extends Controller
                         if (!empty($rCode) && !in_array($rCode, $rotCodes)) $rotCodes[] = $rCode;
                     }
 
+                    $locSerials = [];
+                    foreach ($group['items'] as $gItem) {
+                        $gv = $gItem['variant'];
+                        $gvNum = !empty($gv['item_number']) ? trim((string)$gv['item_number']) : (!empty($gv['item_no']) ? trim((string)$gv['item_no']) : '');
+                        if (empty($gvNum) && !empty($product->item_number)) {
+                            $gvNum = trim((string)$product->item_number);
+                        }
+                        if (empty($gvNum) && !empty($gv['serial_no'])) {
+                            $gvNum = trim((string)$gv['serial_no']);
+                        }
+                        if (!empty($gvNum)) {
+                            $cleanNum = str_starts_with($gvNum, '#') ? $gvNum : '#' . $gvNum;
+                            if (!in_array($cleanNum, $locSerials)) {
+                                $locSerials[] = $cleanNum;
+                            }
+                        }
+                    }
+                    $masterPNum = !empty($product->item_number) ? (str_starts_with($product->item_number, '#') ? $product->item_number : '#' . $product->item_number) : ($product->model ?: $product->item_code);
+                    $displaySerial = !empty($locSerials) ? implode(', ', $locSerials) : $masterPNum;
+
                     $combinedSky = implode('/', $skyCodes);
                     $combinedRot = implode('/', $rotCodes);
                     $line2 = PCodeService::formatCombined($combinedSky, $combinedRot);
@@ -2272,7 +2371,7 @@ class ProductController extends Controller
                         'line_3'          => $locDisplayName,
                         'category'        => $categoryName,
                         'subcategory'     => $subCategoryName,
-                        'code_serial'     => $product->model ?: $product->item_code,
+                        'code_serial'     => $displaySerial,
                         'product_name'    => $product->item_name,
                         'short_name'      => $product->item_name,
                         'item_code'       => $product->model ?: $product->item_code,
@@ -2282,7 +2381,7 @@ class ProductController extends Controller
                         'rot_pcode'       => $combinedRot,
                         'pcodes_combined' => $line2,
                         'location'        => $locDisplayName,
-                        'serial_no'       => '',
+                        'serial_no'       => $displaySerial,
                         'barcode'         => $product->barcode_path ?: $product->item_code,
                         'barcode_svg'     => '',
                     ];
@@ -2315,6 +2414,17 @@ class ProductController extends Controller
 
                     $vSerial = !empty($v['serial_no']) ? trim($v['serial_no']) : '';
                     $vBarcode = !empty($v['barcode']) ? trim($v['barcode']) : (!empty($vSerial) ? $vSerial : ($product->barcode_path ?: $product->item_code));
+
+                    // Unique Variant Item Number (e.g. #20226 / #20233)
+                    $vItemNum = !empty($v['item_number']) ? trim((string)$v['item_number']) : (!empty($v['item_no']) ? trim((string)$v['item_no']) : '');
+                    if (empty($vItemNum) && !empty($product->item_number)) {
+                        $vItemNum = trim((string)$product->item_number);
+                    }
+                    if (empty($vItemNum)) {
+                        $vItemNum = !empty($vSerial) ? $vSerial : ($product->model ?: $product->item_code);
+                    }
+                    $codeOrSerial = $vItemNum;
+                    $displayItemNum = !empty($vItemNum) ? (str_starts_with($vItemNum, '#') ? $vItemNum : '#' . $vItemNum) : '—';
 
                     // Clean variant title
                     $vName = $v['name'] ?? $v['variant_name'] ?? '';
@@ -2369,7 +2479,8 @@ class ProductController extends Controller
                         'rot_pcode'       => $rotPCode,
                         'pcodes_combined' => $line2,
                         'location'        => $vLocation,
-                        'serial_no'       => $codeOrSerial,
+                        'serial_no'       => $displayItemNum,
+                        'item_number'     => $displayItemNum,
                         'barcode'         => $vBarcode,
                         'barcode_svg'     => $barcodeSvg,
                     ];
@@ -2393,7 +2504,9 @@ class ProductController extends Controller
             $barcode = $product->barcode_path ?: $product->item_code;
             $barcodeSvg = $this->generateSafeBarcodeSvg($barcode);
 
-            $codeOrSerial = $product->model ?: $product->item_code;
+            $pNum = !empty($product->item_number) ? trim((string)$product->item_number) : ($product->model ?: $product->item_code);
+            $displayItemNum = !empty($pNum) ? (str_starts_with($pNum, '#') ? $pNum : '#' . $pNum) : '—';
+            $codeOrSerial = $pNum;
 
             // Build Line 1: Product Name
             $line1 = $product->item_name;
@@ -2417,7 +2530,8 @@ class ProductController extends Controller
                 'rot_pcode'       => $rotPCode,
                 'pcodes_combined' => $line2,
                 'location'        => $loc,
-                'serial_no'       => $codeOrSerial,
+                'serial_no'       => $displayItemNum,
+                'item_number'     => $displayItemNum,
                 'barcode'         => $barcode,
                 'barcode_svg'     => $barcodeSvg,
             ];
@@ -2723,6 +2837,37 @@ class ProductController extends Controller
             return response()->json([
                 'status'  => 'error',
                 'message' => 'Failed to update style matrix: ' . $e->getMessage(),
+            ], 500);
+        }
+    }
+
+    /**
+     * Update product attribute configurations (exclusions, active states, etc.) via AJAX.
+     */
+    public function updateAttributeConfigurations(Request $request, $id)
+    {
+        try {
+            $product = Product::findOrFail($id);
+            $attributesData = $request->input('attributes_data');
+            if (is_string($attributesData)) {
+                $attributesData = json_decode($attributesData, true) ?: [];
+            }
+
+            $product->attributes_data = $attributesData;
+            $product->save();
+
+            if (!empty($attributesData) && is_array($attributesData)) {
+                $this->syncAttributesPayloadToMaster($attributesData);
+            }
+
+            return response()->json([
+                'status'  => 'success',
+                'message' => 'Attribute configurations saved successfully!'
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'status'  => 'error',
+                'message' => 'Failed to save attribute configurations: ' . $e->getMessage()
             ], 500);
         }
     }

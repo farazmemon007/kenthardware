@@ -1235,11 +1235,12 @@
                 let stockVal = parseFloat(repo.stock_pieces !== undefined ? repo.stock_pieces : repo.stock) || 0;
                 let badgeClass = stockVal > 0 ? 'bg-success' : 'bg-secondary';
                 let buyPrice = parseFloat(repo.purchase_price_per_piece || repo.trade_price || 0);
+                let itemNumBadge = repo.item_number ? `<span class="badge bg-primary font-monospace me-1" style="font-size:10px; padding: 2px 6px;">#${repo.item_number}</span>` : '';
 
                 return $(`
                 <div class="clearfix py-1">
                     <div class="float-start">
-                        <div class="fw-bold text-dark">${repo.name || repo.text}</div>
+                        <div class="fw-bold text-dark">${itemNumBadge}${repo.name || repo.text}</div>
                         <small class="text-muted">SKU: ${sku} | Unit: ${unit} | Buy Price: Rs. ${buyPrice.toFixed(2)}</small>
                     </div>
                     <div class="float-end">

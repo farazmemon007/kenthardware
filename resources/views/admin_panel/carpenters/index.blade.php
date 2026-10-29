@@ -5,8 +5,7 @@
     /* ==========================================================
        QUICKBOOKS / ODOO POS REPLICA THEME FOR CARPENTER DIRECTORY
        ========================================================== */
-    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap');
-
+    /* Native QuickBooks Font Stack - Crystal Clear on Windows with ClearType Subpixel Rendering */
     html, body,
     .odoo-page-wrapper,
     .qb-table,
@@ -16,9 +15,10 @@
     .qb-filter-bar,
     .qb-table-card,
     input, button, select, textarea {
-        font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif !important;
-        -webkit-font-smoothing: antialiased;
-        -moz-osx-font-smoothing: grayscale;
+        font-family: "Segoe UI", -apple-system, BlinkMacSystemFont, Tahoma, Roboto, "Helvetica Neue", Arial, sans-serif !important;
+        text-rendering: optimizeLegibility;
+        -webkit-font-smoothing: subpixel-antialiased !important;
+        -moz-osx-font-smoothing: auto !important;
     }
 
     .main-content {
@@ -249,18 +249,22 @@
         border-collapse: collapse !important;
     }
 
-    /* Table Headers */
-    .qb-table thead th {
-        background: linear-gradient(180deg, #f7f9fc 0%, #e2eaf3 100%) !important;
-        color: #193452 !important;
-        font-weight: 700 !important;
+    /* Table Headers (Dark Navy Blue - 100% High Contrast Against White Data Rows) */
+    .qb-table thead,
+    .qb-table thead tr,
+    .qb-table thead th,
+    table.dataTable thead th {
+        background: linear-gradient(180deg, #18385e 0%, #0f2238 100%) !important;
+        background-color: #18385e !important;
+        color: #ffffff !important;
+        font-weight: 800 !important;
         text-transform: uppercase;
-        font-size: 11px !important;
-        letter-spacing: 0.3px;
-        border-bottom: 2px solid #aebfd4 !important;
-        border-right: 1px solid #c9d7e5 !important;
+        font-size: 11.5px !important;
+        letter-spacing: 0.5px;
+        border-bottom: 2px solid #081422 !important;
+        border-right: 1px solid rgba(255, 255, 255, 0.2) !important;
         border-top: none !important;
-        padding: 7px 10px !important;
+        padding: 8px 10px !important;
         white-space: nowrap !important;
     }
     .qb-table thead th:last-child {
