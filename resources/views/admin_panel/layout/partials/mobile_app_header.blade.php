@@ -2,48 +2,78 @@
     $dynCompName = \App\Models\Setting::get('company_name', 'Kent Hardware');
     $init1 = strtoupper(substr($dynCompName, 0, 1));
     $init2 = strlen($dynCompName) > 1 ? strtoupper(substr($dynCompName, 1, 1)) : '';
+    $isCycleCount = request()->is('cycle-count*');
+    $isCountSheet = request()->routeIs('cycle_count.sheet');
 @endphp
 
-<!-- Mobile Native App Header (Visible only on < 992px) -->
+<!-- Mobile Native Flutter-Grade App Header (Visible only on < 992px) -->
 <header class="app-mobile-topbar d-flex d-lg-none align-items-center justify-content-between px-3">
-    <!-- Left: Drawer Hamburger Button + App Brand -->
-    <div class="d-flex align-items-center">
-        <button type="button" class="app-mobile-btn-hamburger me-2" id="mobileDrawerOpenBtn" aria-label="Open Navigation Menu">
-            <span class="hamburger-bar"></span>
-            <span class="hamburger-bar"></span>
-            <span class="hamburger-bar"></span>
-        </button>
-        <a href="{{ url('/home') }}" class="d-flex align-items-center text-decoration-none">
-            <div class="app-mobile-logo-badge">
-                <span class="init-1">{{ $init1 }}</span><span class="init-2">{{ $init2 }}</span>
+    <!-- Left: Navigation Icon + Screen Title (Flutter AppBar Style) -->
+    <div class="d-flex align-items-center overflow-hidden">
+        @if($isCountSheet)
+            <a href="{{ route('cycle_count.index') }}" class="app-mobile-btn-hamburger me-2 text-decoration-none" aria-label="Back to counts" style="color: #ffffff;">
+                <i class="fas fa-arrow-left" style="font-size: 17px;"></i>
+            </a>
+            <div class="d-flex flex-column ms-1 overflow-hidden">
+                <span class="app-mobile-brand-title text-truncate" style="font-size: 16px; font-weight: 800; color: #ffffff;">Count Sheet</span>
+                <span class="app-mobile-brand-sub" style="font-size: 11px; font-weight: 700; color: #93c5fd;">Blind Physical Inventory</span>
             </div>
-            <div class="d-flex flex-column ms-2">
-                <span class="app-mobile-brand-title">{{ $dynCompName }}</span>
-                <span class="app-mobile-brand-sub">
-                    @if(Auth::check() && Auth::user()->usertype !== 'admin')
-                        Staff Portal
-                    @else
-                        ERP System
-                    @endif
+        @elseif($isCycleCount)
+            <button type="button" class="app-mobile-btn-hamburger me-2" id="mobileDrawerOpenBtn" aria-label="Open Navigation Menu">
+                <span class="hamburger-bar"></span>
+                <span class="hamburger-bar"></span>
+                <span class="hamburger-bar"></span>
+            </button>
+            <div class="d-flex flex-column ms-1 overflow-hidden">
+                <span class="app-mobile-brand-title text-truncate" style="font-size: 16px; font-weight: 800; color: #ffffff;">Cycle Counts</span>
+                <span class="app-mobile-brand-sub text-truncate" style="font-size: 11px; font-weight: 700; color: #94a3b8;">
+                    {{ $dynCompName }} · {{ Auth::user()->name }}
                 </span>
             </div>
-        </a>
+        @else
+            <button type="button" class="app-mobile-btn-hamburger me-2" id="mobileDrawerOpenBtn" aria-label="Open Navigation Menu">
+                <span class="hamburger-bar"></span>
+                <span class="hamburger-bar"></span>
+                <span class="hamburger-bar"></span>
+            </button>
+            <a href="{{ url('/home') }}" class="d-flex align-items-center text-decoration-none">
+                <div class="app-mobile-logo-badge">
+                    <span class="init-1">{{ $init1 }}</span><span class="init-2">{{ $init2 }}</span>
+                </div>
+                <div class="d-flex flex-column ms-2 overflow-hidden">
+                    <span class="app-mobile-brand-title text-truncate">{{ $dynCompName }}</span>
+                    <span class="app-mobile-brand-sub">
+                        @if(Auth::check() && Auth::user()->usertype !== 'admin')
+                            Staff Portal
+                        @else
+                            ERP System
+                        @endif
+                    </span>
+                </div>
+            </a>
+        @endif
     </div>
 
-    <!-- Right: Quick POS/Count shortcut + Notifications + Profile Avatar -->
-    <div class="d-flex align-items-center gap-2">
-        @if(Auth::check() && Auth::user()->usertype !== 'admin')
-            <a href="{{ route('cycle_count.index') }}" class="app-mobile-pos-pill text-decoration-none" style="background: rgba(37, 99, 235, 0.2); border-color: rgba(59, 130, 246, 0.4);" title="Cycle Counts">
-                <i class="fas fa-clipboard-check text-primary"></i>
-                <span>Counts</span>
+    <!-- Right: Quick Actions & Profile -->
+    <div class="d-flex align-items-center gap-2 flex-shrink-0">
+        @if($isCycleCount)
+            <a href="{{ route('cycle_count.index') }}?week=all" class="app-mobile-icon-btn text-decoration-none" title="Refresh Counts">
+                <i class="fas fa-redo-alt text-white" style="font-size: 13px;"></i>
             </a>
         @else
-            @canany(['sales.create', 'sales.view'])
-                <a href="{{ route('pos.index') }}" class="app-mobile-pos-pill text-decoration-none" title="Quick POS">
-                    <i class="fas fa-bolt text-warning"></i>
-                    <span>POS</span>
+            @if(Auth::check() && Auth::user()->usertype !== 'admin')
+                <a href="{{ route('cycle_count.index') }}" class="app-mobile-pos-pill text-decoration-none" style="background: rgba(37, 99, 235, 0.25); border-color: rgba(59, 130, 246, 0.5);" title="Cycle Counts">
+                    <i class="fas fa-clipboard-check text-primary"></i>
+                    <span>Counts</span>
                 </a>
-            @endcanany
+            @else
+                @canany(['sales.create', 'sales.view'])
+                    <a href="{{ route('pos.index') }}" class="app-mobile-pos-pill text-decoration-none" title="Quick POS">
+                        <i class="fas fa-bolt text-warning"></i>
+                        <span>POS</span>
+                    </a>
+                @endcanany
+            @endif
         @endif
 
         <!-- Mobile Notification Bell -->

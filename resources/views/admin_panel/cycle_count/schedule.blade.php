@@ -311,12 +311,12 @@
     }
 
     /* ========================================================
-       MOBILE ANDROID ERP APP STYLES (Odoo & QuickBooks Inspired)
+       MOBILE ANDROID & FLUTTER-GRADE APP STYLES
        ======================================================== */
     @media (max-width: 991.98px) {
         .img2-wrapper {
-            padding: 8px 10px 85px 10px !important;
-            background: #f1f5f9 !important;
+            padding: 12px 12px 90px 12px !important;
+            background: #f8fafc !important;
             overflow-x: hidden !important;
             min-height: calc(100vh - 60px) !important;
             width: 100% !important;
@@ -341,75 +341,34 @@
             display: none !important;
         }
 
-        /* ── Modern Android App Header Card ── */
-        .m-app-header-card {
-            background: linear-gradient(135deg, #090e1a 0%, #1e293b 100%);
-            border-radius: 16px;
-            padding: 16px;
-            color: #ffffff;
-            margin-bottom: 12px;
-            box-shadow: 0 4px 18px rgba(9, 14, 26, 0.35);
-        }
-        .m-app-portal-pill {
-            background: rgba(37, 99, 235, 0.25);
-            border: 1px solid rgba(59, 130, 246, 0.4);
-            color: #60a5fa;
-            font-size: 11px;
-            font-weight: 700;
-            padding: 3px 9px;
-            border-radius: 20px;
-            display: inline-flex;
-            align-items: center;
-        }
-        .m-app-back-btn {
-            background: rgba(255, 255, 255, 0.12);
-            color: #f1f5f9 !important;
-            padding: 4px 12px;
-            border-radius: 8px;
-            font-size: 11.5px;
-            font-weight: 700;
-            text-decoration: none !important;
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            border: 1px solid rgba(255, 255, 255, 0.18);
-        }
-        .m-app-title {
-            font-size: 1.2rem;
-            font-weight: 800;
-            margin: 10px 0 2px 0;
-            letter-spacing: -0.3px;
-            color: #ffffff;
-        }
-        .m-app-sub {
-            font-size: 12px;
-            color: #94a3b8;
-            margin: 0;
-        }
-
-        /* ── Android Filter & Week Selector Card ── */
+        /* ── Flutter Filter & Week Selector Card ── */
         .m-filter-bar-card {
             background: #ffffff;
-            border-radius: 14px;
-            padding: 10px 12px;
-            margin-bottom: 12px;
-            border: 1px solid #e2e8f0;
-            box-shadow: 0 1px 4px rgba(0,0,0,0.03);
+            border-radius: 16px;
+            padding: 12px 14px;
+            margin-bottom: 14px;
+            border: 1.5px solid #e2e8f0;
+            box-shadow: 0 4px 14px rgba(15, 23, 42, 0.04);
         }
         .m-select-pill-wrap {
             position: relative;
             display: flex;
             align-items: center;
             background: #f8fafc;
-            border: 1px solid #cbd5e1;
-            border-radius: 10px;
-            padding: 0 10px;
-            height: 38px;
+            border: 1.5px solid #cbd5e1;
+            border-radius: 12px;
+            padding: 0 12px;
+            height: 46px;
+            transition: border-color 0.15s ease;
+        }
+        .m-select-pill-wrap:focus-within {
+            border-color: #2563eb;
+            background: #ffffff;
         }
         .m-select-icon {
-            font-size: 12px;
-            margin-right: 6px;
-            color: #64748b;
+            font-size: 14px;
+            margin-right: 8px;
+            color: #475569;
         }
         .m-chip-select {
             width: 100%;
@@ -417,39 +376,44 @@
             background: transparent;
             border: none;
             outline: none;
-            font-size: 12px;
-            font-weight: 700;
+            font-size: 14px;
+            font-weight: 800;
             color: #0f172a;
             cursor: pointer;
         }
         .m-filter-reset-btn {
-            width: 38px;
-            height: 38px;
-            border-radius: 10px;
+            width: 46px;
+            height: 46px;
+            border-radius: 12px;
             background: #f1f5f9;
-            border: 1px solid #cbd5e1;
-            color: #64748b;
+            border: 1.5px solid #cbd5e1;
+            color: #334155;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 12px;
+            font-size: 15px;
             text-decoration: none !important;
             flex-shrink: 0;
+            transition: all 0.15s ease;
+        }
+        .m-filter-reset-btn:active {
+            background: #e2e8f0;
+            transform: scale(0.95);
         }
 
-        /* ── Metric KPI Badges Grid (2x2) ── */
+        /* ── Metric KPI Badges Grid (2x2 Flutter Style) ── */
         .m-kpi-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 10px;
-            margin-bottom: 12px;
+            gap: 12px;
+            margin-bottom: 14px;
         }
         .m-kpi-card {
             background: #ffffff;
-            border-radius: 14px;
-            border: 1px solid #e2e8f0;
-            padding: 12px 14px;
-            box-shadow: 0 2px 6px rgba(0,0,0,0.03);
+            border-radius: 18px;
+            border: 1.5px solid #e2e8f0;
+            padding: 15px 16px;
+            box-shadow: 0 4px 16px rgba(15, 23, 42, 0.05);
             cursor: pointer;
             transition: all 0.15s ease;
         }
@@ -458,93 +422,99 @@
             background: #f8fafc;
         }
         .m-kpi-label {
-            font-size: 11px;
-            font-weight: 700;
-            color: #64748b;
+            font-size: 12.5px;
+            font-weight: 800;
+            color: #475569;
             text-transform: uppercase;
-            letter-spacing: 0.3px;
+            letter-spacing: 0.4px;
         }
         .m-kpi-icon-wrap {
-            width: 28px;
-            height: 28px;
-            border-radius: 8px;
+            width: 32px;
+            height: 32px;
+            border-radius: 10px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 11px;
+            font-size: 13px;
         }
-        .bg-blue-subtle { background: #eff6ff; color: #2563eb; }
-        .bg-green-subtle { background: #f0fdf4; color: #16a34a; }
-        .bg-cyan-subtle { background: #e0f2fe; color: #0284c7; }
-        .bg-emerald-subtle { background: #ecfdf5; color: #059669; }
+        .bg-blue-subtle { background: #eff6ff; color: #1d4ed8; }
+        .bg-green-subtle { background: #f0fdf4; color: #15803d; }
+        .bg-cyan-subtle { background: #fef3c7; color: #b45309; }
+        .bg-emerald-subtle { background: #ecfdf5; color: #047857; }
         .m-kpi-value {
-            font-size: 1.45rem;
+            font-size: 28px;
             font-weight: 900;
-            line-height: 1.1;
-            margin-top: 6px;
+            line-height: 1;
+            margin-top: 8px;
         }
 
-        /* ── Odoo Segmented Chips Bar ── */
+        /* ── Flutter Segmented Chips Bar ── */
         .m-chips-filter {
             display: flex;
             align-items: center;
-            gap: 6px;
+            gap: 8px;
             overflow-x: auto;
-            padding-bottom: 6px;
-            margin-bottom: 12px;
+            padding-bottom: 8px;
+            margin-bottom: 14px;
             -webkit-overflow-scrolling: touch;
             scrollbar-width: none;
         }
         .m-chips-filter::-webkit-scrollbar { display: none; }
         .m-chip {
             flex-shrink: 0;
-            padding: 6px 14px;
+            height: 42px;
+            padding: 8px 18px;
             background: #ffffff;
-            border: 1px solid #cbd5e1;
-            border-radius: 20px;
-            font-size: 12px;
-            font-weight: 700;
-            color: #475569;
+            border: 1.5px solid #cbd5e1;
+            border-radius: 22px;
+            font-size: 13.5px;
+            font-weight: 800;
+            color: #334155;
             cursor: pointer;
             transition: all 0.15s ease;
             white-space: nowrap;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
         }
         .m-chip.active {
-            background: #2563eb;
-            color: #ffffff;
-            border-color: #2563eb;
-            box-shadow: 0 2px 8px rgba(37,99,235,0.3);
+            background: #2563eb !important;
+            color: #ffffff !important;
+            border-color: #2563eb !important;
+            box-shadow: 0 4px 14px rgba(37, 99, 235, 0.35) !important;
         }
 
-        /* ── Search Bar ── */
+        /* ── Search Bar (Flutter TextField Style) ── */
         .m-search-pill-box {
             position: relative;
             display: flex;
             align-items: center;
             background: #ffffff;
             border: 1.5px solid #cbd5e1;
-            border-radius: 12px;
-            padding: 0 12px;
-            margin-bottom: 12px;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.03);
+            border-radius: 16px;
+            padding: 0 16px;
+            height: 48px;
+            margin-bottom: 16px;
+            box-shadow: 0 2px 8px rgba(15, 23, 42, 0.04);
+            transition: border-color 0.15s ease;
         }
         .m-search-pill-box:focus-within {
             border-color: #2563eb;
-            box-shadow: 0 0 0 3px rgba(37,99,235,0.15);
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
         }
         .m-search-icon {
-            color: #94a3b8;
-            font-size: 14px;
-            margin-right: 8px;
+            color: #64748b;
+            font-size: 16px;
+            margin-right: 10px;
         }
         .m-search-pill-input {
             width: 100%;
-            height: 42px;
+            height: 100%;
             border: none;
             outline: none;
             background: transparent;
-            font-size: 13px;
-            font-weight: 500;
+            font-size: 14.5px;
+            font-weight: 600;
             color: #0f172a;
         }
         .m-search-clear {
@@ -553,22 +523,22 @@
             color: #94a3b8;
             cursor: pointer;
             padding: 4px;
-            font-size: 14px;
+            font-size: 16px;
         }
 
-        /* ── Android Task Cards ── */
+        /* ── High-Contrast Flutter Material 3 Task Cards ── */
         .m-cards-list {
             display: flex;
             flex-direction: column;
-            gap: 12px;
+            gap: 16px;
         }
         .android-count-card {
             background: #ffffff;
-            border-radius: 16px;
-            border: 1px solid #e2e8f0;
-            padding: 15px;
-            box-shadow: 0 3px 12px rgba(0,0,0,0.05);
-            transition: transform 0.1s ease;
+            border-radius: 20px;
+            border: 1.5px solid #e2e8f0;
+            padding: 18px 16px;
+            box-shadow: 0 8px 25px rgba(15, 23, 42, 0.08), 0 2px 6px rgba(15, 23, 42, 0.04);
+            transition: transform 0.12s ease;
         }
         .android-count-card:active {
             transform: scale(0.99);
@@ -577,44 +547,51 @@
             display: flex;
             align-items: center;
             justify-content: space-between;
-            margin-bottom: 12px;
+            margin-bottom: 14px;
+            flex-wrap: wrap;
+            gap: 8px;
         }
         .acc-loc-pill {
             display: inline-flex;
             align-items: center;
-            gap: 5px;
+            gap: 6px;
             background: #eff6ff;
-            color: #1d4ed8;
-            border: 1px solid #bfdbfe;
-            padding: 4px 11px;
-            border-radius: 8px;
-            font-size: 13px;
-            font-weight: 800;
+            color: #1e40af;
+            border: 1.5px solid #93c5fd;
+            padding: 6px 14px;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 900;
+            letter-spacing: -0.2px;
         }
         .acc-code-chip {
             font-family: 'JetBrains Mono', monospace;
-            font-size: 12px;
-            color: #64748b;
-            font-weight: 700;
+            font-size: 13.5px;
+            color: #475569;
+            font-weight: 800;
+            background: #f8fafc;
+            padding: 5px 10px;
+            border-radius: 8px;
+            border: 1px solid #e2e8f0;
         }
         .acc-status-pill {
             display: inline-flex;
             align-items: center;
-            gap: 5px;
-            padding: 4px 10px;
+            gap: 6px;
+            padding: 6px 14px;
             border-radius: 20px;
-            font-size: 11.5px;
-            font-weight: 700;
+            font-size: 13px;
+            font-weight: 800;
             white-space: nowrap;
         }
-        .acc-status-started { background: #dcfce7; color: #15803d; border: 1px solid #bbf7d0; }
-        .acc-status-pending { background: #f1f5f9; color: #475569; border: 1px solid #cbd5e1; }
-        .acc-status-submitted { background: #e0f2fe; color: #0369a1; border: 1px solid #bae6fd; }
-        .acc-status-approved { background: #ecfdf5; color: #047857; border: 1px solid #a7f3d0; }
+        .acc-status-started { background: #dcfce7; color: #14532d; border: 1.5px solid #86efac; }
+        .acc-status-pending { background: #f1f5f9; color: #1e293b; border: 1.5px solid #cbd5e1; }
+        .acc-status-submitted { background: #fef3c7; color: #78350f; border: 1.5px solid #fde68a; }
+        .acc-status-approved { background: #ecfdf5; color: #064e3b; border: 1.5px solid #a7f3d0; }
 
         .acc-pulse-dot {
-            width: 7px;
-            height: 7px;
+            width: 8px;
+            height: 8px;
             border-radius: 50%;
             background: #16a34a;
             animation: pulseGlow 1.5s infinite;
@@ -623,63 +600,78 @@
         .acc-meta-strip {
             display: grid;
             grid-template-columns: 1fr 1fr 1fr;
-            gap: 6px;
+            gap: 8px;
             background: #f8fafc;
-            border-radius: 10px;
-            padding: 10px 12px;
-            margin-bottom: 12px;
+            border: 1.5px solid #edf2f7;
+            border-radius: 14px;
+            padding: 12px 14px;
+            margin-bottom: 14px;
         }
         .acc-meta-col {
             display: flex;
             flex-direction: column;
         }
         .acc-meta-k {
-            font-size: 10px;
-            color: #94a3b8;
-            font-weight: 700;
+            font-size: 11px;
+            color: #64748b;
+            font-weight: 800;
             text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 2px;
         }
         .acc-meta-v {
-            font-size: 12px;
-            font-weight: 700;
-            color: #1e293b;
-            margin-top: 1px;
+            font-size: 14.5px;
+            font-weight: 800;
+            color: #0f172a;
+        }
+        .acc-meta-v.text-primary {
+            color: #2563eb !important;
+            font-weight: 900;
+            font-size: 15px;
         }
 
         .acc-progress-box {
-            margin-bottom: 14px;
+            margin-bottom: 16px;
         }
         .acc-progress-header {
             display: flex;
             justify-content: space-between;
-            font-size: 12px;
+            align-items: center;
+            font-size: 13px;
             color: #475569;
-            margin-bottom: 5px;
+            font-weight: 700;
+            margin-bottom: 6px;
+        }
+        .acc-progress-header strong {
+            color: #0f172a;
+            font-size: 14px;
+            font-weight: 900;
         }
         .acc-progress-track {
-            height: 8px;
+            height: 10px;
             background: #e2e8f0;
-            border-radius: 4px;
+            border-radius: 6px;
             overflow: hidden;
         }
         .acc-progress-fill {
             height: 100%;
             background: linear-gradient(90deg, #10b981 0%, #059669 100%);
-            border-radius: 4px;
+            border-radius: 6px;
             transition: width 0.3s ease;
         }
 
-        /* ── Full-Width Tactile Android Buttons ── */
+        /* ── Flutter Elevated Full-Width Buttons (52px Touch Target) ── */
         .acc-btn {
             width: 100%;
-            min-height: 48px;
+            min-height: 52px;
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 8px;
-            border-radius: 12px;
-            font-size: 14px;
+            gap: 10px;
+            border-radius: 16px;
+            font-size: 16px;
             font-weight: 800;
+            letter-spacing: 0.3px;
             text-decoration: none !important;
             border: none;
             cursor: pointer;
@@ -688,70 +680,75 @@
         .acc-btn-start {
             background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
             color: #ffffff !important;
-            box-shadow: 0 4px 12px rgba(37,99,235,0.3);
+            box-shadow: 0 6px 20px rgba(37, 99, 235, 0.4);
         }
         .acc-btn-start:active {
             transform: scale(0.98);
+            box-shadow: 0 2px 8px rgba(37, 99, 235, 0.5);
         }
         .acc-btn-resume {
             background: linear-gradient(135deg, #10b981 0%, #059669 100%);
             color: #ffffff !important;
-            box-shadow: 0 4px 12px rgba(16,185,129,0.3);
+            box-shadow: 0 6px 20px rgba(16, 185, 129, 0.4);
         }
         .acc-btn-resume:active {
             transform: scale(0.98);
+            box-shadow: 0 2px 8px rgba(16, 185, 129, 0.5);
         }
         .acc-btn-waiting {
-            background: #eff6ff;
-            color: #1d4ed8 !important;
-            border: 1.5px solid #bfdbfe;
+            background: #fef3c7;
+            color: #78350f !important;
+            border: 1.5px solid #fde68a;
+            font-size: 14.5px;
             cursor: default;
         }
         .acc-btn-approved {
             background: #ecfdf5;
-            color: #047857 !important;
+            color: #064e3b !important;
             border: 1.5px solid #a7f3d0;
+            font-size: 14.5px;
             cursor: default;
         }
 
         /* ── Android Empty State Card ── */
         .acc-empty-card {
             background: #ffffff;
-            border: 1.5px dashed #cbd5e1;
-            border-radius: 16px;
-            padding: 34px 20px;
+            border: 2px dashed #cbd5e1;
+            border-radius: 20px;
+            padding: 38px 20px;
             text-align: center;
+            box-shadow: 0 4px 16px rgba(15, 23, 42, 0.04);
         }
         .acc-empty-icon-badge {
-            width: 60px;
-            height: 60px;
+            width: 68px;
+            height: 68px;
             border-radius: 50%;
             background: #eff6ff;
             color: #2563eb;
-            font-size: 24px;
+            font-size: 28px;
             display: flex;
             align-items: center;
             justify-content: center;
-            margin: 0 auto 14px auto;
+            margin: 0 auto 16px auto;
         }
         .acc-empty-card h5 {
-            font-size: 15px;
+            font-size: 17px;
             font-weight: 800;
             color: #0f172a;
-            margin-bottom: 6px;
+            margin-bottom: 8px;
         }
 
         /* ── Collapsible Guide Card ── */
         .m-guide-card {
             background: #ffffff;
-            border-radius: 14px;
-            border: 1px solid #e2e8f0;
-            padding: 13px 15px;
-            margin-top: 14px;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.03);
+            border-radius: 16px;
+            border: 1.5px solid #e2e8f0;
+            padding: 16px 18px;
+            margin-top: 16px;
+            box-shadow: 0 2px 8px rgba(15, 23, 42, 0.04);
         }
         .m-guide-title {
-            font-size: 13px;
+            font-size: 14px;
             font-weight: 800;
             color: #0f172a;
             display: flex;
@@ -760,12 +757,12 @@
             cursor: pointer;
         }
         .m-guide-body {
-            margin-top: 10px;
-            font-size: 12px;
+            margin-top: 12px;
+            font-size: 13px;
             color: #475569;
-            line-height: 1.5;
+            line-height: 1.6;
             border-top: 1px dashed #e2e8f0;
-            padding-top: 10px;
+            padding-top: 12px;
         }
     }
 
@@ -864,35 +861,10 @@
         </div>
 
         {{-- ========================================================
-             MOBILE ANDROID ERP APP VIEW (Odoo & QuickBooks Style)
+             MOBILE ANDROID & FLUTTER APP VIEW
              ======================================================== --}}
         <div class="mobile-schedule-app-view">
-            {{-- 1. Mobile App Header Card (Branded, User Role, Quick Back) --}}
-            <div class="m-app-header-card">
-                <div class="d-flex align-items-center justify-content-between">
-                    <div class="d-flex align-items-center gap-2">
-                        <div class="app-mobile-logo-badge" style="width: 34px; height: 34px; font-size: 13px; border-radius: 8px;">KH</div>
-                        <div>
-                            <span class="badge" style="background: rgba(37, 99, 235, 0.28); color: #93c5fd; font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;">
-                                @if(Auth::check() && Auth::user()->usertype !== 'admin')
-                                    Staff Portal · Physical Counting
-                                @else
-                                    Owner / Manager Portal
-                                @endif
-                            </span>
-                            <h4 class="m-app-title">Cycle Counts &amp; Stock</h4>
-                        </div>
-                    </div>
-                    <a href="{{ route('home') }}" class="m-filter-reset-btn text-decoration-none" title="Dashboard" style="color: #cbd5e1; background: rgba(255,255,255,0.08); border-color: rgba(255,255,255,0.12);">
-                        <i class="fas fa-home"></i>
-                    </a>
-                </div>
-                <p class="m-app-sub mt-2">
-                    Staff: <strong>{{ Auth::user()->name }}</strong> · Real-time warehouse counting
-                </p>
-            </div>
-
-            {{-- 2. Filter & Week Selector Pill Bar --}}
+            {{-- 1. Flutter Filter & Week Selector Pill Bar --}}
             <form method="GET" action="{{ route('cycle_count.index') }}" id="mobileFilterFormSchedule" class="m-0">
                 <div class="m-filter-bar-card">
                     <div class="d-flex align-items-center gap-2">
@@ -987,24 +959,25 @@
                 </button>
             </div>
 
-            {{-- 6. Tactile Android ERP Cards List --}}
+            {{-- 4. Tactile Flutter Task Cards List --}}
             <div class="m-cards-list" id="mobileCountsList">
                 @forelse($counts as $count)
                     @php
-                        $locName = $count->location ? $count->location->name : ($count->location_name ?: 'General Rack');
+                        $locRaw = $count->location ? $count->location->name : ($count->location_name ?: 'A1');
+                        $locDisplay = str_starts_with(strtolower($locRaw), 'rack') ? $locRaw : 'Rack ' . $locRaw;
                         $staffName = $count->counter ? $count->counter->name : 'Staff';
                         $percent = $count->progress_percent ?? 0;
                     @endphp
                     <div class="android-count-card mobile-count-card"
                          data-status="{{ $count->status }}"
-                         data-search="{{ strtolower($count->count_number . ' ' . $locName . ' ' . $staffName) }}"
+                         data-search="{{ strtolower($count->count_number . ' ' . $locRaw . ' ' . $staffName) }}"
                          id="mobileCard{{ $count->id }}">
                         
                         {{-- Card Top: Location Pill & Status Badge --}}
                         <div class="acc-header">
                             <div class="d-flex align-items-center gap-2">
                                 <span class="acc-loc-pill">
-                                    <i class="fas fa-map-marker-alt"></i> {{ $locName }}
+                                    <i class="fas fa-map-marker-alt text-primary"></i> {{ $locDisplay }}
                                 </span>
                                 <span class="acc-code-chip">#{{ $count->count_number }}</span>
                             </div>
@@ -1031,15 +1004,15 @@
                         {{-- Metadata Strip --}}
                         <div class="acc-meta-strip">
                             <div class="acc-meta-col">
-                                <span class="acc-meta-k">Date</span>
-                                <span class="acc-meta-v"><i class="far fa-calendar-alt text-muted me-1"></i>{{ $count->count_date ? $count->count_date->format('d M') : '—' }}</span>
+                                <span class="acc-meta-k"><i class="far fa-calendar-alt me-1 text-primary"></i> Date</span>
+                                <span class="acc-meta-v">{{ $count->count_date ? $count->count_date->format('d M Y') : '—' }}</span>
                             </div>
                             <div class="acc-meta-col">
-                                <span class="acc-meta-k">Assigned</span>
-                                <span class="acc-meta-v text-truncate"><i class="far fa-user text-muted me-1"></i>{{ $staffName }}</span>
+                                <span class="acc-meta-k"><i class="far fa-user me-1 text-primary"></i> Staff</span>
+                                <span class="acc-meta-v text-truncate">{{ $staffName }}</span>
                             </div>
                             <div class="acc-meta-col">
-                                <span class="acc-meta-k">Items</span>
+                                <span class="acc-meta-k"><i class="fas fa-boxes me-1 text-primary"></i> Items</span>
                                 <span class="acc-meta-v text-primary font-weight-bold">{{ $count->total_items }} items</span>
                             </div>
                         </div>
@@ -1047,8 +1020,8 @@
                         {{-- Live Progress Bar --}}
                         <div class="acc-progress-box">
                             <div class="acc-progress-header">
-                                <span>Counting Progress</span>
-                                <strong>{{ $count->entered_items }}/{{ $count->total_items }} ({{ $percent }}%)</strong>
+                                <span><i class="fas fa-tasks text-muted me-1"></i> Counting Progress</span>
+                                <strong>{{ $count->entered_items }}/{{ $count->total_items }} counted ({{ $percent }}%)</strong>
                             </div>
                             <div class="acc-progress-track">
                                 <div class="acc-progress-fill" style="width: {{ $percent }}%;"></div>
@@ -1060,38 +1033,38 @@
                             {{-- Staff Touch Action Buttons --}}
                             @if($count->status === 'not_started')
                                 <a href="{{ route('cycle_count.sheet', $count->id) }}" class="acc-btn acc-btn-start">
-                                    <i class="fas fa-play"></i> Start Blind Count
+                                    <i class="fas fa-play me-1"></i> Start Blind Count
                                 </a>
                             @elseif($count->status === 'started')
                                 <a href="{{ route('cycle_count.sheet', $count->id) }}" class="acc-btn acc-btn-resume">
-                                    <i class="fas fa-stopwatch"></i> Continue Counting
+                                    <i class="fas fa-stopwatch me-1"></i> Continue Counting
                                 </a>
                             @elseif($count->status === 'submitted')
                                 <div class="acc-btn acc-btn-waiting">
-                                    <i class="fas fa-hourglass-half"></i> Submitted — Waiting for Manager
+                                    <i class="fas fa-hourglass-half me-1"></i> Submitted — Waiting Manager Approval
                                 </div>
                             @elseif($count->status === 'approved')
                                 <div class="acc-btn acc-btn-approved">
-                                    <i class="fas fa-check-double"></i> Count Completed &amp; Approved
+                                    <i class="fas fa-check-double me-1"></i> Count Completed &amp; Approved
                                 </div>
                             @endif
                         @else
                             {{-- Manager / Admin Action Buttons --}}
                             @if($count->status === 'submitted')
                                 <a href="{{ route('cycle_count.approve', $count->id) }}" class="acc-btn acc-btn-start">
-                                    <i class="fas fa-tasks"></i> Open Review &amp; Reconcile
+                                    <i class="fas fa-tasks me-1"></i> Open Review &amp; Reconcile
                                 </a>
                             @elseif($count->status === 'started')
                                 <a href="{{ route('cycle_count.sheet', $count->id) }}" class="acc-btn acc-btn-resume">
-                                    <i class="fas fa-eye"></i> Inspect Count Sheet
+                                    <i class="fas fa-eye me-1"></i> Inspect Count Sheet
                                 </a>
                             @elseif($count->status === 'approved')
                                 <a href="{{ route('cycle_count.approve', $count->id) }}" class="acc-btn acc-btn-approved">
-                                    <i class="fas fa-check-circle"></i> View Approved Stock
+                                    <i class="fas fa-check-circle me-1"></i> View Approved Stock
                                 </a>
                             @else
                                 <a href="{{ route('cycle_count.sheet', $count->id) }}" class="acc-btn acc-btn-start">
-                                    <i class="fas fa-clipboard-list"></i> Open Count Sheet
+                                    <i class="fas fa-clipboard-list me-1"></i> Open Count Sheet
                                 </a>
                             @endif
                         @endif
@@ -1104,8 +1077,8 @@
                         <h5>No Cycle Counts Scheduled</h5>
                         <p class="text-muted small mb-3">No physical inventory count tasks match your current filter.</p>
                         @if(request('week') !== 'all')
-                            <a href="{{ route('cycle_count.index') }}?week=all" class="acc-btn acc-btn-start" style="display: inline-flex; width: auto; padding: 10px 22px;">
-                                <i class="fas fa-calendar-alt"></i> View All Weeks (Show All Counts)
+                            <a href="{{ route('cycle_count.index') }}?week=all" class="acc-btn acc-btn-start" style="display: inline-flex; width: auto; padding: 12px 24px;">
+                                <i class="fas fa-calendar-alt me-1"></i> View All Weeks (Show All Counts)
                             </a>
                         @endif
                     </div>

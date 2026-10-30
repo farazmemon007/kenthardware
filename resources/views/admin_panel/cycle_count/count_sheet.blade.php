@@ -402,8 +402,8 @@
        ======================================================== */
     @media (max-width: 991.98px) {
         .img3-wrapper {
-            padding: 8px 8px 120px 8px !important;
-            background: #f1f5f9 !important;
+            padding: 12px 12px 130px 12px !important;
+            background: #f8fafc !important;
             overflow-x: hidden !important;
             min-height: calc(100vh - 60px) !important;
         }
@@ -416,32 +416,8 @@
             background: transparent !important;
         }
 
-        /* Mobile App Bar Header */
-        .img3-top-bar {
-            border-radius: 12px;
-            padding: 12px 14px;
-            margin-bottom: 10px;
-            box-shadow: 0 4px 14px rgba(11, 19, 41, 0.25);
-        }
-        .img3-top-bar .title-section {
-            display: flex;
-            flex-direction: column;
-            align-items: flex-start;
-            gap: 4px;
-        }
-        .img3-top-bar .main-title {
-            font-size: 1.02rem;
-            letter-spacing: -0.2px;
-        }
-        .img3-top-bar .badge-pill-role {
-            font-size: 0.68rem;
-            padding: 3px 8px;
-        }
-        .concept-note {
-            display: none !important;
-        }
-
-        /* Hide Desktop Sub-bar, Split Grid, Bottom Bar, & Explanations */
+        /* Hide Desktop bars completely on mobile (Top app bar is handled by mobile_app_header) */
+        .img3-top-bar,
         .img3-sub-bar,
         .img3-split-grid,
         .img3-bottom-bar,
@@ -449,10 +425,15 @@
             display: none !important;
         }
 
-        /* Mobile Sticky Live Timer & Progress Card */
+        /* Mobile Sticky Live Timer & Progress Card (Flutter Style) */
         .m-sticky-timer-card {
             background: #ffffff;
-            border: 1px solid #e2e8f0;
+            border: 1.5px solid #e2e8f0;
+            border-radius: 18px;
+            padding: 16px;
+            margin-bottom: 14px;
+            box-shadow: 0 4px 18px rgba(15, 23, 42, 0.06);
+        }
             border-radius: 14px;
             padding: 12px 14px;
             margin-bottom: 12px;
@@ -656,51 +637,52 @@
             min-width: 0;
         }
         .m-item-name {
-            font-size: 0.88rem;
-            font-weight: 700;
-            color: #0f172a;
-            margin: 0 0 4px 0;
-            line-height: 1.3;
+            font-size: 15.5px !important;
+            font-weight: 800 !important;
+            color: #0f172a !important;
+            margin: 0 0 5px 0;
+            line-height: 1.35;
             word-break: break-word;
         }
         .m-code-badge {
             font-family: 'JetBrains Mono', monospace;
-            font-size: 0.72rem;
-            font-weight: 700;
+            font-size: 13px !important;
+            font-weight: 800 !important;
             background: #f1f5f9;
-            color: #334155;
-            padding: 2px 7px;
-            border-radius: 4px;
-            border: 1px solid #e2e8f0;
+            color: #1e293b !important;
+            padding: 3px 8px;
+            border-radius: 6px;
+            border: 1.5px solid #cbd5e1;
         }
         .m-cat-badge {
-            font-size: 0.68rem;
+            font-size: 12px !important;
             background: #f3e8ff;
-            color: #7e22ce;
-            padding: 2px 6px;
-            border-radius: 4px;
-            font-weight: 600;
+            color: #6b21a8 !important;
+            padding: 3px 8px;
+            border-radius: 6px;
+            font-weight: 700 !important;
         }
         .m-barcode-badge {
             font-family: monospace;
-            font-size: 0.7rem;
-            color: #64748b;
+            font-size: 12px !important;
+            color: #475569 !important;
             background: #f8fafc;
-            padding: 2px 6px;
-            border-radius: 4px;
-            border: 1px solid #e2e8f0;
+            padding: 3px 8px;
+            border-radius: 6px;
+            border: 1px solid #cbd5e1;
+            font-weight: 700 !important;
         }
         .m-counted-pill {
             display: inline-flex;
             align-items: center;
-            gap: 4px;
+            gap: 5px;
             background: #dcfce7;
-            color: #15803d;
-            border: 1px solid #bbf7d0;
-            padding: 3px 8px;
-            border-radius: 12px;
-            font-size: 0.7rem;
-            font-weight: 700;
+            color: #14532d !important;
+            border: 1.5px solid #86efac;
+            padding: 4px 10px;
+            border-radius: 14px;
+            font-size: 12.5px !important;
+            font-weight: 800 !important;
             white-space: nowrap;
         }
 
@@ -710,54 +692,58 @@
             align-items: center;
             justify-content: space-between;
             background: #f8fafc;
-            border-radius: 10px;
-            padding: 8px 12px;
+            border-radius: 14px;
+            padding: 10px 14px;
+            border: 1px solid #e2e8f0;
         }
         .m-unit-label {
-            font-size: 0.78rem;
-            color: #64748b;
+            font-size: 13.5px !important;
+            color: #475569;
+            font-weight: 600;
         }
         .m-unit-label strong {
             color: #0f172a;
-            font-weight: 700;
+            font-weight: 800;
         }
         .m-stepper-box {
             display: inline-flex;
             align-items: center;
             background: #ffffff;
-            border: 1.5px solid #cbd5e1;
-            border-radius: 10px;
+            border: 2px solid #cbd5e1;
+            border-radius: 12px;
             overflow: hidden;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+            box-shadow: 0 2px 6px rgba(0,0,0,0.06);
         }
         .m-btn-step {
-            width: 44px;
-            height: 40px;
+            width: 50px !important;
+            height: 46px !important;
             background: #f1f5f9;
             border: none;
-            color: #1e293b;
-            font-size: 1.1rem;
-            font-weight: 700;
+            color: #0f172a !important;
+            font-size: 1.35rem !important;
+            font-weight: 800 !important;
             display: flex;
             align-items: center;
             justify-content: center;
             cursor: pointer;
-            transition: background 0.15s ease;
+            transition: all 0.15s ease;
             user-select: none;
             -webkit-tap-highlight-color: transparent;
         }
         .m-btn-step:active {
-            background: #e2e8f0;
-            color: #2563eb;
+            background: #2563eb;
+            color: #ffffff !important;
         }
         .m-input-qty {
-            width: 65px;
-            height: 40px;
+            width: 75px !important;
+            height: 46px !important;
             border: none;
             outline: none;
             text-align: center;
-            font-size: 1.05rem;
-            font-weight: 800;
+            font-size: 1.25rem !important;
+            font-weight: 900 !important;
+            color: #0f172a;
+        }
             color: #0f172a;
             background: #ffffff;
             padding: 0 4px;

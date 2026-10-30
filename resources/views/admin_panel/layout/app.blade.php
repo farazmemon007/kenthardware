@@ -355,11 +355,12 @@
         @media (max-width: 991.98px) {
             /* Mobile Body & Container Reset */
             body {
-                padding-top: 56px !important;
-                padding-bottom: 74px !important;
-                background: #f1f5f9 !important;
+                padding-top: 60px !important;
+                padding-bottom: 78px !important;
+                background: #f8fafc !important;
                 overflow-x: hidden !important;
                 font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif !important;
+                -webkit-font-smoothing: antialiased;
             }
             .container-scroller {
                 overflow-x: hidden !important;
@@ -374,27 +375,27 @@
                 display: none !important;
             }
 
-            /* 1. Android Top App Bar */
+            /* 1. Android / Flutter Top App Bar (Sleek 60px AppBar) */
             .app-mobile-topbar {
                 position: fixed !important;
                 top: 0 !important;
                 left: 0 !important;
                 right: 0 !important;
-                height: 56px !important;
+                height: 60px !important;
                 background: #090e1a !important;
                 border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
-                box-shadow: 0 4px 20px rgba(0, 0, 0, 0.35) !important;
+                box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4) !important;
                 z-index: 1040 !important;
                 display: flex !important;
                 align-items: center !important;
                 justify-content: space-between !important;
-                padding: 0 12px !important;
+                padding: 0 14px !important;
                 margin: 0 !important;
             }
             .app-mobile-btn-hamburger {
-                width: 38px;
-                height: 38px;
-                border-radius: 10px;
+                width: 40px;
+                height: 40px;
+                border-radius: 12px;
                 background: rgba(255, 255, 255, 0.08);
                 border: none;
                 display: flex;
@@ -406,17 +407,17 @@
                 cursor: pointer;
             }
             .app-mobile-btn-hamburger .hamburger-bar {
-                width: 18px;
-                height: 2px;
+                width: 20px;
+                height: 2.2px;
                 background-color: #ffffff;
                 border-radius: 2px;
             }
             .app-mobile-logo-badge {
-                width: 34px;
-                height: 34px;
-                border-radius: 8px;
+                width: 36px;
+                height: 36px;
+                border-radius: 10px;
                 background: #0d1527;
-                border: 1.5px solid rgba(255, 255, 255, 0.2);
+                border: 1.5px solid rgba(255, 255, 255, 0.25);
                 display: flex;
                 align-items: center;
                 justify-content: center;
@@ -426,56 +427,56 @@
                 flex-shrink: 0;
             }
             .app-mobile-brand-title {
-                font-size: 13.5px;
-                font-weight: 800;
-                color: #ffffff;
-                line-height: 1.15;
-                max-width: 140px;
+                font-size: 16px !important;
+                font-weight: 800 !important;
+                color: #ffffff !important;
+                line-height: 1.2;
+                max-width: 200px;
                 white-space: nowrap;
                 overflow: hidden;
                 text-overflow: ellipsis;
                 display: block;
             }
             .app-mobile-brand-sub {
-                font-size: 9.5px;
-                font-weight: 700;
-                color: #94a3b8;
-                letter-spacing: 0.5px;
-                text-transform: uppercase;
+                font-size: 11px !important;
+                font-weight: 600 !important;
+                color: #94a3b8 !important;
+                letter-spacing: 0.3px;
                 display: block;
+                margin-top: 1px;
             }
             .app-mobile-pos-pill {
                 background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
                 color: #ffffff !important;
                 border-radius: 20px;
-                padding: 4px 10px;
-                font-size: 11px;
-                font-weight: 700;
+                padding: 5px 12px;
+                font-size: 12px;
+                font-weight: 800;
                 display: inline-flex;
                 align-items: center;
-                gap: 4px;
+                gap: 5px;
             }
             .app-mobile-icon-btn {
-                width: 34px;
-                height: 34px;
-                border-radius: 8px;
+                width: 38px;
+                height: 38px;
+                border-radius: 12px;
                 background: rgba(255, 255, 255, 0.08);
                 border: none;
-                color: #cbd5e1;
+                color: #ffffff;
                 display: inline-flex;
                 align-items: center;
                 justify-content: center;
-                font-size: 14px;
+                font-size: 15px;
             }
             .app-mobile-profile-avatar {
-                width: 34px;
-                height: 34px;
+                width: 38px;
+                height: 38px;
                 border-radius: 50%;
                 background: linear-gradient(135deg, #2563eb, #1d4ed8);
-                border: 1.5px solid rgba(255, 255, 255, 0.4);
+                border: 2px solid rgba(255, 255, 255, 0.4);
                 color: #ffffff;
-                font-size: 13px;
-                font-weight: 800;
+                font-size: 14.5px;
+                font-weight: 900;
                 display: flex;
                 align-items: center;
                 justify-content: center;
@@ -659,21 +660,21 @@
                 background: rgba(255, 255, 255, 0.05);
             }
 
-            /* 3. Android Material 3 Bottom Navigation Bar */
+            /* 3. Android Material 3 Bottom Navigation Bar (Flutter Style) */
             .app-mobile-bottom-bar {
                 position: fixed !important;
                 bottom: 0 !important;
                 left: 0 !important;
                 right: 0 !important;
-                height: 64px !important;
+                height: 68px !important;
                 background: #ffffff !important;
-                border-top: 1px solid #e2e8f0 !important;
-                box-shadow: 0 -4px 18px rgba(0, 0, 0, 0.06) !important;
+                border-top: 1.5px solid #e2e8f0 !important;
+                box-shadow: 0 -4px 20px rgba(15, 23, 42, 0.08) !important;
                 z-index: 1030 !important;
                 display: flex !important;
                 align-items: center !important;
                 justify-content: space-around !important;
-                padding: 0 4px !important;
+                padding: 4px 6px !important;
                 margin: 0 !important;
             }
             .bottom-tab-item {
@@ -685,42 +686,43 @@
                 height: 100%;
                 color: #64748b;
                 text-decoration: none !important;
-                padding: 4px 0;
+                padding: 2px 0;
                 cursor: pointer;
                 border: none;
                 background: transparent;
                 -webkit-tap-highlight-color: transparent;
             }
             .bottom-tab-icon {
-                font-size: 18px;
+                font-size: 20px;
                 line-height: 1;
                 margin-bottom: 3px;
-                width: 38px;
-                height: 26px;
-                border-radius: 14px;
+                width: 52px;
+                height: 30px;
+                border-radius: 16px;
                 display: flex;
                 align-items: center;
                 justify-content: center;
-                transition: all 0.2s ease;
+                transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+                color: #64748b;
             }
             .bottom-tab-label {
-                font-size: 10.5px;
-                font-weight: 700;
+                font-size: 11.5px !important;
+                font-weight: 700 !important;
                 line-height: 1;
-            }
-            .bottom-tab-item.active {
-                color: #2563eb !important;
+                color: #64748b;
+                letter-spacing: 0.2px;
             }
             .bottom-tab-item.active .bottom-tab-icon {
-                background: #eff6ff;
-                color: #2563eb;
-                transform: scale(1.08);
+                background: #dbeafe !important;
+                color: #1d4ed8 !important;
+                transform: scale(1.05);
             }
             .bottom-tab-item.active .bottom-tab-label {
-                font-weight: 800;
+                color: #1d4ed8 !important;
+                font-weight: 900 !important;
             }
             .bottom-tab-item:active {
-                transform: scale(0.92);
+                transform: scale(0.94);
             }
         }
     </style>
