@@ -2,7 +2,7 @@
     $dynCompName = \App\Models\Setting::get('company_name', 'Kent Hardware');
     $init1 = strtoupper(substr($dynCompName, 0, 1));
     $init2 = strlen($dynCompName) > 1 ? strtoupper(substr($dynCompName, 1, 1)) : '';
-    $isCycleCountIndex = request()->routeIs('cycle_count.index');
+    $isCycleCountIndex = request()->routeIs('cycle_count.index') || request()->is('cycle-count');
     $isCountSheet = request()->routeIs('cycle_count.sheet');
 @endphp
 

@@ -309,9 +309,11 @@
     <script src="{{ asset('assets/js/modernizr-2.8.3.min.js') }}"></script>
     <link rel="stylesheet" href="{{ asset('assets/css/metisMenu.css') }}">
     <link rel="stylesheet" href="{{ asset('assets/css/slicknav.min.css') }}">
-    <link rel="stylesheet" href="{{ asset('assets/vendors/am-charts/css/am-charts.css') }}">
-    <link rel="stylesheet" href="{{ asset('assets/vendors/charts/morris-bundle/morris.css') }}">
-    <link rel="stylesheet" href="{{ asset('assets/vendors/charts/c3charts/c3.css') }}">
+    @if(request()->is('home') || request()->is('dashboard'))
+        <link rel="stylesheet" href="{{ asset('assets/vendors/am-charts/css/am-charts.css') }}">
+        <link rel="stylesheet" href="{{ asset('assets/vendors/charts/morris-bundle/morris.css') }}">
+        <link rel="stylesheet" href="{{ asset('assets/vendors/charts/c3charts/c3.css') }}">
+    @endif
     <link rel="stylesheet" href="{{ asset('assets/vendors/data-table/css/jquery.dataTables.css') }}">
     <link rel="stylesheet" href="{{ asset('assets/vendors/data-table/css/dataTables.bootstrap4.min.css') }}">
     <link rel="stylesheet" href="{{ asset('assets/vendors/data-table/css/responsive.bootstrap.min.css') }}">
@@ -336,8 +338,8 @@
     <!-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css"> -->
     <link rel="stylesheet" href="{{ asset('assets/css/flatpickr.min.css') }}">
 
-    {{-- ✅ Universal Responsive CSS - All screens covered with cache-buster --}}
-    <link rel="stylesheet" href="/assets/css/responsive.css?v={{ time() }}">
+    {{-- ✅ Universal Responsive CSS - Cached for speed --}}
+    <link rel="stylesheet" href="/assets/css/responsive.css?v=2.2">
 
     <style id="mobile-app-core-styles">
         /* ============================================================
@@ -361,6 +363,17 @@
                 overflow-x: hidden !important;
                 font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif !important;
                 -webkit-font-smoothing: antialiased;
+            }
+            body.cycle-count-screen,
+            body.no-topbar {
+                padding-top: 0 !important;
+                background: #0b1329 !important;
+            }
+            body.cycle-count-screen .container-scroller,
+            body.cycle-count-screen .app-page-body,
+            body.product-page-body.cycle-count-screen .app-page-body {
+                padding-top: 0 !important;
+                margin-top: 0 !important;
             }
             .container-scroller {
                 overflow-x: hidden !important;
@@ -954,6 +967,11 @@
                 padding-top: 60px !important;
                 padding-bottom: 76px !important;
             }
+            body.cycle-count-screen .app-page-body,
+            body.product-page-body.cycle-count-screen .app-page-body {
+                padding-top: 0 !important;
+                margin-top: 0 !important;
+            }
             .main-content {
                 padding-top: 8px !important;
                 padding-bottom: 8px !important;
@@ -1233,6 +1251,12 @@
                 padding-bottom: 76px !important;
                 min-height: calc(100vh - 60px) !important;
             }
+            body.product-page-body.cycle-count-screen .app-page-body,
+            body.cycle-count-screen .app-page-body {
+                padding-top: 0 !important;
+                margin-top: 0 !important;
+                min-height: auto !important;
+            }
         }
     </style>
 
@@ -1317,8 +1341,9 @@
     $isDashboard = request()->routeIs('home') || request()->is('home') || request()->routeIs('dashboard') || (request()->is('dashboard') && !request()->is('web-orders/*'));
     $useCompactNavbar = !$isDashboard;
     $isProductPage = $useCompactNavbar;
+    $isCycleCountIndex = request()->routeIs('cycle_count.index') || request()->is('cycle-count');
 @endphp
-<body class="{{ $isProductPage ? 'product-page-body' : '' }}">
+<body class="{{ $isProductPage ? 'product-page-body' : '' }} {{ $isCycleCountIndex ? 'cycle-count-screen no-topbar' : '' }}">
     <!--[if lt IE 8]>
 <p class="browserupgrade">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
 <![endif]-->
@@ -1753,6 +1778,7 @@
     <!-- Slick Nav -->
     <script src="{{ asset('assets/js/jquery.slicknav.min.js') }}"></script>
 
+    @if(request()->is('home') || request()->is('dashboard'))
     <!-- start amchart js -->
     <script src="{{ asset('assets/vendors/am-charts/js/ammap.js') }}"></script>
     <script src="{{ asset('assets/vendors/am-charts/js/worldLow.js') }}"></script>
@@ -1772,18 +1798,12 @@
     <script src="{{ asset('assets/vendors/charts/c3charts/c3.min.js') }}"></script>
     <script src="{{ asset('assets/vendors/charts/c3charts/d3-5.4.0.min.js') }}"></script>
 
-    <!-- Data Table js -->
-    <script src="{{ asset('assets/vendors/data-table/js/jquery.dataTables.js') }}"></script>
-    <script src="{{ asset('assets/vendors/data-table/js/jquery.dataTables.min.js') }}"></script>
-    <script src="{{ asset('assets/vendors/data-table/js/dataTables.bootstrap4.min.js') }}"></script>
-    <script src="{{ asset('assets/vendors/data-table/js/dataTables.responsive.min.js') }}"></script>
-    <script src="{{ asset('assets/vendors/data-table/js/responsive.bootstrap.min.js') }}"></script>
-
     <!-- Sparkline Chart -->
     <script src="{{ asset('assets/vendors/charts/sparkline/jquery.sparkline.js') }}"></script>
 
     <!-- Home Script -->
     <script src="{{ asset('assets/js/home.js') }}"></script>
+    @endif
 
     <!-- Main Js -->
     <script src="{{ asset('assets/js/main.js') }}"></script>

@@ -60,7 +60,7 @@ class CycleCountController extends Controller
 
         $counts = $query->paginate(15)->appends($request->all());
 
-        // Summary metrics (scoped to staff member if not admin)
+        // Summary metrics (scoped to staff member if not admin) - 1 Single Fast Aggregate Query
         $now = Carbon::now();
         $thisWeekStart = $now->copy()->startOfWeek();
         $thisWeekEnd = $now->copy()->endOfWeek();
@@ -71,18 +71,28 @@ class CycleCountController extends Controller
             $baseStatQuery->where('assigned_to', Auth::id());
         }
 
-        $totalCountsCount = (clone $baseStatQuery)->count();
-        $completedThisWeek = (clone $baseStatQuery)->where('status', 'approved')
-            ->whereBetween('approved_at', [$thisWeekStart, $thisWeekEnd])
-            ->count();
-        // If 0 approved this week, fallback to total approved for staff overview
-        if ($completedThisWeek === 0 && $isStaff) {
-            $completedThisWeek = (clone $baseStatQuery)->where('status', 'approved')->count();
-        }
-        $pendingApproval = (clone $baseStatQuery)->where('status', 'submitted')->count();
-        $inProgressCount = (clone $baseStatQuery)->where('status', 'started')->count();
+        $stats = (clone $baseStatQuery)
+            ->selectRaw("
+                COUNT(*) as total_counts,
+                SUM(CASE WHEN status = 'started' THEN 1 ELSE 0 END) as in_progress,
+                SUM(CASE WHEN status = 'submitted' THEN 1 ELSE 0 END) as pending_approval,
+                SUM(CASE WHEN status = 'approved' THEN 1 ELSE 0 END) as total_approved,
+                SUM(CASE WHEN status = 'approved' AND approved_at BETWEEN ? AND ? THEN 1 ELSE 0 END) as approved_this_week
+            ", [$thisWeekStart, $thisWeekEnd])
+            ->first();
 
-        $allStaff = $this->getAssignableStaff();
+        $totalCountsCount = (int)($stats->total_counts ?? 0);
+        $inProgressCount  = (int)($stats->in_progress ?? 0);
+        $pendingApproval  = (int)($stats->pending_approval ?? 0);
+        $approvedWeek     = (int)($stats->approved_this_week ?? 0);
+        $approvedTotal    = (int)($stats->total_approved ?? 0);
+
+        $completedThisWeek = ($approvedWeek > 0 || !$isStaff) ? $approvedWeek : $approvedTotal;
+
+        // Skip heavy HR employee scanning on staff mobile requests; cache for admin
+        $allStaff = $isStaff ? collect() : \Illuminate\Support\Facades\Cache::remember('cycle_count_assignable_staff', 300, function() {
+            return $this->getAssignableStaff();
+        });
 
         return view('admin_panel.cycle_count.schedule', compact(
             'counts',

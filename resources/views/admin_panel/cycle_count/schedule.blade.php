@@ -314,18 +314,30 @@
        EXACT MOBILE ANDROID APP STYLES (Pixel-Perfect Mockup Match)
        ======================================================== */
     @media (max-width: 991.98px) {
-        body {
-            padding-top: 0 !important;
-            padding-bottom: 74px !important;
-            background: #f0f4f8 !important;
-            overflow-x: hidden !important;
-        }
-        .app-page-body {
+        html,
+        body,
+        body.cycle-count-screen,
+        body.product-page-body,
+        body.product-page-body.cycle-count-screen,
+        .container-scroller,
+        .app-page-body,
+        body .app-page-body,
+        body.product-page-body .app-page-body,
+        .img2-wrapper,
+        .img2-container {
             padding-top: 0 !important;
             margin-top: 0 !important;
         }
+        body {
+            padding-bottom: 74px !important;
+            background: #0b1329 !important;
+            overflow-x: hidden !important;
+        }
         .app-mobile-topbar {
             display: none !important;
+            height: 0 !important;
+            margin: 0 !important;
+            padding: 0 !important;
         }
         .img2-wrapper {
             padding: 0 !important;
