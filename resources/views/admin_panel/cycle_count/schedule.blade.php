@@ -311,15 +311,29 @@
     }
 
     /* ========================================================
-       MOBILE ANDROID & FLUTTER-GRADE APP STYLES
+       EXACT MOBILE ANDROID APP STYLES (Pixel-Perfect Mockup Match)
        ======================================================== */
     @media (max-width: 991.98px) {
-        .img2-wrapper {
-            padding: 12px 12px 90px 12px !important;
-            background: #f8fafc !important;
+        body {
+            padding-top: 0 !important;
+            padding-bottom: 74px !important;
+            background: #f0f4f8 !important;
             overflow-x: hidden !important;
-            min-height: calc(100vh - 60px) !important;
+        }
+        .app-page-body {
+            padding-top: 0 !important;
+            margin-top: 0 !important;
+        }
+        .app-mobile-topbar {
+            display: none !important;
+        }
+        .img2-wrapper {
+            padding: 0 !important;
+            margin: 0 !important;
+            background: #f0f4f8 !important;
+            min-height: 100vh !important;
             width: 100% !important;
+            overflow-x: hidden !important;
         }
         .img2-container {
             min-width: 100% !important;
@@ -341,428 +355,439 @@
             display: none !important;
         }
 
-        /* ── Flutter Filter & Week Selector Card ── */
-        .m-filter-bar-card {
-            background: #ffffff;
-            border-radius: 16px;
-            padding: 12px 14px;
-            margin-bottom: 14px;
-            border: 1.5px solid #e2e8f0;
-            box-shadow: 0 4px 14px rgba(15, 23, 42, 0.04);
+        /* ── EXACT DARK CURVED HEADER ── */
+        .m-exact-header {
+            background-color: #0b1329;
+            padding: 16px 16px 26px 16px;
+            border-bottom-left-radius: 28px;
+            border-bottom-right-radius: 28px;
+            color: #ffffff;
+            box-shadow: 0 6px 24px rgba(11, 19, 41, 0.35);
         }
-        .m-select-pill-wrap {
-            position: relative;
+        .m-exact-top-bar {
             display: flex;
             align-items: center;
-            background: #f8fafc;
-            border: 1.5px solid #cbd5e1;
-            border-radius: 12px;
-            padding: 0 12px;
-            height: 46px;
-            transition: border-color 0.15s ease;
+            justify-content: space-between;
+            margin-bottom: 18px;
         }
-        .m-select-pill-wrap:focus-within {
-            border-color: #2563eb;
-            background: #ffffff;
+        .m-exact-brand-wrap {
+            display: flex;
+            align-items: center;
+            gap: 12px;
         }
-        .m-select-icon {
-            font-size: 14px;
-            margin-right: 8px;
-            color: #475569;
-        }
-        .m-chip-select {
-            width: 100%;
-            height: 100%;
+        .m-exact-ham-btn {
             background: transparent;
             border: none;
-            outline: none;
-            font-size: 14px;
-            font-weight: 800;
-            color: #0f172a;
+            padding: 0;
+            width: 22px;
+            height: 18px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
             cursor: pointer;
         }
-        .m-filter-reset-btn {
-            width: 46px;
-            height: 46px;
-            border-radius: 12px;
-            background: #f1f5f9;
-            border: 1.5px solid #cbd5e1;
-            color: #334155;
+        .m-exact-ham-btn span {
+            display: block;
+            height: 2.2px;
+            width: 100%;
+            background-color: #ffffff;
+            border-radius: 2px;
+        }
+        .m-exact-title-box {
+            display: flex;
+            flex-direction: column;
+        }
+        .m-exact-brand-name {
+            font-size: 14.5px;
+            font-weight: 700;
+            color: #ffffff;
+            line-height: 1.2;
+        }
+        .m-exact-portal-label {
+            font-size: 11px;
+            color: #94a3b8;
+            font-weight: 500;
+            line-height: 1.2;
+            margin-top: 1px;
+        }
+        .m-exact-right-actions {
             display: flex;
             align-items: center;
-            justify-content: center;
-            font-size: 15px;
-            text-decoration: none !important;
-            flex-shrink: 0;
-            transition: all 0.15s ease;
+            gap: 14px;
         }
-        .m-filter-reset-btn:active {
-            background: #e2e8f0;
-            transform: scale(0.95);
-        }
-
-        /* ── Metric KPI Badges Grid (2x2 Flutter Style) ── */
-        .m-kpi-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 12px;
-            margin-bottom: 14px;
-        }
-        .m-kpi-card {
-            background: #ffffff;
-            border-radius: 18px;
-            border: 1.5px solid #e2e8f0;
-            padding: 15px 16px;
-            box-shadow: 0 4px 16px rgba(15, 23, 42, 0.05);
+        .m-exact-bell-btn {
+            background: transparent;
+            border: none;
+            color: #ffffff;
+            font-size: 18px;
+            padding: 4px;
             cursor: pointer;
-            transition: all 0.15s ease;
-        }
-        .m-kpi-card:active {
-            transform: scale(0.97);
-            background: #f8fafc;
-        }
-        .m-kpi-label {
-            font-size: 12.5px;
-            font-weight: 800;
-            color: #475569;
-            text-transform: uppercase;
-            letter-spacing: 0.4px;
-        }
-        .m-kpi-icon-wrap {
-            width: 32px;
-            height: 32px;
-            border-radius: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 13px;
-        }
-        .bg-blue-subtle { background: #eff6ff; color: #1d4ed8; }
-        .bg-green-subtle { background: #f0fdf4; color: #15803d; }
-        .bg-cyan-subtle { background: #fef3c7; color: #b45309; }
-        .bg-emerald-subtle { background: #ecfdf5; color: #047857; }
-        .m-kpi-value {
-            font-size: 28px;
-            font-weight: 900;
             line-height: 1;
-            margin-top: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .m-exact-avatar-btn {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: #2563eb;
+            color: #ffffff;
+            font-size: 15px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            border: none;
+            line-height: 1;
+            padding: 0;
         }
 
-        /* ── Flutter Segmented Chips Bar ── */
-        .m-chips-filter {
+        .m-exact-hero-tag {
+            font-size: 10px;
+            font-weight: 800;
+            letter-spacing: 0.8px;
+            color: #60a5fa;
+            text-transform: uppercase;
+            margin-bottom: 4px;
+        }
+        .m-exact-hero-title {
+            font-size: 22px;
+            font-weight: 800;
+            color: #ffffff;
+            margin: 0 0 4px 0;
+            letter-spacing: -0.3px;
+            line-height: 1.2;
+        }
+        .m-exact-hero-sub {
+            font-size: 12px;
+            color: #cbd5e1;
+            margin: 0;
+            line-height: 1.3;
+        }
+
+        /* ── MAIN CONTENT CONTAINER (Below Curved Header) ── */
+        .m-exact-body {
+            padding: 14px 14px 85px 14px;
+            background: #f0f4f8;
+        }
+
+        /* ── FILTER ROW (All Weeks, All Status, Refresh) ── */
+        .m-exact-filter-row {
             display: flex;
             align-items: center;
             gap: 8px;
-            overflow-x: auto;
-            padding-bottom: 8px;
-            margin-bottom: 14px;
-            -webkit-overflow-scrolling: touch;
-            scrollbar-width: none;
+            margin-bottom: 12px;
         }
-        .m-chips-filter::-webkit-scrollbar { display: none; }
-        .m-chip {
-            flex-shrink: 0;
-            height: 42px;
-            padding: 8px 18px;
-            background: #ffffff;
-            border: 1.5px solid #cbd5e1;
-            border-radius: 22px;
-            font-size: 13.5px;
-            font-weight: 800;
-            color: #334155;
-            cursor: pointer;
-            transition: all 0.15s ease;
-            white-space: nowrap;
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-        }
-        .m-chip.active {
-            background: #2563eb !important;
-            color: #ffffff !important;
-            border-color: #2563eb !important;
-            box-shadow: 0 4px 14px rgba(37, 99, 235, 0.35) !important;
-        }
-
-        /* ── Search Bar (Flutter TextField Style) ── */
-        .m-search-pill-box {
+        .m-exact-select-wrap {
+            flex: 1;
             position: relative;
+            background: #ffffff;
+            border: 1px solid #cbd5e1;
+            border-radius: 12px;
+            height: 42px;
             display: flex;
             align-items: center;
-            background: #ffffff;
-            border: 1.5px solid #cbd5e1;
-            border-radius: 16px;
-            padding: 0 16px;
-            height: 48px;
-            margin-bottom: 16px;
-            box-shadow: 0 2px 8px rgba(15, 23, 42, 0.04);
-            transition: border-color 0.15s ease;
+            padding: 0 12px;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.02);
         }
-        .m-search-pill-box:focus-within {
-            border-color: #2563eb;
-            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
-        }
-        .m-search-icon {
-            color: #64748b;
-            font-size: 16px;
-            margin-right: 10px;
-        }
-        .m-search-pill-input {
+        .m-exact-select-input {
             width: 100%;
             height: 100%;
             border: none;
             outline: none;
             background: transparent;
-            font-size: 14.5px;
+            font-size: 13px;
             font-weight: 600;
+            color: #1e293b;
+            cursor: pointer;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            appearance: none;
+            padding-right: 18px;
+        }
+        .m-exact-caret {
+            position: absolute;
+            right: 12px;
+            pointer-events: none;
+            font-size: 11px;
+            color: #64748b;
+        }
+        .m-exact-refresh-btn {
+            width: 42px;
+            height: 42px;
+            border-radius: 12px;
+            background: #ffffff;
+            border: 1px solid #cbd5e1;
+            color: #475569;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            text-decoration: none !important;
+            flex-shrink: 0;
+            transition: background 0.15s ease;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.02);
+        }
+        .m-exact-refresh-btn:active {
+            background: #e2e8f0;
+        }
+
+        /* ── 2x2 KPI STAT CARDS ── */
+        .m-exact-kpi-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-bottom: 12px;
+        }
+        .m-exact-kpi-card {
+            background: #ffffff;
+            border-radius: 16px;
+            padding: 12px 14px;
+            border: 1px solid #e2e8f0;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
+            cursor: pointer;
+            transition: transform 0.1s ease;
+        }
+        .m-exact-kpi-card:active {
+            transform: scale(0.98);
+        }
+        .m-exact-kpi-card.active {
+            border-color: #2563eb !important;
+            background: #eff6ff !important;
+        }
+        .m-exact-kpi-label {
+            font-size: 10px;
+            font-weight: 700;
+            color: #475569;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+            margin-bottom: 6px;
+        }
+        .m-exact-kpi-val {
+            font-size: 26px;
+            font-weight: 800;
+            line-height: 1;
+        }
+        .val-blue { color: #2563eb; }
+        .val-green { color: #059669; }
+        .val-amber { color: #d97706; }
+
+        /* ── SEARCH BAR ── */
+        .m-exact-search-wrap {
+            height: 44px;
+            background: #ffffff;
+            border: 1px solid #cbd5e1;
+            border-radius: 22px;
+            padding: 0 14px;
+            display: flex;
+            align-items: center;
+            margin-bottom: 14px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
+        }
+        .m-exact-search-icon {
+            color: #64748b;
+            font-size: 13px;
+            margin-right: 8px;
+        }
+        .m-exact-search-input {
+            width: 100%;
+            height: 100%;
+            border: none;
+            outline: none;
+            background: transparent;
+            font-size: 13px;
+            font-weight: 500;
             color: #0f172a;
         }
-        .m-search-clear {
+        .m-exact-search-clear {
             background: none;
             border: none;
             color: #94a3b8;
             cursor: pointer;
             padding: 4px;
-            font-size: 16px;
+            font-size: 14px;
         }
 
-        /* ── High-Contrast Flutter Material 3 Task Cards ── */
-        .m-cards-list {
+        /* ── TASK CARDS ── */
+        .m-exact-cards-list {
             display: flex;
             flex-direction: column;
-            gap: 16px;
+            gap: 12px;
         }
-        .android-count-card {
+        .m-exact-task-card {
             background: #ffffff;
-            border-radius: 20px;
-            border: 1.5px solid #e2e8f0;
-            padding: 18px 16px;
-            box-shadow: 0 8px 25px rgba(15, 23, 42, 0.08), 0 2px 6px rgba(15, 23, 42, 0.04);
-            transition: transform 0.12s ease;
-        }
-        .android-count-card:active {
-            transform: scale(0.99);
-        }
-        .acc-header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-bottom: 14px;
-            flex-wrap: wrap;
-            gap: 8px;
-        }
-        .acc-loc-pill {
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            background: #eff6ff;
-            color: #1e40af;
-            border: 1.5px solid #93c5fd;
-            padding: 6px 14px;
-            border-radius: 12px;
-            font-size: 16px;
-            font-weight: 900;
-            letter-spacing: -0.2px;
-        }
-        .acc-code-chip {
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 13.5px;
-            color: #475569;
-            font-weight: 800;
-            background: #f8fafc;
-            padding: 5px 10px;
-            border-radius: 8px;
+            border-radius: 18px;
             border: 1px solid #e2e8f0;
+            padding: 14px 16px;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.02);
         }
-        .acc-status-pill {
+        .m-exact-card-top {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 12px;
+        }
+        .m-exact-loc-badge {
+            background: #eff6ff;
+            color: #2563eb;
+            font-weight: 800;
+            font-size: 13px;
+            padding: 4px 10px;
+            border-radius: 8px;
+            border: 1px solid #bfdbfe;
             display: inline-flex;
             align-items: center;
-            gap: 6px;
-            padding: 6px 14px;
-            border-radius: 20px;
-            font-size: 13px;
-            font-weight: 800;
-            white-space: nowrap;
         }
-        .acc-status-started { background: #dcfce7; color: #14532d; border: 1.5px solid #86efac; }
-        .acc-status-pending { background: #f1f5f9; color: #1e293b; border: 1.5px solid #cbd5e1; }
-        .acc-status-submitted { background: #fef3c7; color: #78350f; border: 1.5px solid #fde68a; }
-        .acc-status-approved { background: #ecfdf5; color: #064e3b; border: 1.5px solid #a7f3d0; }
-
-        .acc-pulse-dot {
-            width: 8px;
-            height: 8px;
-            border-radius: 50%;
-            background: #16a34a;
-            animation: pulseGlow 1.5s infinite;
-        }
-
-        .acc-meta-strip {
-            display: grid;
-            grid-template-columns: 1fr 1fr 1fr;
-            gap: 8px;
-            background: #f8fafc;
-            border: 1.5px solid #edf2f7;
-            border-radius: 14px;
-            padding: 12px 14px;
-            margin-bottom: 14px;
-        }
-        .acc-meta-col {
-            display: flex;
-            flex-direction: column;
-        }
-        .acc-meta-k {
-            font-size: 11px;
-            color: #64748b;
-            font-weight: 800;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            margin-bottom: 2px;
-        }
-        .acc-meta-v {
-            font-size: 14.5px;
-            font-weight: 800;
-            color: #0f172a;
-        }
-        .acc-meta-v.text-primary {
-            color: #2563eb !important;
-            font-weight: 900;
-            font-size: 15px;
-        }
-
-        .acc-progress-box {
-            margin-bottom: 16px;
-        }
-        .acc-progress-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            font-size: 13px;
+        .m-exact-code-txt {
             color: #475569;
             font-weight: 700;
+            font-size: 13px;
+            margin-left: 6px;
+        }
+        .m-exact-status-pill {
+            display: inline-flex;
+            align-items: center;
+            border-radius: 14px;
+            padding: 3px 10px;
+            font-size: 11px;
+            font-weight: 600;
+            white-space: nowrap;
+        }
+        .status-not-started {
+            background: transparent;
+            border: 1px solid #94a3b8;
+            color: #334155;
+        }
+        .status-started {
+            background: #dcfce7;
+            border: 1px solid #86efac;
+            color: #15803d;
+        }
+        .status-submitted {
+            background: #fef3c7;
+            border: 1px solid #fde68a;
+            color: #92400e;
+        }
+        .status-approved {
+            background: #ecfdf5;
+            border: 1px solid #a7f3d0;
+            color: #047857;
+        }
+
+        /* Gray Meta Strip */
+        .m-exact-meta-strip {
+            background: #f1f5f9;
+            border-radius: 10px;
+            padding: 8px 12px;
+            margin-bottom: 12px;
+            display: grid;
+            grid-template-columns: 1fr 1.3fr 1fr;
+            gap: 6px;
+        }
+        .m-exact-meta-col {
+            display: flex;
+            flex-direction: column;
+        }
+        .m-exact-meta-k {
+            font-size: 9.5px;
+            font-weight: 700;
+            color: #64748b;
+            text-transform: uppercase;
+            margin-bottom: 2px;
+            letter-spacing: 0.3px;
+        }
+        .m-exact-meta-v {
+            font-size: 12.5px;
+            font-weight: 700;
+            color: #0f172a;
+        }
+        .m-exact-meta-v.items-blue {
+            color: #2563eb;
+        }
+
+        /* Counting Progress */
+        .m-exact-progress-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-size: 11.5px;
             margin-bottom: 6px;
         }
-        .acc-progress-header strong {
+        .m-exact-prog-label {
+            color: #475569;
+            font-weight: 500;
+        }
+        .m-exact-prog-frac {
             color: #0f172a;
-            font-size: 14px;
-            font-weight: 900;
+            font-weight: 600;
         }
-        .acc-progress-track {
-            height: 10px;
+        .m-exact-prog-track {
+            height: 6px;
             background: #e2e8f0;
-            border-radius: 6px;
+            border-radius: 4px;
             overflow: hidden;
+            margin-bottom: 12px;
         }
-        .acc-progress-fill {
+        .m-exact-prog-fill {
             height: 100%;
-            background: linear-gradient(90deg, #10b981 0%, #059669 100%);
-            border-radius: 6px;
+            background: #2563eb;
+            border-radius: 4px;
             transition: width 0.3s ease;
         }
 
-        /* ── Flutter Elevated Full-Width Buttons (52px Touch Target) ── */
-        .acc-btn {
+        /* Exact Button Pill */
+        .m-exact-btn-pill {
             width: 100%;
-            min-height: 52px;
+            height: 46px;
+            background: #2563eb;
+            color: #ffffff !important;
+            border-radius: 23px;
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 10px;
-            border-radius: 16px;
-            font-size: 16px;
-            font-weight: 800;
-            letter-spacing: 0.3px;
+            gap: 8px;
+            font-size: 13.5px;
+            font-weight: 700;
             text-decoration: none !important;
             border: none;
             cursor: pointer;
             transition: all 0.15s ease;
         }
-        .acc-btn-start {
-            background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
-            color: #ffffff !important;
-            box-shadow: 0 6px 20px rgba(37, 99, 235, 0.4);
-        }
-        .acc-btn-start:active {
+        .m-exact-btn-pill:active {
             transform: scale(0.98);
-            box-shadow: 0 2px 8px rgba(37, 99, 235, 0.5);
+            background: #1d4ed8;
         }
-        .acc-btn-resume {
-            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
-            color: #ffffff !important;
-            box-shadow: 0 6px 20px rgba(16, 185, 129, 0.4);
+        .m-exact-btn-pill.btn-resume {
+            background: #10b981;
         }
-        .acc-btn-resume:active {
-            transform: scale(0.98);
-            box-shadow: 0 2px 8px rgba(16, 185, 129, 0.5);
-        }
-        .acc-btn-waiting {
-            background: #fef3c7;
-            color: #78350f !important;
-            border: 1.5px solid #fde68a;
-            font-size: 14.5px;
-            cursor: default;
-        }
-        .acc-btn-approved {
-            background: #ecfdf5;
-            color: #064e3b !important;
-            border: 1.5px solid #a7f3d0;
-            font-size: 14.5px;
-            cursor: default;
-        }
-
-        /* ── Android Empty State Card ── */
-        .acc-empty-card {
-            background: #ffffff;
-            border: 2px dashed #cbd5e1;
-            border-radius: 20px;
-            padding: 38px 20px;
-            text-align: center;
-            box-shadow: 0 4px 16px rgba(15, 23, 42, 0.04);
-        }
-        .acc-empty-icon-badge {
-            width: 68px;
-            height: 68px;
-            border-radius: 50%;
+        .m-exact-btn-pill.btn-waiting {
             background: #eff6ff;
-            color: #2563eb;
-            font-size: 28px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin: 0 auto 16px auto;
+            color: #1d4ed8 !important;
+            border: 1.5px solid #bfdbfe;
+            cursor: default;
         }
-        .acc-empty-card h5 {
-            font-size: 17px;
-            font-weight: 800;
-            color: #0f172a;
-            margin-bottom: 8px;
+        .m-exact-btn-pill.btn-approved {
+            background: #ecfdf5;
+            color: #047857 !important;
+            border: 1.5px solid #a7f3d0;
+            cursor: default;
         }
 
-        /* ── Collapsible Guide Card ── */
-        .m-guide-card {
+        /* Empty Card */
+        .m-exact-empty-card {
             background: #ffffff;
-            border-radius: 16px;
-            border: 1.5px solid #e2e8f0;
-            padding: 16px 18px;
-            margin-top: 16px;
-            box-shadow: 0 2px 8px rgba(15, 23, 42, 0.04);
+            border: 1px dashed #cbd5e1;
+            border-radius: 18px;
+            padding: 34px 20px;
+            text-align: center;
         }
-        .m-guide-title {
-            font-size: 14px;
-            font-weight: 800;
+        .m-exact-empty-card h6 {
+            font-size: 15px;
+            font-weight: 700;
             color: #0f172a;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            cursor: pointer;
-        }
-        .m-guide-body {
-            margin-top: 12px;
-            font-size: 13px;
-            color: #475569;
-            line-height: 1.6;
-            border-top: 1px dashed #e2e8f0;
-            padding-top: 12px;
+            margin-bottom: 6px;
         }
     }
 
@@ -864,238 +889,210 @@
              MOBILE ANDROID & FLUTTER APP VIEW
              ======================================================== --}}
         <div class="mobile-schedule-app-view">
-            {{-- 1. Flutter Filter & Week Selector Pill Bar --}}
-            <form method="GET" action="{{ route('cycle_count.index') }}" id="mobileFilterFormSchedule" class="m-0">
-                <div class="m-filter-bar-card">
-                    <div class="d-flex align-items-center gap-2">
-                        <div class="m-select-pill-wrap flex-grow-1">
-                            <i class="far fa-calendar-alt m-select-icon"></i>
-                            <select name="week" class="m-chip-select" onchange="document.getElementById('mobileFilterFormSchedule').submit()">
-                                <option value="all" {{ request('week', 'all') == 'all' ? 'selected' : '' }}>All Weeks</option>
-                                <option value="this_week" {{ request('week') == 'this_week' ? 'selected' : '' }}>This Week</option>
-                                <option value="last_week" {{ request('week') == 'last_week' ? 'selected' : '' }}>Last Week</option>
-                                <option value="next_week" {{ request('week') == 'next_week' ? 'selected' : '' }}>Next Week</option>
-                            </select>
+            {{-- 1. Dark Curved Hero Header (Exact Visual Match) --}}
+            <div class="m-exact-header">
+                <div class="m-exact-top-bar">
+                    <div class="m-exact-brand-wrap">
+                        <button type="button" class="m-exact-ham-btn" id="mobileDrawerOpenBtn" onclick="if(typeof openMobileAppDrawer === 'function'){ openMobileAppDrawer(); } else { $('#bottomDrawerTriggerBtn').click(); }" aria-label="Open Menu">
+                            <span></span><span></span><span></span>
+                        </button>
+                        <div class="m-exact-title-box">
+                            <span class="m-exact-brand-name">{{ \App\Models\Setting::get('company_name', 'Kent Hardware Center') }}</span>
+                            <span class="m-exact-portal-label">Staff Portal</span>
                         </div>
-
-                        <div class="m-select-pill-wrap flex-grow-1">
-                            <i class="fas fa-filter m-select-icon"></i>
-                            <select name="status" class="m-chip-select" onchange="document.getElementById('mobileFilterFormSchedule').submit()">
-                                <option value="all" {{ request('status', 'all') == 'all' ? 'selected' : '' }}>All Status</option>
-                                <option value="not_started" {{ request('status') == 'not_started' ? 'selected' : '' }}>Not started</option>
-                                <option value="started" {{ request('status') == 'started' ? 'selected' : '' }}>Started</option>
-                                <option value="submitted" {{ request('status') == 'submitted' ? 'selected' : '' }}>Submitted</option>
-                                <option value="approved" {{ request('status') == 'approved' ? 'selected' : '' }}>Approved</option>
-                            </select>
-                        </div>
-
-                        <a href="{{ route('cycle_count.index') }}?week=all" class="m-filter-reset-btn" title="Reset to All Weeks">
-                            <i class="fas fa-redo-alt"></i>
+                    </div>
+                    <div class="m-exact-right-actions">
+                        <a href="{{ route('notifications.index') }}" class="m-exact-bell-btn" title="Notifications" aria-label="Notifications">
+                            <i class="far fa-bell"></i>
                         </a>
-                    </div>
-                </div>
-            </form>
-
-            {{-- 3. Metric KPI Badges Grid (2x2) --}}
-            <div class="m-kpi-grid">
-                <div class="m-kpi-card" onclick="filterMobileStatus('all')">
-                    <div class="d-flex align-items-center justify-content-between">
-                        <span class="m-kpi-label">Total Assigned</span>
-                        <div class="m-kpi-icon-wrap bg-blue-subtle"><i class="fas fa-clipboard-list"></i></div>
-                    </div>
-                    <div class="m-kpi-value text-primary">{{ $totalCountsCount }}</div>
-                </div>
-
-                <div class="m-kpi-card" onclick="filterMobileStatus('started')">
-                    <div class="d-flex align-items-center justify-content-between">
-                        <span class="m-kpi-label">In Progress</span>
-                        <div class="m-kpi-icon-wrap bg-green-subtle"><i class="fas fa-play"></i></div>
-                    </div>
-                    <div class="m-kpi-value text-success">{{ $inProgressCount }}</div>
-                </div>
-
-                <div class="m-kpi-card" onclick="filterMobileStatus('submitted')">
-                    <div class="d-flex align-items-center justify-content-between">
-                        <span class="m-kpi-label">Waiting Review</span>
-                        <div class="m-kpi-icon-wrap bg-cyan-subtle"><i class="fas fa-clock"></i></div>
-                    </div>
-                    <div class="m-kpi-value text-info">{{ $pendingApproval }}</div>
-                </div>
-
-                <div class="m-kpi-card" onclick="filterMobileStatus('approved')">
-                    <div class="d-flex align-items-center justify-content-between">
-                        <span class="m-kpi-label">Approved</span>
-                        <div class="m-kpi-icon-wrap bg-emerald-subtle"><i class="fas fa-check-circle"></i></div>
-                    </div>
-                    <div class="m-kpi-value text-dark">{{ $completedThisWeek }}</div>
-                </div>
-            </div>
-
-            {{-- 4. Odoo Segmented Chips Filter --}}
-            <div class="m-chips-filter">
-                <button type="button" class="m-chip active" data-filter="all" onclick="filterMobileStatus('all', this)">
-                    <i class="fas fa-layer-group me-1"></i> All ({{ $counts->count() }})
-                </button>
-                <button type="button" class="m-chip" data-filter="not_started" onclick="filterMobileStatus('not_started', this)">
-                    <i class="far fa-circle me-1"></i> Not Started
-                </button>
-                <button type="button" class="m-chip" data-filter="started" onclick="filterMobileStatus('started', this)">
-                    <i class="fas fa-play-circle text-success me-1"></i> In Progress
-                </button>
-                <button type="button" class="m-chip" data-filter="submitted" onclick="filterMobileStatus('submitted', this)">
-                    <i class="fas fa-clock text-info me-1"></i> Waiting Review
-                </button>
-                <button type="button" class="m-chip" data-filter="approved" onclick="filterMobileStatus('approved', this)">
-                    <i class="fas fa-check-circle text-dark me-1"></i> Approved
-                </button>
-            </div>
-
-            {{-- 5. Mobile Search Pill Box --}}
-            <div class="m-search-pill-box">
-                <i class="fas fa-search m-search-icon"></i>
-                <input type="text" id="mobileSearchInput" placeholder="Search count #, rack location, staff..." class="m-search-pill-input" oninput="searchMobileCounts(this.value)">
-                <button type="button" class="m-search-clear" id="mobileSearchClearBtn" onclick="clearMobileSearch()" style="display:none;">
-                    <i class="fas fa-times-circle"></i>
-                </button>
-            </div>
-
-            {{-- 4. Tactile Flutter Task Cards List --}}
-            <div class="m-cards-list" id="mobileCountsList">
-                @forelse($counts as $count)
-                    @php
-                        $locRaw = $count->location ? $count->location->name : ($count->location_name ?: 'A1');
-                        $locDisplay = str_starts_with(strtolower($locRaw), 'rack') ? $locRaw : 'Rack ' . $locRaw;
-                        $staffName = $count->counter ? $count->counter->name : 'Staff';
-                        $percent = $count->progress_percent ?? 0;
-                    @endphp
-                    <div class="android-count-card mobile-count-card"
-                         data-status="{{ $count->status }}"
-                         data-search="{{ strtolower($count->count_number . ' ' . $locRaw . ' ' . $staffName) }}"
-                         id="mobileCard{{ $count->id }}">
-                        
-                        {{-- Card Top: Location Pill & Status Badge --}}
-                        <div class="acc-header">
-                            <div class="d-flex align-items-center gap-2">
-                                <span class="acc-loc-pill">
-                                    <i class="fas fa-map-marker-alt text-primary"></i> {{ $locDisplay }}
-                                </span>
-                                <span class="acc-code-chip">#{{ $count->count_number }}</span>
-                            </div>
-
-                            @if($count->status === 'started')
-                                <span class="acc-status-pill acc-status-started">
-                                    <span class="acc-pulse-dot"></span> In Progress
-                                </span>
-                            @elseif($count->status === 'submitted')
-                                <span class="acc-status-pill acc-status-submitted">
-                                    <i class="fas fa-clock"></i> Waiting Review
-                                </span>
-                            @elseif($count->status === 'approved')
-                                <span class="acc-status-pill acc-status-approved">
-                                    <i class="fas fa-check-double"></i> Approved
-                                </span>
-                            @else
-                                <span class="acc-status-pill acc-status-pending">
-                                    <i class="far fa-circle"></i> Not Started
-                                </span>
-                            @endif
-                        </div>
-
-                        {{-- Metadata Strip --}}
-                        <div class="acc-meta-strip">
-                            <div class="acc-meta-col">
-                                <span class="acc-meta-k"><i class="far fa-calendar-alt me-1 text-primary"></i> Date</span>
-                                <span class="acc-meta-v">{{ $count->count_date ? $count->count_date->format('d M Y') : '—' }}</span>
-                            </div>
-                            <div class="acc-meta-col">
-                                <span class="acc-meta-k"><i class="far fa-user me-1 text-primary"></i> Staff</span>
-                                <span class="acc-meta-v text-truncate">{{ $staffName }}</span>
-                            </div>
-                            <div class="acc-meta-col">
-                                <span class="acc-meta-k"><i class="fas fa-boxes me-1 text-primary"></i> Items</span>
-                                <span class="acc-meta-v text-primary font-weight-bold">{{ $count->total_items }} items</span>
-                            </div>
-                        </div>
-
-                        {{-- Live Progress Bar --}}
-                        <div class="acc-progress-box">
-                            <div class="acc-progress-header">
-                                <span><i class="fas fa-tasks text-muted me-1"></i> Counting Progress</span>
-                                <strong>{{ $count->entered_items }}/{{ $count->total_items }} counted ({{ $percent }}%)</strong>
-                            </div>
-                            <div class="acc-progress-track">
-                                <div class="acc-progress-fill" style="width: {{ $percent }}%;"></div>
-                            </div>
-                        </div>
-
-                        {{-- Full-Width Android Tactile Touch Action --}}
-                        @if(Auth::check() && Auth::user()->usertype !== 'admin')
-                            {{-- Staff Touch Action Buttons --}}
-                            @if($count->status === 'not_started')
-                                <a href="{{ route('cycle_count.sheet', $count->id) }}" class="acc-btn acc-btn-start">
-                                    <i class="fas fa-play me-1"></i> Start Blind Count
-                                </a>
-                            @elseif($count->status === 'started')
-                                <a href="{{ route('cycle_count.sheet', $count->id) }}" class="acc-btn acc-btn-resume">
-                                    <i class="fas fa-stopwatch me-1"></i> Continue Counting
-                                </a>
-                            @elseif($count->status === 'submitted')
-                                <div class="acc-btn acc-btn-waiting">
-                                    <i class="fas fa-hourglass-half me-1"></i> Submitted — Waiting Manager Approval
+                        <div class="dropdown">
+                            <button type="button" class="m-exact-avatar-btn" data-toggle="dropdown" aria-expanded="false" title="Account Profile">
+                                {{ strtoupper(substr(Auth::user()->name ?? 'F', 0, 1)) }}
+                            </button>
+                            <div class="dropdown-menu dropdown-menu-right border-0 shadow-lg p-2" style="border-radius: 14px; margin-top: 8px; min-width: 220px; z-index: 99999;">
+                                <div class="px-3 py-2 border-bottom mb-2 bg-light rounded-3">
+                                    <p class="mb-0 text-dark fw-bold small text-truncate">{{ Auth::user()->name ?? 'Staff User' }}</p>
+                                    <small class="text-muted text-break" style="font-size: 11px;">{{ Auth::user()->email ?? '' }}</small>
                                 </div>
-                            @elseif($count->status === 'approved')
-                                <div class="acc-btn acc-btn-approved">
-                                    <i class="fas fa-check-double me-1"></i> Count Completed &amp; Approved
-                                </div>
-                            @endif
-                        @else
-                            {{-- Manager / Admin Action Buttons --}}
-                            @if($count->status === 'submitted')
-                                <a href="{{ route('cycle_count.approve', $count->id) }}" class="acc-btn acc-btn-start">
-                                    <i class="fas fa-tasks me-1"></i> Open Review &amp; Reconcile
-                                </a>
-                            @elseif($count->status === 'started')
-                                <a href="{{ route('cycle_count.sheet', $count->id) }}" class="acc-btn acc-btn-resume">
-                                    <i class="fas fa-eye me-1"></i> Inspect Count Sheet
-                                </a>
-                            @elseif($count->status === 'approved')
-                                <a href="{{ route('cycle_count.approve', $count->id) }}" class="acc-btn acc-btn-approved">
-                                    <i class="fas fa-check-circle me-1"></i> View Approved Stock
-                                </a>
-                            @else
-                                <a href="{{ route('cycle_count.sheet', $count->id) }}" class="acc-btn acc-btn-start">
-                                    <i class="fas fa-clipboard-list me-1"></i> Open Count Sheet
-                                </a>
-                            @endif
-                        @endif
-                    </div>
-                @empty
-                    <div class="acc-empty-card">
-                        <div class="acc-empty-icon-badge">
-                            <i class="fas fa-clipboard-check"></i>
+                                @canany(['settings.view', 'settings.read'])
+                                    <a class="dropdown-item d-flex align-items-center text-dark fw-semibold py-2 rounded-2" href="{{ route('settings.index') }}">
+                                        <i class="fas fa-cog text-primary me-2"></i> Settings
+                                    </a>
+                                @endcanany
+                                <form method="POST" action="{{ route('logout') }}" class="m-0">
+                                    @csrf
+                                    <button type="submit" class="dropdown-item d-flex align-items-center text-danger fw-semibold py-2 rounded-2">
+                                        <i class="fas fa-power-off text-danger me-2"></i> Log Out
+                                    </button>
+                                </form>
+                            </div>
                         </div>
-                        <h5>No Cycle Counts Scheduled</h5>
-                        <p class="text-muted small mb-3">No physical inventory count tasks match your current filter.</p>
-                        @if(request('week') !== 'all')
-                            <a href="{{ route('cycle_count.index') }}?week=all" class="acc-btn acc-btn-start" style="display: inline-flex; width: auto; padding: 12px 24px;">
-                                <i class="fas fa-calendar-alt me-1"></i> View All Weeks (Show All Counts)
-                            </a>
-                        @endif
                     </div>
-                @endforelse
+                </div>
+                <div class="m-exact-hero-tag">PHYSICAL COUNTING</div>
+                <h1 class="m-exact-hero-title">Cycle Counts &amp; Stock</h1>
+                <p class="m-exact-hero-sub">Staff: {{ Auth::user()->name ?? 'Faraz Memon' }} · Real-time warehouse counting</p>
             </div>
 
-            {{-- 7. Collapsible Staff Guide Accordion --}}
-            <div class="m-guide-card">
-                <div class="m-guide-title" onclick="toggleMobileHelp()">
-                    <span><i class="fas fa-info-circle text-primary me-2"></i> How Blind Physical Counting Works</span>
-                    <i class="fas fa-chevron-down" id="helpChevron"></i>
+            {{-- 2. Main Canvas Body --}}
+            <div class="m-exact-body">
+                {{-- Filter Row: All Weeks, All Status, Refresh --}}
+                <form method="GET" action="{{ route('cycle_count.index') }}" id="mExactFilterForm" class="m-exact-filter-row">
+                    <div class="m-exact-select-wrap">
+                        <select name="week" onchange="document.getElementById('mExactFilterForm').submit()" class="m-exact-select-input">
+                            <option value="all" {{ request('week', 'all') == 'all' ? 'selected' : '' }}>All Weeks</option>
+                            <option value="this_week" {{ request('week') == 'this_week' ? 'selected' : '' }}>This Week</option>
+                            <option value="last_week" {{ request('week') == 'last_week' ? 'selected' : '' }}>Last Week</option>
+                            <option value="next_week" {{ request('week') == 'next_week' ? 'selected' : '' }}>Next Week</option>
+                        </select>
+                        <i class="fas fa-caret-down m-exact-caret"></i>
+                    </div>
+
+                    <div class="m-exact-select-wrap">
+                        <select name="status" onchange="document.getElementById('mExactFilterForm').submit()" class="m-exact-select-input">
+                            <option value="all" {{ request('status', 'all') == 'all' ? 'selected' : '' }}>All Status</option>
+                            <option value="not_started" {{ request('status') == 'not_started' ? 'selected' : '' }}>Not Started</option>
+                            <option value="started" {{ request('status') == 'started' ? 'selected' : '' }}>In Progress</option>
+                            <option value="submitted" {{ request('status') == 'submitted' ? 'selected' : '' }}>Waiting Review</option>
+                            <option value="approved" {{ request('status') == 'approved' ? 'selected' : '' }}>Approved</option>
+                        </select>
+                        <i class="fas fa-caret-down m-exact-caret"></i>
+                    </div>
+
+                    <a href="{{ route('cycle_count.index') }}?week=all" class="m-exact-refresh-btn" title="Refresh">
+                        <i class="fas fa-redo-alt"></i>
+                    </a>
+                </form>
+
+                {{-- 2x2 KPI Stat Cards --}}
+                <div class="m-exact-kpi-grid">
+                    <div class="m-exact-kpi-card" data-kpi="all" onclick="filterByExactStatus('all', this)">
+                        <div class="m-exact-kpi-label">TOTAL ASSIGNED</div>
+                        <div class="m-exact-kpi-val val-blue">{{ $totalCountsCount }}</div>
+                    </div>
+                    <div class="m-exact-kpi-card" data-kpi="started" onclick="filterByExactStatus('started', this)">
+                        <div class="m-exact-kpi-label">IN PROGRESS</div>
+                        <div class="m-exact-kpi-val val-green">{{ $inProgressCount }}</div>
+                    </div>
+                    <div class="m-exact-kpi-card" data-kpi="submitted" onclick="filterByExactStatus('submitted', this)">
+                        <div class="m-exact-kpi-label">WAITING REVIEW</div>
+                        <div class="m-exact-kpi-val val-amber">{{ $pendingApproval }}</div>
+                    </div>
+                    <div class="m-exact-kpi-card" data-kpi="approved" onclick="filterByExactStatus('approved', this)">
+                        <div class="m-exact-kpi-label">APPROVED</div>
+                        <div class="m-exact-kpi-val val-green">{{ $completedThisWeek }}</div>
+                    </div>
                 </div>
-                <div class="m-guide-body" id="helpContent" style="display: none;">
-                    <div class="mb-2"><strong>1. Blind Counting:</strong> System stock is hidden so you count objectively what is physically on the shelf.</div>
-                    <div class="mb-2"><strong>2. Live Timer:</strong> Automatically measures elapsed duration from when you start until submission.</div>
-                    <div class="mb-2"><strong>3. Instant Auto-save:</strong> Every entered quantity is automatically saved to the server as you type.</div>
-                    <div><strong>4. Manager Review:</strong> Once submitted, the manager verifies discrepancies and approves inventory adjustments.</div>
+
+                {{-- Search Pill Bar --}}
+                <div class="m-exact-search-wrap">
+                    <i class="fas fa-search m-exact-search-icon"></i>
+                    <input type="text" id="mExactSearchInput" placeholder="Search count #, rack, staff..." class="m-exact-search-input" oninput="handleExactSearch(this.value)">
+                    <button type="button" class="m-exact-search-clear" id="mExactSearchClear" onclick="clearExactSearch()" style="display: none;">
+                        <i class="fas fa-times-circle"></i>
+                    </button>
+                </div>
+
+                {{-- Task Cards List --}}
+                <div class="m-exact-cards-list" id="mExactCardsList">
+                    @forelse($counts as $count)
+                        @php
+                            $locRaw = $count->location ? $count->location->name : ($count->location_name ?: 'A1');
+                            $staffName = $count->counter ? $count->counter->name : (Auth::user()->name ?? 'Staff');
+                            $percent = $count->progress_percent ?? 0;
+                            $statusLabel = 'Not Started';
+                            $statusClass = 'status-not-started';
+                            if ($count->status === 'started') {
+                                $statusLabel = 'In Progress';
+                                $statusClass = 'status-started';
+                            } elseif ($count->status === 'submitted') {
+                                $statusLabel = 'Waiting Review';
+                                $statusClass = 'status-submitted';
+                            } elseif ($count->status === 'approved') {
+                                $statusLabel = 'Approved';
+                                $statusClass = 'status-approved';
+                            }
+                        @endphp
+                        <div class="m-exact-task-card"
+                             data-status="{{ $count->status }}"
+                             data-search="{{ strtolower($count->count_number . ' ' . $locRaw . ' ' . $staffName . ' ' . $statusLabel) }}"
+                             id="mExactCard{{ $count->id }}">
+                            <div class="m-exact-card-top">
+                                <div class="d-flex align-items-center">
+                                    <span class="m-exact-loc-badge">{{ $locRaw }}</span>
+                                    <span class="m-exact-code-txt">#{{ $count->count_number }}</span>
+                                </div>
+                                <span class="m-exact-status-pill {{ $statusClass }}">{{ $statusLabel }}</span>
+                            </div>
+
+                            <div class="m-exact-meta-strip">
+                                <div class="m-exact-meta-col">
+                                    <span class="m-exact-meta-k">DATE</span>
+                                    <span class="m-exact-meta-v">{{ $count->count_date ? $count->count_date->format('d M') : now()->format('d M') }}</span>
+                                </div>
+                                <div class="m-exact-meta-col">
+                                    <span class="m-exact-meta-k">ASSIGNED</span>
+                                    <span class="m-exact-meta-v text-truncate">{{ $staffName }}</span>
+                                </div>
+                                <div class="m-exact-meta-col">
+                                    <span class="m-exact-meta-k">ITEMS</span>
+                                    <span class="m-exact-meta-v items-blue">{{ $count->total_items }} items</span>
+                                </div>
+                            </div>
+
+                            <div class="m-exact-progress-row">
+                                <span class="m-exact-prog-label">Counting Progress</span>
+                                <span class="m-exact-prog-frac">{{ $count->entered_items }}/{{ $count->total_items }} ({{ $percent }}%)</span>
+                            </div>
+                            <div class="m-exact-prog-track">
+                                <div class="m-exact-prog-fill" style="width: {{ $percent }}%;"></div>
+                            </div>
+
+                            @if(Auth::check() && Auth::user()->usertype !== 'admin')
+                                @if($count->status === 'not_started')
+                                    <a href="{{ route('cycle_count.sheet', $count->id) }}" class="m-exact-btn-pill">
+                                        <i class="fas fa-play" style="font-size: 11px;"></i> Start Blind Count
+                                    </a>
+                                @elseif($count->status === 'started')
+                                    <a href="{{ route('cycle_count.sheet', $count->id) }}" class="m-exact-btn-pill btn-resume">
+                                        <i class="fas fa-stopwatch" style="font-size: 12px;"></i> Continue Counting
+                                    </a>
+                                @elseif($count->status === 'submitted')
+                                    <div class="m-exact-btn-pill btn-waiting">
+                                        <i class="fas fa-clock" style="font-size: 12px;"></i> Waiting for Manager
+                                    </div>
+                                @elseif($count->status === 'approved')
+                                    <div class="m-exact-btn-pill btn-approved">
+                                        <i class="fas fa-check-double" style="font-size: 12px;"></i> Approved
+                                    </div>
+                                @endif
+                            @else
+                                @if($count->status === 'submitted')
+                                    <a href="{{ route('cycle_count.approve', $count->id) }}" class="m-exact-btn-pill">
+                                        <i class="fas fa-tasks" style="font-size: 12px;"></i> Open Review &amp; Reconcile
+                                    </a>
+                                @elseif($count->status === 'started')
+                                    <a href="{{ route('cycle_count.sheet', $count->id) }}" class="m-exact-btn-pill btn-resume">
+                                        <i class="fas fa-eye" style="font-size: 12px;"></i> Inspect Count Sheet
+                                    </a>
+                                @elseif($count->status === 'approved')
+                                    <a href="{{ route('cycle_count.approve', $count->id) }}" class="m-exact-btn-pill btn-approved">
+                                        <i class="fas fa-check-circle" style="font-size: 12px;"></i> View Approved Stock
+                                    </a>
+                                @else
+                                    <a href="{{ route('cycle_count.sheet', $count->id) }}" class="m-exact-btn-pill">
+                                        <i class="fas fa-clipboard-list" style="font-size: 12px;"></i> Open Count Sheet
+                                    </a>
+                                @endif
+                            @endif
+                        </div>
+                    @empty
+                        <div class="m-exact-empty-card">
+                            <h6>No counts found</h6>
+                            <p class="text-muted small mb-3">No physical counts match your filter.</p>
+                            <a href="{{ route('cycle_count.index') }}?week=all" class="m-exact-btn-pill" style="display:inline-flex; width:auto; padding:10px 24px;">View All Weeks</a>
+                        </div>
+                    @endforelse
                 </div>
             </div>
         </div>
@@ -1304,73 +1301,60 @@
 </div>
 
 <script>
-    let currentMobileStatusFilter = 'all';
+    let currentExactStatus = 'all';
 
-    function filterMobileStatus(status, btnEl) {
-        currentMobileStatusFilter = status;
-        
-        // Update active chip across both class variants
-        document.querySelectorAll('.m-chip, .mobile-chip').forEach(btn => btn.classList.remove('active'));
-        if (btnEl) {
-            btnEl.classList.add('active');
-        } else {
-            const target = document.querySelector(`.m-chip[data-filter="${status}"], .mobile-chip[data-filter="${status}"]`);
+    function filterByExactStatus(status, el) {
+        currentExactStatus = status;
+        document.querySelectorAll('.m-exact-kpi-card').forEach(c => c.classList.remove('active'));
+        if (el) {
+            el.classList.add('active');
+        } else if (status !== 'all') {
+            const target = document.querySelector(`.m-exact-kpi-card[data-kpi="${status}"]`);
             if (target) target.classList.add('active');
         }
-
-        applyMobileFilters();
+        applyExactFilters();
     }
 
-    function searchMobileCounts(query) {
-        const clearBtn = document.getElementById('mobileSearchClearBtn');
+    function handleExactSearch(val) {
+        const clearBtn = document.getElementById('mExactSearchClear');
         if (clearBtn) {
-            clearBtn.style.display = query && query.length > 0 ? 'inline-block' : 'none';
+            clearBtn.style.display = val && val.length > 0 ? 'inline-block' : 'none';
         }
-        applyMobileFilters();
+        applyExactFilters();
     }
 
-    function clearMobileSearch() {
-        const inp = document.getElementById('mobileSearchInput');
+    function clearExactSearch() {
+        const inp = document.getElementById('mExactSearchInput');
         if (inp) {
             inp.value = '';
-            const clearBtn = document.getElementById('mobileSearchClearBtn');
+            const clearBtn = document.getElementById('mExactSearchClear');
             if (clearBtn) clearBtn.style.display = 'none';
         }
-        applyMobileFilters();
+        applyExactFilters();
     }
 
-    function applyMobileFilters() {
-        const query = (document.getElementById('mobileSearchInput')?.value || '').toLowerCase().trim();
-        const cards = document.querySelectorAll('.android-count-card, .mobile-count-card');
-        let visibleCount = 0;
+    function applyExactFilters() {
+        const query = (document.getElementById('mExactSearchInput')?.value || '').toLowerCase().trim();
+        const cards = document.querySelectorAll('.m-exact-task-card, .android-count-card, .mobile-count-card');
 
         cards.forEach(card => {
             const cardStatus = card.getAttribute('data-status');
-            const searchData = card.getAttribute('data-search') || '';
+            const searchData = (card.getAttribute('data-search') || '').toLowerCase();
 
-            const matchesStatus = (currentMobileStatusFilter === 'all') || (cardStatus === currentMobileStatusFilter);
+            const matchesStatus = (currentExactStatus === 'all') || (cardStatus === currentExactStatus);
             const matchesQuery = (!query) || (searchData.indexOf(query) !== -1);
 
             if (matchesStatus && matchesQuery) {
                 card.style.display = 'block';
-                visibleCount++;
             } else {
                 card.style.display = 'none';
             }
         });
     }
 
-    function toggleMobileHelp() {
-        const content = document.getElementById('helpContent');
-        const chevron = document.getElementById('helpChevron');
-        if (!content) return;
-        if (content.style.display === 'none' || content.style.display === '') {
-            content.style.display = 'block';
-            if (chevron) chevron.className = 'fas fa-chevron-up';
-        } else {
-            content.style.display = 'none';
-            if (chevron) chevron.className = 'fas fa-chevron-down';
-        }
-    }
+    // Aliases
+    function filterMobileStatus(status, el) { filterByExactStatus(status, el); }
+    function searchMobileCounts(query) { handleExactSearch(query); }
+    function clearMobileSearch() { clearExactSearch(); }
 </script>
 @endsection
