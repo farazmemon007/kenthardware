@@ -2,11 +2,10 @@
     $dynCompName = \App\Models\Setting::get('company_name', 'Kent Hardware');
     $init1 = strtoupper(substr($dynCompName, 0, 1));
     $init2 = strlen($dynCompName) > 1 ? strtoupper(substr($dynCompName, 1, 1)) : '';
-    $isCycleCountIndex = request()->routeIs('cycle_count.index') || request()->is('cycle-count');
-    $isCountSheet = request()->routeIs('cycle_count.sheet');
+    $isCycleCountScreen = request()->routeIs('cycle_count.*') || request()->is('cycle-count*');
 @endphp
 
-@if(!$isCycleCountIndex)
+@if(!$isCycleCountScreen)
 <!-- Mobile Native App Header (Visible only on < 992px) -->
 <header class="app-mobile-topbar d-flex d-lg-none align-items-center justify-content-between px-3">
     <!-- Left: Navigation Icon + Screen Title (Flutter AppBar Style) -->

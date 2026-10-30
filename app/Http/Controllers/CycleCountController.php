@@ -547,6 +547,15 @@ class CycleCountController extends Controller
     public function saveItemCount(Request $request, $id)
     {
         $cycleCount = CycleCount::findOrFail($id);
+
+        // Security / Process Rule: Counter MUST be started before inserting or changing counts
+        if (!$cycleCount->started_at && $cycleCount->status === 'not_started') {
+            return response()->json([
+                'status'  => 'error',
+                'message' => 'Counting session is not started. Please click "Start Count" first.'
+            ], 403);
+        }
+
         $itemId = $request->input('item_id');
         $countedQty = $request->input('counted_qty');
 

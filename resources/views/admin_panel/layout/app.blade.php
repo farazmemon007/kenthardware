@@ -1341,7 +1341,7 @@
     $isDashboard = request()->routeIs('home') || request()->is('home') || request()->routeIs('dashboard') || (request()->is('dashboard') && !request()->is('web-orders/*'));
     $useCompactNavbar = !$isDashboard;
     $isProductPage = $useCompactNavbar;
-    $isCycleCountIndex = request()->routeIs('cycle_count.index') || request()->is('cycle-count');
+    $isCycleCountIndex = request()->routeIs('cycle_count.*') || request()->is('cycle-count*');
 @endphp
 <body class="{{ $isProductPage ? 'product-page-body' : '' }} {{ $isCycleCountIndex ? 'cycle-count-screen no-topbar' : '' }}">
     <!--[if lt IE 8]>

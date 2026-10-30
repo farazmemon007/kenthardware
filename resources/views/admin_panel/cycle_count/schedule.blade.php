@@ -312,60 +312,9 @@
 
     /* ========================================================
        EXACT MOBILE ANDROID APP STYLES (Pixel-Perfect Mockup Match)
+       These apply on < 992px ONLY. Desktop is handled above.
        ======================================================== */
     @media (max-width: 991.98px) {
-        html,
-        body,
-        body.cycle-count-screen,
-        body.product-page-body,
-        body.product-page-body.cycle-count-screen,
-        .container-scroller,
-        .app-page-body,
-        body .app-page-body,
-        body.product-page-body .app-page-body,
-        .img2-wrapper,
-        .img2-container {
-            padding-top: 0 !important;
-            margin-top: 0 !important;
-        }
-        body {
-            padding-bottom: 74px !important;
-            background: #0b1329 !important;
-            overflow-x: hidden !important;
-        }
-        .app-mobile-topbar {
-            display: none !important;
-            height: 0 !important;
-            margin: 0 !important;
-            padding: 0 !important;
-        }
-        .img2-wrapper {
-            padding: 0 !important;
-            margin: 0 !important;
-            background: #f0f4f8 !important;
-            min-height: 100vh !important;
-            width: 100% !important;
-            overflow-x: hidden !important;
-        }
-        .img2-container {
-            min-width: 100% !important;
-            max-width: 100% !important;
-            width: 100% !important;
-            border: none !important;
-            box-shadow: none !important;
-            background: transparent !important;
-            margin: 0 !important;
-            padding: 0 !important;
-        }
-
-        /* Completely hide desktop bars and desktop table on mobile */
-        .img2-top-bar,
-        .img2-toolbar,
-        .img2-table-wrap,
-        .img2-table-footer,
-        .img2-bottom-grid {
-            display: none !important;
-        }
 
         /* ── EXACT DARK CURVED HEADER ── */
         .m-exact-header {
@@ -803,9 +752,108 @@
         }
     }
 
+    /* =========================================================
+       SCREEN-SIZE BASED LAYOUT TOGGLE
+       Desktop (>= 992px) = original table UI
+       Mobile / Tablet (< 992px) = Flutter-style app UI
+       ========================================================= */
+
+    /* --- DESKTOP (>= 992px): Show table UI, hide app view --- */
     @media (min-width: 992px) {
         .mobile-schedule-app-view {
             display: none !important;
+        }
+        .img2-top-bar,
+        .img2-toolbar,
+        .img2-table-wrap,
+        .img2-table-footer,
+        .img2-bottom-grid {
+            display: block !important;
+        }
+        .img2-table-footer,
+        .img2-bottom-grid {
+            display: flex !important;
+        }
+        .img2-table-wrap {
+            display: block !important;
+        }
+        .img2-top-bar,
+        .img2-toolbar {
+            display: flex !important;
+        }
+        .img2-bottom-grid {
+            display: grid !important;
+        }
+    }
+
+    /* --- MOBILE / TABLET (< 992px): Show app view, hide desktop table --- */
+    @media (max-width: 991.98px) {
+        /* 1. Zero-gap flush header: kill ALL body/container top padding on this page */
+        html { padding-top: 0 !important; }
+
+        body,
+        body.product-page-body,
+        body.cycle-count-screen,
+        body.product-page-body.cycle-count-screen {
+            padding-top: 0 !important;
+            margin-top: 0 !important;
+            background: #0b1329 !important;
+            padding-bottom: 74px !important;
+        }
+
+        .container-scroller,
+        .app-page-body,
+        body.product-page-body .app-page-body,
+        body.cycle-count-screen .app-page-body,
+        body.product-page-body.cycle-count-screen .app-page-body {
+            padding-top: 0 !important;
+            margin-top: 0 !important;
+        }
+
+        /* 2. Kill the legacy mobile topbar (this page has its own header) */
+        .app-mobile-topbar,
+        header.app-mobile-topbar {
+            display: none !important;
+            height: 0 !important;
+            padding: 0 !important;
+            margin: 0 !important;
+            overflow: hidden !important;
+        }
+
+        /* 3. Strip the desktop-UI wrappers of any layout */
+        .img2-wrapper {
+            padding: 0 !important;
+            margin: 0 !important;
+            background: transparent !important;
+            min-height: auto !important;
+            width: 100% !important;
+            overflow-x: hidden !important;
+        }
+        .img2-container {
+            min-width: 0 !important;
+            max-width: 100% !important;
+            width: 100% !important;
+            border: none !important;
+            box-shadow: none !important;
+            background: transparent !important;
+            margin: 0 !important;
+            padding: 0 !important;
+            border-radius: 0 !important;
+        }
+
+        /* 4. Hide all desktop-only UI elements */
+        .img2-top-bar,
+        .img2-toolbar,
+        .img2-table-wrap,
+        .img2-table-footer,
+        .img2-bottom-grid,
+        .toolbar-right-note {
+            display: none !important;
+        }
+
+        /* 5. Ensure app mobile view is shown as block */
+        .mobile-schedule-app-view {
+            display: block !important;
         }
     }
 </style>

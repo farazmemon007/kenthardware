@@ -20,18 +20,27 @@
         <!-- Tab 2: Cycle Counts / My Tasks -->
         <a href="{{ route('cycle_count.index') }}" class="bottom-tab-item {{ request()->is('cycle-count') ? 'active' : '' }}">
             <div class="bottom-tab-icon">
-                <i class="fas fa-clipboard-check"></i>
+                <i class="far fa-check-square"></i>
             </div>
             <span class="bottom-tab-label">Counts</span>
         </a>
 
         <!-- Tab 3: Current Sheet / Scanner (Only if on sheet, or quick tasks) -->
         @if(request()->routeIs('cycle_count.sheet'))
-            <a href="javascript:void(0)" class="bottom-tab-item active" onclick="document.getElementById('mQuickScannerInput')?.focus();">
+            <a href="javascript:void(0)" class="bottom-tab-item active" onclick="document.getElementById('mQuickScannerInput')?.focus();" style="color: #059669 !important;">
                 <div class="bottom-tab-icon">
-                    <i class="fas fa-barcode"></i>
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#059669" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M3 7V5a2 2 0 0 1 2-2h2"></path>
+                        <path d="M17 3h2a2 2 0 0 1 2 2v2"></path>
+                        <path d="M21 17v2a2 2 0 0 1-2 2h-2"></path>
+                        <path d="M7 21H5a2 2 0 0 1-2-2v-2"></path>
+                        <line x1="7" y1="8" x2="7" y2="16"></line>
+                        <line x1="10" y1="8" x2="10" y2="16"></line>
+                        <line x1="13" y1="8" x2="13" y2="16"></line>
+                        <line x1="17" y1="8" x2="17" y2="16"></line>
+                    </svg>
                 </div>
-                <span class="bottom-tab-label">Scanner</span>
+                <span class="bottom-tab-label" style="color: #059669 !important; font-weight: 700;">Scanner</span>
             </a>
         @else
             <!-- Tab 3: My Attendance -->
