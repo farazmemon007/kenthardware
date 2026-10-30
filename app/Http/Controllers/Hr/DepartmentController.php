@@ -26,30 +26,45 @@ class DepartmentController extends Controller
         ]);
 
         if ($validator->fails()) {
-            return response()->json(['errors' => $validator->errors()], 422);
+            if ($request->ajax() || $request->wantsJson()) {
+                return response()->json(['errors' => $validator->errors()], 422);
+            }
+            return redirect()->back()->withErrors($validator)->withInput();
         }
 
         if ($request->filled('edit_id')) {
             if (! auth()->user()->can('hr.departments.edit')) {
-                return response()->json(['error' => 'Unauthorized action.'], 403);
+                if ($request->ajax() || $request->wantsJson()) {
+                    return response()->json(['error' => 'Unauthorized action.'], 403);
+                }
+                return redirect()->back()->with('error', 'Unauthorized action.');
             }
             $department = Department::findOrFail($request->edit_id);
             $department->update($request->all());
 
-            return response()->json([
-                'success' => 'Department Updated Successfully',
-                'reload' => true,
-            ]);
+            if ($request->ajax() || $request->wantsJson()) {
+                return response()->json([
+                    'success' => 'Department Updated Successfully',
+                    'reload' => true,
+                ]);
+            }
+            return redirect()->route('hr.departments.index')->with('success', 'Department Updated Successfully');
         } else {
             if (! auth()->user()->can('hr.departments.create')) {
-                return response()->json(['error' => 'Unauthorized action.'], 403);
+                if ($request->ajax() || $request->wantsJson()) {
+                    return response()->json(['error' => 'Unauthorized action.'], 403);
+                }
+                return redirect()->back()->with('error', 'Unauthorized action.');
             }
             Department::create($request->all());
 
-            return response()->json([
-                'success' => 'Department Created Successfully',
-                'reload' => true,
-            ]);
+            if ($request->ajax() || $request->wantsJson()) {
+                return response()->json([
+                    'success' => 'Department Created Successfully',
+                    'reload' => true,
+                ]);
+            }
+            return redirect()->route('hr.departments.index')->with('success', 'Department Created Successfully');
         }
     }
 
@@ -61,13 +76,19 @@ class DepartmentController extends Controller
     public function destroy(Department $department)
     {
         if (! auth()->user()->can('hr.departments.delete')) {
-            return response()->json(['error' => 'Unauthorized action.'], 403);
+            if (request()->ajax() || request()->wantsJson()) {
+                return response()->json(['error' => 'Unauthorized action.'], 403);
+            }
+            return redirect()->back()->with('error', 'Unauthorized action.');
         }
         $department->delete();
 
-        return response()->json([
-            'success' => 'Department Deleted Successfully',
-            'reload' => true,
-        ]);
+        if (request()->ajax() || request()->wantsJson()) {
+            return response()->json([
+                'success' => 'Department Deleted Successfully',
+                'reload' => true,
+            ]);
+        }
+        return redirect()->route('hr.departments.index')->with('success', 'Department Deleted Successfully');
     }
 }

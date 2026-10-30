@@ -336,8 +336,394 @@
     <!-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css"> -->
     <link rel="stylesheet" href="{{ asset('assets/css/flatpickr.min.css') }}">
 
-    {{-- ✅ Universal Responsive CSS - All screens covered --}}
-    <link rel="stylesheet" href="{{ asset('assets/css/responsive.css') }}">
+    {{-- ✅ Universal Responsive CSS - All screens covered with cache-buster --}}
+    <link rel="stylesheet" href="/assets/css/responsive.css?v={{ time() }}">
+
+    <style id="mobile-app-core-styles">
+        /* ============================================================
+           BULLETPROOF CRITICAL MOBILE APP STYLES (Android Native / Odoo / QuickBooks)
+           ============================================================ */
+        @media (min-width: 992px) {
+            .app-mobile-topbar,
+            .app-mobile-drawer,
+            .app-mobile-drawer-backdrop,
+            .app-mobile-bottom-bar {
+                display: none !important;
+            }
+        }
+
+        @media (max-width: 991.98px) {
+            /* Mobile Body & Container Reset */
+            body {
+                padding-top: 56px !important;
+                padding-bottom: 74px !important;
+                background: #f1f5f9 !important;
+                overflow-x: hidden !important;
+                font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif !important;
+            }
+            .container-scroller {
+                overflow-x: hidden !important;
+                width: 100% !important;
+            }
+            .app-page-body {
+                padding-top: 0 !important;
+                padding-bottom: 0 !important;
+                min-height: auto !important;
+            }
+            footer {
+                display: none !important;
+            }
+
+            /* 1. Android Top App Bar */
+            .app-mobile-topbar {
+                position: fixed !important;
+                top: 0 !important;
+                left: 0 !important;
+                right: 0 !important;
+                height: 56px !important;
+                background: #090e1a !important;
+                border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
+                box-shadow: 0 4px 20px rgba(0, 0, 0, 0.35) !important;
+                z-index: 1040 !important;
+                display: flex !important;
+                align-items: center !important;
+                justify-content: space-between !important;
+                padding: 0 12px !important;
+                margin: 0 !important;
+            }
+            .app-mobile-btn-hamburger {
+                width: 38px;
+                height: 38px;
+                border-radius: 10px;
+                background: rgba(255, 255, 255, 0.08);
+                border: none;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+                gap: 4px;
+                padding: 0;
+                cursor: pointer;
+            }
+            .app-mobile-btn-hamburger .hamburger-bar {
+                width: 18px;
+                height: 2px;
+                background-color: #ffffff;
+                border-radius: 2px;
+            }
+            .app-mobile-logo-badge {
+                width: 34px;
+                height: 34px;
+                border-radius: 8px;
+                background: #0d1527;
+                border: 1.5px solid rgba(255, 255, 255, 0.2);
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-weight: 900;
+                font-size: 15px;
+                color: #ffffff;
+                flex-shrink: 0;
+            }
+            .app-mobile-brand-title {
+                font-size: 13.5px;
+                font-weight: 800;
+                color: #ffffff;
+                line-height: 1.15;
+                max-width: 140px;
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                display: block;
+            }
+            .app-mobile-brand-sub {
+                font-size: 9.5px;
+                font-weight: 700;
+                color: #94a3b8;
+                letter-spacing: 0.5px;
+                text-transform: uppercase;
+                display: block;
+            }
+            .app-mobile-pos-pill {
+                background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+                color: #ffffff !important;
+                border-radius: 20px;
+                padding: 4px 10px;
+                font-size: 11px;
+                font-weight: 700;
+                display: inline-flex;
+                align-items: center;
+                gap: 4px;
+            }
+            .app-mobile-icon-btn {
+                width: 34px;
+                height: 34px;
+                border-radius: 8px;
+                background: rgba(255, 255, 255, 0.08);
+                border: none;
+                color: #cbd5e1;
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+                font-size: 14px;
+            }
+            .app-mobile-profile-avatar {
+                width: 34px;
+                height: 34px;
+                border-radius: 50%;
+                background: linear-gradient(135deg, #2563eb, #1d4ed8);
+                border: 1.5px solid rgba(255, 255, 255, 0.4);
+                color: #ffffff;
+                font-size: 13px;
+                font-weight: 800;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                padding: 0;
+                cursor: pointer;
+            }
+
+            /* 2. Android Off-canvas Slide Drawer */
+            .app-mobile-drawer {
+                position: fixed !important;
+                top: 0 !important;
+                left: 0 !important;
+                bottom: 0 !important;
+                width: 85vw !important;
+                max-width: 320px !important;
+                z-index: 99999 !important;
+                background: #0f172a !important;
+                color: #f8fafc !important;
+                overflow-y: auto !important;
+                -webkit-overflow-scrolling: touch !important;
+                box-shadow: 4px 0 25px rgba(0, 0, 0, 0.5) !important;
+                transform: translateX(-100%) !important;
+                transition: transform 0.28s ease !important;
+                display: none;
+            }
+            body.drawer-open .app-mobile-drawer {
+                display: block !important;
+                transform: translateX(0) !important;
+            }
+            .app-mobile-drawer-backdrop {
+                position: fixed !important;
+                inset: 0 !important;
+                background: rgba(0, 0, 0, 0.65) !important;
+                backdrop-filter: blur(4px) !important;
+                -webkit-backdrop-filter: blur(4px) !important;
+                z-index: 99998 !important;
+                display: none;
+                opacity: 0;
+                transition: opacity 0.25s ease;
+            }
+            body.drawer-open .app-mobile-drawer-backdrop {
+                display: block !important;
+                opacity: 1 !important;
+            }
+            body.drawer-open {
+                overflow: hidden !important;
+            }
+
+            /* Drawer Header */
+            .app-drawer-user-card {
+                background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+                padding: 20px 16px 14px 16px;
+                border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+            }
+            .app-drawer-avatar {
+                width: 44px;
+                height: 44px;
+                border-radius: 50%;
+                background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+                border: 2px solid rgba(255, 255, 255, 0.25);
+                color: #ffffff;
+                font-size: 18px;
+                font-weight: 800;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                flex-shrink: 0;
+            }
+            .app-drawer-user-name {
+                font-size: 14.5px;
+                font-weight: 700;
+                color: #ffffff;
+                margin: 0;
+            }
+            .app-drawer-close-btn {
+                background: rgba(255, 255, 255, 0.1);
+                border: none;
+                color: #ffffff;
+                width: 32px;
+                height: 32px;
+                border-radius: 8px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                cursor: pointer;
+            }
+
+            /* Drawer Quick Shortcuts */
+            .app-drawer-quick-actions {
+                padding: 10px 12px;
+                background: #111c33;
+                border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+            }
+            .app-drawer-quick-btn {
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                gap: 4px;
+                text-decoration: none !important;
+            }
+            .app-drawer-quick-btn .quick-icon {
+                width: 38px;
+                height: 38px;
+                border-radius: 10px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                color: #ffffff;
+                font-size: 15px;
+            }
+            .app-drawer-quick-btn span {
+                font-size: 10.5px;
+                font-weight: 600;
+                color: #cbd5e1;
+            }
+            .bg-indigo { background: #4f46e5; }
+            .bg-emerald { background: #059669; }
+            .bg-sky { background: #0284c7; }
+            .bg-amber { background: #d97706; }
+
+            /* Drawer Menu List */
+            .app-drawer-menu-list {
+                list-style: none;
+                padding: 8px 10px 30px 10px;
+                margin: 0;
+            }
+            .app-drawer-item {
+                margin-bottom: 2px;
+            }
+            .app-drawer-link {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                padding: 10px 12px;
+                border-radius: 8px;
+                color: #cbd5e1 !important;
+                font-size: 13.5px;
+                font-weight: 600;
+                text-decoration: none !important;
+                transition: all 0.15s ease;
+            }
+            .app-drawer-link:active,
+            .app-drawer-item.active .app-drawer-link {
+                background: #1e293b;
+                color: #38bdf8 !important;
+            }
+            .app-menu-icon {
+                font-size: 15px;
+                width: 24px;
+                text-align: center;
+                margin-right: 10px;
+                color: #94a3b8;
+            }
+            .app-drawer-submenu {
+                display: none;
+                padding: 4px 8px 6px 34px;
+            }
+            .app-drawer-item.submenu-open .app-drawer-submenu {
+                display: block;
+            }
+            .app-drawer-item.submenu-open .app-drawer-arrow {
+                transform: rotate(90deg);
+            }
+            .app-drawer-arrow {
+                font-size: 10px;
+                color: #64748b;
+                transition: transform 0.2s ease;
+            }
+            .app-drawer-sublink {
+                display: flex;
+                align-items: center;
+                gap: 8px;
+                padding: 7px 10px;
+                color: #94a3b8 !important;
+                font-size: 12.5px;
+                text-decoration: none !important;
+                border-radius: 6px;
+            }
+            .app-drawer-sublink:active {
+                color: #ffffff !important;
+                background: rgba(255, 255, 255, 0.05);
+            }
+
+            /* 3. Android Material 3 Bottom Navigation Bar */
+            .app-mobile-bottom-bar {
+                position: fixed !important;
+                bottom: 0 !important;
+                left: 0 !important;
+                right: 0 !important;
+                height: 64px !important;
+                background: #ffffff !important;
+                border-top: 1px solid #e2e8f0 !important;
+                box-shadow: 0 -4px 18px rgba(0, 0, 0, 0.06) !important;
+                z-index: 1030 !important;
+                display: flex !important;
+                align-items: center !important;
+                justify-content: space-around !important;
+                padding: 0 4px !important;
+                margin: 0 !important;
+            }
+            .bottom-tab-item {
+                flex: 1;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+                height: 100%;
+                color: #64748b;
+                text-decoration: none !important;
+                padding: 4px 0;
+                cursor: pointer;
+                border: none;
+                background: transparent;
+                -webkit-tap-highlight-color: transparent;
+            }
+            .bottom-tab-icon {
+                font-size: 18px;
+                line-height: 1;
+                margin-bottom: 3px;
+                width: 38px;
+                height: 26px;
+                border-radius: 14px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                transition: all 0.2s ease;
+            }
+            .bottom-tab-label {
+                font-size: 10.5px;
+                font-weight: 700;
+                line-height: 1;
+            }
+            .bottom-tab-item.active {
+                color: #2563eb !important;
+            }
+            .bottom-tab-item.active .bottom-tab-icon {
+                background: #eff6ff;
+                color: #2563eb;
+                transform: scale(1.08);
+            }
+            .bottom-tab-item.active .bottom-tab-label {
+                font-weight: 800;
+            }
+            .bottom-tab-item:active {
+                transform: scale(0.92);
+            }
+        }
+    </style>
 
     <style>
         .dropdown-toggle::after,
@@ -1564,13 +1950,25 @@
         $(document).ready(function() {
             // ── 1. Native Mobile App Drawer Controller ──
             function openMobileAppDrawer() {
-                $('body').addClass('drawer-open');
-                $('#mobileAppDrawerBackdrop').fadeIn(200);
+                var drawer = document.getElementById('mobileAppDrawer');
+                var backdrop = document.getElementById('mobileAppDrawerBackdrop');
+                if (drawer) drawer.style.setProperty('display', 'block', 'important');
+                if (backdrop) backdrop.style.setProperty('display', 'block', 'important');
+                setTimeout(function() {
+                    $('body').addClass('drawer-open');
+                }, 10);
             }
 
             function closeMobileAppDrawer() {
                 $('body').removeClass('drawer-open');
-                $('#mobileAppDrawerBackdrop').fadeOut(200);
+                setTimeout(function() {
+                    if (!$('body').hasClass('drawer-open')) {
+                        var drawer = document.getElementById('mobileAppDrawer');
+                        var backdrop = document.getElementById('mobileAppDrawerBackdrop');
+                        if (drawer) drawer.style.setProperty('display', 'none', 'important');
+                        if (backdrop) backdrop.style.setProperty('display', 'none', 'important');
+                    }
+                }, 280);
             }
 
             // Open from Topbar Hamburger or Bottom Bar "Menu" button

@@ -203,7 +203,7 @@
                     </h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
-                <form id="leaveForm" action="{{ route('hr.leaves.store') }}" method="POST" data-ajax-validate="true">
+                <form id="leaveForm" action="{{ route('hr.leaves.store') }}" method="POST">
                     @csrf
                     <div class="modal-body">
                         <div class="form-group-modern">
@@ -324,7 +324,60 @@
                 });
             });
 
-            // Custom submit handler removed - using data-ajax-validate
+            // Submit Leave Form via AJAX
+            $('#leaveForm').on('submit', function(e) {
+                e.preventDefault();
+                var $form = $(this);
+                var $btn = $form.find('button[type="submit"]');
+                var origHtml = $btn.html();
+
+                $btn.prop('disabled', true).html('<i class="fa fa-spinner fa-spin me-1"></i> Saving...');
+
+                $.ajax({
+                    url: $form.attr('action'),
+                    type: 'POST',
+                    data: $form.serialize(),
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest'
+                    },
+                    success: function(response) {
+                        $btn.prop('disabled', false).html(origHtml);
+                        $('#leaveModal').modal('hide');
+
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Success!',
+                            text: response.success || 'Leave Request Submitted Successfully',
+                            confirmButtonColor: '#059669',
+                            timer: 2000,
+                            timerProgressBar: true
+                        }).then(() => {
+                            location.reload();
+                        });
+                    },
+                    error: function(xhr) {
+                        $btn.prop('disabled', false).html(origHtml);
+                        var errMsg = 'Failed to submit leave request.';
+                        if (xhr.responseJSON) {
+                            if (xhr.responseJSON.errors) {
+                                var errList = Object.values(xhr.responseJSON.errors).flat();
+                                errMsg = errList.join('<br>');
+                            } else if (xhr.responseJSON.error) {
+                                errMsg = xhr.responseJSON.error;
+                            } else if (xhr.responseJSON.message) {
+                                errMsg = xhr.responseJSON.message;
+                            }
+                        }
+
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error!',
+                            html: errMsg,
+                            confirmButtonColor: '#ef4444'
+                        });
+                    }
+                });
+            });
         });
     </script>
 @endsection

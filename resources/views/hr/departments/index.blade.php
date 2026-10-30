@@ -133,10 +133,9 @@
                         <i class="fa fa-building"></i>
                         <span>Add Department</span>
                     </h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    <button type="button" class="btn-close" data-dismiss="modal" data-bs-dismiss="modal"></button>
                 </div>
-                <form id="departmentForm" action="{{ route('hr.departments.store') }}" method="POST"
-                    data-ajax-validate="true">
+                <form id="departmentForm" action="{{ route('hr.departments.store') }}" method="POST">
                     @csrf
                     <input type="hidden" name="edit_id" id="edit_id">
                     <div class="modal-body">
@@ -151,7 +150,7 @@
                         </div>
                     </div>
                     <div class="modal-footer-modern">
-                        <button type="button" class="btn btn-cancel" data-bs-dismiss="modal">
+                        <button type="button" class="btn btn-cancel" data-dismiss="modal" data-bs-dismiss="modal">
                             <i class="fa fa-times me-2"></i>Cancel
                         </button>
                         <button type="submit" class="btn btn-save">
@@ -188,6 +187,61 @@
                 $('#departmentModal').modal('show');
             });
 
+            // Submit Department Form via AJAX
+            $('#departmentForm').on('submit', function(e) {
+                e.preventDefault();
+                var $form = $(this);
+                var $btn = $form.find('button[type="submit"]');
+                var origHtml = $btn.html();
+
+                $btn.prop('disabled', true).html('<i class="fa fa-spinner fa-spin me-1"></i> Saving...');
+
+                $.ajax({
+                    url: $form.attr('action'),
+                    type: 'POST',
+                    data: $form.serialize(),
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest'
+                    },
+                    success: function(response) {
+                        $btn.prop('disabled', false).html(origHtml);
+                        $('#departmentModal').modal('hide');
+
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Success!',
+                            text: response.success || 'Department Saved Successfully',
+                            confirmButtonColor: '#059669',
+                            timer: 2000,
+                            timerProgressBar: true
+                        }).then(() => {
+                            location.reload();
+                        });
+                    },
+                    error: function(xhr) {
+                        $btn.prop('disabled', false).html(origHtml);
+                        var errMsg = 'Failed to save department.';
+                        if (xhr.responseJSON) {
+                            if (xhr.responseJSON.errors) {
+                                var errList = Object.values(xhr.responseJSON.errors).flat();
+                                errMsg = errList.join('<br>');
+                            } else if (xhr.responseJSON.error) {
+                                errMsg = xhr.responseJSON.error;
+                            } else if (xhr.responseJSON.message) {
+                                errMsg = xhr.responseJSON.message;
+                            }
+                        }
+
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error!',
+                            html: errMsg,
+                            confirmButtonColor: '#ef4444'
+                        });
+                    }
+                });
+            });
+
             // Delete
             $(document).on('click', '.delete-btn', function() {
                 var url = $(this).data('url');
@@ -206,11 +260,18 @@
                             data: {
                                 _token: '{{ csrf_token() }}'
                             },
+                            headers: {
+                                'X-Requested-With': 'XMLHttpRequest'
+                            },
                             success: function(response) {
                                 if (response.success) {
                                     Swal.fire('Deleted!', response.success, 'success')
                                         .then(() => location.reload());
                                 }
+                            },
+                            error: function(xhr) {
+                                var errMsg = xhr.responseJSON?.error || 'Failed to delete department.';
+                                Swal.fire('Error!', errMsg, 'error');
                             }
                         });
                     }
@@ -231,7 +292,7 @@
             // Refresh
             $('#refreshBtn').click(() => location.reload());
 
-            // Manual Form Submit Removed - using data-ajax-validate
+
         });
     </script>
 @endsection

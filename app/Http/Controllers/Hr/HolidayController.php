@@ -29,29 +29,44 @@ class HolidayController extends Controller
         ]);
 
         if ($validator->fails()) {
-            return response()->json(['errors' => $validator->errors()], 422);
+            if ($request->ajax() || $request->wantsJson()) {
+                return response()->json(['errors' => $validator->errors()], 422);
+            }
+            return redirect()->back()->withErrors($validator)->withInput();
         }
 
         if ($request->filled('edit_id')) {
             if (!auth()->user()->can('hr.holidays.edit')) {
-                return response()->json(['error' => 'Unauthorized action.'], 403);
+                if ($request->ajax() || $request->wantsJson()) {
+                    return response()->json(['error' => 'Unauthorized action.'], 403);
+                }
+                return redirect()->back()->with('error', 'Unauthorized action.');
             }
             $holiday = Holiday::findOrFail($request->edit_id);
             $holiday->update($request->all());
             $message = 'Holiday Updated Successfully';
         } else {
             if (!auth()->user()->can('hr.holidays.create')) {
-                return response()->json(['error' => 'Unauthorized action.'], 403);
+                if ($request->ajax() || $request->wantsJson()) {
+                    return response()->json(['error' => 'Unauthorized action.'], 403);
+                }
+                return redirect()->back()->with('error', 'Unauthorized action.');
             }
             // Check if date already exists
             if (Holiday::whereDate('date', $request->date)->exists()) {
-                return response()->json(['errors' => ['date' => ['A holiday already exists on this date.']]], 422);
+                if ($request->ajax() || $request->wantsJson()) {
+                    return response()->json(['errors' => ['date' => ['A holiday already exists on this date.']]], 422);
+                }
+                return redirect()->back()->withErrors(['date' => 'A holiday already exists on this date.'])->withInput();
             }
             Holiday::create($request->all());
             $message = 'Holiday Created Successfully';
         }
 
-        return response()->json(['success' => $message]);
+        if ($request->ajax() || $request->wantsJson()) {
+            return response()->json(['success' => $message]);
+        }
+        return redirect()->route('hr.holidays.index')->with('success', $message);
     }
 
     public function destroy($id)

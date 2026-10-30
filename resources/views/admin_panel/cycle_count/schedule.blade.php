@@ -315,10 +315,11 @@
        ======================================================== */
     @media (max-width: 991.98px) {
         .img2-wrapper {
-            padding: 8px 8px 85px 8px !important;
+            padding: 8px 10px 85px 10px !important;
             background: #f1f5f9 !important;
             overflow-x: hidden !important;
             min-height: calc(100vh - 60px) !important;
+            width: 100% !important;
         }
         .img2-container {
             min-width: 100% !important;
@@ -327,111 +328,164 @@
             border: none !important;
             box-shadow: none !important;
             background: transparent !important;
+            margin: 0 !important;
+            padding: 0 !important;
         }
 
-        /* Top Dark Bar as Mobile App Bar */
-        .img2-top-bar {
-            border-radius: 12px;
-            padding: 12px 14px;
-            margin-bottom: 10px;
-            box-shadow: 0 4px 14px rgba(11, 19, 41, 0.25);
-        }
-        .img2-top-bar .title-section {
-            display: flex;
-            flex-direction: column;
-            align-items: flex-start;
-            gap: 4px;
-        }
-        .img2-top-bar .main-title {
-            font-size: 1.05rem;
-            letter-spacing: -0.2px;
-        }
-        .img2-top-bar .badge-pill-role {
-            font-size: 0.68rem;
-            padding: 3px 8px;
-        }
-        .concept-note {
-            display: none !important;
-        }
-
-        /* Hide desktop table and desktop footer */
+        /* Completely hide desktop bars and desktop table on mobile */
+        .img2-top-bar,
+        .img2-toolbar,
         .img2-table-wrap,
         .img2-table-footer,
         .img2-bottom-grid {
             display: none !important;
         }
 
-        /* Sub-header Filter Toolbar -> Mobile App Filter Bar */
-        .img2-toolbar {
-            background: #ffffff;
-            border-radius: 12px;
-            border: 1px solid #e2e8f0;
-            padding: 10px 12px;
+        /* ── Modern Android App Header Card ── */
+        .m-app-header-card {
+            background: linear-gradient(135deg, #090e1a 0%, #1e293b 100%);
+            border-radius: 16px;
+            padding: 16px;
+            color: #ffffff;
             margin-bottom: 12px;
-            box-shadow: 0 2px 6px rgba(0,0,0,0.03);
+            box-shadow: 0 4px 18px rgba(9, 14, 26, 0.35);
         }
-        .toolbar-right-note {
-            display: none !important;
-        }
-        .img2-toolbar-left {
-            width: 100%;
-            justify-content: space-between;
-        }
-        #filterFormSchedule {
-            width: 100%;
-            display: flex;
+        .m-app-portal-pill {
+            background: rgba(37, 99, 235, 0.25);
+            border: 1px solid rgba(59, 130, 246, 0.4);
+            color: #60a5fa;
+            font-size: 11px;
+            font-weight: 700;
+            padding: 3px 9px;
+            border-radius: 20px;
+            display: inline-flex;
             align-items: center;
-            justify-content: space-between;
-            gap: 8px;
-            flex-wrap: wrap;
         }
-        .filter-inline-select {
-            flex: 1;
-            min-width: 120px;
-        }
-        .filter-select-input {
-            width: 100%;
-            padding: 6px 8px;
-            font-size: 0.82rem;
+        .m-app-back-btn {
+            background: rgba(255, 255, 255, 0.12);
+            color: #f1f5f9 !important;
+            padding: 4px 12px;
             border-radius: 8px;
+            font-size: 11.5px;
+            font-weight: 700;
+            text-decoration: none !important;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            border: 1px solid rgba(255, 255, 255, 0.18);
+        }
+        .m-app-title {
+            font-size: 1.2rem;
+            font-weight: 800;
+            margin: 10px 0 2px 0;
+            letter-spacing: -0.3px;
+            color: #ffffff;
+        }
+        .m-app-sub {
+            font-size: 12px;
+            color: #94a3b8;
+            margin: 0;
         }
 
-        /* Metrics Summary Grid for Mobile */
-        .mobile-metrics-strip {
+        /* ── Android Filter & Week Selector Card ── */
+        .m-filter-bar-card {
+            background: #ffffff;
+            border-radius: 14px;
+            padding: 10px 12px;
+            margin-bottom: 12px;
+            border: 1px solid #e2e8f0;
+            box-shadow: 0 1px 4px rgba(0,0,0,0.03);
+        }
+        .m-select-pill-wrap {
+            position: relative;
+            display: flex;
+            align-items: center;
+            background: #f8fafc;
+            border: 1px solid #cbd5e1;
+            border-radius: 10px;
+            padding: 0 10px;
+            height: 38px;
+        }
+        .m-select-icon {
+            font-size: 12px;
+            margin-right: 6px;
+            color: #64748b;
+        }
+        .m-chip-select {
+            width: 100%;
+            height: 100%;
+            background: transparent;
+            border: none;
+            outline: none;
+            font-size: 12px;
+            font-weight: 700;
+            color: #0f172a;
+            cursor: pointer;
+        }
+        .m-filter-reset-btn {
+            width: 38px;
+            height: 38px;
+            border-radius: 10px;
+            background: #f1f5f9;
+            border: 1px solid #cbd5e1;
+            color: #64748b;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            text-decoration: none !important;
+            flex-shrink: 0;
+        }
+
+        /* ── Metric KPI Badges Grid (2x2) ── */
+        .m-kpi-grid {
             display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 8px;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
             margin-bottom: 12px;
         }
-        .mobile-metric-card {
+        .m-kpi-card {
             background: #ffffff;
+            border-radius: 14px;
             border: 1px solid #e2e8f0;
-            border-radius: 10px;
-            padding: 10px 6px;
-            text-align: center;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+            padding: 12px 14px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.03);
             cursor: pointer;
             transition: all 0.15s ease;
         }
-        .mobile-metric-card:active {
+        .m-kpi-card:active {
             transform: scale(0.97);
             background: #f8fafc;
         }
-        .mobile-metric-val {
-            font-size: 1.2rem;
-            font-weight: 800;
-            line-height: 1.2;
-        }
-        .mobile-metric-label {
-            font-size: 0.65rem;
+        .m-kpi-label {
+            font-size: 11px;
+            font-weight: 700;
             color: #64748b;
-            font-weight: 600;
             text-transform: uppercase;
-            margin-top: 2px;
+            letter-spacing: 0.3px;
+        }
+        .m-kpi-icon-wrap {
+            width: 28px;
+            height: 28px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 11px;
+        }
+        .bg-blue-subtle { background: #eff6ff; color: #2563eb; }
+        .bg-green-subtle { background: #f0fdf4; color: #16a34a; }
+        .bg-cyan-subtle { background: #e0f2fe; color: #0284c7; }
+        .bg-emerald-subtle { background: #ecfdf5; color: #059669; }
+        .m-kpi-value {
+            font-size: 1.45rem;
+            font-weight: 900;
+            line-height: 1.1;
+            margin-top: 6px;
         }
 
-        /* Odoo Segmented Chips */
-        .mobile-chips-filter {
+        /* ── Odoo Segmented Chips Bar ── */
+        .m-chips-filter {
             display: flex;
             align-items: center;
             gap: 6px;
@@ -441,93 +495,91 @@
             -webkit-overflow-scrolling: touch;
             scrollbar-width: none;
         }
-        .mobile-chips-filter::-webkit-scrollbar {
-            display: none;
-        }
-        .mobile-chip {
+        .m-chips-filter::-webkit-scrollbar { display: none; }
+        .m-chip {
             flex-shrink: 0;
             padding: 6px 14px;
             background: #ffffff;
             border: 1px solid #cbd5e1;
             border-radius: 20px;
-            font-size: 0.76rem;
-            font-weight: 600;
+            font-size: 12px;
+            font-weight: 700;
             color: #475569;
-            text-decoration: none;
-            transition: all 0.15s ease;
-            display: inline-flex;
-            align-items: center;
-            gap: 5px;
             cursor: pointer;
+            transition: all 0.15s ease;
+            white-space: nowrap;
         }
-        .mobile-chip.active {
+        .m-chip.active {
             background: #2563eb;
             color: #ffffff;
             border-color: #2563eb;
-            box-shadow: 0 2px 6px rgba(37,99,235,0.3);
+            box-shadow: 0 2px 8px rgba(37,99,235,0.3);
         }
 
-        /* Mobile Search Input */
-        .mobile-search-bar {
-            margin-bottom: 12px;
-        }
-        .mobile-search-input-wrap {
+        /* ── Search Bar ── */
+        .m-search-pill-box {
             position: relative;
             display: flex;
             align-items: center;
             background: #ffffff;
-            border: 1px solid #cbd5e1;
-            border-radius: 10px;
+            border: 1.5px solid #cbd5e1;
+            border-radius: 12px;
             padding: 0 12px;
+            margin-bottom: 12px;
             box-shadow: 0 1px 3px rgba(0,0,0,0.03);
         }
-        .mobile-search-input-wrap .search-icon {
+        .m-search-pill-box:focus-within {
+            border-color: #2563eb;
+            box-shadow: 0 0 0 3px rgba(37,99,235,0.15);
+        }
+        .m-search-icon {
             color: #94a3b8;
-            font-size: 0.85rem;
+            font-size: 14px;
             margin-right: 8px;
         }
-        .mobile-search-input {
+        .m-search-pill-input {
             width: 100%;
-            height: 40px;
+            height: 42px;
             border: none;
             outline: none;
             background: transparent;
-            font-size: 0.85rem;
+            font-size: 13px;
+            font-weight: 500;
             color: #0f172a;
         }
-        .search-clear-btn {
+        .m-search-clear {
             background: none;
             border: none;
             color: #94a3b8;
             cursor: pointer;
             padding: 4px;
+            font-size: 14px;
         }
 
-        /* Mobile Count Cards (Odoo / QuickBooks ERP List Item) */
-        .mobile-counts-list {
+        /* ── Android Task Cards ── */
+        .m-cards-list {
             display: flex;
             flex-direction: column;
             gap: 12px;
         }
-        .mobile-count-card {
+        .android-count-card {
             background: #ffffff;
+            border-radius: 16px;
             border: 1px solid #e2e8f0;
-            border-radius: 14px;
-            padding: 14px 15px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
-            position: relative;
-            transition: transform 0.1s ease, box-shadow 0.15s ease;
+            padding: 15px;
+            box-shadow: 0 3px 12px rgba(0,0,0,0.05);
+            transition: transform 0.1s ease;
         }
-        .mobile-count-card:active {
+        .android-count-card:active {
             transform: scale(0.99);
         }
-        .mcc-top {
+        .acc-header {
             display: flex;
             align-items: center;
             justify-content: space-between;
             margin-bottom: 12px;
         }
-        .mcc-loc-badge {
+        .acc-loc-pill {
             display: inline-flex;
             align-items: center;
             gap: 5px;
@@ -535,49 +587,32 @@
             color: #1d4ed8;
             border: 1px solid #bfdbfe;
             padding: 4px 11px;
-            border-radius: 6px;
-            font-size: 0.88rem;
+            border-radius: 8px;
+            font-size: 13px;
             font-weight: 800;
-            letter-spacing: -0.2px;
         }
-        .mcc-code {
+        .acc-code-chip {
             font-family: 'JetBrains Mono', monospace;
-            font-size: 0.8rem;
+            font-size: 12px;
             color: #64748b;
-            font-weight: 600;
+            font-weight: 700;
         }
-        .mcc-status-pill {
+        .acc-status-pill {
             display: inline-flex;
             align-items: center;
             gap: 5px;
             padding: 4px 10px;
-            border-radius: 12px;
-            font-size: 0.72rem;
+            border-radius: 20px;
+            font-size: 11.5px;
             font-weight: 700;
             white-space: nowrap;
         }
-        .status-started {
-            background: #dcfce7;
-            color: #15803d;
-            border: 1px solid #bbf7d0;
-        }
-        .status-not_started {
-            background: #f1f5f9;
-            color: #475569;
-            border: 1px solid #cbd5e1;
-        }
-        .status-submitted {
-            background: #e0f2fe;
-            color: #0369a1;
-            border: 1px solid #bae6fd;
-        }
-        .status-approved {
-            background: #f0fdf4;
-            color: #166534;
-            border: 1px solid #86efac;
-        }
+        .acc-status-started { background: #dcfce7; color: #15803d; border: 1px solid #bbf7d0; }
+        .acc-status-pending { background: #f1f5f9; color: #475569; border: 1px solid #cbd5e1; }
+        .acc-status-submitted { background: #e0f2fe; color: #0369a1; border: 1px solid #bae6fd; }
+        .acc-status-approved { background: #ecfdf5; color: #047857; border: 1px solid #a7f3d0; }
 
-        .pulse-dot {
+        .acc-pulse-dot {
             width: 7px;
             height: 7px;
             border-radius: 50%;
@@ -585,135 +620,150 @@
             animation: pulseGlow 1.5s infinite;
         }
 
-        .mcc-meta-grid {
+        .acc-meta-strip {
             display: grid;
             grid-template-columns: 1fr 1fr 1fr;
             gap: 6px;
             background: #f8fafc;
             border-radius: 10px;
-            padding: 9px 12px;
+            padding: 10px 12px;
             margin-bottom: 12px;
         }
-        .mcc-meta-item {
+        .acc-meta-col {
             display: flex;
             flex-direction: column;
         }
-        .mcc-meta-label {
-            font-size: 0.65rem;
+        .acc-meta-k {
+            font-size: 10px;
             color: #94a3b8;
-            font-weight: 600;
+            font-weight: 700;
             text-transform: uppercase;
         }
-        .mcc-meta-val {
-            font-size: 0.8rem;
+        .acc-meta-v {
+            font-size: 12px;
             font-weight: 700;
             color: #1e293b;
             margin-top: 1px;
         }
 
-        .mcc-progress-section {
+        .acc-progress-box {
             margin-bottom: 14px;
         }
-        .mcc-prog-text-row {
+        .acc-progress-header {
             display: flex;
             justify-content: space-between;
-            font-size: 0.76rem;
+            font-size: 12px;
             color: #475569;
             margin-bottom: 5px;
         }
-        .mcc-prog-track {
+        .acc-progress-track {
             height: 8px;
             background: #e2e8f0;
             border-radius: 4px;
             overflow: hidden;
         }
-        .mcc-prog-fill {
+        .acc-progress-fill {
             height: 100%;
             background: linear-gradient(90deg, #10b981 0%, #059669 100%);
             border-radius: 4px;
             transition: width 0.3s ease;
         }
 
-        /* Buttons in Cards */
-        .btn-mcc-action {
+        /* ── Full-Width Tactile Android Buttons ── */
+        .acc-btn {
             width: 100%;
-            min-height: 44px;
+            min-height: 48px;
             display: flex;
             align-items: center;
             justify-content: center;
             gap: 8px;
-            border-radius: 10px;
-            font-size: 0.88rem;
-            font-weight: 700;
+            border-radius: 12px;
+            font-size: 14px;
+            font-weight: 800;
             text-decoration: none !important;
             border: none;
             cursor: pointer;
             transition: all 0.15s ease;
         }
-        .btn-mcc-start {
-            background: #2563eb;
+        .acc-btn-start {
+            background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
             color: #ffffff !important;
-            box-shadow: 0 3px 8px rgba(37,99,235,0.25);
+            box-shadow: 0 4px 12px rgba(37,99,235,0.3);
         }
-        .btn-mcc-start:active {
-            background: #1d4ed8;
+        .acc-btn-start:active {
             transform: scale(0.98);
         }
-        .btn-mcc-resume {
-            background: #10b981;
+        .acc-btn-resume {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
             color: #ffffff !important;
-            box-shadow: 0 3px 8px rgba(16,185,129,0.25);
+            box-shadow: 0 4px 12px rgba(16,185,129,0.3);
         }
-        .btn-mcc-resume:active {
-            background: #059669;
+        .acc-btn-resume:active {
             transform: scale(0.98);
         }
-        .btn-mcc-waiting {
+        .acc-btn-waiting {
             background: #eff6ff;
             color: #1d4ed8 !important;
-            border: 1px solid #bfdbfe;
-            font-weight: 600;
+            border: 1.5px solid #bfdbfe;
             cursor: default;
         }
-        .btn-mcc-approved {
-            background: #f0fdf4;
-            color: #166534 !important;
-            border: 1px solid #bbf7d0;
-            font-weight: 600;
+        .acc-btn-approved {
+            background: #ecfdf5;
+            color: #047857 !important;
+            border: 1.5px solid #a7f3d0;
             cursor: default;
         }
 
-        .mobile-count-empty {
+        /* ── Android Empty State Card ── */
+        .acc-empty-card {
             background: #ffffff;
-            border: 1px dashed #cbd5e1;
-            border-radius: 12px;
-            padding: 30px 16px;
+            border: 1.5px dashed #cbd5e1;
+            border-radius: 16px;
+            padding: 34px 20px;
             text-align: center;
         }
+        .acc-empty-icon-badge {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: #eff6ff;
+            color: #2563eb;
+            font-size: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 14px auto;
+        }
+        .acc-empty-card h5 {
+            font-size: 15px;
+            font-weight: 800;
+            color: #0f172a;
+            margin-bottom: 6px;
+        }
 
-        /* Collapsible Help on Mobile */
-        .mobile-help-card {
+        /* ── Collapsible Guide Card ── */
+        .m-guide-card {
             background: #ffffff;
+            border-radius: 14px;
             border: 1px solid #e2e8f0;
-            border-radius: 12px;
             padding: 13px 15px;
             margin-top: 14px;
             box-shadow: 0 1px 3px rgba(0,0,0,0.03);
         }
-        .mobile-help-title {
-            font-size: 0.84rem;
-            font-weight: 700;
+        .m-guide-title {
+            font-size: 13px;
+            font-weight: 800;
             color: #0f172a;
             display: flex;
             align-items: center;
             justify-content: space-between;
             cursor: pointer;
         }
-        .mobile-help-content {
+        .m-guide-body {
             margin-top: 10px;
-            font-size: 0.76rem;
+            font-size: 12px;
             color: #475569;
-            line-height: 1.45;
+            line-height: 1.5;
             border-top: 1px dashed #e2e8f0;
             padding-top: 10px;
         }
@@ -770,8 +820,8 @@
                     <div class="filter-inline-select">
                         <span>Week</span>
                         <select name="week" class="filter-select-input" onchange="document.getElementById('filterFormSchedule').submit()">
-                            <option value="this_week" {{ request('week', 'this_week') == 'this_week' ? 'selected' : '' }}>[this week] ▼</option>
-                            <option value="all" {{ request('week') == 'all' ? 'selected' : '' }}>[all weeks] ▼</option>
+                            <option value="all" {{ request('week', 'all') == 'all' ? 'selected' : '' }}>[all weeks] ▼</option>
+                            <option value="this_week" {{ request('week') == 'this_week' ? 'selected' : '' }}>[this week] ▼</option>
                             <option value="last_week" {{ request('week') == 'last_week' ? 'selected' : '' }}>[last week] ▼</option>
                             <option value="next_week" {{ request('week') == 'next_week' ? 'selected' : '' }}>[next week] ▼</option>
                         </select>
@@ -817,185 +867,260 @@
              MOBILE ANDROID ERP APP VIEW (Odoo & QuickBooks Style)
              ======================================================== --}}
         <div class="mobile-schedule-app-view">
-            {{-- 1. Mobile Metric Cards Strip --}}
-            <div class="mobile-metrics-strip">
-                <div class="mobile-metric-card" onclick="filterMobileStatus('all')">
-                    <div class="mobile-metric-val text-primary">{{ $totalCountsCount }}</div>
-                    <div class="mobile-metric-label">Total</div>
+            {{-- 1. Mobile App Header Card (Branded, User Role, Quick Back) --}}
+            <div class="m-app-header-card">
+                <div class="d-flex align-items-center justify-content-between">
+                    <div class="d-flex align-items-center gap-2">
+                        <div class="app-mobile-logo-badge" style="width: 34px; height: 34px; font-size: 13px; border-radius: 8px;">KH</div>
+                        <div>
+                            <span class="badge" style="background: rgba(37, 99, 235, 0.28); color: #93c5fd; font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;">
+                                @if(Auth::check() && Auth::user()->usertype !== 'admin')
+                                    Staff Portal · Physical Counting
+                                @else
+                                    Owner / Manager Portal
+                                @endif
+                            </span>
+                            <h4 class="m-app-title">Cycle Counts &amp; Stock</h4>
+                        </div>
+                    </div>
+                    <a href="{{ route('home') }}" class="m-filter-reset-btn text-decoration-none" title="Dashboard" style="color: #cbd5e1; background: rgba(255,255,255,0.08); border-color: rgba(255,255,255,0.12);">
+                        <i class="fas fa-home"></i>
+                    </a>
                 </div>
-                <div class="mobile-metric-card" onclick="filterMobileStatus('started')">
-                    <div class="mobile-metric-val text-success">{{ $inProgressCount }}</div>
-                    <div class="mobile-metric-label">Started</div>
+                <p class="m-app-sub mt-2">
+                    Staff: <strong>{{ Auth::user()->name }}</strong> · Real-time warehouse counting
+                </p>
+            </div>
+
+            {{-- 2. Filter & Week Selector Pill Bar --}}
+            <form method="GET" action="{{ route('cycle_count.index') }}" id="mobileFilterFormSchedule" class="m-0">
+                <div class="m-filter-bar-card">
+                    <div class="d-flex align-items-center gap-2">
+                        <div class="m-select-pill-wrap flex-grow-1">
+                            <i class="far fa-calendar-alt m-select-icon"></i>
+                            <select name="week" class="m-chip-select" onchange="document.getElementById('mobileFilterFormSchedule').submit()">
+                                <option value="all" {{ request('week', 'all') == 'all' ? 'selected' : '' }}>All Weeks</option>
+                                <option value="this_week" {{ request('week') == 'this_week' ? 'selected' : '' }}>This Week</option>
+                                <option value="last_week" {{ request('week') == 'last_week' ? 'selected' : '' }}>Last Week</option>
+                                <option value="next_week" {{ request('week') == 'next_week' ? 'selected' : '' }}>Next Week</option>
+                            </select>
+                        </div>
+
+                        <div class="m-select-pill-wrap flex-grow-1">
+                            <i class="fas fa-filter m-select-icon"></i>
+                            <select name="status" class="m-chip-select" onchange="document.getElementById('mobileFilterFormSchedule').submit()">
+                                <option value="all" {{ request('status', 'all') == 'all' ? 'selected' : '' }}>All Status</option>
+                                <option value="not_started" {{ request('status') == 'not_started' ? 'selected' : '' }}>Not started</option>
+                                <option value="started" {{ request('status') == 'started' ? 'selected' : '' }}>Started</option>
+                                <option value="submitted" {{ request('status') == 'submitted' ? 'selected' : '' }}>Submitted</option>
+                                <option value="approved" {{ request('status') == 'approved' ? 'selected' : '' }}>Approved</option>
+                            </select>
+                        </div>
+
+                        <a href="{{ route('cycle_count.index') }}?week=all" class="m-filter-reset-btn" title="Reset to All Weeks">
+                            <i class="fas fa-redo-alt"></i>
+                        </a>
+                    </div>
                 </div>
-                <div class="mobile-metric-card" onclick="filterMobileStatus('submitted')">
-                    <div class="mobile-metric-val text-info">{{ $pendingApproval }}</div>
-                    <div class="mobile-metric-label">Waiting</div>
+            </form>
+
+            {{-- 3. Metric KPI Badges Grid (2x2) --}}
+            <div class="m-kpi-grid">
+                <div class="m-kpi-card" onclick="filterMobileStatus('all')">
+                    <div class="d-flex align-items-center justify-content-between">
+                        <span class="m-kpi-label">Total Assigned</span>
+                        <div class="m-kpi-icon-wrap bg-blue-subtle"><i class="fas fa-clipboard-list"></i></div>
+                    </div>
+                    <div class="m-kpi-value text-primary">{{ $totalCountsCount }}</div>
                 </div>
-                <div class="mobile-metric-card" onclick="filterMobileStatus('approved')">
-                    <div class="mobile-metric-val text-dark">{{ $completedThisWeek }}</div>
-                    <div class="mobile-metric-label">Approved</div>
+
+                <div class="m-kpi-card" onclick="filterMobileStatus('started')">
+                    <div class="d-flex align-items-center justify-content-between">
+                        <span class="m-kpi-label">In Progress</span>
+                        <div class="m-kpi-icon-wrap bg-green-subtle"><i class="fas fa-play"></i></div>
+                    </div>
+                    <div class="m-kpi-value text-success">{{ $inProgressCount }}</div>
+                </div>
+
+                <div class="m-kpi-card" onclick="filterMobileStatus('submitted')">
+                    <div class="d-flex align-items-center justify-content-between">
+                        <span class="m-kpi-label">Waiting Review</span>
+                        <div class="m-kpi-icon-wrap bg-cyan-subtle"><i class="fas fa-clock"></i></div>
+                    </div>
+                    <div class="m-kpi-value text-info">{{ $pendingApproval }}</div>
+                </div>
+
+                <div class="m-kpi-card" onclick="filterMobileStatus('approved')">
+                    <div class="d-flex align-items-center justify-content-between">
+                        <span class="m-kpi-label">Approved</span>
+                        <div class="m-kpi-icon-wrap bg-emerald-subtle"><i class="fas fa-check-circle"></i></div>
+                    </div>
+                    <div class="m-kpi-value text-dark">{{ $completedThisWeek }}</div>
                 </div>
             </div>
 
-            {{-- 2. Odoo / QuickBooks Segmented Filter Chips --}}
-            <div class="mobile-chips-filter">
-                <button type="button" class="mobile-chip active" data-filter="all" onclick="filterMobileStatus('all', this)">
-                    <i class="fas fa-layer-group"></i> All ({{ $counts->count() }})
+            {{-- 4. Odoo Segmented Chips Filter --}}
+            <div class="m-chips-filter">
+                <button type="button" class="m-chip active" data-filter="all" onclick="filterMobileStatus('all', this)">
+                    <i class="fas fa-layer-group me-1"></i> All ({{ $counts->count() }})
                 </button>
-                <button type="button" class="mobile-chip" data-filter="not_started" onclick="filterMobileStatus('not_started', this)">
-                    <i class="far fa-circle"></i> Not Started
+                <button type="button" class="m-chip" data-filter="not_started" onclick="filterMobileStatus('not_started', this)">
+                    <i class="far fa-circle me-1"></i> Not Started
                 </button>
-                <button type="button" class="mobile-chip" data-filter="started" onclick="filterMobileStatus('started', this)">
-                    <i class="fas fa-play-circle text-success"></i> Started
+                <button type="button" class="m-chip" data-filter="started" onclick="filterMobileStatus('started', this)">
+                    <i class="fas fa-play-circle text-success me-1"></i> In Progress
                 </button>
-                <button type="button" class="mobile-chip" data-filter="submitted" onclick="filterMobileStatus('submitted', this)">
-                    <i class="fas fa-clock text-info"></i> Submitted
+                <button type="button" class="m-chip" data-filter="submitted" onclick="filterMobileStatus('submitted', this)">
+                    <i class="fas fa-clock text-info me-1"></i> Waiting Review
                 </button>
-                <button type="button" class="mobile-chip" data-filter="approved" onclick="filterMobileStatus('approved', this)">
-                    <i class="fas fa-check-circle text-dark"></i> Approved
+                <button type="button" class="m-chip" data-filter="approved" onclick="filterMobileStatus('approved', this)">
+                    <i class="fas fa-check-circle text-dark me-1"></i> Approved
                 </button>
             </div>
 
-            {{-- 3. Mobile Search Box --}}
-            <div class="mobile-search-bar">
-                <div class="mobile-search-input-wrap">
-                    <i class="fas fa-search search-icon"></i>
-                    <input type="text" id="mobileSearchInput" placeholder="Search count #, location, staff..." class="mobile-search-input" oninput="searchMobileCounts(this.value)">
-                    <button type="button" class="search-clear-btn" id="mobileSearchClearBtn" onclick="clearMobileSearch()" style="display:none;">
-                        <i class="fas fa-times"></i>
-                    </button>
-                </div>
+            {{-- 5. Mobile Search Pill Box --}}
+            <div class="m-search-pill-box">
+                <i class="fas fa-search m-search-icon"></i>
+                <input type="text" id="mobileSearchInput" placeholder="Search count #, rack location, staff..." class="m-search-pill-input" oninput="searchMobileCounts(this.value)">
+                <button type="button" class="m-search-clear" id="mobileSearchClearBtn" onclick="clearMobileSearch()" style="display:none;">
+                    <i class="fas fa-times-circle"></i>
+                </button>
             </div>
 
-            {{-- 4. Mobile Count Cards List --}}
-            <div class="mobile-counts-list" id="mobileCountsList">
+            {{-- 6. Tactile Android ERP Cards List --}}
+            <div class="m-cards-list" id="mobileCountsList">
                 @forelse($counts as $count)
                     @php
-                        $locName = $count->location ? $count->location->name : ($count->location_name ?: 'General');
+                        $locName = $count->location ? $count->location->name : ($count->location_name ?: 'General Rack');
                         $staffName = $count->counter ? $count->counter->name : 'Staff';
                         $percent = $count->progress_percent ?? 0;
                     @endphp
-                    <div class="mobile-count-card"
+                    <div class="android-count-card mobile-count-card"
                          data-status="{{ $count->status }}"
                          data-search="{{ strtolower($count->count_number . ' ' . $locName . ' ' . $staffName) }}"
                          id="mobileCard{{ $count->id }}">
                         
-                        {{-- Card Top: Location & Status --}}
-                        <div class="mcc-top">
+                        {{-- Card Top: Location Pill & Status Badge --}}
+                        <div class="acc-header">
                             <div class="d-flex align-items-center gap-2">
-                                <span class="mcc-loc-badge">
+                                <span class="acc-loc-pill">
                                     <i class="fas fa-map-marker-alt"></i> {{ $locName }}
                                 </span>
-                                <span class="mcc-code">#{{ $count->count_number }}</span>
+                                <span class="acc-code-chip">#{{ $count->count_number }}</span>
                             </div>
 
                             @if($count->status === 'started')
-                                <span class="mcc-status-pill status-started">
-                                    <span class="pulse-dot"></span> In Progress
+                                <span class="acc-status-pill acc-status-started">
+                                    <span class="acc-pulse-dot"></span> In Progress
                                 </span>
                             @elseif($count->status === 'submitted')
-                                <span class="mcc-status-pill status-submitted">
+                                <span class="acc-status-pill acc-status-submitted">
                                     <i class="fas fa-clock"></i> Waiting Review
                                 </span>
                             @elseif($count->status === 'approved')
-                                <span class="mcc-status-pill status-approved">
-                                    <i class="fas fa-check-circle"></i> Approved
+                                <span class="acc-status-pill acc-status-approved">
+                                    <i class="fas fa-check-double"></i> Approved
                                 </span>
                             @else
-                                <span class="mcc-status-pill status-not_started">
+                                <span class="acc-status-pill acc-status-pending">
                                     <i class="far fa-circle"></i> Not Started
                                 </span>
                             @endif
                         </div>
 
-                        {{-- Card Meta Grid --}}
-                        <div class="mcc-meta-grid">
-                            <div class="mcc-meta-item">
-                                <span class="mcc-meta-label">Date</span>
-                                <span class="mcc-meta-val"><i class="far fa-calendar-alt text-muted me-1"></i>{{ $count->count_date ? $count->count_date->format('d M') : '—' }}</span>
+                        {{-- Metadata Strip --}}
+                        <div class="acc-meta-strip">
+                            <div class="acc-meta-col">
+                                <span class="acc-meta-k">Date</span>
+                                <span class="acc-meta-v"><i class="far fa-calendar-alt text-muted me-1"></i>{{ $count->count_date ? $count->count_date->format('d M') : '—' }}</span>
                             </div>
-                            <div class="mcc-meta-item">
-                                <span class="mcc-meta-label">Assigned To</span>
-                                <span class="mcc-meta-val text-truncate"><i class="far fa-user text-muted me-1"></i>{{ $staffName }}</span>
+                            <div class="acc-meta-col">
+                                <span class="acc-meta-k">Assigned</span>
+                                <span class="acc-meta-v text-truncate"><i class="far fa-user text-muted me-1"></i>{{ $staffName }}</span>
                             </div>
-                            <div class="mcc-meta-item">
-                                <span class="mcc-meta-label">Total Items</span>
-                                <span class="mcc-meta-val text-primary font-weight-bold">{{ $count->total_items }} items</span>
+                            <div class="acc-meta-col">
+                                <span class="acc-meta-k">Items</span>
+                                <span class="acc-meta-v text-primary font-weight-bold">{{ $count->total_items }} items</span>
                             </div>
                         </div>
 
                         {{-- Live Progress Bar --}}
-                        <div class="mcc-progress-section">
-                            <div class="mcc-prog-text-row">
-                                <span class="font-weight-600">Counting Progress</span>
-                                <span class="font-weight-bold text-dark">{{ $count->entered_items }}/{{ $count->total_items }} ({{ $percent }}%)</span>
+                        <div class="acc-progress-box">
+                            <div class="acc-progress-header">
+                                <span>Counting Progress</span>
+                                <strong>{{ $count->entered_items }}/{{ $count->total_items }} ({{ $percent }}%)</strong>
                             </div>
-                            <div class="mcc-prog-track">
-                                <div class="mcc-prog-fill" style="width: {{ $percent }}%;"></div>
+                            <div class="acc-progress-track">
+                                <div class="acc-progress-fill" style="width: {{ $percent }}%;"></div>
                             </div>
                         </div>
 
-                        {{-- Bottom Action Button (Android Touch Style) --}}
-                        <div class="mcc-action-wrap">
-                            @if(Auth::check() && Auth::user()->usertype !== 'admin')
-                                {{-- Staff Touch Actions --}}
-                                @if($count->status === 'not_started')
-                                    <a href="{{ route('cycle_count.sheet', $count->id) }}" class="btn-mcc-action btn-mcc-start">
-                                        <i class="fas fa-play"></i> Start Count
-                                    </a>
-                                @elseif($count->status === 'started')
-                                    <a href="{{ route('cycle_count.sheet', $count->id) }}" class="btn-mcc-action btn-mcc-resume">
-                                        <i class="fas fa-stopwatch"></i> Continue Count
-                                    </a>
-                                @elseif($count->status === 'submitted')
-                                    <div class="btn-mcc-action btn-mcc-waiting">
-                                        <i class="fas fa-check"></i> Submitted — Waiting for Manager
-                                    </div>
-                                @elseif($count->status === 'approved')
-                                    <div class="btn-mcc-action btn-mcc-approved">
-                                        <i class="fas fa-check-double"></i> Count Completed &amp; Approved
-                                    </div>
-                                @endif
-                            @else
-                                {{-- Admin Actions --}}
-                                @if($count->status === 'submitted')
-                                    <a href="{{ route('cycle_count.approve', $count->id) }}" class="btn-mcc-action btn-mcc-start" style="background:#2563eb;">
-                                        <i class="fas fa-tasks"></i> Open Review &amp; Reconcile
-                                    </a>
-                                @elseif($count->status === 'started')
-                                    <a href="{{ route('cycle_count.sheet', $count->id) }}" class="btn-mcc-action btn-mcc-resume">
-                                        <i class="fas fa-eye"></i> Inspect Count Sheet
-                                    </a>
-                                @elseif($count->status === 'approved')
-                                    <a href="{{ route('cycle_count.approve', $count->id) }}" class="btn-mcc-action btn-mcc-approved">
-                                        <i class="fas fa-check-circle"></i> View Approved Stock
-                                    </a>
-                                @else
-                                    <a href="{{ route('cycle_count.sheet', $count->id) }}" class="btn-mcc-action btn-mcc-start">
-                                        <i class="fas fa-clipboard-list"></i> Open Count Sheet
-                                    </a>
-                                @endif
+                        {{-- Full-Width Android Tactile Touch Action --}}
+                        @if(Auth::check() && Auth::user()->usertype !== 'admin')
+                            {{-- Staff Touch Action Buttons --}}
+                            @if($count->status === 'not_started')
+                                <a href="{{ route('cycle_count.sheet', $count->id) }}" class="acc-btn acc-btn-start">
+                                    <i class="fas fa-play"></i> Start Blind Count
+                                </a>
+                            @elseif($count->status === 'started')
+                                <a href="{{ route('cycle_count.sheet', $count->id) }}" class="acc-btn acc-btn-resume">
+                                    <i class="fas fa-stopwatch"></i> Continue Counting
+                                </a>
+                            @elseif($count->status === 'submitted')
+                                <div class="acc-btn acc-btn-waiting">
+                                    <i class="fas fa-hourglass-half"></i> Submitted — Waiting for Manager
+                                </div>
+                            @elseif($count->status === 'approved')
+                                <div class="acc-btn acc-btn-approved">
+                                    <i class="fas fa-check-double"></i> Count Completed &amp; Approved
+                                </div>
                             @endif
-                        </div>
+                        @else
+                            {{-- Manager / Admin Action Buttons --}}
+                            @if($count->status === 'submitted')
+                                <a href="{{ route('cycle_count.approve', $count->id) }}" class="acc-btn acc-btn-start">
+                                    <i class="fas fa-tasks"></i> Open Review &amp; Reconcile
+                                </a>
+                            @elseif($count->status === 'started')
+                                <a href="{{ route('cycle_count.sheet', $count->id) }}" class="acc-btn acc-btn-resume">
+                                    <i class="fas fa-eye"></i> Inspect Count Sheet
+                                </a>
+                            @elseif($count->status === 'approved')
+                                <a href="{{ route('cycle_count.approve', $count->id) }}" class="acc-btn acc-btn-approved">
+                                    <i class="fas fa-check-circle"></i> View Approved Stock
+                                </a>
+                            @else
+                                <a href="{{ route('cycle_count.sheet', $count->id) }}" class="acc-btn acc-btn-start">
+                                    <i class="fas fa-clipboard-list"></i> Open Count Sheet
+                                </a>
+                            @endif
+                        @endif
                     </div>
                 @empty
-                    <div class="mobile-count-empty">
-                        <i class="fas fa-clipboard-list text-muted mb-2" style="font-size: 2rem;"></i>
-                        <h6>No counts found</h6>
-                        <p class="text-muted small mb-0">No physical count tasks match your current filter.</p>
+                    <div class="acc-empty-card">
+                        <div class="acc-empty-icon-badge">
+                            <i class="fas fa-clipboard-check"></i>
+                        </div>
+                        <h5>No Cycle Counts Scheduled</h5>
+                        <p class="text-muted small mb-3">No physical inventory count tasks match your current filter.</p>
+                        @if(request('week') !== 'all')
+                            <a href="{{ route('cycle_count.index') }}?week=all" class="acc-btn acc-btn-start" style="display: inline-flex; width: auto; padding: 10px 22px;">
+                                <i class="fas fa-calendar-alt"></i> View All Weeks (Show All Counts)
+                            </a>
+                        @endif
                     </div>
                 @endforelse
             </div>
 
-            {{-- 5. Mobile Help & Instructions Accordion --}}
-            <div class="mobile-help-card">
-                <div class="mobile-help-title" onclick="toggleMobileHelp()">
-                    <span><i class="fas fa-info-circle text-primary me-1"></i> How Physical Counting Works</span>
+            {{-- 7. Collapsible Staff Guide Accordion --}}
+            <div class="m-guide-card">
+                <div class="m-guide-title" onclick="toggleMobileHelp()">
+                    <span><i class="fas fa-info-circle text-primary me-2"></i> How Blind Physical Counting Works</span>
                     <i class="fas fa-chevron-down" id="helpChevron"></i>
                 </div>
-                <div class="mobile-help-content" id="helpContent" style="display: none;">
-                    <div class="mb-2"><strong>1. Blind Counting:</strong> Computer stock is hidden so you count objectively what is physically on the shelf without guessing.</div>
-                    <div class="mb-2"><strong>2. Live Timer:</strong> Measures duration automatically as you count.</div>
+                <div class="m-guide-body" id="helpContent" style="display: none;">
+                    <div class="mb-2"><strong>1. Blind Counting:</strong> System stock is hidden so you count objectively what is physically on the shelf.</div>
+                    <div class="mb-2"><strong>2. Live Timer:</strong> Automatically measures elapsed duration from when you start until submission.</div>
                     <div class="mb-2"><strong>3. Instant Auto-save:</strong> Every entered quantity is automatically saved to the server as you type.</div>
                     <div><strong>4. Manager Review:</strong> Once submitted, the manager verifies discrepancies and approves inventory adjustments.</div>
                 </div>
@@ -1211,12 +1336,12 @@
     function filterMobileStatus(status, btnEl) {
         currentMobileStatusFilter = status;
         
-        // Update active chip
-        document.querySelectorAll('.mobile-chip').forEach(btn => btn.classList.remove('active'));
+        // Update active chip across both class variants
+        document.querySelectorAll('.m-chip, .mobile-chip').forEach(btn => btn.classList.remove('active'));
         if (btnEl) {
             btnEl.classList.add('active');
         } else {
-            const target = document.querySelector(`.mobile-chip[data-filter="${status}"]`);
+            const target = document.querySelector(`.m-chip[data-filter="${status}"], .mobile-chip[data-filter="${status}"]`);
             if (target) target.classList.add('active');
         }
 
@@ -1226,7 +1351,7 @@
     function searchMobileCounts(query) {
         const clearBtn = document.getElementById('mobileSearchClearBtn');
         if (clearBtn) {
-            clearBtn.style.display = query && query.length > 0 ? 'block' : 'none';
+            clearBtn.style.display = query && query.length > 0 ? 'inline-block' : 'none';
         }
         applyMobileFilters();
     }
@@ -1235,14 +1360,15 @@
         const inp = document.getElementById('mobileSearchInput');
         if (inp) {
             inp.value = '';
-            document.getElementById('mobileSearchClearBtn').style.display = 'none';
+            const clearBtn = document.getElementById('mobileSearchClearBtn');
+            if (clearBtn) clearBtn.style.display = 'none';
         }
         applyMobileFilters();
     }
 
     function applyMobileFilters() {
         const query = (document.getElementById('mobileSearchInput')?.value || '').toLowerCase().trim();
-        const cards = document.querySelectorAll('.mobile-count-card');
+        const cards = document.querySelectorAll('.android-count-card, .mobile-count-card');
         let visibleCount = 0;
 
         cards.forEach(card => {

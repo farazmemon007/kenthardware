@@ -25,7 +25,10 @@ class DesignationController extends Controller
         ]);
 
         if ($validator->fails()) {
-            return response()->json(['errors' => $validator->errors()], 422);
+            if ($request->ajax() || $request->wantsJson()) {
+                return response()->json(['errors' => $validator->errors()], 422);
+            }
+            return redirect()->back()->withErrors($validator)->withInput();
         }
 
         $data = [
@@ -36,35 +39,53 @@ class DesignationController extends Controller
 
         if ($request->filled('edit_id')) {
             if (!auth()->user()->can('hr.designations.edit')) {
-                return response()->json(['error' => 'Unauthorized action.'], 403);
+                if ($request->ajax() || $request->wantsJson()) {
+                    return response()->json(['error' => 'Unauthorized action.'], 403);
+                }
+                return redirect()->back()->with('error', 'Unauthorized action.');
             }
             $designation = Designation::findOrFail($request->edit_id);
             $designation->update($data);
-            return response()->json([
-                'success' => 'Designation Updated Successfully',
-                'reload' => true
-            ]);
+            if ($request->ajax() || $request->wantsJson()) {
+                return response()->json([
+                    'success' => 'Designation Updated Successfully',
+                    'reload' => true
+                ]);
+            }
+            return redirect()->route('hr.designations.index')->with('success', 'Designation Updated Successfully');
         } else {
             if (!auth()->user()->can('hr.designations.create')) {
-                return response()->json(['error' => 'Unauthorized action.'], 403);
+                if ($request->ajax() || $request->wantsJson()) {
+                    return response()->json(['error' => 'Unauthorized action.'], 403);
+                }
+                return redirect()->back()->with('error', 'Unauthorized action.');
             }
             Designation::create($data);
-            return response()->json([
-                'success' => 'Designation Created Successfully',
-                'reload' => true
-            ]);
+            if ($request->ajax() || $request->wantsJson()) {
+                return response()->json([
+                    'success' => 'Designation Created Successfully',
+                    'reload' => true
+                ]);
+            }
+            return redirect()->route('hr.designations.index')->with('success', 'Designation Created Successfully');
         }
     }
 
     public function destroy(Designation $designation)
     {
         if (!auth()->user()->can('hr.designations.delete')) {
-            return response()->json(['error' => 'Unauthorized action.'], 403);
+            if (request()->ajax() || request()->wantsJson()) {
+                return response()->json(['error' => 'Unauthorized action.'], 403);
+            }
+            return redirect()->back()->with('error', 'Unauthorized action.');
         }
         $designation->delete();
-        return response()->json([
-            'success' => 'Designation Deleted Successfully',
-            'reload' => true
-        ]);
+        if (request()->ajax() || request()->wantsJson()) {
+            return response()->json([
+                'success' => 'Designation Deleted Successfully',
+                'reload' => true
+            ]);
+        }
+        return redirect()->route('hr.designations.index')->with('success', 'Designation Deleted Successfully');
     }
 }

@@ -1,7 +1,7 @@
 <!-- Mobile App Slide-in Offcanvas Drawer -->
-<div class="app-mobile-drawer-backdrop d-lg-none" id="mobileAppDrawerBackdrop"></div>
+<div class="app-mobile-drawer-backdrop d-lg-none" id="mobileAppDrawerBackdrop" style="display: none !important;"></div>
 
-<aside class="app-mobile-drawer d-lg-none" id="mobileAppDrawer" aria-label="Mobile Navigation Menu">
+<aside class="app-mobile-drawer d-lg-none" id="mobileAppDrawer" aria-label="Mobile Navigation Menu" style="display: none !important;">
     <!-- Drawer Header: User Profile Card -->
     <div class="app-drawer-user-card">
         <div class="d-flex align-items-center justify-content-between mb-3">

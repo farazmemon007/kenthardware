@@ -32,19 +32,28 @@ class LeaveController extends Controller
         ]);
 
         if ($validator->fails()) {
-            return response()->json(['errors' => $validator->errors()], 422);
+            if ($request->ajax() || $request->wantsJson()) {
+                return response()->json(['errors' => $validator->errors()], 422);
+            }
+            return redirect()->back()->withErrors($validator)->withInput();
         }
 
         if (! auth()->user()->can('hr.leaves.create')) {
-            return response()->json(['error' => 'Unauthorized action.'], 403);
+            if ($request->ajax() || $request->wantsJson()) {
+                return response()->json(['error' => 'Unauthorized action.'], 403);
+            }
+            return redirect()->back()->with('error', 'Unauthorized action.');
         }
 
         Leave::create($request->all());
 
-        return response()->json([
-            'success' => 'Leave request submitted successfully.',
-            'reload' => true,
-        ]);
+        if ($request->ajax() || $request->wantsJson()) {
+            return response()->json([
+                'success' => 'Leave request submitted successfully.',
+                'reload' => true,
+            ]);
+        }
+        return redirect()->route('hr.leaves.index')->with('success', 'Leave request submitted successfully.');
     }
 
     public function updateStatus(Request $request, Leave $leave)

@@ -60,17 +60,27 @@ class CycleCountController extends Controller
 
         $counts = $query->paginate(15)->appends($request->all());
 
-        // Summary metrics
+        // Summary metrics (scoped to staff member if not admin)
         $now = Carbon::now();
         $thisWeekStart = $now->copy()->startOfWeek();
         $thisWeekEnd = $now->copy()->endOfWeek();
 
-        $totalCountsCount = CycleCount::count();
-        $completedThisWeek = CycleCount::where('status', 'approved')
+        $isStaff = Auth::check() && Auth::user()->usertype !== 'admin';
+        $baseStatQuery = CycleCount::query();
+        if ($isStaff) {
+            $baseStatQuery->where('assigned_to', Auth::id());
+        }
+
+        $totalCountsCount = (clone $baseStatQuery)->count();
+        $completedThisWeek = (clone $baseStatQuery)->where('status', 'approved')
             ->whereBetween('approved_at', [$thisWeekStart, $thisWeekEnd])
             ->count();
-        $pendingApproval = CycleCount::where('status', 'submitted')->count();
-        $inProgressCount = CycleCount::where('status', 'started')->count();
+        // If 0 approved this week, fallback to total approved for staff overview
+        if ($completedThisWeek === 0 && $isStaff) {
+            $completedThisWeek = (clone $baseStatQuery)->where('status', 'approved')->count();
+        }
+        $pendingApproval = (clone $baseStatQuery)->where('status', 'submitted')->count();
+        $inProgressCount = (clone $baseStatQuery)->where('status', 'started')->count();
 
         $allStaff = $this->getAssignableStaff();
 

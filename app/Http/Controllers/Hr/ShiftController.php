@@ -32,7 +32,10 @@ class ShiftController extends Controller
         ]);
 
         if ($validator->fails()) {
-            return response()->json(['errors' => $validator->errors()], 422);
+            if ($request->ajax() || $request->wantsJson()) {
+                return response()->json(['errors' => $validator->errors()], 422);
+            }
+            return redirect()->back()->withErrors($validator)->withInput();
         }
 
         // If setting as default, unset other defaults
@@ -42,20 +45,29 @@ class ShiftController extends Controller
 
         if ($request->filled('edit_id')) {
             if (! auth()->user()->can('hr.shifts.edit')) {
-                return response()->json(['error' => 'Unauthorized action.'], 403);
+                if ($request->ajax() || $request->wantsJson()) {
+                    return response()->json(['error' => 'Unauthorized action.'], 403);
+                }
+                return redirect()->back()->with('error', 'Unauthorized action.');
             }
             $shift = Shift::findOrFail($request->edit_id);
             $shift->update($request->all());
             $message = 'Shift Updated Successfully';
         } else {
             if (! auth()->user()->can('hr.shifts.create')) {
-                return response()->json(['error' => 'Unauthorized action.'], 403);
+                if ($request->ajax() || $request->wantsJson()) {
+                    return response()->json(['error' => 'Unauthorized action.'], 403);
+                }
+                return redirect()->back()->with('error', 'Unauthorized action.');
             }
             Shift::create($request->all());
             $message = 'Shift Created Successfully';
         }
 
-        return response()->json(['success' => $message]);
+        if ($request->ajax() || $request->wantsJson()) {
+            return response()->json(['success' => $message]);
+        }
+        return redirect()->route('hr.shifts.index')->with('success', $message);
     }
 
     public function destroy($id)

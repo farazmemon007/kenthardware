@@ -320,6 +320,55 @@
         #canvas {
             display: none;
         }
+
+        /* Mobile Native App Overrides */
+        @media (max-width: 991.98px) {
+            .my-attendance {
+                margin: 10px auto 25px auto !important;
+                padding: 0 8px !important;
+                max-width: 100% !important;
+            }
+            .attendance-card {
+                border-radius: 16px !important;
+                box-shadow: 0 4px 18px rgba(0, 0, 0, 0.05) !important;
+                border: 1px solid #e2e8f0;
+            }
+            .attendance-header {
+                padding: 20px 16px !important;
+            }
+            .attendance-header h2 {
+                font-size: 1.35rem !important;
+            }
+            .attendance-header .time {
+                font-size: 2.2rem !important;
+                margin: 8px 0 !important;
+            }
+            .attendance-body {
+                padding: 18px 14px !important;
+            }
+            .btn-checkin, .btn-checkout {
+                min-height: 48px !important;
+                padding: 13px !important;
+                border-radius: 12px !important;
+                font-size: 1rem !important;
+            }
+            .status-box {
+                padding: 14px !important;
+                border-radius: 10px !important;
+            }
+            .employee-info {
+                gap: 12px !important;
+                margin-bottom: 16px !important;
+                padding-bottom: 16px !important;
+            }
+            .employee-avatar {
+                width: 48px !important;
+                height: 48px !important;
+            }
+            .camera-container {
+                padding: 18px 14px !important;
+            }
+        }
     </style>
 
     <!-- Script for Face API -->

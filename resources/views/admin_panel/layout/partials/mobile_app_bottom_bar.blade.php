@@ -7,7 +7,7 @@
 <nav class="app-mobile-bottom-bar d-flex d-lg-none" aria-label="Mobile Bottom Navigation">
     @if($isEmployee || $isCycleCountRoute)
         {{-- ===============================================
-             EMPLOYEE & STAFF PORTAL BOTTOM NAVIGATION BAR
+             EMPLOYEE & STAFF PORTAL BOTTOM NAVIGATION (Android App)
              =============================================== --}}
         <!-- Tab 1: Home / Dashboard -->
         <a href="{{ url('/home') }}" class="bottom-tab-item {{ (request()->is('home') || request()->is('dashboard')) && !$isCycleCountRoute ? 'active' : '' }}">
@@ -19,39 +19,42 @@
 
         <!-- Tab 2: Cycle Counts / My Tasks -->
         <a href="{{ route('cycle_count.index') }}" class="bottom-tab-item {{ request()->is('cycle-count') ? 'active' : '' }}">
-            <div class="bottom-tab-icon pos-badge-icon" style="background: linear-gradient(135deg, #2563eb, #1d4ed8);">
+            <div class="bottom-tab-icon">
                 <i class="fas fa-clipboard-check"></i>
             </div>
             <span class="bottom-tab-label">Counts</span>
         </a>
 
-        <!-- Tab 3: Current Sheet / Scanner -->
+        <!-- Tab 3: Current Sheet / Scanner (Only if on sheet, or quick tasks) -->
         @if(request()->routeIs('cycle_count.sheet'))
             <a href="javascript:void(0)" class="bottom-tab-item active" onclick="document.getElementById('mQuickScannerInput')?.focus();">
-                <div class="bottom-tab-icon" style="color: #10b981;">
+                <div class="bottom-tab-icon">
                     <i class="fas fa-barcode"></i>
                 </div>
-                <span class="bottom-tab-label">Scan/Count</span>
+                <span class="bottom-tab-label">Scanner</span>
             </a>
         @else
-            <a href="{{ route('cycle_count.index') }}" class="bottom-tab-item">
+            <!-- Tab 3: My Attendance -->
+            <a href="{{ route('my-attendance') }}" class="bottom-tab-item {{ request()->is('my-attendance*') ? 'active' : '' }}">
                 <div class="bottom-tab-icon">
-                    <i class="fas fa-boxes-stacked"></i>
+                    <i class="fas fa-user-clock"></i>
                 </div>
-                <span class="bottom-tab-label">Audit</span>
+                <span class="bottom-tab-label">Attendance</span>
             </a>
         @endif
 
-        <!-- Tab 4: My Attendance -->
-        <a href="{{ route('my-attendance') }}" class="bottom-tab-item {{ request()->is('my-attendance*') ? 'active' : '' }}">
-            <div class="bottom-tab-icon">
-                <i class="fas fa-user-clock"></i>
-            </div>
-            <span class="bottom-tab-label">Attendance</span>
-        </a>
+        @if(request()->routeIs('cycle_count.sheet'))
+            <!-- Tab 4: My Attendance -->
+            <a href="{{ route('my-attendance') }}" class="bottom-tab-item {{ request()->is('my-attendance*') ? 'active' : '' }}">
+                <div class="bottom-tab-icon">
+                    <i class="fas fa-user-clock"></i>
+                </div>
+                <span class="bottom-tab-label">Attendance</span>
+            </a>
+        @endif
 
         <!-- Tab 5: App Menu Drawer Trigger -->
-        <button type="button" class="bottom-tab-item border-0 bg-transparent" id="bottomDrawerTriggerBtn">
+        <button type="button" class="bottom-tab-item" id="bottomDrawerTriggerBtn" aria-label="Open Navigation Menu">
             <div class="bottom-tab-icon">
                 <i class="fas fa-bars"></i>
             </div>
@@ -59,7 +62,7 @@
         </button>
     @else
         {{-- ===============================================
-             ADMIN & MANAGER BOTTOM NAVIGATION BAR
+             ADMIN & MANAGER BOTTOM NAVIGATION
              =============================================== --}}
         <!-- Tab 1: Home / Dashboard -->
         <a href="{{ url('/home') }}" class="bottom-tab-item {{ request()->is('home') || request()->is('dashboard') ? 'active' : '' }}">
@@ -72,7 +75,7 @@
         <!-- Tab 2: POS Quick Sale -->
         @canany(['sales.create', 'sales.view'])
             <a href="{{ route('pos.index') }}" class="bottom-tab-item {{ request()->is('pos*') ? 'active' : '' }}">
-                <div class="bottom-tab-icon pos-badge-icon">
+                <div class="bottom-tab-icon">
                     <i class="fas fa-cash-register"></i>
                 </div>
                 <span class="bottom-tab-label">POS</span>
@@ -112,7 +115,7 @@
         </a>
 
         <!-- Tab 5: App Menu Drawer Trigger -->
-        <button type="button" class="bottom-tab-item border-0 bg-transparent" id="bottomDrawerTriggerBtn">
+        <button type="button" class="bottom-tab-item" id="bottomDrawerTriggerBtn" aria-label="Open Navigation Menu">
             <div class="bottom-tab-icon">
                 <i class="fas fa-bars"></i>
             </div>
