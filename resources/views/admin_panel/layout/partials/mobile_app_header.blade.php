@@ -19,19 +19,32 @@
             </div>
             <div class="d-flex flex-column ms-2">
                 <span class="app-mobile-brand-title">{{ $dynCompName }}</span>
-                <span class="app-mobile-brand-sub">ERP System</span>
+                <span class="app-mobile-brand-sub">
+                    @if(Auth::check() && Auth::user()->usertype !== 'admin')
+                        Staff Portal
+                    @else
+                        ERP System
+                    @endif
+                </span>
             </div>
         </a>
     </div>
 
-    <!-- Right: Quick POS shortcut + Notifications + Profile Avatar -->
+    <!-- Right: Quick POS/Count shortcut + Notifications + Profile Avatar -->
     <div class="d-flex align-items-center gap-2">
-        @canany(['sales.create', 'sales.view'])
-            <a href="{{ route('pos.index') }}" class="app-mobile-pos-pill text-decoration-none" title="Quick POS">
-                <i class="fas fa-bolt text-warning"></i>
-                <span>POS</span>
+        @if(Auth::check() && Auth::user()->usertype !== 'admin')
+            <a href="{{ route('cycle_count.index') }}" class="app-mobile-pos-pill text-decoration-none" style="background: rgba(37, 99, 235, 0.2); border-color: rgba(59, 130, 246, 0.4);" title="Cycle Counts">
+                <i class="fas fa-clipboard-check text-primary"></i>
+                <span>Counts</span>
             </a>
-        @endcanany
+        @else
+            @canany(['sales.create', 'sales.view'])
+                <a href="{{ route('pos.index') }}" class="app-mobile-pos-pill text-decoration-none" title="Quick POS">
+                    <i class="fas fa-bolt text-warning"></i>
+                    <span>POS</span>
+                </a>
+            @endcanany
+        @endif
 
         <!-- Mobile Notification Bell -->
         <div class="dropdown">

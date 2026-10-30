@@ -396,6 +396,437 @@
         margin: 0;
         line-height: 1.35;
     }
+
+    /* ========================================================
+       MOBILE ANDROID ERP COUNTING APP STYLES (Odoo Barcode & QuickBooks Inspired)
+       ======================================================== */
+    @media (max-width: 991.98px) {
+        .img3-wrapper {
+            padding: 8px 8px 120px 8px !important;
+            background: #f1f5f9 !important;
+            overflow-x: hidden !important;
+            min-height: calc(100vh - 60px) !important;
+        }
+        .img3-container {
+            min-width: 100% !important;
+            max-width: 100% !important;
+            width: 100% !important;
+            border: none !important;
+            box-shadow: none !important;
+            background: transparent !important;
+        }
+
+        /* Mobile App Bar Header */
+        .img3-top-bar {
+            border-radius: 12px;
+            padding: 12px 14px;
+            margin-bottom: 10px;
+            box-shadow: 0 4px 14px rgba(11, 19, 41, 0.25);
+        }
+        .img3-top-bar .title-section {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 4px;
+        }
+        .img3-top-bar .main-title {
+            font-size: 1.02rem;
+            letter-spacing: -0.2px;
+        }
+        .img3-top-bar .badge-pill-role {
+            font-size: 0.68rem;
+            padding: 3px 8px;
+        }
+        .concept-note {
+            display: none !important;
+        }
+
+        /* Hide Desktop Sub-bar, Split Grid, Bottom Bar, & Explanations */
+        .img3-sub-bar,
+        .img3-split-grid,
+        .img3-bottom-bar,
+        .img3-bottom-grid {
+            display: none !important;
+        }
+
+        /* Mobile Sticky Live Timer & Progress Card */
+        .m-sticky-timer-card {
+            background: #ffffff;
+            border: 1px solid #e2e8f0;
+            border-radius: 14px;
+            padding: 12px 14px;
+            margin-bottom: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+        }
+        .m-timer-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 10px;
+        }
+        .m-timer-left {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .m-timer-display {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 1.25rem;
+            font-weight: 800;
+            color: #0f172a;
+            letter-spacing: 0.5px;
+        }
+        .m-timer-display.running {
+            color: #16a34a;
+        }
+        .m-btn-start-timer {
+            background: #10b981;
+            color: #ffffff;
+            border: none;
+            border-radius: 8px;
+            padding: 6px 14px;
+            font-size: 0.82rem;
+            font-weight: 700;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            box-shadow: 0 2px 6px rgba(16,185,129,0.25);
+        }
+        .m-btn-start-timer:active {
+            background: #059669;
+            transform: scale(0.97);
+        }
+
+        .m-blind-notice-pill {
+            background: #fffbeb;
+            border: 1px solid #fde68a;
+            color: #92400e;
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-size: 0.72rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            margin-bottom: 10px;
+        }
+
+        .m-progress-meta-row {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.76rem;
+            color: #475569;
+            margin-bottom: 5px;
+        }
+        .m-progress-track {
+            height: 8px;
+            background: #e2e8f0;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+        .m-progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #10b981 0%, #059669 100%);
+            border-radius: 4px;
+            transition: width 0.3s ease;
+        }
+
+        /* Mobile Barcode & Search Controls */
+        .m-search-box {
+            position: relative;
+            margin-bottom: 10px;
+        }
+        .m-search-input-wrap {
+            display: flex;
+            align-items: center;
+            background: #ffffff;
+            border: 1.5px solid #cbd5e1;
+            border-radius: 12px;
+            padding: 0 12px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.03);
+            transition: border-color 0.2s ease;
+        }
+        .m-search-input-wrap:focus-within {
+            border-color: #2563eb;
+            box-shadow: 0 0 0 3px rgba(37,99,235,0.15);
+        }
+        .m-search-input-wrap .search-icon {
+            color: #64748b;
+            font-size: 0.95rem;
+            margin-right: 8px;
+        }
+        .m-search-input {
+            width: 100%;
+            height: 44px;
+            border: none;
+            outline: none;
+            background: transparent;
+            font-size: 0.88rem;
+            color: #0f172a;
+        }
+
+        /* Filter Chips */
+        .m-filter-chips {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            overflow-x: auto;
+            padding-bottom: 6px;
+            margin-bottom: 12px;
+            -webkit-overflow-scrolling: touch;
+            scrollbar-width: none;
+        }
+        .m-filter-chips::-webkit-scrollbar {
+            display: none;
+        }
+        .m-chip-btn {
+            flex-shrink: 0;
+            padding: 6px 14px;
+            background: #ffffff;
+            border: 1px solid #cbd5e1;
+            border-radius: 20px;
+            font-size: 0.76rem;
+            font-weight: 600;
+            color: #475569;
+            cursor: pointer;
+            transition: all 0.15s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+        }
+        .m-chip-btn.active {
+            background: #2563eb;
+            color: #ffffff;
+            border-color: #2563eb;
+            box-shadow: 0 2px 6px rgba(37,99,235,0.3);
+        }
+
+        /* Touch-Friendly Item Cards (Odoo / QuickBooks Stepper Style) */
+        .m-items-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        .m-sheet-card {
+            background: #ffffff;
+            border: 1px solid #e2e8f0;
+            border-radius: 14px;
+            padding: 13px 14px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+            position: relative;
+            transition: all 0.2s ease;
+            border-left: 4px solid #cbd5e1;
+        }
+        .m-sheet-card.is-counted {
+            border-left-color: #10b981;
+            background: #fbfdfc;
+        }
+        .m-sheet-card.is-active-focus {
+            box-shadow: 0 0 0 2px #2563eb, 0 6px 20px rgba(37,99,235,0.15);
+            border-left-color: #2563eb;
+        }
+        .m-card-header {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            gap: 8px;
+            margin-bottom: 12px;
+        }
+        .m-thumb-wrap {
+            width: 48px;
+            height: 48px;
+            border-radius: 8px;
+            overflow: hidden;
+            background: #f1f5f9;
+            border: 1px solid #e2e8f0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            cursor: pointer;
+        }
+        .m-thumb-wrap img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .m-item-title-col {
+            flex: 1;
+            min-width: 0;
+        }
+        .m-item-name {
+            font-size: 0.88rem;
+            font-weight: 700;
+            color: #0f172a;
+            margin: 0 0 4px 0;
+            line-height: 1.3;
+            word-break: break-word;
+        }
+        .m-code-badge {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.72rem;
+            font-weight: 700;
+            background: #f1f5f9;
+            color: #334155;
+            padding: 2px 7px;
+            border-radius: 4px;
+            border: 1px solid #e2e8f0;
+        }
+        .m-cat-badge {
+            font-size: 0.68rem;
+            background: #f3e8ff;
+            color: #7e22ce;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-weight: 600;
+        }
+        .m-barcode-badge {
+            font-family: monospace;
+            font-size: 0.7rem;
+            color: #64748b;
+            background: #f8fafc;
+            padding: 2px 6px;
+            border-radius: 4px;
+            border: 1px solid #e2e8f0;
+        }
+        .m-counted-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            background: #dcfce7;
+            color: #15803d;
+            border: 1px solid #bbf7d0;
+            padding: 3px 8px;
+            border-radius: 12px;
+            font-size: 0.7rem;
+            font-weight: 700;
+            white-space: nowrap;
+        }
+
+        /* Stepper & Unit Row */
+        .m-counter-section {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: #f8fafc;
+            border-radius: 10px;
+            padding: 8px 12px;
+        }
+        .m-unit-label {
+            font-size: 0.78rem;
+            color: #64748b;
+        }
+        .m-unit-label strong {
+            color: #0f172a;
+            font-weight: 700;
+        }
+        .m-stepper-box {
+            display: inline-flex;
+            align-items: center;
+            background: #ffffff;
+            border: 1.5px solid #cbd5e1;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        }
+        .m-btn-step {
+            width: 44px;
+            height: 40px;
+            background: #f1f5f9;
+            border: none;
+            color: #1e293b;
+            font-size: 1.1rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: background 0.15s ease;
+            user-select: none;
+            -webkit-tap-highlight-color: transparent;
+        }
+        .m-btn-step:active {
+            background: #e2e8f0;
+            color: #2563eb;
+        }
+        .m-input-qty {
+            width: 65px;
+            height: 40px;
+            border: none;
+            outline: none;
+            text-align: center;
+            font-size: 1.05rem;
+            font-weight: 800;
+            color: #0f172a;
+            background: #ffffff;
+            padding: 0 4px;
+        }
+        .m-input-qty:focus {
+            background: #eff6ff;
+            color: #1d4ed8;
+        }
+
+        /* Sticky Bottom Action Bar Pinned Above Bottom Navigation */
+        .m-sticky-bottom-bar {
+            position: fixed;
+            bottom: 60px;
+            left: 0;
+            right: 0;
+            background: rgba(15, 23, 42, 0.96);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border-top: 1px solid rgba(255, 255, 255, 0.12);
+            padding: 10px 14px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            z-index: 1025;
+            box-shadow: 0 -4px 18px rgba(0, 0, 0, 0.25);
+        }
+        .m-bottom-summary {
+            display: flex;
+            flex-direction: column;
+            color: #ffffff;
+        }
+        .m-bottom-summary-text {
+            font-size: 0.8rem;
+            font-weight: 700;
+            color: #e2e8f0;
+        }
+        .m-bottom-sub {
+            font-size: 0.68rem;
+            color: #94a3b8;
+        }
+        .m-btn-submit-sheet {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: #ffffff;
+            border: none;
+            border-radius: 10px;
+            padding: 10px 18px;
+            font-size: 0.88rem;
+            font-weight: 800;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.35);
+            transition: all 0.15s ease;
+            white-space: nowrap;
+        }
+        .m-btn-submit-sheet:active {
+            transform: scale(0.97);
+            background: #047857;
+        }
+    }
+
+    @media (min-width: 992px) {
+        .mobile-count-sheet-app,
+        .m-sticky-bottom-bar {
+            display: none !important;
+        }
+    }
 </style>
 
 <div class="img3-wrapper">
@@ -456,6 +887,177 @@
             $leftItems = $items->slice(0, $midPoint);
             $rightItems = $items->slice($midPoint);
         @endphp
+
+        {{-- ========================================================
+             MOBILE ANDROID ERP COUNTING APP (Odoo & QuickBooks Style)
+             ======================================================== --}}
+        <div class="mobile-count-sheet-app">
+            {{-- 1. Sticky Timer & Live Progress Card --}}
+            <div class="m-sticky-timer-card">
+                <div class="m-timer-row">
+                    <div class="m-timer-left">
+                        <i class="fas fa-stopwatch text-primary" style="font-size: 1.1rem;"></i>
+                        <span class="m-timer-display {{ $cycleCount->started_at ? 'running' : '' }}" id="mStopwatchDisplay">00:00:00</span>
+                    </div>
+                    @if(!$cycleCount->started_at && $cycleCount->status === 'not_started')
+                        <button type="button" class="m-btn-start-timer" id="mBtnStartCountTimer" onclick="startTimerNow()">
+                            <i class="fas fa-play"></i> Start Count
+                        </button>
+                    @endif
+                </div>
+
+                <div class="m-blind-notice-pill">
+                    <i class="fas fa-shield-alt text-warning"></i> Blind Audit: Count physically on shelf. System stock is hidden.
+                </div>
+
+                <div class="m-progress-meta-row">
+                    <span class="font-weight-600">Items Counted</span>
+                    <span class="font-weight-bold text-dark">
+                        <span id="mEnteredCount">{{ $cycleCount->entered_items }}</span> / {{ $cycleCount->total_items }}
+                        (<span id="mEnteredPercent">{{ round(($cycleCount->entered_items / max(1, $cycleCount->total_items)) * 100) }}%</span>)
+                    </span>
+                </div>
+                <div class="m-progress-track">
+                    <div class="m-progress-fill" id="mProgressBar" style="width: {{ round(($cycleCount->entered_items / max(1, $cycleCount->total_items)) * 100) }}%;"></div>
+                </div>
+            </div>
+
+            {{-- 2. Barcode & Search Input --}}
+            <div class="m-search-box">
+                <div class="m-search-input-wrap">
+                    <i class="fas fa-barcode search-icon"></i>
+                    <input type="text" id="mQuickScannerInput" class="m-search-input" placeholder="Scan barcode sticker or search item..." oninput="handleMobileSearch(this.value)">
+                    <button type="button" class="search-clear-btn" id="mSearchClearBtn" onclick="clearMobileItemSearch()" style="display:none;">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+            </div>
+
+            {{-- 3. Filter Chips --}}
+            <div class="m-filter-chips">
+                <button type="button" class="m-chip-btn active" data-filter="all" onclick="filterMobileSheetItems('all', this)">
+                    <i class="fas fa-layer-group"></i> All ({{ $totalCount }})
+                </button>
+                <button type="button" class="m-chip-btn" data-filter="uncounted" onclick="filterMobileSheetItems('uncounted', this)">
+                    <i class="far fa-circle text-warning"></i> Uncounted (<span id="mUncountedChip">{{ max(0, $cycleCount->total_items - $cycleCount->entered_items) }}</span>)
+                </button>
+                <button type="button" class="m-chip-btn" data-filter="counted" onclick="filterMobileSheetItems('counted', this)">
+                    <i class="fas fa-check-circle text-success"></i> Counted (<span id="mCountedChip">{{ $cycleCount->entered_items }}</span>)
+                </button>
+            </div>
+
+            {{-- 4. Mobile Items List --}}
+            <div class="m-items-list" id="mItemsList">
+                @forelse($items as $idx => $it)
+                    @php
+                        $isEntered = $it->is_entered || ($it->counted_qty !== null && $it->counted_qty !== '');
+                        $uniqueCode = $it->p_code ?: ($it->item_code ?: 'ITEM-' . ($idx + 1));
+                    @endphp
+                    <div class="m-sheet-card {{ $isEntered ? 'is-counted' : '' }}"
+                         id="m-card-{{ $it->id }}"
+                         data-item-id="{{ $it->id }}"
+                         data-is-counted="{{ $isEntered ? '1' : '0' }}"
+                         data-barcode="{{ strtolower($it->barcode_path ?? '') }}"
+                         data-code="{{ strtolower($uniqueCode) }}"
+                         data-name="{{ strtolower($it->item_name) }}"
+                         data-search="{{ strtolower(($it->barcode_path ?? '') . ' ' . $uniqueCode . ' ' . $it->item_name) }}">
+
+                        <div class="m-card-header">
+                            <div class="d-flex align-items-center gap-2 overflow-hidden flex-grow-1">
+                                <div class="m-thumb-wrap" onclick="openImageModal('{{ $it->image_path ? '/uploads/products/' . $it->image_path : '' }}', '{{ addslashes($it->item_name) }}')">
+                                    @if($it->image_path)
+                                        <img src="/uploads/products/{{ $it->image_path }}" onerror="this.onerror=null;this.parentElement.innerHTML='<i class=\'far fa-image\'></i>';">
+                                    @else
+                                        <i class="far fa-image text-muted"></i>
+                                    @endif
+                                </div>
+                                <div class="m-item-title-col">
+                                    <h6 class="m-item-name" title="{{ $it->item_name }}">{{ $it->item_name }}</h6>
+                                    <div class="d-flex align-items-center gap-1 flex-wrap">
+                                        <span class="m-code-badge">{{ $uniqueCode }}</span>
+                                        @if($it->category_name)
+                                            <span class="m-cat-badge">{{ $it->category_name }}</span>
+                                        @endif
+                                        @if($it->barcode_path)
+                                            <span class="m-barcode-badge"><i class="fas fa-barcode"></i> {{ $it->barcode_path }}</span>
+                                        @endif
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="m-status-wrap">
+                                <span class="m-counted-pill {{ $isEntered ? '' : 'd-none' }}" id="m-pill-{{ $it->id }}">
+                                    <i class="fas fa-check-circle"></i> Counted
+                                </span>
+                            </div>
+                        </div>
+
+                        {{-- Touch Counter Section (Odoo / QuickBooks Stepper) --}}
+                        <div class="m-counter-section">
+                            <div class="m-unit-label">
+                                Unit: <strong>{{ $it->unit ?: 'Pcs' }}</strong>
+                            </div>
+
+                            <div class="m-stepper-box">
+                                <button type="button" class="m-btn-step m-btn-minus" onclick="stepMobileQty({{ $it->id }}, -1)" aria-label="Decrease quantity">
+                                    <i class="fas fa-minus"></i>
+                                </button>
+
+                                <input type="number"
+                                       step="any"
+                                       min="0"
+                                       inputmode="decimal"
+                                       pattern="[0-9]*"
+                                       class="m-input-qty"
+                                       id="m-input-{{ $it->id }}"
+                                       data-item-id="{{ $it->id }}"
+                                       value="{{ $it->counted_qty !== null ? (float)$it->counted_qty : '' }}"
+                                       placeholder="0"
+                                       onfocus="highlightMobileCard({{ $it->id }})"
+                                       onblur="saveCountedQtyMobile(this);">
+
+                                <button type="button" class="m-btn-step m-btn-plus" onclick="stepMobileQty({{ $it->id }}, 1)" aria-label="Increase quantity">
+                                    <i class="fas fa-plus"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                @empty
+                    <div class="text-center py-4 text-muted bg-white rounded-3 p-3">
+                        No items assigned in this cycle count.
+                    </div>
+                @endforelse
+            </div>
+        </div>
+
+        {{-- 5. Sticky Bottom Action Bar Pinned Above Mobile Bottom Navigation --}}
+        <div class="m-sticky-bottom-bar">
+            <div class="m-bottom-summary">
+                <span class="m-bottom-summary-text">
+                    Counted: <strong id="mStickyEntered">{{ $cycleCount->entered_items }} / {{ $cycleCount->total_items }}</strong>
+                </span>
+                <span class="m-bottom-sub">Auto-saves on typing</span>
+            </div>
+
+            <button type="button" class="m-btn-submit-sheet" id="mBtnSubmitSheet" onclick="document.getElementById('btnSubmitSheetCount').click()">
+                <i class="fas fa-paper-plane"></i> Submit Count
+            </button>
+        </div>
+
+        {{-- Lightbox Photo Modal --}}
+        <div class="modal fade" id="mImageModal" tabindex="-1" role="dialog" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered" role="document">
+                <div class="modal-content" style="border-radius: 14px; overflow: hidden;">
+                    <div class="modal-header py-2 px-3 border-0 bg-dark text-white d-flex align-items-center justify-content-between">
+                        <span class="modal-title font-weight-bold small text-truncate" id="mImageModalTitle">Product Image</span>
+                        <button type="button" class="close text-white" data-dismiss="modal">&times;</button>
+                    </div>
+                    <div class="modal-body p-0 text-center bg-light" style="min-height: 220px; display: flex; align-items: center; justify-content: center;">
+                        <img id="mImageModalSrc" src="" alt="Product Photo" style="max-width: 100%; max-height: 70vh; object-fit: contain;">
+                    </div>
+                </div>
+            </div>
+        </div>
 
         {{-- 2-Column Side-by-Side Split Grid --}}
         <div class="img3-split-grid">
@@ -656,10 +1258,18 @@ function updateStopwatchDisplay() {
     if (!startedAtTimestamp) return;
     const now = Date.now();
     const elapsedSeconds = Math.max(0, Math.floor((now - startedAtTimestamp) / 1000));
+    const formatted = formatStopwatch(elapsedSeconds);
+
     const el = document.getElementById('stopwatchDisplay');
     if (el) {
-        el.textContent = formatStopwatch(elapsedSeconds);
+        el.textContent = formatted;
         el.classList.add('running');
+    }
+
+    const mEl = document.getElementById('mStopwatchDisplay');
+    if (mEl) {
+        mEl.textContent = formatted;
+        mEl.classList.add('running');
     }
 }
 
@@ -670,9 +1280,14 @@ if (isStarted && startedAtTimestamp) {
 
 function startTimerNow() {
     const btn = document.getElementById('btnStartCountTimer');
+    const mBtn = document.getElementById('mBtnStartCountTimer');
     if (btn) {
         btn.disabled = true;
         btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Starting...';
+    }
+    if (mBtn) {
+        mBtn.disabled = true;
+        mBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Starting...';
     }
 
     fetch('{{ route("cycle_count.start_timer", $cycleCount->id) }}', {
@@ -687,6 +1302,7 @@ function startTimerNow() {
         if (data.status === 'success') {
             startedAtTimestamp = new Date(data.started_at).getTime();
             if (btn) btn.remove();
+            if (mBtn) mBtn.remove();
             updateStopwatchDisplay();
             if (!stopwatchInterval) {
                 stopwatchInterval = setInterval(updateStopwatchDisplay, 1000);
@@ -697,6 +1313,10 @@ function startTimerNow() {
                 btn.disabled = false;
                 btn.innerHTML = '<i class="fas fa-play"></i> Start Count';
             }
+            if (mBtn) {
+                mBtn.disabled = false;
+                mBtn.innerHTML = '<i class="fas fa-play"></i> Start Count';
+            }
         }
     })
     .catch(err => {
@@ -704,6 +1324,10 @@ function startTimerNow() {
         if (btn) {
             btn.disabled = false;
             btn.innerHTML = '<i class="fas fa-play"></i> Start Count';
+        }
+        if (mBtn) {
+            mBtn.disabled = false;
+            mBtn.innerHTML = '<i class="fas fa-play"></i> Start Count';
         }
     });
 }
@@ -716,6 +1340,39 @@ function highlightRow(id) {
 
 function unhighlightRow(id) {
     // Keep clean
+}
+
+function highlightMobileCard(id) {
+    document.querySelectorAll('.m-sheet-card').forEach(c => c.classList.remove('is-active-focus'));
+    const card = document.getElementById('m-card-' + id);
+    if (card) card.classList.add('is-active-focus');
+}
+
+function stepMobileQty(itemId, delta) {
+    const inputEl = document.getElementById('m-input-' + itemId);
+    if (!inputEl) return;
+    let cur = parseFloat(inputEl.value);
+    if (isNaN(cur)) cur = 0;
+    let next = Math.max(0, cur + delta);
+    inputEl.value = next;
+
+    // Sync to desktop input if exists
+    const desktopInput = document.querySelector(`.blind-table .count-box-input[data-item-id="${itemId}"]`);
+    if (desktopInput) desktopInput.value = next;
+
+    highlightMobileCard(itemId);
+    saveCountedQty(inputEl);
+}
+
+function saveCountedQtyMobile(inputEl) {
+    const itemId = inputEl.getAttribute('data-item-id');
+    const val = inputEl.value.trim();
+
+    // Sync to desktop input
+    const desktopInput = document.querySelector(`.blind-table .count-box-input[data-item-id="${itemId}"]`);
+    if (desktopInput) desktopInput.value = val;
+
+    saveCountedQty(inputEl);
 }
 
 function saveCountedQty(inputEl) {
@@ -742,17 +1399,135 @@ function saveCountedQty(inputEl) {
     .then(res => res.json())
     .then(data => {
         if (data.status === 'success') {
-            if (data.is_entered) {
-                checkIcon.classList.add('visible');
-            } else {
-                checkIcon.classList.remove('visible');
+            // Desktop check indicator
+            if (checkIcon) {
+                if (data.is_entered) {
+                    checkIcon.classList.add('visible');
+                } else {
+                    checkIcon.classList.remove('visible');
+                }
             }
+
+            // Mobile card state update
+            const mCard = document.getElementById('m-card-' + itemId);
+            const mPill = document.getElementById('m-pill-' + itemId);
+            if (mCard) {
+                if (data.is_entered) {
+                    mCard.classList.add('is-counted');
+                    mCard.setAttribute('data-is-counted', '1');
+                    if (mPill) mPill.classList.remove('d-none');
+                } else {
+                    mCard.classList.remove('is-counted');
+                    mCard.setAttribute('data-is-counted', '0');
+                    if (mPill) mPill.classList.add('d-none');
+                }
+            }
+
             enteredItems = data.entered_items;
-            document.getElementById('enteredProgressText').textContent = 'Entered ' + enteredItems + ' / ' + totalItems;
-            document.getElementById('uncountedNumber').textContent = Math.max(0, totalItems - enteredItems);
+            const uncounted = Math.max(0, totalItems - enteredItems);
+            const percent = Math.round((enteredItems / Math.max(1, totalItems)) * 100);
+
+            // Update Desktop counters
+            const elEnteredText = document.getElementById('enteredProgressText');
+            if (elEnteredText) elEnteredText.textContent = 'Entered ' + enteredItems + ' / ' + totalItems;
+            const elUncounted = document.getElementById('uncountedNumber');
+            if (elUncounted) elUncounted.textContent = uncounted;
+
+            // Update Mobile counters & progress bar
+            const mEnt = document.getElementById('mEnteredCount');
+            if (mEnt) mEnt.textContent = enteredItems;
+            const mPct = document.getElementById('mEnteredPercent');
+            if (mPct) mPct.textContent = percent + '%';
+            const mBar = document.getElementById('mProgressBar');
+            if (mBar) mBar.style.width = percent + '%';
+            const mStick = document.getElementById('mStickyEntered');
+            if (mStick) mStick.textContent = enteredItems + ' / ' + totalItems;
+            const mUncChip = document.getElementById('mUncountedChip');
+            if (mUncChip) mUncChip.textContent = uncounted;
+            const mCntChip = document.getElementById('mCountedChip');
+            if (mCntChip) mCntChip.textContent = enteredItems;
         }
     })
     .catch(err => console.error(err));
+}
+
+// Mobile Filter Chips (All, Uncounted, Counted)
+let currentMobileSheetFilter = 'all';
+
+function filterMobileSheetItems(type, btnEl) {
+    currentMobileSheetFilter = type;
+    document.querySelectorAll('.m-chip-btn').forEach(b => b.classList.remove('active'));
+    if (btnEl) btnEl.classList.add('active');
+
+    applyMobileSheetFilter();
+}
+
+function handleMobileSearch(q) {
+    const clearBtn = document.getElementById('mSearchClearBtn');
+    if (clearBtn) {
+        clearBtn.style.display = q && q.length > 0 ? 'block' : 'none';
+    }
+    applyMobileSheetFilter();
+}
+
+function clearMobileItemSearch() {
+    const inp = document.getElementById('mQuickScannerInput');
+    if (inp) inp.value = '';
+    const clearBtn = document.getElementById('mSearchClearBtn');
+    if (clearBtn) clearBtn.style.display = 'none';
+    applyMobileSheetFilter();
+}
+
+function applyMobileSheetFilter() {
+    const query = (document.getElementById('mQuickScannerInput')?.value || '').toLowerCase().trim();
+    const cards = document.querySelectorAll('.m-sheet-card');
+
+    cards.forEach(card => {
+        const isCounted = card.getAttribute('data-is-counted') === '1';
+        const searchData = card.getAttribute('data-search') || '';
+
+        let matchesFilter = true;
+        if (currentMobileSheetFilter === 'uncounted') {
+            matchesFilter = !isCounted;
+        } else if (currentMobileSheetFilter === 'counted') {
+            matchesFilter = isCounted;
+        }
+
+        let matchesQuery = true;
+        if (query) {
+            matchesQuery = searchData.indexOf(query) !== -1;
+        }
+
+        if (matchesFilter && matchesQuery) {
+            card.style.display = 'block';
+        } else {
+            card.style.display = 'none';
+        }
+    });
+
+    // If query matches exact barcode/code, scroll to and highlight first match
+    if (query && query.length >= 2) {
+        const firstMatch = document.querySelector(`.m-sheet-card[data-barcode="${query}"], .m-sheet-card[data-code="${query}"]`);
+        if (firstMatch && firstMatch.style.display !== 'none') {
+            firstMatch.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            firstMatch.classList.add('is-active-focus');
+            const inp = firstMatch.querySelector('.m-input-qty');
+            if (inp) inp.focus();
+        }
+    }
+}
+
+// Lightbox Modal for Photo Preview
+function openImageModal(imgSrc, title) {
+    if (!imgSrc) return;
+    const modalEl = document.getElementById('mImageModal');
+    const modalSrc = document.getElementById('mImageModalSrc');
+    const modalTitle = document.getElementById('mImageModalTitle');
+    if (modalSrc) modalSrc.src = imgSrc;
+    if (modalTitle) modalTitle.textContent = title || 'Product Image';
+    if (typeof $ !== 'undefined' && $('#mImageModal').modal) {
+        $('#mImageModal').modal('show');
+    }
 }
 
 // Quick Search / Barcode Scanner input

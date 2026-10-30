@@ -496,6 +496,71 @@
         margin: 0;
         line-height: 1.35;
     }
+
+    /* Mobile Responsive Adaptation */
+    @media (max-width: 991.98px) {
+        .img4-wrapper {
+            padding: 8px 8px 85px 8px !important;
+            background: #f1f5f9 !important;
+            overflow-x: hidden !important;
+            min-height: calc(100vh - 60px) !important;
+        }
+        .img4-container {
+            min-width: 100% !important;
+            max-width: 100% !important;
+            width: 100% !important;
+            border: none !important;
+            box-shadow: none !important;
+            background: transparent !important;
+        }
+        .img4-top-bar {
+            border-radius: 12px;
+            padding: 12px 14px;
+            margin-bottom: 10px;
+            box-shadow: 0 4px 14px rgba(11, 19, 41, 0.25);
+        }
+        .img4-top-bar .title-section {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 4px;
+        }
+        .img4-top-bar .main-title {
+            font-size: 1.02rem;
+        }
+        .concept-note {
+            display: none !important;
+        }
+        .img4-kpi-bar {
+            border-radius: 12px;
+            margin-bottom: 10px;
+            border: 1px solid #e2e8f0;
+        }
+        .img4-main-grid {
+            display: flex !important;
+            flex-direction: column !important;
+        }
+        .img4-table-sec {
+            border-right: none !important;
+            border-bottom: 1px solid #e2e8f0;
+            overflow-x: auto !important;
+            border-radius: 12px;
+            margin-bottom: 12px;
+        }
+        .img4-sidebar {
+            width: 100% !important;
+            border-radius: 12px;
+            margin-bottom: 12px;
+        }
+        .img4-bottom-grid {
+            display: flex !important;
+            flex-direction: column !important;
+        }
+        .img4-box {
+            border-right: none !important;
+            border-bottom: 1px solid #e2e8f0;
+        }
+    }
 </style>
 
 <div class="img4-wrapper">

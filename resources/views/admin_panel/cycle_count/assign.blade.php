@@ -466,6 +466,62 @@
         margin: 0;
         line-height: 1.35;
     }
+
+    /* Mobile Responsive Adaptation */
+    @media (max-width: 991.98px) {
+        .img1-wrapper {
+            padding: 8px 8px 85px 8px !important;
+            background: #f1f5f9 !important;
+            overflow-x: hidden !important;
+            min-height: calc(100vh - 60px) !important;
+        }
+        .img1-container {
+            min-width: 100% !important;
+            max-width: 100% !important;
+            width: 100% !important;
+            border: none !important;
+            box-shadow: none !important;
+            background: transparent !important;
+        }
+        .img1-top-bar {
+            border-radius: 12px;
+            padding: 12px 14px;
+            margin-bottom: 10px;
+            box-shadow: 0 4px 14px rgba(11, 19, 41, 0.25);
+        }
+        .img1-top-bar .title-section {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 4px;
+        }
+        .concept-note {
+            display: none !important;
+        }
+        .img1-main-grid {
+            display: flex !important;
+            flex-direction: column !important;
+            min-height: auto !important;
+        }
+        .col-form, .col-table, .col-summary {
+            width: 100% !important;
+            border-right: none !important;
+            border-bottom: 1px solid #e2e8f0 !important;
+            border-radius: 12px;
+            margin-bottom: 12px;
+        }
+        .col-table-scroll {
+            max-height: 400px !important;
+        }
+        .img1-bottom-grid {
+            display: flex !important;
+            flex-direction: column !important;
+        }
+        .img1-box {
+            border-right: none !important;
+            border-bottom: 1px solid #e2e8f0;
+        }
+    }
 </style>
 
 <div class="img1-wrapper">

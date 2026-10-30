@@ -28,36 +28,57 @@
     <!-- Quick Touch Shortcuts Row -->
     <div class="app-drawer-quick-actions px-3 py-2 border-bottom">
         <div class="row g-2 text-center">
-            @canany(['sales.create', 'sales.view'])
-                <div class="col-3">
-                    <a href="{{ route('pos.index') }}" class="app-drawer-quick-btn text-decoration-none">
-                        <div class="quick-icon bg-indigo"><i class="fas fa-cash-register"></i></div>
-                        <span>POS</span>
+            @if(Auth::check() && Auth::user()->usertype !== 'admin')
+                <div class="col-4">
+                    <a href="{{ route('cycle_count.index') }}" class="app-drawer-quick-btn text-decoration-none">
+                        <div class="quick-icon bg-indigo"><i class="fas fa-clipboard-check"></i></div>
+                        <span>Counts</span>
                     </a>
                 </div>
-                <div class="col-3">
-                    <a href="{{ url('sale') }}" class="app-drawer-quick-btn text-decoration-none">
-                        <div class="quick-icon bg-emerald"><i class="fas fa-receipt"></i></div>
-                        <span>Sales</span>
+                <div class="col-4">
+                    <a href="{{ route('my-attendance') }}" class="app-drawer-quick-btn text-decoration-none">
+                        <div class="quick-icon bg-emerald"><i class="fas fa-user-clock"></i></div>
+                        <span>Attendance</span>
                     </a>
                 </div>
-            @endcanany
-            @can('products.view')
-                <div class="col-3">
-                    <a href="{{ route('product') }}" class="app-drawer-quick-btn text-decoration-none">
-                        <div class="quick-icon bg-sky"><i class="fas fa-boxes-stacked"></i></div>
-                        <span>Items</span>
+                <div class="col-4">
+                    <a href="{{ url('/home') }}" class="app-drawer-quick-btn text-decoration-none">
+                        <div class="quick-icon bg-sky"><i class="fas fa-home"></i></div>
+                        <span>Home</span>
                     </a>
                 </div>
-            @endcan
-            @canany(['item.stock.report.view', 'purchase.report.view', 'sale.report.view'])
+            @else
+                @canany(['sales.create', 'sales.view'])
+                    <div class="col-3">
+                        <a href="{{ route('pos.index') }}" class="app-drawer-quick-btn text-decoration-none">
+                            <div class="quick-icon bg-indigo"><i class="fas fa-cash-register"></i></div>
+                            <span>POS</span>
+                        </a>
+                    </div>
+                @endcanany
                 <div class="col-3">
-                    <a href="{{ route('report.sale') }}" class="app-drawer-quick-btn text-decoration-none">
-                        <div class="quick-icon bg-amber"><i class="fas fa-chart-line"></i></div>
-                        <span>Reports</span>
+                    <a href="{{ route('cycle_count.index') }}" class="app-drawer-quick-btn text-decoration-none">
+                        <div class="quick-icon bg-emerald"><i class="fas fa-clipboard-check"></i></div>
+                        <span>Counts</span>
                     </a>
                 </div>
-            @endcanany
+                @can('products.view')
+                    <div class="col-3">
+                        <a href="{{ route('product') }}" class="app-drawer-quick-btn text-decoration-none">
+                            <div class="quick-icon bg-sky"><i class="fas fa-boxes-stacked"></i></div>
+                            <span>Items</span>
+                        </a>
+                    </div>
+                @endcan
+                @canany(['item.stock.report.view', 'purchase.report.view', 'sale.report.view'])
+                    <div class="col-3">
+                        <a href="{{ route('report.sale') }}" class="app-drawer-quick-btn text-decoration-none">
+                            <div class="quick-icon bg-amber"><i class="fas fa-chart-line"></i></div>
+                            <span>Reports</span>
+                        </a>
+                    </div>
+                @endcanany
+            @endif
         </div>
     </div>
 
@@ -70,6 +91,27 @@
                     <div class="d-flex align-items-center">
                         <i class="fas fa-home app-menu-icon"></i>
                         <span class="app-menu-title">Dashboard</span>
+                    </div>
+                </a>
+            </li>
+
+            <!-- 1.1 Physical Cycle Counts (Staff & Audit Portal) -->
+            <li class="app-drawer-item {{ request()->is('cycle-count*') ? 'active' : '' }}">
+                <a href="{{ route('cycle_count.index') }}" class="app-drawer-link">
+                    <div class="d-flex align-items-center">
+                        <i class="fas fa-clipboard-check app-menu-icon" style="color: #2563eb;"></i>
+                        <span class="app-menu-title">Cycle Counts &amp; Audit</span>
+                    </div>
+                    <span class="badge badge-primary" style="font-size: 10px; padding: 2px 6px;">Portal</span>
+                </a>
+            </li>
+
+            <!-- 1.2 My Attendance -->
+            <li class="app-drawer-item {{ request()->is('my-attendance*') ? 'active' : '' }}">
+                <a href="{{ route('my-attendance') }}" class="app-drawer-link">
+                    <div class="d-flex align-items-center">
+                        <i class="fas fa-user-clock app-menu-icon" style="color: #10b981;"></i>
+                        <span class="app-menu-title">My Attendance</span>
                     </div>
                 </a>
             </li>
@@ -123,6 +165,7 @@
                         <a href="{{ url('warehouse') }}" class="app-drawer-sublink"><i class="fas fa-warehouse"></i> Warehouse</a>
                         <a href="{{ route('storage_locations.index') }}" class="app-drawer-sublink"><i class="fas fa-layer-group"></i> Racks & Shelves</a>
                     @endcan
+                    <a href="{{ route('cycle_count.index') }}" class="app-drawer-sublink"><i class="fas fa-clipboard-check text-primary"></i> Cycle Counts &amp; Audit</a>
                     @can('warehouse.stock.view')
                         <a href="{{ url('warehouse_stocks') }}" class="app-drawer-sublink"><i class="fas fa-boxes"></i> Warehouse Stocks</a>
                     @endcan
