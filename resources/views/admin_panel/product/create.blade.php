@@ -3558,6 +3558,7 @@
 
 
 
+        .include-pill,
         .exclude-pill {
 
             display: inline-flex;
@@ -3566,11 +3567,11 @@
 
             gap: 4px;
 
-            background: #fee2e2;
+            background: #ecfdf5;
 
-            color: #991b1b;
+            color: #065f46;
 
-            border: 1px solid #fca5a5;
+            border: 1px solid #a7f3d0;
 
             border-radius: 4px;
 
@@ -3588,11 +3589,13 @@
 
 
 
+        .include-pill .include-remove,
+        .include-pill .exclude-remove,
         .exclude-pill .exclude-remove {
 
             cursor: pointer;
 
-            color: #dc2626;
+            color: #059669;
 
             font-size: 13px;
 
@@ -3604,9 +3607,11 @@
 
 
 
+        .include-pill .include-remove:hover,
+        .include-pill .exclude-remove:hover,
         .exclude-pill .exclude-remove:hover {
 
-            color: #7f1d1d;
+            color: #047857;
 
         }
 
@@ -3930,39 +3935,49 @@
 
 
 
-        /* Matrix Table */
+        /* Matrix Table - Clean ERP Flat Grid with Zebra Rows & Interactive Focus */
 
         #variantsTable {
 
-            border-collapse: separate;
+            border-collapse: separate !important;
 
-            border-spacing: 0;
+            border-spacing: 0 !important;
 
-            border: 1px solid var(--border-strong);
+            border: none !important;
 
-            border-radius: var(--radius-sm);
+            border-top: 1px solid #e2e8f0 !important;
+
+            border-bottom: 1px solid #cbd5e1 !important;
+
+            border-radius: 0 !important;
 
         }
 
 
 
-        #variantsTable th {
+        #variantsTable thead th {
 
             background: #f8fafc !important;
 
-            color: #334155;
+            color: #475569 !important;
 
             font-size: 11px !important;
 
-            font-weight: 700;
+            font-weight: 700 !important;
 
             text-transform: uppercase;
 
             letter-spacing: 0.03em;
 
-            padding: 6px 6px !important;
+            padding: 7px 6px !important;
 
-            border-bottom: 1.5px solid var(--border-strong);
+            border-top: none !important;
+
+            border-left: none !important;
+
+            border-right: none !important;
+
+            border-bottom: 2px solid #cbd5e1 !important;
 
             white-space: nowrap;
 
@@ -3970,31 +3985,221 @@
 
 
 
-        #variantsTable td {
+        #variantsTable tbody tr {
 
-            padding: 4px 4px !important;
-
-            vertical-align: middle;
-
-            border-bottom: 1px solid var(--border-light);
+            transition: background-color 0.12s ease;
 
         }
 
 
 
-        #variantsTable .form-control-sm, 
+        #variantsTable tbody tr:nth-child(odd) {
 
-        #variantsTable .form-select-sm {
+            background-color: #ffffff !important;
 
-            height: 28px;
+        }
 
-            font-size: 12px;
 
-            border-radius: var(--radius-sm);
 
-            border: 1px solid var(--border-strong);
+        #variantsTable tbody tr:nth-child(even) {
 
-            padding: 2px 6px;
+            background-color: #f8fafc !important;
+
+        }
+
+
+
+        #variantsTable tbody tr:hover {
+
+            background-color: #f1f5f9 !important;
+
+        }
+
+
+
+        #variantsTable tbody td {
+
+            padding: 3px 4px !important;
+
+            vertical-align: middle !important;
+
+            border-top: none !important;
+
+            border-left: none !important;
+
+            border-right: none !important;
+
+            border-bottom: 1px solid #e2e8f0 !important;
+
+        }
+
+
+
+        /* Remove idle input box borders & backgrounds at rest */
+
+        #variantsTable tbody td .form-control,
+
+        #variantsTable tbody td .form-control-sm,
+
+        #variantsTable tbody td .form-select,
+
+        #variantsTable tbody td .form-select-sm,
+
+        #variantsTable tbody td input[type="text"],
+
+        #variantsTable tbody td input[type="number"],
+
+        #variantsTable tbody td select {
+
+            height: 28px !important;
+
+            font-size: 12px !important;
+
+            border-radius: 4px !important;
+
+            border: 1px solid transparent !important;
+
+            background-color: transparent !important;
+
+            box-shadow: none !important;
+
+            padding: 2px 6px !important;
+
+            transition: border-color 0.15s ease, background-color 0.15s ease, box-shadow 0.15s ease;
+
+        }
+
+
+
+        /* Hover on cell input */
+
+        #variantsTable tbody td .form-control:hover,
+
+        #variantsTable tbody td .form-select:hover,
+
+        #variantsTable tbody td input[type="text"]:hover,
+
+        #variantsTable tbody td input[type="number"]:hover,
+
+        #variantsTable tbody td select:hover {
+
+            border-color: #cbd5e1 !important;
+
+            background-color: #ffffff !important;
+
+        }
+
+
+
+        /* On Click / Focus: highlight only active box */
+
+        #variantsTable tbody td .form-control:focus,
+
+        #variantsTable tbody td .form-select:focus,
+
+        #variantsTable tbody td input[type="text"]:focus,
+
+        #variantsTable tbody td input[type="number"]:focus,
+
+        #variantsTable tbody td select:focus {
+
+            border: 1.5px solid #2563eb !important;
+
+            background-color: #ffffff !important;
+
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.18) !important;
+
+            outline: none !important;
+
+        }
+
+
+
+        /* Readonly inputs (e.g. P-Codes) */
+
+        #variantsTable tbody td input[readonly] {
+
+            border: 1px solid transparent !important;
+
+            background-color: transparent !important;
+
+            cursor: default;
+
+        }
+
+        #variantsTable tbody td input[readonly]:focus {
+
+            border: 1.5px solid #94a3b8 !important;
+
+            background-color: #f8fafc !important;
+
+            box-shadow: 0 0 0 2px rgba(148, 163, 184, 0.2) !important;
+
+        }
+
+
+
+        /* Hide number spinner buttons (up/down +/- buttons) */
+
+        #variantsTable input[type=number]::-webkit-outer-spin-button,
+
+        #variantsTable input[type=number]::-webkit-inner-spin-button,
+
+        .config-attr-table input[type=number]::-webkit-outer-spin-button,
+
+        .config-attr-table input[type=number]::-webkit-inner-spin-button {
+
+            -webkit-appearance: none !important;
+
+            margin: 0 !important;
+
+        }
+
+
+
+        #variantsTable input[type=number],
+
+        .config-attr-table input[type=number] {
+
+            -moz-appearance: textfield !important;
+
+        }
+
+
+
+        /* Draggable Column Headers */
+
+        #variantsTable thead th[draggable="true"] {
+
+            cursor: grab !important;
+
+            user-select: none !important;
+
+        }
+
+        #variantsTable thead th[draggable="true"]:active {
+
+            cursor: grabbing !important;
+
+        }
+
+        #variantsTable thead th.th-dragging {
+
+            opacity: 0.4 !important;
+
+            background: #e0e7ff !important;
+
+        }
+
+        #variantsTable thead th.th-drag-over-left {
+
+            border-left: 3px solid #2563eb !important;
+
+        }
+
+        #variantsTable thead th.th-drag-over-right {
+
+            border-right: 3px solid #2563eb !important;
 
         }
 
@@ -5204,25 +5409,25 @@
 
                                     <div class="table-responsive">
 
-                                        <table class="table table-bordered table-sm align-middle mb-1" id="variantsTable">
+                                        <table class="table table-sm align-middle mb-1" id="variantsTable">
 
                                             <thead>
 
                                                 <tr>
 
-                                                    <th style="width: 32px;" class="text-center col-select"><input type="checkbox" class="form-check-input" id="selectAllVariantsCheck" title="Select All"></th>
+                                                    <th style="width: 32px;" class="text-center col-select" data-col-key="col-select"><input type="checkbox" class="form-check-input" id="selectAllVariantsCheck" title="Select All"></th>
 
-                                                    <th style="width: 105px;" class="col-serial text-center">Serial No</th>
+                                                    <th style="width: 105px;" class="col-serial text-center" data-col-key="col-serial">Serial No</th>
 
-                                                    <th style="width: 130px;" class="col-ref">Internal Ref</th>
+                                                    <th style="width: 130px;" class="col-ref" data-col-key="col-ref">Internal Ref</th>
 
-                                                    <th style="width: 105px;" class="col-item-number">Item #</th>
+                                                    <th style="width: 105px;" class="col-item-number" data-col-key="col-item-number">Item #</th>
 
-                                                    <th style="min-width: 120px;" class="col-name">Product Name</th>
+                                                    <th style="min-width: 120px;" class="col-name" data-col-key="col-name">Product Name</th>
 
-                                                    <th style="min-width: 180px;" class="col-attrs">Attributes</th>
+                                                    <th style="min-width: 180px;" class="col-attrs" data-col-key="col-attrs">Attributes</th>
 
-                                                    <th style="min-width: 165px; width: 165px;" class="col-storage-type">
+                                                    <th style="min-width: 165px; width: 165px;" class="col-storage-type" data-col-key="col-storage-type">
 
                                                         <div class="d-flex align-items-center justify-content-between">
 
@@ -5238,7 +5443,7 @@
 
                                                     </th>
 
-                                                    <th style="min-width: 125px; width: 125px;" class="col-location">
+                                                    <th style="min-width: 125px; width: 125px;" class="col-location" data-col-key="col-location">
 
                                                         <div class="d-flex align-items-center justify-content-between">
 
@@ -5254,25 +5459,25 @@
 
                                                     </th>
 
-                                                    <th style="width: 90px;" class="text-center col-stock">On Hand (Stock)</th>
+                                                    <th style="width: 90px;" class="text-center col-stock" data-col-key="col-stock">On Hand (Stock)</th>
 
-                                                    <th style="width: 95px;" class="text-center conv-col col-conv" id="convFactorHeader">Pcs / Carton</th>
+                                                    <th style="width: 95px;" class="text-center conv-col col-conv" id="convFactorHeader" data-col-key="col-conv">Pcs / Carton</th>
 
-                                                    <th style="width: 90px;" class="text-center piece-wt-only-col col-weight">Piece Wt (g)</th>
+                                                    <th style="width: 90px;" class="text-center piece-wt-only-col col-weight" data-col-key="col-weight">Piece Wt (g)</th>
 
-                                                    <th style="width: 95px;" class="col-sale">Sky Price</th>
+                                                    <th style="width: 95px;" class="col-sale" data-col-key="col-sale">Sky Price</th>
 
-                                                    <th style="width: 85px;" class="col-sky-pcode">Sky P-Code</th>
+                                                    <th style="width: 85px;" class="col-sky-pcode" data-col-key="col-sky-pcode">Sky P-Code</th>
 
-                                                    <th style="width: 95px;" class="col-cost">Cost (Purch)</th>
+                                                    <th style="width: 95px;" class="col-cost" data-col-key="col-cost">Cost (Purch)</th>
 
-                                                    <th style="width: 85px;" class="col-wholesale">Rot Price.</th>
+                                                    <th style="width: 85px;" class="col-wholesale" data-col-key="col-wholesale">Rot Price.</th>
 
-                                                    <th style="width: 85px;" class="col-rot-pcode">Rot P-Code</th>
+                                                    <th style="width: 85px;" class="col-rot-pcode" data-col-key="col-rot-pcode">Rot P-Code</th>
 
-                                                    <th style="width: 110px;" class="col-barcode">Barcode</th>
+                                                    <th style="width: 110px;" class="col-barcode" data-col-key="col-barcode">Barcode</th>
 
-                                                    <th style="width: 55px;" class="text-center col-action" title="Customize Columns (or right-click any row)">Action <i class="fas fa-sliders-h text-primary ms-1" style="font-size: 11px; cursor: pointer;" onclick="showCustomizeVariantsModal()" title="Customize Columns"></i></th>
+                                                    <th style="width: 55px;" class="text-center col-action" data-col-key="col-action" title="Customize Columns (or right-click any row)">Action <i class="fas fa-sliders-h text-primary ms-1" style="font-size: 11px; cursor: pointer;" onclick="showCustomizeVariantsModal()" title="Customize Columns"></i></th>
 
                                                 </tr>
 
@@ -7166,7 +7371,7 @@
 
                             <i class="fas fa-info-circle text-primary"></i>
 
-                            <span id="configModalStatusTip">Values configuration &amp; combination exclusions</span>
+                            <span id="configModalStatusTip">Values configuration &amp; allowed pairings (Include Only)</span>
 
                         </div>
 
@@ -7190,7 +7395,7 @@
 
                                     <th style="padding: 6px 12px;">
 
-                                        Exclude For <span class="config-th-hint">(Never pair with these values)</span>
+                                        Include / Pair With <span class="config-th-hint">(Only pair with these values — leave empty for all)</span>
 
                                     </th>
 
@@ -7222,7 +7427,7 @@
 
                             <i class="fas fa-shield-alt text-primary"></i>
 
-                            <span>Excluded combinations will not generate variants in Kent Hardware.</span>
+                            <span>Only selected combinations will generate variants. Leave empty to allow all values.</span>
 
                         </div>
 
@@ -8489,6 +8694,9 @@
 
 
         document.addEventListener('DOMContentLoaded', function() {
+            if (window.initDraggableVariantColumns) window.initDraggableVariantColumns();
+            if (window.applySavedColumnOrder) window.applySavedColumnOrder();
+    
 
             const form = document.getElementById('productForm');
 
@@ -12708,7 +12916,7 @@
 
                             <div class="exclude-tag-box" data-val="${escapeHtml(val)}">
 
-                                <input type="text" class="exclude-input-field" placeholder="${candidateExclusions.length > 0 ? 'Click to exclude...' : 'No other attributes'}">
+                                <input type="text" class="exclude-input-field" placeholder="${candidateExclusions.length > 0 ? 'Click to select allowed values (empty = all)...' : 'No other attributes'}">
 
                             </div>
 
@@ -12736,50 +12944,39 @@
 
 
 
-                    // Helper to add exclude pill
-
-                    function addExcludePill(exText) {
-
+                    // Helper to add include pill (allowed pairing rule)
+                    function addIncludePill(exText) {
                         exText = exText.trim();
-
                         if (!exText) return;
-
-                        const existingPills = Array.from(exBox.querySelectorAll('.exclude-pill')).map(p => p.dataset.ex);
-
+                        const existingPills = Array.from(exBox.querySelectorAll('.include-pill, .exclude-pill')).map(p => p.dataset.ex || p.dataset.val);
                         if (existingPills.includes(exText)) return;
 
-
-
                         const pill = document.createElement('span');
-
-                        pill.className = 'exclude-pill';
-
+                        pill.className = 'include-pill';
                         pill.dataset.ex = exText;
-
-                        pill.innerHTML = `<span>${exText}</span><span class="exclude-remove">&times;</span>`;
-
-                        pill.querySelector('.exclude-remove').addEventListener('click', function(e) {
-
+                        pill.dataset.val = exText;
+                        pill.innerHTML = `<span>${exText}</span><span class="include-remove">&times;</span>`;
+                        pill.querySelector('.include-remove').addEventListener('click', function(e) {
                             e.stopPropagation();
-
                             pill.remove();
-
                         });
-
                         exBox.insertBefore(pill, exInput);
-
                         exInput.value = '';
-
                     }
+                    const addExcludePill = addIncludePill;
 
 
 
-                    // Render existing exclusions
-
-                    if (Array.isArray(cfg.exclude_for)) {
-
-                        cfg.exclude_for.forEach(ef => addExcludePill(ef));
-
+                    // Render existing inclusions (or convert legacy exclusions)
+                    if (Array.isArray(cfg.include_for) && cfg.include_for.length > 0) {
+                        cfg.include_for.forEach(ef => addIncludePill(ef));
+                    } else if (Array.isArray(cfg.exclude_for) && cfg.exclude_for.length > 0) {
+                        const legacyEx = cfg.exclude_for.map(x => x.toLowerCase().trim());
+                        const autoInclusions = candidateExclusions.filter(c => {
+                            const cLower = c.toLowerCase().trim();
+                            return !legacyEx.some(ex => cLower === ex || cLower.endsWith(': ' + ex));
+                        });
+                        autoInclusions.forEach(ef => addIncludePill(ef));
                     }
 
 
@@ -12802,7 +12999,7 @@
 
 
 
-                        const currentSelected = Array.from(exBox.querySelectorAll('.exclude-pill')).map(p => p.dataset.ex);
+                        const currentSelected = Array.from(exBox.querySelectorAll('.include-pill, .exclude-pill')).map(p => p.dataset.ex || p.dataset.val);
 
                         const q = exInput.value.toLowerCase().trim();
 
@@ -12828,7 +13025,7 @@
 
                             li.style.cursor = 'default';
 
-                            li.textContent = 'No exclusions available';
+                            li.textContent = 'No more values available';
 
                             globalExcludeDropdown.appendChild(li);
 
@@ -12846,7 +13043,7 @@
 
                                     e.preventDefault();
 
-                                    addExcludePill(item);
+                                    addIncludePill(item);
 
                                     closeExcludeDropdown();
 
@@ -13034,7 +13231,7 @@
 
                         if (!val) return;
 
-                        const excludePills = Array.from(tr.querySelectorAll('.exclude-pill')).map(p => p.dataset.ex);
+                        const includePills = Array.from(tr.querySelectorAll('.include-pill, .exclude-pill')).map(p => p.dataset.ex || p.dataset.val);
 
                         const isActive = tr.querySelector('.config-active-check')?.checked ?? true;
 
@@ -13044,7 +13241,9 @@
 
                         attributeConfigurations[currentConfigAttrName][val] = {
 
-                            exclude_for: excludePills,
+                            include_for: includePills,
+
+                            exclude_for: [],
 
                             active: isActive,
 
@@ -13068,7 +13267,7 @@
 
                         title: 'Configuration Saved',
 
-                        text: `Values & exclusions for "${currentConfigAttrName}" updated!`,
+                        text: `Values & allowed pairings for "${currentConfigAttrName}" updated!`,
 
                         timer: 1200,
 
@@ -13366,68 +13565,60 @@
 
 
 
-                // Apply Attribute Configurations & Exclusions (Exclude For) matching Video 05:27 - 07:06
-
+                // Apply Attribute Configurations & Allowed Combinations / Inclusions
                 combos = combos.filter(combo => {
-
                     // 1. Check if any value is inactive
-
                     for (const item of combo) {
-
                         const aCfg = getAttrConfig(item.attr);
-
                         const vCfg = getValConfig(aCfg, item.val);
-
                         if (vCfg && vCfg.active === false) {
-
                             return false;
-
                         }
-
                     }
 
-
-
-                    // 2. Check if any value has an exclude_for rule that matches another item in this combo
-
+                    // 2. Check Include / Pair With rules (Positive matching)
                     for (const item of combo) {
-
                         const aCfg = getAttrConfig(item.attr);
-
                         const vCfg = getValConfig(aCfg, item.val);
-
-                        if (vCfg && Array.isArray(vCfg.exclude_for)) {
-
-                            for (const exRule of vCfg.exclude_for) {
-
-                                const rule = exRule.toLowerCase().trim();
-
+                        if (vCfg) {
+                            const incRules = Array.isArray(vCfg.include_for) ? vCfg.include_for : [];
+                            if (incRules.length > 0) {
                                 for (const other of combo) {
-
                                     if (other === item) continue;
+                                    const otherAttrPrefix = (other.attr + ':').toLowerCase().trim();
+                                    const allowedForThisAttr = incRules
+                                        .filter(r => r.toLowerCase().trim().startsWith(otherAttrPrefix))
+                                        .map(r => r.substring(r.indexOf(':') + 1).toLowerCase().trim());
 
-                                    const withAttr = `${other.attr}: ${other.val}`.toLowerCase().trim();
-
-                                    const valOnly = other.val.toLowerCase().trim();
-
-                                    if (rule === withAttr || rule === valOnly) {
-
-                                        return false; // Excluded!
-
+                                    // If specific allowed values were defined for this other attribute:
+                                    if (allowedForThisAttr.length > 0) {
+                                        const oValLower = other.val.toLowerCase().trim();
+                                        if (!allowedForThisAttr.includes(oValLower)) {
+                                            return false; // Not in allowed pairings!
+                                        }
                                     }
-
                                 }
-
                             }
 
+                            // Backward compatibility: If legacy exclude_for is present and include_for is empty
+                            const exRules = Array.isArray(vCfg.exclude_for) ? vCfg.exclude_for : [];
+                            if (exRules.length > 0 && incRules.length === 0) {
+                                for (const exRule of exRules) {
+                                    const rule = exRule.toLowerCase().trim();
+                                    for (const other of combo) {
+                                        if (other === item) continue;
+                                        const withAttr = `${other.attr}: ${other.val}`.toLowerCase().trim();
+                                        const valOnly = other.val.toLowerCase().trim();
+                                        if (rule === withAttr || rule === valOnly) {
+                                            return false; // Excluded!
+                                        }
+                                    }
+                                }
+                            }
                         }
-
                     }
 
-
-
                     return true;
-
                 });
 
 
@@ -13894,7 +14085,169 @@
 
 
 
-            function toggleFactorColumns() {
+            
+        // =========================================================
+        // Drag-and-Drop Column Reordering for Variants Table
+        // =========================================================
+        const VAR_COL_ORDER_KEY = 'kent_variants_col_order_v3';
+
+        function getColKey(el) {
+            if (!el) return '';
+            if (el.dataset && el.dataset.colKey) return el.dataset.colKey;
+            for (let c of el.classList) {
+                if (c.startsWith('col-')) return c;
+            }
+            return '';
+        }
+
+        window.getSavedVariantColOrder = function() {
+            try {
+                const saved = localStorage.getItem(VAR_COL_ORDER_KEY);
+                if (saved) {
+                    const arr = JSON.parse(saved);
+                    if (Array.isArray(arr) && arr.length > 0) return arr;
+                }
+            } catch(e) {}
+            return null;
+        };
+
+        window.saveVariantColOrder = function(orderArray) {
+            try {
+                localStorage.setItem(VAR_COL_ORDER_KEY, JSON.stringify(orderArray));
+            } catch(e) {}
+        };
+
+        window.applySavedColumnOrder = function() {
+            const table = document.getElementById('variantsTable');
+            if (!table) return;
+            const thead = table.querySelector('thead');
+            if (!thead) return;
+            const headerRow = thead.querySelector('tr');
+            if (!headerRow) return;
+
+            const savedOrder = window.getSavedVariantColOrder();
+            if (savedOrder && savedOrder.length > 0) {
+                const actionTh = headerRow.querySelector('.col-action');
+                const thMap = {};
+                Array.from(headerRow.children).forEach(th => {
+                    const key = getColKey(th);
+                    if (key && key !== 'col-select' && key !== 'col-action') {
+                        thMap[key] = th;
+                    }
+                });
+
+                savedOrder.forEach(key => {
+                    if (thMap[key]) {
+                        if (actionTh) {
+                            headerRow.insertBefore(thMap[key], actionTh);
+                        } else {
+                            headerRow.appendChild(thMap[key]);
+                        }
+                    }
+                });
+            }
+
+            // Sync all tbody rows to match the header row sequence
+            const currentThKeys = Array.from(headerRow.children).map(th => getColKey(th)).filter(Boolean);
+            const tbody = table.querySelector('tbody');
+            if (!tbody) return;
+            const rows = tbody.querySelectorAll('tr');
+            rows.forEach(tr => {
+                const tdMap = {};
+                Array.from(tr.children).forEach(td => {
+                    const key = getColKey(td);
+                    if (key) tdMap[key] = td;
+                });
+
+                currentThKeys.forEach(key => {
+                    if (key && tdMap[key]) {
+                        tr.appendChild(tdMap[key]);
+                    }
+                });
+            });
+        };
+
+        window.initDraggableVariantColumns = function() {
+            const table = document.getElementById('variantsTable');
+            if (!table) return;
+            const thead = table.querySelector('thead');
+            if (!thead) return;
+            const headerRow = thead.querySelector('tr');
+            if (!headerRow) return;
+
+            const ths = headerRow.querySelectorAll('th');
+            ths.forEach(th => {
+                const key = getColKey(th);
+                if (key === 'col-select' || key === 'col-action') {
+                    th.removeAttribute('draggable');
+                    return;
+                }
+
+                th.setAttribute('draggable', 'true');
+                th.style.cursor = 'grab';
+                th.title = (th.title ? th.title + ' | ' : '') + 'Drag to reorder column';
+
+                th.addEventListener('dragstart', function(e) {
+                    window.draggedVariantColTh = this;
+                    this.classList.add('th-dragging');
+                    e.dataTransfer.effectAllowed = 'move';
+                    e.dataTransfer.setData('text/plain', getColKey(this));
+                });
+
+                th.addEventListener('dragend', function() {
+                    this.classList.remove('th-dragging');
+                    ths.forEach(t => t.classList.remove('th-drag-over-left', 'th-drag-over-right'));
+                    window.draggedVariantColTh = null;
+                });
+
+                th.addEventListener('dragover', function(e) {
+                    e.preventDefault();
+                    if (!window.draggedVariantColTh || window.draggedVariantColTh === this) return;
+                    e.dataTransfer.dropEffect = 'move';
+
+                    const rect = this.getBoundingClientRect();
+                    const relX = e.clientX - rect.left;
+                    ths.forEach(t => t.classList.remove('th-drag-over-left', 'th-drag-over-right'));
+                    if (relX < rect.width / 2) {
+                        this.classList.add('th-drag-over-left');
+                    } else {
+                        this.classList.add('th-drag-over-right');
+                    }
+                });
+
+                th.addEventListener('dragleave', function() {
+                    this.classList.remove('th-drag-over-left', 'th-drag-over-right');
+                });
+
+                th.addEventListener('drop', function(e) {
+                    e.preventDefault();
+                    ths.forEach(t => t.classList.remove('th-drag-over-left', 'th-drag-over-right'));
+                    const srcTh = window.draggedVariantColTh;
+                    if (!srcTh || srcTh === this) return;
+
+                    const rect = this.getBoundingClientRect();
+                    const relX = e.clientX - rect.left;
+                    const insertBefore = relX < rect.width / 2;
+
+                    if (insertBefore) {
+                        headerRow.insertBefore(srcTh, this);
+                    } else {
+                        headerRow.insertBefore(srcTh, this.nextSibling);
+                    }
+
+                    const newThOrder = Array.from(headerRow.children)
+                        .map(h => getColKey(h))
+                        .filter(k => k && k !== 'col-select' && k !== 'col-action');
+
+                    window.saveVariantColOrder(newThOrder);
+                    window.applySavedColumnOrder();
+                });
+            });
+        };
+
+        function toggleFactorColumns() {
+
+                if (window.applySavedColumnOrder) window.applySavedColumnOrder();
 
                 if (!unitDropdown) return;
 
