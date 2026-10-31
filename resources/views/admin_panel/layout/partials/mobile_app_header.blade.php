@@ -3,6 +3,7 @@
     $init1 = strtoupper(substr($dynCompName, 0, 1));
     $init2 = strlen($dynCompName) > 1 ? strtoupper(substr($dynCompName, 1, 1)) : '';
     $isCycleCountScreen = request()->routeIs('cycle_count.*') || request()->is('cycle-count*');
+    $isCountSheet = $isCountSheet ?? false;
 @endphp
 
 @if(!$isCycleCountScreen)
