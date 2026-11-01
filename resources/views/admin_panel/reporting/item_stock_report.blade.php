@@ -8,7 +8,7 @@
        With Normal QuickBooks Fonts & Alternating Zebra Strips
        ========================================================== */
 
-    @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@500;600;700&display=swap');
 
     /* Universal Space Reset to Eliminate Scrolling & Extra Spaces */
     .app-page-body {
@@ -37,7 +37,7 @@
     .qb-filter-bar,
     .qb-table-card,
     input, button, select, textarea {
-        font-family: 'Plus Jakarta Sans', 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif !important;
+        font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif !important;
         -webkit-font-smoothing: antialiased;
         -moz-osx-font-smoothing: grayscale;
     }
@@ -48,7 +48,7 @@
     }
 
     .font-monospace, .qb-mono, .tabular-nums {
-        font-family: 'Plus Jakarta Sans', 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif !important;
+        font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif !important;
         font-variant-numeric: tabular-nums !important;
         font-feature-settings: "tnum" !important;
     }
@@ -73,17 +73,17 @@
         display: flex;
         align-items: center;
         gap: 8px;
-        font-size: 14px;
+        font-size: 15px;
         font-weight: 800;
         letter-spacing: 0.3px;
         color: #ffffff;
     }
     .qb-win-title i {
         color: #38bdf8;
-        font-size: 15px;
+        font-size: 16px;
     }
     .qb-win-sub {
-        font-size: 11px;
+        font-size: 12.5px;
         font-weight: 600;
         color: #93c5fd;
         text-transform: uppercase;
@@ -104,15 +104,15 @@
         border: none;
         background: transparent;
         color: #cbd5e1;
-        font-size: 11.5px;
+        font-size: 13px;
         font-weight: 700;
-        padding: 3px 11px;
-        height: 26px;
+        padding: 4px 13px;
+        height: 28px;
         border-radius: 3px;
         cursor: pointer;
         display: inline-flex;
         align-items: center;
-        gap: 5px;
+        gap: 6px;
         transition: all 0.12s ease;
         white-space: nowrap;
         text-decoration: none !important;
@@ -136,12 +136,12 @@
         box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.45), 0 1px 2px rgba(0, 0, 0, 0.2) !important;
         color: #ffffff !important;
         font-weight: 700 !important;
-        font-size: 12px !important;
-        padding: 3px 12px !important;
-        height: 27px !important;
+        font-size: 13px !important;
+        padding: 4px 13px !important;
+        height: 29px !important;
         display: inline-flex;
         align-items: center;
-        gap: 5px;
+        gap: 6px;
         text-decoration: none !important;
         cursor: pointer;
         transition: filter 0.1s ease;
@@ -159,12 +159,12 @@
         box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.7), 0 1px 2px rgba(0, 0, 0, 0.1) !important;
         color: #1e293b !important;
         font-weight: 700 !important;
-        font-size: 12px !important;
-        padding: 3px 12px !important;
-        height: 27px !important;
+        font-size: 13px !important;
+        padding: 4px 13px !important;
+        height: 29px !important;
         display: inline-flex;
         align-items: center;
-        gap: 5px;
+        gap: 6px;
         text-decoration: none !important;
         cursor: pointer;
         transition: filter 0.1s ease;
@@ -180,45 +180,45 @@
         background: linear-gradient(180deg, #edf3fa 0%, #d4e0ee 100%) !important;
         border: 1px solid #b2c5dc;
         border-radius: 4px;
-        padding: 4px 10px;
-        margin-bottom: 4px !important;
+        padding: 6px 12px;
+        margin-bottom: 5px !important;
         display: flex;
         align-items: center;
         justify-content: space-between;
         flex-wrap: wrap;
-        gap: 6px;
+        gap: 8px;
         box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.6);
     }
     .qb-kpi-group {
         display: inline-flex;
         align-items: center;
-        gap: 8px;
+        gap: 10px;
         flex-wrap: wrap;
     }
     .qb-kpi-chip {
         background: #ffffff;
         border: 1px solid #8ca4c3;
         border-radius: 4px;
-        padding: 4px 10px;
-        font-size: 12px;
+        padding: 6px 13px;
+        font-size: 14px;
         display: inline-flex;
         align-items: center;
-        gap: 6px;
+        gap: 7px;
         line-height: 1.25;
         box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.8), 0 1px 1px rgba(0, 0, 0, 0.05);
     }
     .qb-kpi-chip .chip-label {
         font-weight: 800;
         color: #334155;
-        font-size: 10.5px;
+        font-size: 12px;
         text-transform: uppercase;
         letter-spacing: 0.4px;
     }
     .qb-kpi-chip .chip-val {
-        font-weight: 700;
-        font-family: 'Plus Jakarta Sans', 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        font-weight: 800;
+        font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
         font-variant-numeric: tabular-nums;
-        font-size: 13px;
+        font-size: 16.5px;
     }
 
     /* 3. Filter Bar (Single-Line Compact Strip) */
@@ -226,14 +226,14 @@
         background: linear-gradient(180deg, #f7fafd 0%, #e8f0f8 100%) !important;
         border: 1px solid #b9cce2;
         border-radius: 4px;
-        padding: 5px 8px;
-        margin-bottom: 4px !important;
+        padding: 6px 10px;
+        margin-bottom: 5px !important;
         box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.8);
     }
     .qb-filter-form {
         display: flex;
         align-items: flex-end;
-        gap: 6px;
+        gap: 8px;
         flex-wrap: wrap;
         width: 100%;
         margin: 0;
@@ -243,22 +243,22 @@
         flex-direction: column;
     }
     .qb-flabel {
-        font-size: 10.5px !important;
+        font-size: 12.5px !important;
         font-weight: 800 !important;
         text-transform: uppercase;
         letter-spacing: 0.4px;
         color: #1e3a5f !important;
-        margin-bottom: 2px !important;
+        margin-bottom: 3px !important;
         white-space: nowrap;
     }
     .qb-input, select.qb-input {
-        height: 30px !important;
+        height: 35px !important;
         border: 1px solid #8ca4c3 !important;
-        border-radius: 3px !important;
-        font-size: 12px !important;
+        border-radius: 4px !important;
+        font-size: 14px !important;
         font-weight: 600 !important;
         color: #0f2744 !important;
-        padding: 2px 8px !important;
+        padding: 3px 10px !important;
         background-color: #ffffff;
         outline: none;
     }
@@ -269,24 +269,24 @@
 
     /* Select2 High-Density ERP Styling */
     .qb-filter-col .select2-container .select2-selection--single {
-        height: 30px !important;
+        height: 35px !important;
         border: 1px solid #8ca4c3 !important;
-        border-radius: 3px !important;
-        padding: 0 4px !important;
+        border-radius: 4px !important;
+        padding: 0 6px !important;
         background: #ffffff !important;
         display: flex !important;
         align-items: center !important;
     }
     .qb-filter-col .select2-container--default .select2-selection--single .select2-selection__rendered {
-        line-height: 28px !important;
-        font-size: 12px !important;
+        line-height: 33px !important;
+        font-size: 14px !important;
         font-weight: 600 !important;
         color: #0f2744 !important;
         padding-left: 4px !important;
     }
     .qb-filter-col .select2-container--default .select2-selection--single .select2-selection__arrow {
-        height: 28px !important;
-        right: 4px !important;
+        height: 33px !important;
+        right: 6px !important;
     }
     .qb-filter-col .select2-container--default.select2-container--disabled .select2-selection--single {
         background-color: #f1f5f9 !important;
@@ -299,13 +299,13 @@
         border: 1px solid #15457a !important;
         color: #ffffff !important;
         font-weight: 700 !important;
-        border-radius: 3px !important;
-        height: 30px !important;
-        padding: 0 13px !important;
-        font-size: 12px !important;
+        border-radius: 4px !important;
+        height: 35px !important;
+        padding: 0 15px !important;
+        font-size: 13.5px !important;
         display: inline-flex;
         align-items: center;
-        gap: 5px;
+        gap: 6px;
         box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.4), 0 1px 2px rgba(0, 0, 0, 0.2);
         white-space: nowrap;
         cursor: pointer;
@@ -320,13 +320,13 @@
         border: 1px solid #8ca4c3 !important;
         color: #334155 !important;
         font-weight: 600 !important;
-        border-radius: 3px !important;
-        height: 30px !important;
-        padding: 0 11px !important;
-        font-size: 12px !important;
+        border-radius: 4px !important;
+        height: 35px !important;
+        padding: 0 13px !important;
+        font-size: 13.5px !important;
         display: inline-flex;
         align-items: center;
-        gap: 4px;
+        gap: 5px;
         white-space: nowrap;
         cursor: pointer;
     }
@@ -349,32 +349,130 @@
         overflow-x: auto;
         min-height: 0 !important;
         width: 100% !important;
+        position: relative !important;
+    }
+    .col-resize-guide {
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        width: 2px;
+        background: #2563eb;
+        box-shadow: 0 0 6px rgba(37, 99, 235, 0.8), 0 0 2px #1d4ed8;
+        z-index: 100;
+        display: none;
+        pointer-events: none;
     }
     .qb-table {
         margin-bottom: 0 !important;
-        font-size: 12px !important;
+        font-size: 15.5px !important;
         width: 100% !important;
         border-collapse: collapse !important;
-        table-layout: auto;
+        table-layout: fixed !important;
     }
 
     /* Table Headers (Soft Blue-Gray Gradient with Sharp Dividers) */
     .qb-table thead th {
         background: linear-gradient(180deg, #f7f9fc 0%, #e2eaf3 100%) !important;
         color: #0f2744 !important;
-        font-weight: 700 !important;
+        font-weight: 800 !important;
         text-transform: uppercase;
-        font-size: 10.5px !important;
-        letter-spacing: 0.3px;
+        font-size: 13.5px !important;
+        letter-spacing: 0.35px;
         border-bottom: 2px solid #8ca4c3 !important;
         border-right: 1px solid #cbd5e1 !important;
         border-top: none !important;
-        padding: 5px 6px !important;
+        padding: 9px 12px !important;
         white-space: nowrap !important;
         vertical-align: middle;
+        position: relative !important;
+        box-sizing: border-box !important;
+        overflow: hidden;
     }
     .qb-table thead th:last-child {
         border-right: none !important;
+    }
+
+    /* Column Resizer Handle */
+    .qb-table thead th .col-resizer {
+        position: absolute;
+        top: 0;
+        right: 0;
+        width: 10px;
+        height: 100%;
+        cursor: col-resize !important;
+        user-select: none !important;
+        z-index: 20;
+        display: block;
+    }
+    .qb-table thead th .col-resizer::after {
+        content: '';
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        right: 0;
+        width: 3px;
+        background: transparent;
+        transition: background 0.1s ease;
+    }
+    .qb-table thead th .col-resizer:hover::after,
+    .qb-table thead th .col-resizer.is-resizing::after {
+        background: #2563eb;
+        box-shadow: 0 0 6px rgba(37, 99, 235, 0.9);
+    }
+    body.is-col-resizing {
+        cursor: col-resize !important;
+        user-select: none !important;
+    }
+    body.is-col-resizing * {
+        user-select: none !important;
+        cursor: col-resize !important;
+    }
+    body.is-col-resizing .qb-table tbody tr,
+    body.is-col-resizing .qb-table thead th {
+        pointer-events: none !important;
+        transition: none !important;
+    }
+    body.is-col-resizing .col-resizer {
+        pointer-events: auto !important;
+    }
+
+    /* Draggable Column Headers */
+    .qb-table thead th.qb-col-draggable {
+        cursor: grab !important;
+        user-select: none !important;
+        position: relative;
+        transition: background 0.15s ease, border-color 0.15s ease;
+    }
+    .qb-table thead th.qb-col-draggable:active {
+        cursor: grabbing !important;
+    }
+    .qb-table thead th.qb-col-draggable:hover {
+        background: linear-gradient(180deg, #edf4fc 0%, #d8e5f3 100%) !important;
+    }
+    .qb-table thead th.th-dragging {
+        opacity: 0.45 !important;
+        background: #dbeafe !important;
+        outline: 2px dashed #2563eb !important;
+    }
+    .qb-table thead th.th-drag-over-left {
+        border-left: 3px solid #2563eb !important;
+        background: #eff6ff !important;
+    }
+    .qb-table thead th.th-drag-over-right {
+        border-right: 3px solid #2563eb !important;
+        background: #eff6ff !important;
+    }
+    .qb-col-grip {
+        display: inline-block;
+        color: #64748b;
+        font-size: 11px;
+        margin-right: 4px;
+        opacity: 0.6;
+        vertical-align: middle;
+    }
+    .qb-table thead th:hover .qb-col-grip {
+        color: #0284c7;
+        opacity: 1;
     }
 
     /* Table Body Cells */
@@ -382,11 +480,20 @@
         border-bottom: 1px solid #c8d7e6 !important;
         border-right: 1px solid #cbd8e7 !important;
         border-top: none !important;
-        padding: 4px 6px !important;
-        font-size: 12px !important;
+        padding: 8px 10px !important;
+        font-size: 15.5px !important;
         color: #0f172a !important;
         vertical-align: middle;
-        line-height: 1.25;
+        line-height: 1.4;
+        box-sizing: border-box !important;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+    .qb-table tbody td[data-col="name"],
+    .qb-table tbody td[data-col="category"] {
+        white-space: normal !important;
+        word-break: break-word !important;
     }
     .qb-table tbody td:last-child {
         border-right: none !important;
@@ -438,11 +545,11 @@
     .qb-table tfoot td {
         background: linear-gradient(180deg, #edf3fa 0%, #dbe5f1 100%) !important;
         color: #0f2744 !important;
-        font-weight: 700 !important;
-        font-size: 12px !important;
+        font-weight: 800 !important;
+        font-size: 16px !important;
         border-top: 2px solid #8ca4c3 !important;
         border-right: 1px solid #cbd5e1 !important;
-        padding: 6px 8px !important;
+        padding: 9px 10px !important;
         vertical-align: middle;
     }
     .qb-table tfoot th:last-child,
@@ -450,16 +557,16 @@
         border-right: none !important;
     }
 
-    /* High-Contrast Badges & Flags (Compact High-Density Styling) */
+    /* High-Contrast Badges & Flags (Enhanced Legibility Styling) */
     .acc-badge-code {
-        font-family: 'SFMono-Regular', Consolas, 'Segoe UI Mono', monospace !important;
-        font-size: 11px !important;
-        font-weight: 600 !important;
+        font-family: 'Inter', system-ui, -apple-system, sans-serif !important;
+        font-size: 13.5px !important;
+        font-weight: 800 !important;
         color: #0f2744 !important;
         background-color: #f1f5f9 !important;
         border: 1px solid #cbd5e1 !important;
-        border-radius: 3px !important;
-        padding: 1px 5px !important;
+        border-radius: 4px !important;
+        padding: 3px 8px !important;
         display: inline-block;
         letter-spacing: 0.2px;
         white-space: nowrap;
@@ -468,21 +575,21 @@
         background: #f1f5f9;
         color: #1e293b;
         border: 1px solid #cbd5e1;
-        border-radius: 3px;
-        padding: 1px 5px;
-        font-size: 10.5px;
-        font-weight: 600;
+        border-radius: 4px;
+        padding: 3px 8px;
+        font-size: 13.5px;
+        font-weight: 700;
         white-space: nowrap;
         display: inline-block;
     }
     .qb-status-badge {
-        font-size: 10px;
-        font-weight: 700;
-        padding: 2px 5px;
-        border-radius: 3px;
+        font-size: 13px !important;
+        font-weight: 700 !important;
+        padding: 4px 10px !important;
+        border-radius: 4px;
         display: inline-flex;
         align-items: center;
-        gap: 3px;
+        gap: 5px;
         white-space: nowrap;
     }
     .qb-status-healthy {
@@ -502,10 +609,10 @@
     }
 
     .acc-bal-flag {
-        font-size: 10.5px !important;
+        font-size: 13.5px !important;
         font-weight: 700 !important;
-        padding: 1px 5px !important;
-        border-radius: 3px !important;
+        padding: 3px 8px !important;
+        border-radius: 4px !important;
         display: inline-block;
         vertical-align: middle;
         white-space: nowrap;
@@ -525,11 +632,11 @@
         background: #f8fafc;
         border: 1px solid #8ca4c3;
         color: #1e3a5f;
-        border-radius: 3px;
-        width: 24px;
-        height: 22px;
+        border-radius: 4px;
+        width: 30px;
+        height: 28px;
         padding: 0;
-        font-size: 11px;
+        font-size: 13.5px;
         cursor: pointer;
         display: inline-flex;
         align-items: center;
@@ -547,7 +654,7 @@
         display: flex;
         justify-content: space-between;
         align-items: center;
-        padding: 5px 10px;
+        padding: 8px 14px;
         background: #f8fafc;
         border-top: 1px solid #cbd5e1;
     }
@@ -555,11 +662,11 @@
         background: #ffffff;
         border: 1px solid #8ca4c3;
         color: #0f2744;
-        font-size: 12px;
+        font-size: 14px;
         font-weight: 700;
-        padding: 2px 9px;
-        height: 26px;
-        border-radius: 3px;
+        padding: 3px 12px;
+        height: 30px;
+        border-radius: 4px;
         cursor: pointer;
         display: inline-flex;
         align-items: center;
@@ -604,6 +711,11 @@
                         </button>
                     </div>
 
+                    {{-- Reset Column Order Action --}}
+                    <button type="button" id="btnResetColOrder" class="qb-btn-gray" title="Reset column positions and widths back to default">
+                        <i class="fas fa-columns text-primary"></i> Reset Columns
+                    </button>
+
                     {{-- Export CSV Action --}}
                     <button type="button" id="btnExportCsvTop" class="qb-btn-blue" title="Export current report data to CSV">
                         <i class="fas fa-file-excel"></i> Export CSV
@@ -640,7 +752,8 @@
                 </div>
 
                 <div class="d-none d-md-flex align-items-center gap-2">
-                    <span class="acc-badge-code" id="pageReportNotice">QuickBooks Grid View (50 Items/Page)</span>
+                    <span class="acc-badge-code" style="font-size:13px; background:#eff6ff; color:#1e40af; border-color:#bfdbfe;" title="Drag header to reorder, or drag column right border to resize"><i class="fas fa-arrows-alt text-primary me-1"></i> Drag to Reorder &amp; Resize</span>
+                    <span class="acc-badge-code" id="pageReportNotice" style="font-size:13px;">QuickBooks Grid View (50 Items/Page)</span>
                 </div>
             </div>
 
@@ -727,10 +840,11 @@
             <div class="qb-table-card">
                 <div id="loader" style="display:none; text-align:center; padding:18px; background:#f8fafc;">
                     <div class="spinner-border spinner-border-sm text-primary" role="status"></div>
-                    <span class="ms-2 text-dark font-monospace fw-bold" style="font-size:12px;">Loading stock &amp; movement records...</span>
+                    <span class="ms-2 text-dark tabular-nums fw-bold" style="font-size:14px;">Loading stock &amp; movement records...</span>
                 </div>
 
                 <div class="table-responsive">
+                    <div id="colResizeGuide" class="col-resize-guide"></div>
                     <table id="stockTable" class="qb-table" style="width:100%;">
                         <thead id="tableHeader">
                             {{-- Rendered dynamically based on Summary vs Ledger mode --}}
@@ -746,7 +860,7 @@
 
                 {{-- Pagination Footer --}}
                 <div id="paginationContainer" class="qb-pagination-bar">
-                    <div id="paginationInfo" class="text-dark font-monospace fw-bold" style="font-size:11.5px;"></div>
+                    <div id="paginationInfo" class="text-dark tabular-nums fw-bold" style="font-size:13.5px;"></div>
                     <div id="paginationLinks" class="d-flex gap-1"></div>
                 </div>
             </div>
@@ -767,7 +881,7 @@
                     <i class="fas fa-history text-info"></i>
                     <span id="productHistoryModalLabel">Product Movement Timeline</span>
                 </div>
-                <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close" style="background:transparent; border:none; font-size:18px; line-height:1; opacity:.85;">
+                <button type="button" class="close text-white" data-dismiss="modal" data-bs-dismiss="modal" aria-label="Close" style="background:transparent; border:none; font-size:18px; line-height:1; opacity:.85;">
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
@@ -794,7 +908,7 @@
             </div>
 
             <div class="modal-footer py-2 px-3 border-top bg-light d-flex justify-content-end">
-                <button type="button" class="qb-btn-gray" data-dismiss="modal">Close</button>
+                <button type="button" class="qb-btn-gray" data-dismiss="modal" data-bs-dismiss="modal">Close</button>
             </div>
 
         </div>
@@ -804,65 +918,73 @@
 @endsection
 
 @section('js')
-<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
-<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
-
 <script>
 $(document).ready(function() {
 
     let currentReportData = [];
     let currentPage = 1;
 
-    // Select2 Product Search
-    $('#product_id').select2({
-        placeholder: "-- All Products --",
-        allowClear: true,
-        width: '100%',
-        ajax: {
-            url: "{{ route('products.search') }}",
-            dataType: 'json',
-            delay: 250,
-            data: function (params) {
-                return { q: params.term };
-            },
-            processResults: function (data) {
-                return {
-                    results: $.map(data, function (item) {
-                        let text = '';
-                        if (item.item_number) {
-                            text += '[#' + item.item_number + '] ';
-                        }
-                        if (item.item_code) {
-                            text += item.item_code + ' - ';
-                        }
-                        text += item.item_name;
-                        return {
-                            id: item.id,
-                            text: text
-                        }
-                    })
-                };
-            },
-            cache: true
+    // Select2 Product Search (Local Select2 from app layout)
+    if ($.fn.select2) {
+        $('#product_id').select2({
+            placeholder: "-- All Products --",
+            allowClear: true,
+            width: '100%',
+            ajax: {
+                url: "{{ route('products.search') }}",
+                dataType: 'json',
+                delay: 250,
+                data: function (params) {
+                    return { q: params.term || '' };
+                },
+                processResults: function (data) {
+                    return {
+                        results: $.map(data, function (item) {
+                            let text = '';
+                            if (item.item_number) {
+                                text += '[#' + item.item_number + '] ';
+                            }
+                            if (item.item_code) {
+                                text += item.item_code + ' - ';
+                            }
+                            text += item.item_name;
+                            return {
+                                id: item.id,
+                                text: text
+                            };
+                        })
+                    };
+                },
+                cache: true
+            }
+        });
+
+        // Select2 Variant Filter
+        $('#variant_key').select2({
+            placeholder: "-- All Variants --",
+            allowClear: true,
+            width: '100%'
+        });
+    }
+
+    // Unselect / Clear handlers for Select2
+    $('#product_id').on('select2:unselect select2:clear', function () {
+        $(this).empty().append('<option value="all">-- All Products --</option>').val('all');
+        $('#variant_key').empty().append('<option value="all">-- All Variants --</option>').val('all').prop('disabled', true);
+        if ($.fn.select2) {
+            $('#variant_key').trigger('change.select2');
         }
+        currentPage = 1;
+        fetchStockReport();
     });
 
-    // Select2 Variant Filter
-    $('#variant_key').select2({
-        placeholder: "-- All Variants --",
-        allowClear: true,
-        width: '100%'
+    $('#variant_key').on('select2:unselect select2:clear', function () {
+        $(this).val('all');
+        currentPage = 1;
+        fetchStockReport();
     });
 
-    $('#product_id').on('select2:unselect', function () {
-        $(this).val('all').trigger('change');
-    });
-
-    $('#variant_key').on('select2:unselect', function () {
-        $(this).val('all').trigger('change');
-    });
-
-    // When Product changes, fetch variants dynamically
+    // When Product changes, fetch variants dynamically & update report
     $('#product_id').on('change', function () {
         let productId = $(this).val();
         let variantSelect = $('#variant_key');
@@ -886,7 +1008,9 @@ $(document).ready(function() {
                         variantSelect.append('<option value="all">-- No Variants (Standard Item) --</option>');
                         variantSelect.prop('disabled', true);
                     }
-                    variantSelect.val('all').trigger('change.select2');
+                    if ($.fn.select2) {
+                        variantSelect.val('all').trigger('change.select2');
+                    }
                 },
                 error: function () {
                     variantSelect.prop('disabled', true);
@@ -894,8 +1018,25 @@ $(document).ready(function() {
             });
         } else {
             variantSelect.prop('disabled', true);
-            variantSelect.val('all').trigger('change.select2');
+            if ($.fn.select2) {
+                variantSelect.val('all').trigger('change.select2');
+            }
         }
+
+        currentPage = 1;
+        fetchStockReport();
+    });
+
+    // When Variant changes, update report
+    $('#variant_key').on('change', function () {
+        currentPage = 1;
+        fetchStockReport();
+    });
+
+    // Auto-filter when Category, Warehouse, or Unit type changes
+    $('#category_id, #warehouse_id, #unit_type').on('change', function () {
+        currentPage = 1;
+        fetchStockReport();
     });
 
     // Mode Toggle Buttons
@@ -934,11 +1075,291 @@ $(document).ready(function() {
         $('#warehouse_id').val('all');
         $('#unit_type').val('all');
         $('#filter_item_number').val('');
-        $('#product_id').val('all').trigger('change.select2');
-        $('#variant_key').empty().append('<option value="all">-- All Variants --</option>').val('all').prop('disabled', true).trigger('change.select2');
+        $('#product_id').empty().append('<option value="all">-- All Products --</option>').val('all');
+        if ($.fn.select2) {
+            $('#product_id').trigger('change.select2');
+        }
+        $('#variant_key').empty().append('<option value="all">-- All Variants --</option>').val('all').prop('disabled', true);
+        if ($.fn.select2) {
+            $('#variant_key').trigger('change.select2');
+        }
         currentPage = 1;
         fetchStockReport();
     });
+
+    // Reset Column Order & Widths Button
+    $('#btnResetColOrder').on('click', function () {
+        let mode = $('#report_mode').val() || 'summary';
+        localStorage.removeItem('kent_stock_report_cols_' + mode);
+        localStorage.removeItem('kent_stock_report_widths_' + mode);
+        $('#stockTable').css({
+            'width': '100%',
+            'min-width': '100%'
+        });
+        renderTableHeader(mode);
+        renderTableBody(currentReportData, mode);
+    });
+
+    // ==========================================================
+    // COLUMN DEFINITIONS WITH REORDER & DRAG SUPPORT
+    // ==========================================================
+
+    const summaryColumns = {
+        'index': {
+            key: 'index',
+            title: '#',
+            thHtml: '<th data-col="index" style="width:42px;" class="text-center qb-col-draggable" title="Drag to reorder / resize column"><i class="fas fa-grip-vertical qb-col-grip"></i>#</th>',
+            getCell: (row, i) => `<td data-col="index" class="text-center text-muted tabular-nums fw-semibold" style="font-size:14px; padding:8px 6px;">${((currentPage - 1) * 50) + (i + 1)}</td>`,
+            getFooter: () => `<td data-col="index" class="text-center text-muted" style="font-size:14px;">—</td>`,
+            getCsvValue: (r, i) => ((currentPage - 1) * 50) + (i + 1)
+        },
+        'code': {
+            key: 'code',
+            title: 'Item Code',
+            thHtml: '<th data-col="code" style="width:105px;" class="qb-col-draggable" title="Drag to reorder / resize column"><i class="fas fa-grip-vertical qb-col-grip"></i>Item Code</th>',
+            getCell: (row) => `<td data-col="code" style="padding:8px 8px;">${row.item_code ? `<span class="acc-badge-code">${escapeHtml(row.item_code)}</span>` : `<span class="text-muted tabular-nums">—</span>`}</td>`,
+            getFooter: () => `<td data-col="code"></td>`,
+            getCsvValue: (r) => r.item_code || ''
+        },
+        'unique': {
+            key: 'unique',
+            title: 'Unique #',
+            thHtml: '<th data-col="unique" style="width:90px;" class="text-center qb-col-draggable" title="Unique Variant / Item No - Drag to reorder / resize"><i class="fas fa-grip-vertical qb-col-grip"></i>Unique #</th>',
+            getCell: (row) => `<td data-col="unique" class="text-center" style="padding:8px 6px;">${(row.item_number && String(row.item_number).trim() !== '') ? `<span class="badge bg-primary text-white" style="font-family:'Inter',system-ui,sans-serif; font-size:13px; font-weight:700; padding:3.5px 8px; border-radius:4px;" title="Unique Variant / Item No">#${escapeHtml(String(row.item_number).replace(/^#/, ''))}</span>` : `<span class="text-muted tabular-nums">—</span>`}</td>`,
+            getFooter: () => `<td data-col="unique"></td>`,
+            getCsvValue: (r) => r.item_number || ''
+        },
+        'name': {
+            key: 'name',
+            title: 'Item / Variant Name',
+            thHtml: '<th data-col="name" class="qb-col-draggable" style="width:230px;" title="Drag to reorder / resize column"><i class="fas fa-grip-vertical qb-col-grip"></i>Item / Variant Name</th>',
+            getCell: (row) => `<td data-col="name" class="fw-bold text-dark" style="font-size:15.5px; line-height:1.35; word-break:break-word; padding:8px 10px;">${escapeHtml(row.item_name)}</td>`,
+            getFooter: () => `<td data-col="name" class="fw-bold text-dark text-end" style="font-size:15px; letter-spacing:0.3px;">PAGE TOTAL:</td>`,
+            getCsvValue: (r) => r.item_name || ''
+        },
+        'category': {
+            key: 'category',
+            title: 'Category',
+            thHtml: '<th data-col="category" style="width:125px;" class="qb-col-draggable" title="Drag to reorder column"><i class="fas fa-grip-vertical qb-col-grip"></i>Category</th>',
+            getCell: (row) => `<td data-col="category" class="text-secondary" style="font-size:14.5px; line-height:1.3; word-break:break-word; padding:8px 8px;">${escapeHtml(row.category_name || '—')}</td>`,
+            getFooter: () => `<td data-col="category"></td>`,
+            getCsvValue: (r) => r.category_name || ''
+        },
+        'unit': {
+            key: 'unit',
+            title: 'Unit',
+            thHtml: '<th data-col="unit" class="text-center qb-col-draggable" style="width:60px;" title="Drag to reorder column"><i class="fas fa-grip-vertical qb-col-grip"></i>Unit</th>',
+            getCell: (row) => `<td data-col="unit" class="text-center" style="padding:8px 6px;"><span class="qb-unit-badge">${escapeHtml(row.unit_name || 'Pcs')}</span></td>`,
+            getFooter: () => `<td data-col="unit"></td>`,
+            getCsvValue: (r) => r.unit_name || ''
+        },
+        'stock': {
+            key: 'stock',
+            title: 'Stock Bal',
+            thHtml: '<th data-col="stock" class="text-center qb-col-draggable" style="width:105px;" title="Stock Balance - Drag to reorder"><i class="fas fa-grip-vertical qb-col-grip"></i>Stock Bal</th>',
+            getCell: (row) => {
+                let s = parseFloat(row.balance) || 0;
+                let c = s > 0 ? "color:#15803d;" : (s < 0 ? "color:#b91c1c;" : "color:#475569;");
+                return `<td data-col="stock" class="text-center tabular-nums fw-bold" style="${c} font-size:15.5px; padding:8px 8px;">${escapeHtml(row.formatted_stock)}</td>`;
+            },
+            getFooter: () => `<td data-col="stock"></td>`,
+            getCsvValue: (r) => r.balance || 0
+        },
+        'cartons': {
+            key: 'cartons',
+            title: 'Cartons',
+            thHtml: '<th data-col="cartons" class="text-center qb-col-draggable" style="width:100px;" title="Cartons / Loose Pieces - Drag to reorder"><i class="fas fa-grip-vertical qb-col-grip"></i>Cartons</th>',
+            getCell: (row) => `<td data-col="cartons" class="text-center tabular-nums fw-semibold" style="color:#475569; font-size:14.5px; padding:8px 8px;">${row.carton_display || '—'}</td>`,
+            getFooter: () => `<td data-col="cartons"></td>`,
+            getCsvValue: (r) => r.carton_display || ''
+        },
+        'avgcost': {
+            key: 'avgcost',
+            title: 'Avg Cost (Rs)',
+            thHtml: '<th data-col="avgcost" class="text-end qb-col-draggable" style="width:115px;" title="Average Cost in Rupees - Drag to reorder"><i class="fas fa-grip-vertical qb-col-grip"></i>Avg Cost</th>',
+            getCell: (row) => `<td data-col="avgcost" class="text-end tabular-nums fw-bold text-dark" style="font-size:15.5px; padding:8px 10px;">Rs ${(parseFloat(row.average_price) || 0).toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}</td>`,
+            getFooter: () => `<td data-col="avgcost" class="text-end tabular-nums text-muted" style="font-size:14.5px;">—</td>`,
+            getCsvValue: (r) => r.average_price || 0
+        },
+        'value': {
+            key: 'value',
+            title: 'Stock Value (Rs)',
+            thHtml: '<th data-col="value" class="text-end qb-col-draggable" style="width:130px;" title="Total Stock Value in Rupees - Drag to reorder"><i class="fas fa-grip-vertical qb-col-grip"></i>Stock Value</th>',
+            getCell: (row) => `<td data-col="value" class="text-end tabular-nums fw-bold" style="color:#0f172a; font-size:15.5px; padding:8px 10px;">Rs ${(parseFloat(row.stock_value) || 0).toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}</td>`,
+            getFooter: (totalVal) => `<td data-col="value" class="text-end tabular-nums fw-bold" style="color:#1d4ed8; font-size:16px; padding:9px 10px;">Rs ${(totalVal || 0).toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}</td>`,
+            getCsvValue: (r) => r.stock_value || 0
+        },
+        'status': {
+            key: 'status',
+            title: 'Status',
+            thHtml: '<th data-col="status" class="text-center qb-col-draggable" style="width:105px;" title="Drag to reorder column"><i class="fas fa-grip-vertical qb-col-grip"></i>Status</th>',
+            getCell: (row) => {
+                let statusBadge = '<span class="qb-status-badge qb-status-healthy"><i class="fas fa-check-circle"></i> In Stock</span>';
+                if (row.status === 'out_of_stock') {
+                    statusBadge = '<span class="qb-status-badge qb-status-out"><i class="fas fa-times-circle"></i> Out of Stock</span>';
+                } else if (row.status === 'low_stock') {
+                    statusBadge = '<span class="qb-status-badge qb-status-low"><i class="fas fa-exclamation-triangle"></i> Low Stock</span>';
+                }
+                return `<td data-col="status" class="text-center" style="padding:8px 6px;">${statusBadge}</td>`;
+            },
+            getFooter: () => `<td data-col="status"></td>`,
+            getCsvValue: (r) => r.status || ''
+        },
+        'history': {
+            key: 'history',
+            title: 'History',
+            thHtml: '<th data-col="history" class="text-center qb-col-draggable" style="width:48px;" title="Movement History Timeline - Drag to reorder"><i class="fas fa-grip-vertical qb-col-grip"></i><i class="fas fa-history"></i></th>',
+            getCell: (row) => `<td data-col="history" class="text-center" style="padding:8px 6px;"><button type="button" class="qb-history-btn view-history-btn" data-id="${row.id}" data-name="${escapeHtml(row.item_name)}" title="View Movement History Timeline"><i class="fas fa-history"></i></button></td>`,
+            getFooter: () => `<td data-col="history"></td>`,
+            getCsvValue: () => ''
+        }
+    };
+
+    const ledgerColumns = {
+        'index': {
+            key: 'index',
+            title: '#',
+            thHtml: '<th data-col="index" style="width:42px;" class="text-center qb-col-draggable" title="Drag to reorder column"><i class="fas fa-grip-vertical qb-col-grip"></i>#</th>',
+            getCell: (row, i) => `<td data-col="index" class="text-center text-muted tabular-nums fw-semibold" style="font-size:14px; padding:8px 6px;">${((currentPage - 1) * 50) + (i + 1)}</td>`,
+            getFooter: () => `<td data-col="index" class="text-center text-muted" style="font-size:14px;">—</td>`,
+            getCsvValue: (r, i) => ((currentPage - 1) * 50) + (i + 1)
+        },
+        'code': {
+            key: 'code',
+            title: 'Item Code',
+            thHtml: '<th data-col="code" style="width:105px;" class="qb-col-draggable" title="Drag to reorder column"><i class="fas fa-grip-vertical qb-col-grip"></i>Item Code</th>',
+            getCell: (row) => `<td data-col="code" style="padding:8px 8px;">${row.item_code ? `<span class="acc-badge-code">${escapeHtml(row.item_code)}</span>` : `<span class="text-muted tabular-nums">—</span>`}</td>`,
+            getFooter: () => `<td data-col="code"></td>`,
+            getCsvValue: (r) => r.item_code || ''
+        },
+        'unique': {
+            key: 'unique',
+            title: 'Unique #',
+            thHtml: '<th data-col="unique" style="width:90px;" class="text-center qb-col-draggable" title="Unique Variant / Item No - Drag to reorder"><i class="fas fa-grip-vertical qb-col-grip"></i>Unique #</th>',
+            getCell: (row) => `<td data-col="unique" class="text-center" style="padding:8px 6px;">${(row.item_number && String(row.item_number).trim() !== '') ? `<span class="badge bg-primary text-white" style="font-family:'Inter',system-ui,sans-serif; font-size:13px; font-weight:700; padding:3.5px 8px; border-radius:4px;" title="Unique Variant / Item No">#${escapeHtml(String(row.item_number).replace(/^#/, ''))}</span>` : `<span class="text-muted tabular-nums">—</span>`}</td>`,
+            getFooter: () => `<td data-col="unique"></td>`,
+            getCsvValue: (r) => r.item_number || ''
+        },
+        'name': {
+            key: 'name',
+            title: 'Item / Variant Name',
+            thHtml: '<th data-col="name" class="qb-col-draggable" style="width:210px;" title="Drag to reorder / resize column"><i class="fas fa-grip-vertical qb-col-grip"></i>Item / Variant Name</th>',
+            getCell: (row) => `<td data-col="name" class="fw-bold text-dark" style="font-size:15.5px; line-height:1.35; word-break:break-word; padding:8px 10px;">${escapeHtml(row.item_name)}</td>`,
+            getFooter: () => `<td data-col="name" class="fw-bold text-dark text-end" style="font-size:15px; letter-spacing:0.3px;">PAGE TOTAL:</td>`,
+            getCsvValue: (r) => r.item_name || ''
+        },
+        'opening': {
+            key: 'opening',
+            title: 'Open',
+            thHtml: '<th data-col="opening" class="text-end qb-col-draggable" style="width:75px;" title="Opening Stock - Drag to reorder"><i class="fas fa-grip-vertical qb-col-grip"></i>Open</th>',
+            getCell: (row) => `<td data-col="opening" class="text-end tabular-nums text-muted fw-semibold" style="font-size:14.5px; padding:8px 8px;">${(parseFloat(row.initial_stock) || 0).toLocaleString()}</td>`,
+            getFooter: () => `<td data-col="opening"></td>`,
+            getCsvValue: (r) => r.initial_stock || 0
+        },
+        'purchased': {
+            key: 'purchased',
+            title: 'Purch (+)',
+            thHtml: '<th data-col="purchased" class="text-end qb-col-draggable" style="width:85px;" title="Purchased - Drag to reorder"><i class="fas fa-grip-vertical qb-col-grip"></i>Purch (+)</th>',
+            getCell: (row) => `<td data-col="purchased" class="text-end tabular-nums text-success fw-bold" style="font-size:14.5px; padding:8px 8px;">+${(parseFloat(row.purchased) || 0).toLocaleString()}</td>`,
+            getFooter: () => `<td data-col="purchased"></td>`,
+            getCsvValue: (r) => r.purchased || 0
+        },
+        'sold': {
+            key: 'sold',
+            title: 'Sold (-)',
+            thHtml: '<th data-col="sold" class="text-end qb-col-draggable" style="width:85px;" title="Sold - Drag to reorder"><i class="fas fa-grip-vertical qb-col-grip"></i>Sold (-)</th>',
+            getCell: (row) => `<td data-col="sold" class="text-end tabular-nums text-danger fw-bold" style="font-size:14.5px; padding:8px 8px;">-${(parseFloat(row.sold) || 0).toLocaleString()}</td>`,
+            getFooter: () => `<td data-col="sold"></td>`,
+            getCsvValue: (r) => r.sold || 0
+        },
+        'saleret': {
+            key: 'saleret',
+            title: 'Sal Ret (+)',
+            thHtml: '<th data-col="saleret" class="text-end qb-col-draggable" style="width:85px;" title="Sale Return - Drag to reorder"><i class="fas fa-grip-vertical qb-col-grip"></i>Sal Ret (+)</th>',
+            getCell: (row) => `<td data-col="saleret" class="text-end tabular-nums text-success fw-bold" style="font-size:14.5px; padding:8px 8px;">+${(parseFloat(row.returned_qty) || 0).toLocaleString()}</td>`,
+            getFooter: () => `<td data-col="saleret"></td>`,
+            getCsvValue: (r) => r.returned_qty || 0
+        },
+        'purret': {
+            key: 'purret',
+            title: 'Pur Ret (-)',
+            thHtml: '<th data-col="purret" class="text-end qb-col-draggable" style="width:85px;" title="Purchase Return - Drag to reorder"><i class="fas fa-grip-vertical qb-col-grip"></i>Pur Ret (-)</th>',
+            getCell: (row) => `<td data-col="purret" class="text-end tabular-nums text-danger fw-bold" style="font-size:14.5px; padding:8px 8px;">-${(parseFloat(row.purch_returned_qty) || 0).toLocaleString()}</td>`,
+            getFooter: () => `<td data-col="purret"></td>`,
+            getCsvValue: (r) => r.purch_returned_qty || 0
+        },
+        'adjust': {
+            key: 'adjust',
+            title: 'Adjust',
+            thHtml: '<th data-col="adjust" class="text-center qb-col-draggable" style="background:#fffbeb !important; color:#92400e !important; width:85px;" title="Stock Adjustments - Drag to reorder"><i class="fas fa-grip-vertical qb-col-grip"></i>Adjust</th>',
+            getCell: (row) => {
+                let adjVal = parseFloat(row.adjustments) || 0;
+                let adjBadge = '<span class="text-muted tabular-nums">—</span>';
+                if (adjVal > 0) adjBadge = `<span class="acc-bal-flag dr tabular-nums">+${adjVal}</span>`;
+                else if (adjVal < 0) adjBadge = `<span class="acc-bal-flag cr tabular-nums">${adjVal}</span>`;
+                return `<td data-col="adjust" class="text-center qb-col-adjust" style="padding:8px 6px;">${adjBadge}</td>`;
+            },
+            getFooter: () => `<td data-col="adjust"></td>`,
+            getCsvValue: (r) => r.adjustments || 0
+        },
+        'closing': {
+            key: 'closing',
+            title: 'Closing',
+            thHtml: '<th data-col="closing" class="text-end fw-bold qb-col-draggable" style="background:#eef2ff !important; color:#1d4ed8 !important; width:95px;" title="Closing Stock - Drag to reorder"><i class="fas fa-grip-vertical qb-col-grip"></i>Closing</th>',
+            getCell: (row) => {
+                let stockNum = parseFloat(row.balance) || 0;
+                let stockColor = stockNum > 0 ? 'color:#15803d;' : (stockNum < 0 ? 'color:#b91c1c;' : 'color:#475569;');
+                return `<td data-col="closing" class="text-end tabular-nums fw-bold qb-col-closing" style="${stockColor} font-size:15.5px; padding:8px 8px;">${escapeHtml(row.formatted_stock)}</td>`;
+            },
+            getFooter: () => `<td data-col="closing"></td>`,
+            getCsvValue: (r) => r.balance || 0
+        },
+        'value': {
+            key: 'value',
+            title: 'Stock Value (Rs)',
+            thHtml: '<th data-col="value" class="text-end qb-col-draggable" style="width:130px;" title="Total Stock Value in Rupees - Drag to reorder"><i class="fas fa-grip-vertical qb-col-grip"></i>Stock Value</th>',
+            getCell: (row) => `<td data-col="value" class="text-end tabular-nums fw-bold" style="color:#0f172a; font-size:15.5px; padding:8px 10px;">Rs ${(parseFloat(row.stock_value) || 0).toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}</td>`,
+            getFooter: (totalVal) => `<td data-col="value" class="text-end tabular-nums fw-bold" style="color:#1d4ed8; font-size:16px; padding:9px 10px;">Rs ${(totalVal || 0).toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}</td>`,
+            getCsvValue: (r) => r.stock_value || 0
+        },
+        'history': {
+            key: 'history',
+            title: 'History',
+            thHtml: '<th data-col="history" class="text-center qb-col-draggable" style="width:48px;" title="Movement History Timeline - Drag to reorder"><i class="fas fa-grip-vertical qb-col-grip"></i><i class="fas fa-history"></i></th>',
+            getCell: (row) => `<td data-col="history" class="text-center" style="padding:8px 6px;"><button type="button" class="qb-history-btn view-history-btn" data-id="${row.id}" data-name="${escapeHtml(row.item_name)}" title="View Movement History Timeline"><i class="fas fa-history"></i></button></td>`,
+            getFooter: () => `<td data-col="history"></td>`,
+            getCsvValue: () => ''
+        }
+    };
+
+    const defaultSummaryOrder = ['index', 'code', 'unique', 'name', 'category', 'unit', 'stock', 'cartons', 'avgcost', 'value', 'status', 'history'];
+    const defaultLedgerOrder  = ['index', 'code', 'unique', 'name', 'opening', 'purchased', 'sold', 'saleret', 'purret', 'adjust', 'closing', 'value', 'history'];
+
+    function getColOrder(mode) {
+        const storageKey = 'kent_stock_report_cols_' + mode;
+        const defaultOrder = (mode === 'summary') ? defaultSummaryOrder : defaultLedgerOrder;
+        try {
+            const saved = localStorage.getItem(storageKey);
+            if (saved) {
+                const parsed = JSON.parse(saved);
+                if (Array.isArray(parsed) && parsed.length > 0) {
+                    const validKeys = parsed.filter(k => defaultOrder.includes(k));
+                    defaultOrder.forEach(k => {
+                        if (!validKeys.includes(k)) validKeys.push(k);
+                    });
+                    return validKeys;
+                }
+            }
+        } catch(e) {}
+        return [...defaultOrder];
+    }
+
+    function saveColOrder(mode, order) {
+        const storageKey = 'kent_stock_report_cols_' + mode;
+        try {
+            localStorage.setItem(storageKey, JSON.stringify(order));
+        } catch(e) {}
+    }
 
     // Initial Load
     fetchStockReport();
@@ -947,7 +1368,7 @@ $(document).ready(function() {
         $('#loader').show();
         $('#reportBody').empty();
 
-        let mode = $('#report_mode').val();
+        let mode = $('#report_mode').val() || 'summary';
         renderTableHeader(mode);
 
         $.ajax({
@@ -970,23 +1391,25 @@ $(document).ready(function() {
                 currentReportData = res.data || [];
 
                 // Update KPIs
-                $('#kpiGrandStockValue').text('Rs ' + (res.grand_total || 0).toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2}));
+                $('#kpiGrandStockValue').text('Rs ' + (parseFloat(res.grand_total) || 0).toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2}));
                 
-                let totalStock = res.total_current_stock || 0;
+                let totalStock = parseFloat(res.total_current_stock) || 0;
                 $('#kpiTotalStock').text(totalStock.toLocaleString() + ' Units');
                 
-                let netAdj = res.total_adjustments_qty || 0;
+                let netAdj = parseFloat(res.total_adjustments_qty) || 0;
                 let netAdjStr = (netAdj >= 0 ? '+' : '') + netAdj.toLocaleString() + ' Units';
                 $('#kpiNetAdjustments').text(netAdjStr);
                 
-                $('#kpiSoldAmount').text('Rs ' + (res.total_sold_amount || 0).toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2}));
+                $('#kpiSoldAmount').text('Rs ' + (parseFloat(res.total_sold_amount) || 0).toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2}));
 
                 renderTableBody(res.data, mode);
                 renderPagination(res.pagination);
             },
-            error: function () {
+            error: function (xhr, status, error) {
                 $('#loader').hide();
-                alert('Error loading stock report data.');
+                console.error('Stock report error:', error, xhr.responseText);
+                const colOrder = getColOrder(mode);
+                $('#reportBody').html(`<tr><td colspan="${colOrder.length}" class="text-center py-4 text-danger fw-semibold" style="font-size:13.5px;"><i class="fas fa-exclamation-triangle me-1"></i> Failed to load stock records. Please try again.</td></tr>`);
             }
         });
     }
@@ -1004,32 +1427,32 @@ $(document).ready(function() {
 
         let links = '';
         if (pag.current_page > 1) {
-            links += `<button class="qb-page-btn page-btn" data-page="${pag.current_page - 1}"><i class="fas fa-chevron-left me-1"></i> Prev</button>`;
+            links += `<button type="button" class="qb-page-btn page-btn" data-page="${pag.current_page - 1}"><i class="fas fa-chevron-left me-1"></i> Prev</button>`;
         }
 
         let startPage = Math.max(1, pag.current_page - 2);
         let endPage = Math.min(pag.last_page, pag.current_page + 2);
 
         if (startPage > 1) {
-            links += `<button class="qb-page-btn page-btn" data-page="1">1</button>`;
+            links += `<button type="button" class="qb-page-btn page-btn" data-page="1">1</button>`;
             if (startPage > 2) links += `<span class="px-1 text-muted">...</span>`;
         }
 
         for (let i = startPage; i <= endPage; i++) {
             if (i === pag.current_page) {
-                links += `<button class="qb-page-btn active page-btn" data-page="${i}">${i}</button>`;
+                links += `<button type="button" class="qb-page-btn active page-btn" data-page="${i}">${i}</button>`;
             } else {
-                links += `<button class="qb-page-btn page-btn" data-page="${i}">${i}</button>`;
+                links += `<button type="button" class="qb-page-btn page-btn" data-page="${i}">${i}</button>`;
             }
         }
 
         if (endPage < pag.last_page) {
             if (endPage < pag.last_page - 1) links += `<span class="px-1 text-muted">...</span>`;
-            links += `<button class="qb-page-btn page-btn" data-page="${pag.last_page}">${pag.last_page}</button>`;
+            links += `<button type="button" class="qb-page-btn page-btn" data-page="${pag.last_page}">${pag.last_page}</button>`;
         }
         
         if (pag.current_page < pag.last_page) {
-            links += `<button class="qb-page-btn page-btn" data-page="${pag.current_page + 1}">Next <i class="fas fa-chevron-right ms-1"></i></button>`;
+            links += `<button type="button" class="qb-page-btn page-btn" data-page="${pag.current_page + 1}">Next <i class="fas fa-chevron-right ms-1"></i></button>`;
         }
         
         $('#paginationLinks').html(links);
@@ -1044,160 +1467,352 @@ $(document).ready(function() {
         let thead = $('#tableHeader');
         thead.empty();
 
-        if (mode === 'summary') {
-            thead.append(`
-                <tr>
-                    <th style="width:28px;" class="text-center">#</th>
-                    <th style="width:78px;">Item Code</th>
-                    <th style="width:62px;" class="text-center" title="Unique Variant / Item No">Unique #</th>
-                    <th>Item / Variant Name</th>
-                    <th style="width:92px;">Category</th>
-                    <th class="text-center" style="width:42px;">Unit</th>
-                    <th class="text-center" style="width:78px;" title="Stock Balance">Stock Bal</th>
-                    <th class="text-center" style="width:80px;" title="Cartons / Loose Pieces">Cartons</th>
-                    <th class="text-end" style="width:88px;" title="Average Cost in Rupees">Avg Cost</th>
-                    <th class="text-end" style="width:96px;" title="Total Stock Value in Rupees">Stock Value</th>
-                    <th class="text-center" style="width:82px;">Status</th>
-                    <th class="text-center" style="width:36px;" title="Movement History Timeline"><i class="fas fa-history"></i></th>
-                </tr>
-            `);
-        } else {
-            thead.append(`
-                <tr>
-                    <th style="width:28px;" class="text-center">#</th>
-                    <th style="width:78px;">Item Code</th>
-                    <th style="width:62px;" class="text-center" title="Unique Variant / Item No">Unique #</th>
-                    <th>Item / Variant Name</th>
-                    <th class="text-end" style="width:56px;" title="Opening Stock">Open</th>
-                    <th class="text-end" style="width:58px;" title="Purchased">Purch (+)</th>
-                    <th class="text-end" style="width:58px;" title="Sold">Sold (-)</th>
-                    <th class="text-end" style="width:60px;" title="Sale Return">Sal Ret (+)</th>
-                    <th class="text-end" style="width:60px;" title="Purchase Return">Pur Ret (-)</th>
-                    <th class="text-center" style="background:#fffbeb !important; color:#92400e !important; width:66px;" title="Stock Adjustments">Adjust</th>
-                    <th class="text-end fw-bold" style="background:#eef2ff !important; color:#1d4ed8 !important; width:72px;" title="Closing Stock">Closing</th>
-                    <th class="text-end" style="width:92px;" title="Total Stock Value in Rupees">Stock Value</th>
-                    <th class="text-center" style="width:36px;" title="Movement History Timeline"><i class="fas fa-history"></i></th>
-                </tr>
-            `);
+        const colOrder = getColOrder(mode);
+        const colDef = (mode === 'summary') ? summaryColumns : ledgerColumns;
+
+        let tr = $('<tr></tr>');
+        colOrder.forEach(key => {
+            if (colDef[key]) {
+                tr.append(colDef[key].thHtml);
+            }
+        });
+        thead.append(tr);
+
+        initDraggableColumns();
+        initColumnResizing(mode);
+    }
+
+    function initDraggableColumns() {
+        const thead = document.getElementById('tableHeader');
+        if (!thead) return;
+        const headerRow = thead.querySelector('tr');
+        if (!headerRow) return;
+
+        const ths = headerRow.querySelectorAll('th.qb-col-draggable');
+        ths.forEach(th => {
+            th.setAttribute('draggable', 'true');
+
+            th.ondragstart = function (e) {
+                // If user clicked on resizer handle or resizing is in progress, cancel drag
+                if (e.target.classList.contains('col-resizer') || e.target.closest('.col-resizer') || $('body').hasClass('is-col-resizing')) {
+                    e.preventDefault();
+                    return false;
+                }
+                window.draggedStockTh = this;
+                this.classList.add('th-dragging');
+                e.dataTransfer.effectAllowed = 'move';
+                e.dataTransfer.setData('text/plain', this.getAttribute('data-col'));
+            };
+
+            th.ondragend = function () {
+                this.classList.remove('th-dragging');
+                ths.forEach(t => t.classList.remove('th-drag-over-left', 'th-drag-over-right'));
+                window.draggedStockTh = null;
+            };
+
+            th.ondragover = function (e) {
+                if ($('body').hasClass('is-col-resizing')) return;
+                e.preventDefault();
+                if (!window.draggedStockTh || window.draggedStockTh === this) return;
+                e.dataTransfer.dropEffect = 'move';
+
+                const rect = this.getBoundingClientRect();
+                const relX = e.clientX - rect.left;
+                ths.forEach(t => t.classList.remove('th-drag-over-left', 'th-drag-over-right'));
+                if (relX < rect.width / 2) {
+                    this.classList.add('th-drag-over-left');
+                } else {
+                    this.classList.add('th-drag-over-right');
+                }
+            };
+
+            th.ondragleave = function () {
+                this.classList.remove('th-drag-over-left', 'th-drag-over-right');
+            };
+
+            th.ondrop = function (e) {
+                e.preventDefault();
+                ths.forEach(t => t.classList.remove('th-drag-over-left', 'th-drag-over-right', 'th-dragging'));
+                const srcTh = window.draggedStockTh;
+                if (!srcTh || srcTh === this) return;
+
+                const rect = this.getBoundingClientRect();
+                const relX = e.clientX - rect.left;
+                const insertBefore = relX < rect.width / 2;
+
+                if (insertBefore) {
+                    headerRow.insertBefore(srcTh, this);
+                } else {
+                    headerRow.insertBefore(srcTh, this.nextSibling);
+                }
+
+                // Extract new column sequence from header
+                const newColOrder = [];
+                headerRow.querySelectorAll('th').forEach(h => {
+                    const colKey = h.getAttribute('data-col');
+                    if (colKey) newColOrder.push(colKey);
+                });
+
+                const mode = $('#report_mode').val() || 'summary';
+                saveColOrder(mode, newColOrder);
+
+                // Instantly reorder all tbody rows and footer
+                syncTableBodyColumnOrder(newColOrder);
+                syncTableFooterColumnOrder(newColOrder);
+            };
+        });
+    }
+
+    // ==========================================================
+    // COLUMN RESIZING WITH DRAG HANDLE & LOCALSTORAGE CACHING
+    // ==========================================================
+
+    function getSavedColWidths(mode) {
+        const key = 'kent_stock_report_widths_' + mode;
+        try {
+            const saved = localStorage.getItem(key);
+            return saved ? JSON.parse(saved) : {};
+        } catch (e) {
+            return {};
         }
     }
 
+    function saveColWidths(mode, widths) {
+        const key = 'kent_stock_report_widths_' + mode;
+        try {
+            localStorage.setItem(key, JSON.stringify(widths));
+        } catch (e) {}
+    }
+
+    function initColumnResizing(mode) {
+        const $table = $('#stockTable');
+        if (!$table.length) return;
+        const tableEl = $table[0];
+        const $container = $table.closest('.table-responsive');
+        const containerEl = $container[0];
+
+        let $guide = $container.find('#colResizeGuide');
+        if (!$guide.length) {
+            $guide = $('<div id="colResizeGuide" class="col-resize-guide"></div>');
+            $container.prepend($guide);
+        }
+        const guideEl = $guide[0];
+
+        const savedWidths = getSavedColWidths(mode);
+        const $ths = $('#tableHeader tr th');
+        let totalCalculatedWidth = 0;
+
+        $ths.each(function(i) {
+            const $th = $(this);
+            const thEl = $th[0];
+            const colKey = $th.attr('data-col') || ('col_' + i);
+
+            // Apply saved width if exists
+            if (savedWidths[colKey]) {
+                const w = parseInt(savedWidths[colKey], 10);
+                thEl.style.width = w + 'px';
+                thEl.style.minWidth = w + 'px';
+                totalCalculatedWidth += w;
+            } else {
+                const currentW = Math.round($th.outerWidth());
+                if (currentW > 0) {
+                    thEl.style.width = currentW + 'px';
+                    thEl.style.minWidth = currentW + 'px';
+                    totalCalculatedWidth += currentW;
+                }
+            }
+
+            // Remove existing resizer if any to avoid duplication
+            $th.find('.col-resizer').remove();
+
+            // Create resizer handle
+            const $resizer = $('<div class="col-resizer" title="Drag to adjust column width (Double-click to reset)"></div>');
+            $th.append($resizer);
+
+            $resizer.on('mousedown', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+
+                const startX = e.pageX;
+                const startW = Math.round($th.outerWidth());
+                const startTableW = Math.round($table.outerWidth());
+                const cachedParentW = Math.round(containerEl.clientWidth);
+                const containerRect = containerEl.getBoundingClientRect();
+                const containerScrollLeft = containerEl.scrollLeft;
+                let hasMoved = false;
+
+                $resizer.addClass('is-resizing');
+                $('body').addClass('is-col-resizing');
+                $th.attr('draggable', 'false');
+
+                // Initialize guide position and display
+                const initialGuideX = e.clientX - containerRect.left + containerScrollLeft;
+                guideEl.style.left = initialGuideX + 'px';
+                guideEl.style.height = tableEl.offsetHeight + 'px';
+                guideEl.style.display = 'block';
+
+                const minWidth = (colKey === 'index' || colKey === 'history') ? 38 : (colKey === 'unit' ? 50 : 65);
+
+                let rafId = null;
+                let targetWidth = startW;
+                let targetTableWidth = startTableW;
+                let targetGuideX = initialGuideX;
+
+                function onMouseMove(moveEvent) {
+                    const diff = moveEvent.pageX - startX;
+                    if (Math.abs(diff) > 1) {
+                        hasMoved = true;
+                    }
+
+                    const newW = Math.max(minWidth, Math.round(startW + diff));
+                    if (newW === targetWidth) return;
+                    targetWidth = newW;
+                    const actualDiff = newW - startW;
+                    targetTableWidth = Math.max(cachedParentW, startTableW + actualDiff);
+
+                    targetGuideX = moveEvent.clientX - containerRect.left + containerEl.scrollLeft;
+
+                    if (!rafId) {
+                        rafId = requestAnimationFrame(function() {
+                            rafId = null;
+                            // Ultra-fast hardware-accelerated direct style updates (Zero layout thrashing!)
+                            thEl.style.width = targetWidth + 'px';
+                            thEl.style.minWidth = targetWidth + 'px';
+                            tableEl.style.width = targetTableWidth + 'px';
+                            tableEl.style.minWidth = targetTableWidth + 'px';
+                            guideEl.style.left = targetGuideX + 'px';
+                        });
+                    }
+                }
+
+                function onMouseUp() {
+                    $(document).off('mousemove', onMouseMove);
+                    $(document).off('mouseup', onMouseUp);
+
+                    if (rafId) {
+                        cancelAnimationFrame(rafId);
+                        rafId = null;
+                    }
+
+                    guideEl.style.display = 'none';
+                    $resizer.removeClass('is-resizing');
+                    $('body').removeClass('is-col-resizing');
+                    $th.attr('draggable', 'true');
+
+                    if (hasMoved) {
+                        const currentWidths = getSavedColWidths(mode);
+                        currentWidths[colKey] = targetWidth;
+                        saveColWidths(mode, currentWidths);
+                    }
+                }
+
+                $(document).on('mousemove', onMouseMove);
+                $(document).on('mouseup', onMouseUp);
+            });
+
+            // Double click resets column width
+            $resizer.on('dblclick', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+
+                const currentWidths = getSavedColWidths(mode);
+                delete currentWidths[colKey];
+                saveColWidths(mode, currentWidths);
+
+                thEl.style.width = '';
+                thEl.style.minWidth = '';
+                tableEl.style.width = '100%';
+                tableEl.style.minWidth = '100%';
+
+                setTimeout(function() {
+                    initColumnResizing(mode);
+                }, 40);
+            });
+        });
+
+        if (totalCalculatedWidth > 0) {
+            const parentWidth = Math.round(containerEl.clientWidth);
+            const finalTableWidth = Math.max(parentWidth, totalCalculatedWidth);
+            tableEl.style.width = finalTableWidth + 'px';
+            tableEl.style.minWidth = finalTableWidth + 'px';
+        }
+    }
+
+    function syncTableBodyColumnOrder(colOrder) {
+        const tbody = document.getElementById('reportBody');
+        if (!tbody) return;
+        const rows = tbody.querySelectorAll('tr');
+        rows.forEach(tr => {
+            const cellMap = {};
+            Array.from(tr.children).forEach(td => {
+                const k = td.getAttribute('data-col');
+                if (k) cellMap[k] = td;
+            });
+            colOrder.forEach(k => {
+                if (cellMap[k]) tr.appendChild(cellMap[k]);
+            });
+        });
+    }
+
+    function syncTableFooterColumnOrder(colOrder) {
+        const tfoot = document.getElementById('tableFooter');
+        if (!tfoot) return;
+        const rows = tfoot.querySelectorAll('tr');
+        rows.forEach(tr => {
+            const cellMap = {};
+            Array.from(tr.children).forEach(td => {
+                const k = td.getAttribute('data-col');
+                if (k) cellMap[k] = td;
+            });
+            colOrder.forEach(k => {
+                if (cellMap[k]) tr.appendChild(cellMap[k]);
+            });
+        });
+    }
+
     function renderTableBody(data, mode) {
-        let tbody  = $('#reportBody');
-        let tfooter= $('#tableFooter');
+        let tbody   = $('#reportBody');
+        let tfooter = $('#tableFooter');
         tbody.empty();
         tfooter.empty();
 
+        const colOrder = getColOrder(mode);
+        const colDef = (mode === 'summary') ? summaryColumns : ledgerColumns;
+
         if (!data || data.length === 0) {
-            tbody.append(`<tr><td colspan="13" class="text-center py-4 text-muted fw-semibold" style="font-size:13px;">No stock data found matching the selected filters.</td></tr>`);
+            tbody.append(`<tr><td colspan="${colOrder.length}" class="text-center py-4 text-muted fw-semibold" style="font-size:13.5px;">No stock data found matching the selected filters.</td></tr>`);
             return;
         }
 
         let totalValue = 0;
 
         $.each(data, function (i, row) {
-            totalValue += parseFloat(row.stock_value) || 0;
+            totalValue += (parseFloat(row.stock_value) || 0);
 
-            let historyBtn = `
-                <button type="button" class="qb-history-btn view-history-btn" data-id="${row.id}" data-name="${escapeHtml(row.item_name)}" title="View Movement History Timeline">
-                    <i class="fas fa-history"></i>
-                </button>
-            `;
-
-            let itemCodeBadge = row.item_code 
-                ? `<span class="acc-badge-code">${row.item_code}</span>` 
-                : `<span class="text-muted tabular-nums">—</span>`;
-
-            let itemNumberBadge = (row.item_number && String(row.item_number).trim() !== '') 
-                ? `<span class="badge bg-primary text-white" style="font-family:'SFMono-Regular',Consolas,'Segoe UI',monospace; font-size:10.5px; font-weight:600; padding:2px 5px; border-radius:3px;" title="Unique Variant / Item No">#${escapeHtml(String(row.item_number).replace(/^#/, ''))}</span>` 
-                : `<span class="text-muted tabular-nums">—</span>`;
-
-            if (mode === 'summary') {
-                let statusBadge = '<span class="qb-status-badge qb-status-healthy"><i class="fas fa-check-circle"></i> In Stock</span>';
-                if (row.status === 'out_of_stock') {
-                    statusBadge = '<span class="qb-status-badge qb-status-out"><i class="fas fa-times-circle"></i> Out of Stock</span>';
-                } else if (row.status === 'low_stock') {
-                    statusBadge = '<span class="qb-status-badge qb-status-low"><i class="fas fa-exclamation-triangle"></i> Low Stock</span>';
+            let rowHtml = '<tr>';
+            colOrder.forEach(key => {
+                if (colDef[key]) {
+                    rowHtml += colDef[key].getCell(row, i);
                 }
-
-                let stockNum = parseFloat(row.balance) || 0;
-                let stockColor = stockNum > 0 ? 'color:#15803d;' : (stockNum < 0 ? 'color:#b91c1c;' : 'color:#475569;');
-
-                let rowHtml = `
-                <tr>
-                    <td class="text-center text-muted tabular-nums fw-semibold" style="font-size:11.5px; padding:4px 2px;">${i + 1}</td>
-                    <td style="padding:4px 5px;">${itemCodeBadge}</td>
-                    <td class="text-center" style="padding:4px 3px;">${itemNumberBadge}</td>
-                    <td class="fw-semibold text-dark" style="font-size:12px; line-height:1.25; word-break:break-word; padding:4px 6px;">${row.item_name}</td>
-                    <td class="text-secondary" style="font-size:11.5px; line-height:1.2; word-break:break-word; padding:4px 5px;">${row.category_name || '—'}</td>
-                    <td class="text-center" style="padding:4px 3px;"><span class="qb-unit-badge">${row.unit_name || 'Pcs'}</span></td>
-                    <td class="text-center tabular-nums fw-bold" style="${stockColor} font-size:12px; padding:4px 5px;">${row.formatted_stock}</td>
-                    <td class="text-center tabular-nums fw-semibold" style="color:#475569; font-size:11.5px; padding:4px 5px;">${row.carton_display || '—'}</td>
-                    <td class="text-end tabular-nums fw-bold text-dark" style="font-size:12px; padding:4px 5px;">Rs ${parseFloat(row.average_price).toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}</td>
-                    <td class="text-end tabular-nums fw-bold" style="color:#0f172a; font-size:12px; padding:4px 5px;">Rs ${parseFloat(row.stock_value).toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}</td>
-                    <td class="text-center" style="padding:4px 3px;">${statusBadge}</td>
-                    <td class="text-center" style="padding:4px 2px;">${historyBtn}</td>
-                </tr>`;
-                tbody.append(rowHtml);
-
-            } else {
-                // Detailed Movement Ledger Row
-                let adjVal = parseFloat(row.adjustments) || 0;
-                let adjBadge = '<span class="text-muted tabular-nums">—</span>';
-                if (adjVal > 0) {
-                    adjBadge = `<span class="acc-bal-flag dr tabular-nums">+${adjVal}</span>`;
-                } else if (adjVal < 0) {
-                    adjBadge = `<span class="acc-bal-flag cr tabular-nums">${adjVal}</span>`;
-                }
-
-                let stockNum = parseFloat(row.balance) || 0;
-                let stockColor = stockNum > 0 ? 'color:#15803d;' : (stockNum < 0 ? 'color:#b91c1c;' : 'color:#475569;');
-
-                let rowHtml = `
-                <tr>
-                    <td class="text-center text-muted tabular-nums fw-semibold" style="font-size:11.5px; padding:4px 2px;">${i + 1}</td>
-                    <td style="padding:4px 5px;">${itemCodeBadge}</td>
-                    <td class="text-center" style="padding:4px 3px;">${itemNumberBadge}</td>
-                    <td class="fw-semibold text-dark" style="font-size:12px; line-height:1.25; word-break:break-word; padding:4px 6px;">${row.item_name}</td>
-                    <td class="text-end tabular-nums text-muted" style="font-size:11.5px; padding:4px 4px;">${parseFloat(row.initial_stock).toLocaleString()}</td>
-                    <td class="text-end tabular-nums text-success fw-bold" style="font-size:11.5px; padding:4px 4px;">+${parseFloat(row.purchased).toLocaleString()}</td>
-                    <td class="text-end tabular-nums text-danger fw-bold" style="font-size:11.5px; padding:4px 4px;">-${parseFloat(row.sold).toLocaleString()}</td>
-                    <td class="text-end tabular-nums text-success fw-bold" style="font-size:11.5px; padding:4px 4px;">+${parseFloat(row.returned_qty).toLocaleString()}</td>
-                    <td class="text-end tabular-nums text-danger fw-bold" style="font-size:11.5px; padding:4px 4px;">-${parseFloat(row.purch_returned_qty).toLocaleString()}</td>
-                    <td class="text-center qb-col-adjust" style="padding:4px 3px;">${adjBadge}</td>
-                    <td class="text-end tabular-nums fw-bold qb-col-closing" style="${stockColor} font-size:12px; padding:4px 5px;">${row.formatted_stock}</td>
-                    <td class="text-end tabular-nums fw-bold text-dark" style="font-size:12px; padding:4px 5px;">Rs ${parseFloat(row.stock_value).toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}</td>
-                    <td class="text-center" style="padding:4px 2px;">${historyBtn}</td>
-                </tr>`;
-                tbody.append(rowHtml);
-            }
+            });
+            rowHtml += '</tr>';
+            tbody.append(rowHtml);
         });
 
         // Table Footer Summary
-        if (mode === 'summary') {
-            tfooter.append(`
-                <tr>
-                    <td colspan="8" class="text-end fw-bold" style="color:#0f2744; letter-spacing:0.3px; font-size:11.5px;">PAGE STOCK VALUATION TOTAL:</td>
-                    <td class="text-end tabular-nums fw-bold" style="color:#1e3a5f; font-size:12px;">—</td>
-                    <td class="text-end tabular-nums fw-bold" style="color:#1d4ed8; font-size:12.5px;">Rs ${totalValue.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}</td>
-                    <td colspan="2"></td>
-                </tr>
-            `);
-        } else {
-            tfooter.append(`
-                <tr>
-                    <td colspan="11" class="text-end fw-bold" style="color:#0f2744; letter-spacing:0.3px; font-size:11.5px;">PAGE STOCK VALUATION TOTAL:</td>
-                    <td class="text-end tabular-nums fw-bold" style="color:#1d4ed8; font-size:12.5px;">Rs ${totalValue.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}</td>
-                    <td></td>
-                </tr>
-            `);
-        }
-    }
+        let footerHtml = '<tr>';
+        colOrder.forEach(key => {
+            if (colDef[key]) {
+                footerHtml += colDef[key].getFooter(totalValue);
+            }
+        });
+        footerHtml += '</tr>';
+        tfooter.append(footerHtml);
     }
 
     function escapeHtml(text) {
-        if (!text) return '';
-        return text
+        if (text === null || text === undefined) return '';
+        return String(text)
             .replace(/&/g, "&amp;")
             .replace(/</g, "&lt;")
             .replace(/>/g, "&gt;")
@@ -1226,66 +1841,51 @@ $(document).ready(function() {
                         let qtyColor = qtyVal > 0 ? 'text-success' : (qtyVal < 0 ? 'text-danger' : 'text-dark');
                         let row = `
                         <tr>
-                            <td class="ps-3 text-dark font-monospace fw-semibold" style="font-size:12px;">${m.date}</td>
-                            <td><span class="badge bg-${m.type_badge} px-2 py-1 font-monospace" style="font-size:11.5px;">${m.type}</span></td>
-                            <td><span class="acc-badge-code">${m.ref_type}</span></td>
-                            <td class="text-center font-monospace fw-bold ${qtyColor}" style="font-size:12.5px;">${qtyVal > 0 ? '+' : ''}${m.qty}</td>
-                            <td style="font-size:12px; color:#334155;">${m.note || '—'}</td>
+                            <td class="ps-3 text-dark tabular-nums fw-semibold" style="font-size:14px;">${m.date}</td>
+                            <td><span class="badge bg-${m.type_badge} px-2 py-1" style="font-family:'Inter',system-ui,sans-serif; font-size:13px; font-weight:700;">${m.type}</span></td>
+                            <td><span class="acc-badge-code" style="font-size:13px;">${m.ref_type}</span></td>
+                            <td class="text-center tabular-nums fw-bold ${qtyColor}" style="font-size:14.5px;">${qtyVal > 0 ? '+' : ''}${m.qty}</td>
+                            <td style="font-size:14px; color:#334155;">${m.note || '—'}</td>
                         </tr>`;
                         tbody.append(row);
                     });
                 } else {
-                    tbody.html('<tr><td colspan="5" class="text-center py-4 text-muted fw-semibold" style="font-size:12px;">No stock movements recorded for this item yet.</td></tr>');
+                    tbody.html('<tr><td colspan="5" class="text-center py-4 text-muted fw-semibold" style="font-size:14px;">No stock movements recorded for this item yet.</td></tr>');
                 }
             },
             error: function () {
-                tbody.html('<tr><td colspan="5" class="text-center py-4 text-danger fw-semibold" style="font-size:12px;">Failed to fetch movement history.</td></tr>');
+                tbody.html('<tr><td colspan="5" class="text-center py-4 text-danger fw-semibold" style="font-size:14px;">Failed to fetch movement history.</td></tr>');
             }
         });
     });
 
-    // Export CSV
+    // Export CSV with Dynamic Column Arrangement
     $('#btnExportCsv, #btnExportCsvTop').on('click', function () {
         if (!currentReportData || currentReportData.length === 0) {
             alert('No report data to export.');
             return;
         }
 
-        let mode = $('#report_mode').val();
-        let csv = '';
+        let mode = $('#report_mode').val() || 'summary';
+        const colOrder = getColOrder(mode);
+        const colDef = (mode === 'summary') ? summaryColumns : ledgerColumns;
 
-        if (mode === 'summary') {
-            csv = 'Item Code,Unique Item #,Item Name,Category,Unit,Stock Balance,Cartons / Loose,Avg Price (Rs),Stock Value (Rs),Status\n';
-            $.each(currentReportData, function (i, r) {
-                let code = (r.item_code || '').replace(/"/g, '""');
-                let itemNum = (r.item_number || '').replace(/"/g, '""');
-                let name = (r.item_name || '').replace(/"/g, '""');
-                let cat  = (r.category_name || '').replace(/"/g, '""');
-                let unit = (r.unit_name || '').replace(/"/g, '""');
-                let bal  = (r.balance || 0);
-                let cart = (r.carton_display || '').replace(/"/g, '""');
-                let avg  = (r.average_price || 0);
-                let val  = (r.stock_value || 0);
-                let st   = (r.status || '');
-                csv += `"${code}","${itemNum}","${name}","${cat}","${unit}","${bal}","${cart}","${avg}","${val}","${st}"\n`;
-            });
-        } else {
-            csv = 'Item Code,Unique Item #,Item Name,Opening,Purchased (+),Sold (-),Sale Return (+),Purch Return (-),Adjustments (+/-),Closing Stock,Stock Value (Rs)\n';
-            $.each(currentReportData, function (i, r) {
-                let code = (r.item_code || '').replace(/"/g, '""');
-                let itemNum = (r.item_number || '').replace(/"/g, '""');
-                let name = (r.item_name || '').replace(/"/g, '""');
-                let op   = (r.initial_stock || 0);
-                let pu   = (r.purchased || 0);
-                let so   = (r.sold || 0);
-                let sr   = (r.returned_qty || 0);
-                let pr   = (r.purch_returned_qty || 0);
-                let adj  = (r.adjustments || 0);
-                let cl   = (r.balance || 0);
-                let val  = (r.stock_value || 0);
-                csv += `"${code}","${itemNum}","${name}","${op}","${pu}","${so}","${sr}","${pr}","${adj}","${cl}","${val}"\n`;
-            });
-        }
+        // Build CSV header from current column order
+        let headerRow = colOrder
+            .filter(k => k !== 'history')
+            .map(k => '"' + (colDef[k].title || '').replace(/"/g, '""') + '"')
+            .join(',');
+        let csv = headerRow + '\n';
+
+        $.each(currentReportData, function (i, r) {
+            let rowVals = colOrder
+                .filter(k => k !== 'history')
+                .map(k => {
+                    let v = colDef[k].getCsvValue(r, i);
+                    return '"' + String(v === null || v === undefined ? '' : v).replace(/"/g, '""') + '"';
+                });
+            csv += rowVals.join(',') + '\n';
+        });
 
         let blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
         let link = document.createElement("a");

@@ -201,14 +201,14 @@
         width: 100%;
         border-collapse: separate !important;
         border-spacing: 0 !important;
-        font-size: 12px;
+        font-size: 13.5px;
         table-layout: fixed;
     }
     #modalVariantTable {
         width: 100% !important;
         border-collapse: separate !important;
         border-spacing: 0 !important;
-        font-size: 12px;
+        font-size: 13px;
         table-layout: auto;
     }
     #productTable thead th, #modalVariantTable thead th {
@@ -216,9 +216,9 @@
         color: #1e293b !important;
         font-weight: 700;
         text-transform: uppercase;
-        font-size: 11px;
+        font-size: 12.5px;
         letter-spacing: 0.35px;
-        padding: 7px 8px !important;
+        padding: 8px 10px !important;
         border-top: 1px solid #e2e8f0 !important;
         border-bottom: 2px solid #cbd5e1 !important;
         border-right: 1px solid #e2e8f0 !important;
@@ -271,18 +271,136 @@
     body.is-col-resizing * {
         user-select: none !important;
     }
+
+    /* ── Column Hover Highlight (entire column lights up on mouseenter) ── */
+    #productTable td.col-hover-highlight {
+        background-color: #dbeafe !important;
+        transition: background-color 0.08s ease;
+    }
+    #productTable thead th.col-hover-highlight {
+        background-color: #dbeafe !important;
+        color: #1d4ed8 !important;
+        box-shadow: inset 0 -3px 0 #2563eb, inset 0 2px 0 #2563eb !important;
+        transition: background-color 0.08s ease;
+    }
+    #productTable tbody tr:hover td.col-hover-highlight {
+        background-color: #93c5fd !important;
+        color: #1e3a8a !important;
+        font-weight: 600 !important;
+        box-shadow: inset 0 0 0 1.5px #2563eb !important;
+    }
+    #productTable tbody tr.row-qb-selected td.col-hover-highlight {
+        background-color: #7db8fc !important;
+        color: #1e3a8a !important;
+    }
+
+    /* ── Hide Any Sorting Arrow Glyphs (Prevent Cramping & Text Overlap) ── */
+    #productTable thead th:before,
+    #productTable thead th:after,
+    #productTable thead .sorting:before,
+    #productTable thead .sorting:after,
+    #productTable thead .sorting_asc:before,
+    #productTable thead .sorting_asc:after,
+    #productTable thead .sorting_desc:before,
+    #productTable thead .sorting_desc:after {
+        display: none !important;
+        content: "" !important;
+    }
+    #productTable thead th {
+        padding-right: 8px !important;
+    }
+
+    /* ── Drag & Drop Column Reorder: Sleek Compact Floating Badge ── */
+    table.DTCR_clonedTable,
+    table.DTCR_clonedTable.dataTable,
+    table.DTCR_clonedTable.table,
+    body > table.DTCR_clonedTable {
+        position: absolute !important;
+        width: auto !important;
+        min-width: 0 !important;
+        max-width: 180px !important;
+        height: auto !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        border-collapse: separate !important;
+        table-layout: auto !important;
+        background: #ffffff !important;
+        border: 2px solid #2563eb !important;
+        border-radius: 8px !important;
+        box-shadow: 0 10px 25px rgba(37, 99, 235, 0.35), 0 4px 10px rgba(0, 0, 0, 0.15) !important;
+        z-index: 999999 !important;
+        pointer-events: none !important;
+        overflow: hidden !important;
+        opacity: 0.95 !important;
+    }
+    table.DTCR_clonedTable thead,
+    table.DTCR_clonedTable tbody,
+    table.DTCR_clonedTable tr {
+        background: transparent !important;
+        border: none !important;
+        width: auto !important;
+    }
+    table.DTCR_clonedTable thead th,
+    table.DTCR_clonedTable th {
+        background: #eff6ff !important;
+        color: #1d4ed8 !important;
+        font-size: 11px !important;
+        font-weight: 700 !important;
+        text-transform: uppercase !important;
+        letter-spacing: 0.4px !important;
+        padding: 6px 14px !important;
+        white-space: nowrap !important;
+        border: none !important;
+        text-align: center !important;
+        box-shadow: none !important;
+        display: block !important;
+        width: auto !important;
+        min-width: 0 !important;
+        max-width: 170px !important;
+        overflow: hidden !important;
+        text-overflow: ellipsis !important;
+    }
+    table.DTCR_clonedTable thead th:before,
+    table.DTCR_clonedTable thead th:after,
+    table.DTCR_clonedTable .col-resizer {
+        display: none !important;
+    }
+
+    /* Vertical drop insertion indicator line */
+    div.DTCR_pointer {
+        width: 3px !important;
+        background-color: #2563eb !important;
+        z-index: 99999 !important;
+        box-shadow: 0 0 10px rgba(37, 99, 235, 0.8), 0 0 3px #1d4ed8 !important;
+        border-radius: 3px !important;
+    }
+    /* Grab cursor for draggable headers */
+    #productTable thead th {
+        cursor: grab;
+    }
+    #productTable thead th:active {
+        cursor: grabbing;
+    }
+    /* Don't show grab on checkbox column */
+    #productTable thead th:first-child {
+        cursor: default;
+    }
+    #productTable thead th .col-resizer {
+        cursor: col-resize;
+    }
+
     #productTable thead th:last-child, #modalVariantTable thead th:last-child {
         border-right: none !important;
     }
     #productTable tbody td, #modalVariantTable tbody td {
-        padding: 5px 8px !important;
+        padding: 6px 10px !important;
         border: none !important;
         border-bottom: 1px solid #c8d7e6 !important;
         border-right: 1px solid #cbd8e7 !important;
         color: #1e293b;
         vertical-align: middle;
-        font-size: 12px;
-        line-height: 1.25;
+        font-size: 13.5px;
+        line-height: 1.35;
         white-space: nowrap;
         box-sizing: border-box;
         overflow: hidden;
@@ -339,43 +457,43 @@
     }
 
     /* Item details cell */
-    .item-name { font-weight: 700; color: #0f172a; margin-bottom: 1px; font-size: 12px; line-height: 1.25; }
-    .item-meta { font-size: 10.5px; color: var(--erp-muted); display: flex; flex-wrap: wrap; gap: 3px; align-items: center; margin-top: 1px; }
+    .item-name { font-weight: 700; color: #0f172a; margin-bottom: 2px; font-size: 14px; line-height: 1.3; }
+    .item-meta { font-size: 12px; color: var(--erp-muted); display: flex; flex-wrap: wrap; gap: 4px; align-items: center; margin-top: 2px; }
     .item-meta .meta-chip {
-        background: #f1f5f9; border-radius: 3px; padding: 1px 5px;
-        font-size: 10px; font-weight: 600; color: #475569;
-        display: inline-flex; align-items: center; gap: 2px;
+        background: #f1f5f9; border-radius: 4px; padding: 2px 6px;
+        font-size: 11px; font-weight: 600; color: #475569;
+        display: inline-flex; align-items: center; gap: 3px;
     }
-    .item-code { font-family: 'Courier New', monospace; background: #ffffff; border: 1px solid #cbd5e1; border-radius: 3px; padding: 0 4px; font-size: 10.5px; font-weight: 700; color: #334155; }
+    .item-code { font-family: 'Courier New', monospace; background: #ffffff; border: 1px solid #cbd5e1; border-radius: 4px; padding: 1px 6px; font-size: 12px; font-weight: 700; color: #334155; }
 
     /* Stock badge */
     .stock-badge {
-        display: inline-flex; align-items: center; gap: 3px;
+        display: inline-flex; align-items: center; gap: 4px;
         background: var(--erp-success-lt); color: var(--erp-success);
-        border: 1px solid #a7f3d0; border-radius: 4px;
-        padding: 1px 5px; font-size: 11px; font-weight: 700;
+        border: 1px solid #a7f3d0; border-radius: 5px;
+        padding: 2px 7px; font-size: 12.5px; font-weight: 700;
         white-space: nowrap;
     }
     .stock-badge.low  { background: var(--erp-danger-lt); color: var(--erp-danger); border-color: #fecaca; }
     .stock-badge.zero { background: #fef3c7; color: #b45309; border-color: #fde68a; }
-    .stock-unit { font-weight: 500; font-size: 10px; opacity: .85; }
+    .stock-unit { font-weight: 500; font-size: 11.5px; opacity: .85; }
 
     /* Price cells */
-    .price-purchase { color: #64748b; font-weight: 600; font-size: 11.5px; white-space: nowrap; font-variant-numeric: tabular-nums; }
-    .price-sale     { color: #059669; font-weight: 800; font-size: 12px; white-space: nowrap; font-variant-numeric: tabular-nums; }
-    .price-wholesale { color: #0284c7; font-weight: 700; font-size: 11.5px; white-space: nowrap; font-variant-numeric: tabular-nums; }
+    .price-purchase { color: #64748b; font-weight: 600; font-size: 13px; white-space: nowrap; font-variant-numeric: tabular-nums; }
+    .price-sale     { color: #059669; font-weight: 800; font-size: 14px; white-space: nowrap; font-variant-numeric: tabular-nums; }
+    .price-wholesale { color: #0284c7; font-weight: 700; font-size: 13px; white-space: nowrap; font-variant-numeric: tabular-nums; }
 
     /* Status badge */
     .status-active {
         background: #ecfdf5; color: #059669;
-        border: 1px solid #a7f3d0; border-radius: 4px;
-        padding: 1px 6px; font-size: 10.5px; font-weight: 700;
+        border: 1px solid #a7f3d0; border-radius: 5px;
+        padding: 2px 8px; font-size: 12px; font-weight: 700;
         white-space: nowrap;
     }
     .status-inactive {
         background: #f1f5f9; color: #64748b;
-        border: 1px solid #cbd5e1; border-radius: 4px;
-        padding: 1px 6px; font-size: 10.5px; font-weight: 700;
+        border: 1px solid #cbd5e1; border-radius: 5px;
+        padding: 2px 8px; font-size: 12px; font-weight: 700;
         white-space: nowrap;
     }
 
@@ -3021,7 +3139,7 @@
                     <strong>Cycle Count Due:</strong> <span class="badge bg-danger text-white qb-due-counter">{{ $dueCycleCount }}</span> product(s) are due for physical inventory counting today based on sales velocity!
                 </span>
             </div>
-            <button type="button" class="btn btn-sm btn-primary fw-bold px-3 py-1" id="qbMainBannerCountDueBtn" style="font-size: 12px; border-radius: 6px;">
+            <button type="button" class="btn btn-sm btn-primary fw-bold px-3 py-1 d-none" id="qbMainBannerCountDueBtn" style="display: none !important;">
                 <i class="fas fa-clipboard-check me-1"></i> Count Due Products Now
             </button>
         </div>
@@ -3110,10 +3228,10 @@
                             @endphp
                             <tr id="product-row-{{ $product->id }}" class="{{ $product->is_active ? '' : 'row-inactive' }}">
                                 <td class="text-center"><input type="checkbox" class="selectProduct row-check" value="{{ $product->id }}"></td>
-                                <td class="text-center text-muted" style="font-size:11px;">{{ $products->firstItem() + $key }}</td>
+                                <td class="text-center text-muted" style="font-size:12.5px; font-weight:600;">{{ $products->firstItem() + $key }}</td>
                                 <td class="text-center">
                                     @if(!empty($product->item_number))
-                                        <div class="mb-1"><span class="badge bg-primary text-white font-monospace" style="font-size:10px;">#{{ $product->item_number }}</span></div>
+                                        <div class="mb-1"><span class="badge bg-primary text-white font-monospace" style="font-size:11.5px;">#{{ $product->item_number }}</span></div>
                                     @endif
                                     <span class="item-code">{{ $product->item_code }}</span>
                                 </td>
@@ -3129,10 +3247,10 @@
                                     <div class="item-name">{{ $product->item_name }}</div>
                                     <div class="item-meta">
                                         @if($product->category_relation)
-                                            <span class="meta-chip"><i class="fas fa-list" style="font-size:.6rem;"></i> {{ $product->category_relation->name }}</span>
+                                            <span class="meta-chip"><i class="fas fa-list" style="font-size:.65rem;"></i> {{ $product->category_relation->name }}</span>
                                         @endif
                                         @if($product->brand)
-                                            <span class="meta-chip"><i class="fas fa-trademark" style="font-size:.6rem;"></i> {{ $product->brand->name }}</span>
+                                            <span class="meta-chip"><i class="fas fa-trademark" style="font-size:.65rem;"></i> {{ $product->brand->name }}</span>
                                         @endif
                                     </div>
                                 </td>
@@ -3146,13 +3264,13 @@
                                 <td class="price-purchase text-end">Rs. {{ number_format($tradePrice, 2) }}</td>
                                 <td class="price-sale text-end">Rs. {{ number_format($retailPrice, 2) }}</td>
                                 <td class="text-center">
-                                    <span class="badge bg-light text-dark border px-1.5 py-0.5 font-monospace fw-bold" style="font-size: 11px;" title="Sky P-Code">
+                                    <span class="badge bg-light text-dark border px-1.5 py-0.5 font-monospace fw-bold" style="font-size: 12.5px;" title="Sky P-Code">
                                         {{ \App\Services\PCodeService::encode($retailPrice) }}
                                     </span>
                                 </td>
                                 <td class="price-wholesale text-end">Rs. {{ number_format((float)($product->wholesale_price ?? 0), 2) }}</td>
                                 <td class="text-center">
-                                    <span class="badge bg-light text-dark border px-1.5 py-0.5 font-monospace fw-bold" style="font-size: 11px;" title="Rot P-Code">
+                                    <span class="badge bg-light text-dark border px-1.5 py-0.5 font-monospace fw-bold" style="font-size: 12.5px;" title="Rot P-Code">
                                         {{ \App\Services\PCodeService::encode((float)($product->wholesale_price ?? 0)) }}
                                     </span>
                                 </td>
@@ -3854,6 +3972,7 @@
                     <span class="fw-semibold text-secondary" style="font-size: 12px;">Available Columns:</span>
                     <div class="btn-group btn-group-sm">
                         <button type="button" class="btn btn-sm btn-outline-primary py-0 px-2" style="font-size: 11px;" id="idxColSelectAll">Select All</button>
+                        <button type="button" class="btn btn-sm btn-outline-warning py-0 px-2" style="font-size: 11px;" id="idxColResetOrder">Reset Order</button>
                         <button type="button" class="btn btn-sm btn-outline-secondary py-0 px-2" style="font-size: 11px;" id="idxColResetDefault">Reset Default</button>
                     </div>
                 </div>
@@ -4241,6 +4360,10 @@
     <button type="button" class="qb-ctx-item text-muted" id="qbCtxResetWidthsBtn">
         <i class="fas fa-arrows-alt-h"></i>
         <span>Reset Column Widths</span>
+    </button>
+    <button type="button" class="qb-ctx-item text-muted" id="qbCtxResetOrderBtn">
+        <i class="fas fa-sort-amount-down-alt"></i>
+        <span>Reset Column Order</span>
     </button>
     <button type="button" class="qb-ctx-item text-muted" id="qbCtxResetIndexBtn">
         <i class="fas fa-undo"></i>
@@ -4633,6 +4756,9 @@
 @endsection
 
 @section('js')
+<link rel="stylesheet" href="{{ asset('assets/vendors/data-table/css/colReorder.dataTables.min.css') }}">
+<script src="{{ asset('assets/vendors/data-table/js/jquery.dataTables.min.js') }}"></script>
+<script src="{{ asset('assets/vendors/data-table/js/dataTables.colReorder.min.js') }}"></script>
 <script src="{{ asset('assets/js/xlsx.full.min.js') }}"></script>
 <script>
 if (typeof XLSX === 'undefined') {
@@ -4851,17 +4977,68 @@ $(document).ready(function () {
     });
 
     // ── DataTable init ── (responsive:false – we use CSS horizontal scroll instead)
+    const COL_ORDER_STORAGE_KEY = 'kent_product_col_order_v1';
+    let savedColOrder = null;
+    try {
+        const raw = localStorage.getItem(COL_ORDER_STORAGE_KEY);
+        if (raw) savedColOrder = JSON.parse(raw);
+    } catch(e) {}
+
     let table = $('#productTable').DataTable({
         responsive: false,
         paging:     false,
         ordering:   true,
         info:       false,
         order:      [[4, 'asc']],
-        dom:        'rt',
+        dom:        'Rrt',
         scrollX:    false,
         autoWidth:  false,
-        columnDefs: [{ targets: [0, 12], orderable: false, searchable: false }]
+        columnDefs: [{ targets: [0, 12], orderable: false, searchable: false }],
+        colReorder: {
+            fixedColumnsLeft: 1,
+            order: savedColOrder || undefined
+        }
     });   // DataTable closes here
+
+    // Save column order whenever it changes
+    table.on('column-reorder', function(e, settings, details) {
+        try {
+            const currentOrder = table.colReorder.order();
+            localStorage.setItem(COL_ORDER_STORAGE_KEY, JSON.stringify(currentOrder));
+        } catch(ex) {}
+        // Re-init resizing after column reorder
+        if (typeof initTableColumnResizing === 'function') {
+            setTimeout(initTableColumnResizing, 80);
+        }
+    });
+
+    // Ensure cloned drag node looks clean, compact and matches header width
+    $(document).on('mousedown', '#productTable thead th', function(e) {
+        if ($(e.target).is('.col-resizer') || $(e.target).is('input') || $(e.target).is('button')) return;
+        const $th = $(this);
+        const thWidth = Math.min(160, Math.max(65, $th.outerWidth()));
+        
+        let attempts = 0;
+        const interval = setInterval(function() {
+            attempts++;
+            const $clone = $('table.DTCR_clonedTable');
+            if ($clone.length) {
+                $clone.css({
+                    'width': thWidth + 'px',
+                    'min-width': '0px',
+                    'max-width': '180px'
+                });
+                $clone.find('th').css({
+                    'width': '100%',
+                    'min-width': '0px',
+                    'max-width': '180px',
+                    'padding': '6px 12px'
+                });
+                clearInterval(interval);
+            }
+            if (attempts > 30) clearInterval(interval);
+        }, 15);
+    });
 
     // ══════════════════════════════════════════════════════════════
     // QUICKBOOKS POS STYLE: CUSTOMIZE PRODUCT TABLE COLUMNS
@@ -5271,6 +5448,49 @@ $(document).ready(function () {
     // Initialize resizing on load
     setTimeout(initTableColumnResizing, 120);
 
+    // ══════════════════════════════════════════════════════════════
+    // COLUMN HOVER HIGHLIGHT – entire column lights up on mouseenter
+    // ══════════════════════════════════════════════════════════════
+    (function() {
+        let currentHighlightCol = -1;
+        const $productTable = $('#productTable');
+
+        function highlightColumn(colIdx) {
+            if (colIdx === currentHighlightCol) return;
+            clearColumnHighlight();
+            if (colIdx < 0) return;
+            currentHighlightCol = colIdx;
+            // Highlight header
+            $productTable.find('thead tr').each(function() {
+                $(this).children().eq(colIdx).addClass('col-hover-highlight');
+            });
+            // Highlight all body cells in this column
+            $productTable.find('tbody tr').each(function() {
+                $(this).children().eq(colIdx).addClass('col-hover-highlight');
+            });
+        }
+
+        function clearColumnHighlight() {
+            if (currentHighlightCol < 0) return;
+            $productTable.find('.col-hover-highlight').removeClass('col-hover-highlight');
+            currentHighlightCol = -1;
+        }
+
+        // Use event delegation for performance
+        $productTable.on('mouseenter', 'td, th', function() {
+            if ($('body').hasClass('is-col-resizing') || $('body').hasClass('is-col-dragging')) {
+                clearColumnHighlight();
+                return;
+            }
+            const colIdx = $(this).index();
+            highlightColumn(colIdx);
+        });
+
+        $productTable.on('mouseleave', function() {
+            clearColumnHighlight();
+        });
+    })();
+
     // Context menu: Reset Column Widths
     $('#qbCtxResetWidthsBtn').on('click', function(e) {
         e.preventDefault();
@@ -5279,6 +5499,28 @@ $(document).ready(function () {
         $('#productTable thead th').css({ 'width': '', 'min-width': '', 'max-width': '' });
         $('#productTable').css({ 'width': '100%', 'min-width': '100%' });
         setTimeout(initTableColumnResizing, 80);
+    });
+
+    // Reset Column Order (back to original positions)
+    function resetColumnOrder() {
+        localStorage.removeItem(COL_ORDER_STORAGE_KEY);
+        if (table && table.colReorder) {
+            table.colReorder.reset();
+        }
+        if (typeof initTableColumnResizing === 'function') {
+            setTimeout(initTableColumnResizing, 80);
+        }
+    }
+
+    $('#qbCtxResetOrderBtn').on('click', function(e) {
+        e.preventDefault();
+        hideIndexContextMenu();
+        resetColumnOrder();
+    });
+
+    $('#idxColResetOrder').on('click', function(e) {
+        e.preventDefault();
+        resetColumnOrder();
     });
 
     // ── Select All ──

@@ -58,7 +58,7 @@
 
             color: var(--text-main);
 
-            font-size: 13px;
+            font-size: 14px;
 
         }
 
@@ -66,11 +66,15 @@
 
         .page-container {
 
-            max-width: 1350px;
+            width: 100% !important;
 
-            margin: 0 auto;
+            max-width: 100% !important;
 
-            padding: 16px 16px 60px 16px;
+            margin: 0 auto !important;
+
+            padding: 12px 18px 60px 18px !important;
+
+            box-sizing: border-box !important;
 
         }
 
@@ -630,9 +634,9 @@
 
             align-items: center;
 
-            gap: 6px;
+            gap: 7px !important;
 
-            font-size: 13px;
+            font-size: 14.5px !important;
 
             font-weight: 600;
 
@@ -650,9 +654,9 @@
 
         .odoo-check-label input[type="checkbox"] {
 
-            width: 15px;
+            width: 17px !important;
 
-            height: 15px;
+            height: 17px !important;
 
             border-radius: 3px;
 
@@ -934,6 +938,58 @@
 
 
 
+        
+        /* Comprehensive Form Typography & Sizing Enhancements */
+        #uomSummaryBadge {
+            font-size: 12.5px !important;
+            line-height: 1.4 !important;
+        }
+        #uomSummaryBadge .badge {
+            font-size: 12px !important;
+            padding: 4px 8px !important;
+        }
+        #uomSummaryText {
+            font-size: 12.5px !important;
+            color: #475569 !important;
+        }
+        .odoo-tabs-content-wrap .form-label,
+        .erp-section-body .form-label,
+        .modal-body .form-label {
+            font-size: 13.5px !important;
+            font-weight: 600 !important;
+            color: #334155 !important;
+            margin-bottom: 5px !important;
+        }
+        .odoo-tabs-content-wrap .form-control,
+        .odoo-tabs-content-wrap .form-select,
+        .erp-section-body .form-control,
+        .erp-section-body .form-select,
+        .modal-body .form-control,
+        .modal-body .form-select {
+            font-size: 14px !important;
+            min-height: 38px !important;
+        }
+        .odoo-tabs-content-wrap .input-group-text,
+        .erp-section-body .input-group-text {
+            font-size: 13.5px !important;
+        }
+        .odoo-tabs-content-wrap .form-check-label,
+        .erp-section-body .form-check-label {
+            font-size: 14px !important;
+        }
+        .odoo-tabs-content-wrap small.text-muted,
+        .erp-section-body small.text-muted,
+        .form-row-item small.text-muted {
+            font-size: 12.5px !important;
+        }
+        #btnOpenUomModal {
+            height: 38px !important;
+            font-size: 13px !important;
+        }
+        .field-label {
+            line-height: 1.3 !important;
+        }
+    
         /* Tabs Nav - Clean Odoo Style */
 
         .odoo-tabs-container {
@@ -994,9 +1050,9 @@
 
             display: block;
 
-            padding: 7px 14px;
+            padding: 9px 18px !important;
 
-            font-size: 12.5px;
+            font-size: 14.5px !important;
 
             font-weight: 600;
 
@@ -1114,7 +1170,7 @@
 
             background: var(--bg-section-header);
 
-            padding: 7px 12px;
+            padding: 9px 14px !important;
 
             border-bottom: 1px solid var(--border-light);
 
@@ -1128,9 +1184,10 @@
 
 
 
+        .erp-section-title i { font-size: 15px !important; }
         .erp-section-title {
 
-            font-size: 11.5px;
+            font-size: 13.5px !important;
 
             font-weight: 700;
 
@@ -1144,7 +1201,7 @@
 
             align-items: center;
 
-            gap: 6px;
+            gap: 8px !important;
 
             margin: 0;
 
@@ -1170,13 +1227,13 @@
 
             align-items: center;
 
-            padding: 4px 0;
+            padding: 6px 0 !important;
 
             border-bottom: 1px dashed var(--border-light);
 
             margin-bottom: 0;
 
-            min-height: 33px;
+            min-height: 42px !important;
 
         }
 
@@ -1192,11 +1249,12 @@
 
         .field-label {
 
-            width: 125px;
+            width: 155px !important;
+            min-width: 155px !important;
 
             flex-shrink: 0;
 
-            font-size: 12.5px;
+            font-size: 14px !important;
 
             font-weight: 600;
 
@@ -1230,11 +1288,12 @@
 
             width: 100%;
 
-            height: 30px;
+            height: 38px !important;
 
-            padding: 3px 10px;
+            padding: 6px 12px !important;
+            font-size: 14.5px !important;
 
-            font-size: 13px;
+            font-size: 14px;
 
             font-weight: 500;
 
@@ -1268,11 +1327,12 @@
 
             width: 100%;
 
-            height: 30px;
+            height: 38px !important;
 
-            padding: 3px 26px 3px 10px;
+            padding: 6px 32px 6px 12px !important;
+            font-size: 14.5px !important;
 
-            font-size: 13px;
+            font-size: 14px;
 
             font-weight: 500;
 
@@ -1280,7 +1340,7 @@
 
             background: #ffffff url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%2364748b' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='m2 5 6 6 6-6'/%3e%3c/svg%3e") no-repeat right 8px center;
 
-            background-size: 10px;
+            background-size: 12px !important;
 
             border: 1px solid var(--border-strong);
 
@@ -1318,7 +1378,7 @@
 
             align-items: center;
 
-            gap: 16px;
+            gap: 18px !important;
 
         }
 
@@ -1330,9 +1390,9 @@
 
             align-items: center;
 
-            gap: 5px;
+            gap: 7px !important;
 
-            font-size: 12.5px;
+            font-size: 14.5px !important;
 
             font-weight: 500;
 
@@ -1348,9 +1408,9 @@
 
         .odoo-radio input[type="radio"] {
 
-            width: 14px;
+            width: 17px !important;
 
-            height: 14px;
+            height: 17px !important;
 
             accent-color: #0d9488;
 
@@ -1396,15 +1456,15 @@
 
             background: transparent !important;
 
-            padding: 0 7px !important;
+            padding: 0 10px !important;
 
-            font-size: 10px !important;
+            font-size: 13px !important;
 
-            font-weight: 700 !important;
+            font-weight: 800 !important;
 
-            line-height: 22px !important;
+            line-height: 28px !important;
 
-            height: 22px !important;
+            height: 28px !important;
 
             border-radius: 0 !important;
 
@@ -1424,13 +1484,13 @@
 
         .matrix-loc-cell .row-wh-select {
 
-            height: 24px !important;
+            height: 32px !important;
 
-            font-size: 10.5px !important;
+            font-size: 14px !important;
 
             font-weight: 600 !important;
 
-            padding: 1px 18px 1px 6px !important;
+            padding: 2px 20px 2px 8px !important;
 
             border-radius: 4px !important;
 
@@ -1478,9 +1538,9 @@
 
             display: inline-block;
 
-            width: 36px;
+            width: 44px !important;
 
-            height: 20px;
+            height: 24px !important;
 
             margin: 0;
 
@@ -1534,9 +1594,9 @@
 
             content: "";
 
-            height: 14px;
+            height: 18px !important;
 
-            width: 14px;
+            width: 18px !important;
 
             left: 2px;
 
@@ -1566,7 +1626,7 @@
 
         .odoo-switch input:checked + .slider-round:before {
 
-            transform: translateX(16px);
+            transform: translateX(20px !important);
 
         }
 
@@ -1588,7 +1648,7 @@
 
         .currency-prefix {
 
-            font-size: 12.5px;
+            font-size: 14px !important;
 
             font-weight: 700;
 
@@ -1602,7 +1662,7 @@
 
         .unit-suffix {
 
-            font-size: 12px;
+            font-size: 13.5px !important;
 
             font-weight: 500;
 
@@ -1622,7 +1682,7 @@
 
             align-items: center;
 
-            gap: 6px;
+            gap: 7px !important;
 
             background: #f1f5f9;
 
@@ -1630,17 +1690,17 @@
 
             border: 1px solid var(--border-strong);
 
-            padding: 2px 8px;
+            padding: 4px 12px !important;
 
             border-radius: 14px;
 
-            font-size: 11.5px;
+            font-size: 14px !important;
 
             font-weight: 700;
 
             cursor: pointer;
 
-            height: 24px;
+            height: 32px !important;
 
         }
 
@@ -1656,7 +1716,7 @@
 
         .tax-pill-badge .close-tax {
 
-            font-size: 12px;
+            font-size: 15px !important;
 
             color: #64748b;
 
@@ -1688,9 +1748,9 @@
 
             font-weight: 700;
 
-            width: 30px;
+            width: 38px !important;
 
-            height: 30px;
+            height: 38px !important;
 
             border-radius: var(--radius-sm);
 
@@ -1698,7 +1758,7 @@
 
             place-items: center;
 
-            font-size: 14px;
+            font-size: 18px !important;
 
             transition: all 0.12s;
 
@@ -1732,9 +1792,9 @@
 
             border-radius: var(--radius-md);
 
-            padding: 8px 12px;
+            padding: 10px 14px !important;
 
-            font-size: 12.5px;
+            font-size: 14px !important;
 
             color: var(--text-main);
 
@@ -1744,7 +1804,7 @@
 
             resize: vertical;
 
-            min-height: 65px;
+            min-height: 75px !important;
 
             transition: border-color 0.12s;
 
@@ -1854,7 +1914,7 @@
 
             padding: 3px 26px 3px 10px;
 
-            font-size: 13px;
+            font-size: 14px;
 
             font-weight: 500;
 
@@ -1958,7 +2018,7 @@
 
             padding: 6px 14px;
 
-            font-size: 13px;
+            font-size: 14px;
 
             color: #e2e8f0;
 
@@ -2368,7 +2428,7 @@
 
             color: #64748b !important;
 
-            font-size: 13px;
+            font-size: 14px;
 
             display: inline-flex;
 
@@ -2850,7 +2910,7 @@
 
             cursor: pointer;
 
-            font-size: 13px;
+            font-size: 14px;
 
             color: #818cf8;
 
@@ -2874,7 +2934,7 @@
 
             outline: none;
 
-            font-size: 13px;
+            font-size: 14px;
 
             padding: 2px 4px;
 
@@ -2976,7 +3036,7 @@
 
             color: #94a3b8;
 
-            font-size: 13px;
+            font-size: 14px;
 
             padding: 3px 5px;
 
@@ -3020,7 +3080,7 @@
 
             border: none;
 
-            font-size: 13px;
+            font-size: 14px;
 
             font-weight: 600;
 
@@ -3140,7 +3200,7 @@
 
         .odoo-smart-btn .smart-btn-val {
 
-            font-size: 13px;
+            font-size: 14px;
 
             font-weight: 700;
 
@@ -3597,7 +3657,7 @@
 
             color: #059669;
 
-            font-size: 13px;
+            font-size: 14px;
 
             font-weight: 800;
 
@@ -3917,19 +3977,23 @@
 
             background: #e2e8f0;
 
-            color: #334155;
+            color: #1e293b;
 
-            font-size: 11px;
+            font-size: 14px !important;
 
-            font-weight: 600;
+            font-weight: 700 !important;
 
-            padding: 2px 7px;
+            padding: 4px 10px !important;
 
-            border-radius: 4px;
+            border-radius: 5px !important;
 
-            margin: 1px 2px;
+            margin: 2px 3px !important;
 
             border: 1px solid #cbd5e1;
+
+            white-space: nowrap !important;
+
+            line-height: 1.4 !important;
 
         }
 
@@ -3937,273 +4001,304 @@
 
         /* Matrix Table - Clean ERP Flat Grid with Zebra Rows & Interactive Focus */
 
-        #variantsTable {
-
-            border-collapse: separate !important;
-
-            border-spacing: 0 !important;
-
-            border: none !important;
-
-            border-top: 1px solid #e2e8f0 !important;
-
-            border-bottom: 1px solid #cbd5e1 !important;
-
-            border-radius: 0 !important;
-
+        /* =====================================================================
+           VARIANTS MATRIX TABLE: FULL WIDTH, STRIPED ROWS, HOVER HIGHLIGHT & RESIZING (ENHANCED FONT SIZE)
+           ===================================================================== */
+        body.vt-col-resizing {
+            cursor: col-resize !important;
+            user-select: none !important;
         }
 
+        body.vt-col-resizing * {
+            user-select: none !important;
+        }
 
+        /* Sticky Scrollable Container for Matrix Table */
+        #variantsContainer .table-responsive {
+            max-height: 68vh;
+            min-height: 220px;
+            overflow-y: auto !important;
+            overflow-x: auto !important;
+            position: relative;
+            border: 1px solid #cbd5e1;
+            border-radius: 6px;
+            background: #ffffff;
+            scroll-behavior: smooth;
+        }
+
+        #variantsContainer .table-responsive::-webkit-scrollbar {
+            width: 8px;
+            height: 9px;
+        }
+
+        #variantsContainer .table-responsive::-webkit-scrollbar-track {
+            background: #f1f5f9;
+            border-radius: 4px;
+        }
+
+        #variantsContainer .table-responsive::-webkit-scrollbar-thumb {
+            background: #94a3b8;
+            border-radius: 4px;
+        }
+
+        #variantsContainer .table-responsive::-webkit-scrollbar-thumb:hover {
+            background: #64748b;
+        }
+
+        #variantsTable {
+            border-collapse: separate !important;
+            border-spacing: 0 !important;
+            border: none !important;
+            border-top: none !important;
+            border-bottom: 2px solid #cbd5e1 !important;
+            border-radius: 0 !important;
+            width: 100% !important;
+        }
+
+        #variantsTable thead {
+            position: sticky !important;
+            top: 0 !important;
+            z-index: 25 !important;
+        }
 
         #variantsTable thead th {
-
-            background: #f8fafc !important;
-
-            color: #475569 !important;
-
-            font-size: 11px !important;
-
-            font-weight: 700 !important;
-
+            position: sticky !important;
+            top: 0 !important;
+            z-index: 25 !important;
+            background: #f1f5f9 !important;
+            color: #1e293b !important;
+            font-size: 15px !important;
+            font-weight: 800 !important;
             text-transform: uppercase;
-
             letter-spacing: 0.03em;
-
-            padding: 7px 6px !important;
-
-            border-top: none !important;
-
+            padding: 10px 8px !important;
+            border-top: 1px solid #e2e8f0 !important;
             border-left: none !important;
-
-            border-right: none !important;
-
+            border-right: 1px solid #e2e8f0 !important;
             border-bottom: 2px solid #cbd5e1 !important;
-
             white-space: nowrap;
-
+            user-select: none;
+            box-sizing: border-box;
+            box-shadow: 0 2px 4px rgba(15, 23, 42, 0.08), inset 0 -2px 0 #cbd5e1 !important;
         }
 
-
-
-        #variantsTable tbody tr {
-
-            transition: background-color 0.12s ease;
-
+        #variantsTable thead th span,
+        #variantsTable thead th div {
+            font-size: 15px !important;
+            font-weight: 800 !important;
         }
 
+        #variantsTable thead th button {
+            font-size: 12px !important;
+        }
 
+        #variantsTable thead th:last-child {
+            border-right: none !important;
+        }
 
-        #variantsTable tbody tr:nth-child(odd) {
+        /* Column Resizer Handle (Portion change by dragging column border) */
+        #variantsTable thead th .vt-col-resizer {
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 8px;
+            height: 100%;
+            cursor: col-resize;
+            user-select: none;
+            z-index: 10;
+            display: block;
+        }
 
+        #variantsTable thead th .vt-col-resizer::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            right: 0;
+            width: 2px;
+            background: transparent;
+            transition: background 0.15s ease;
+        }
+
+        #variantsTable thead th .vt-col-resizer:hover::after,
+        #variantsTable thead th .vt-col-resizer.is-resizing::after {
+            background: #2563eb;
+            box-shadow: 0 0 5px rgba(37, 99, 235, 0.9);
+        }
+
+        /* Alternating Zebra Striping ("background strip wala") */
+        #variantsTable tbody tr:nth-child(even) td {
+            background-color: #dbe7f4 !important; /* Distinct QuickBooks Cool Blue Stripe */
+        }
+
+        #variantsTable tbody tr:nth-child(odd) td {
             background-color: #ffffff !important;
-
         }
 
-
-
-        #variantsTable tbody tr:nth-child(even) {
-
-            background-color: #f8fafc !important;
-
+        /* Hover Highlight on any strip/row ("jis bhe trip/strip par cursor lakar jayn vo highlight ho") */
+        #variantsTable tbody tr:hover td {
+            background-color: #bfdbfe !important; /* Prominent dark blue hover highlight */
         }
 
-
-
-        #variantsTable tbody tr:hover {
-
-            background-color: #f1f5f9 !important;
-
+        #variantsTable tbody tr:hover td:first-child {
+            box-shadow: inset 5px 0 0 #1d4ed8 !important; /* Dark royal blue prominent indicator strip */
         }
-
-
 
         #variantsTable tbody td {
-
-            padding: 3px 4px !important;
-
+            padding: 6px 8px !important;
             vertical-align: middle !important;
-
             border-top: none !important;
-
             border-left: none !important;
+            border-right: 1px solid #cbd8e7 !important;
+            border-bottom: 1px solid #c8d7e6 !important;
+            font-size: 15px !important;
+            color: #0f172a !important;
+            transition: background-color 0.12s ease;
+        }
 
+        #variantsTable tbody td:last-child {
             border-right: none !important;
-
-            border-bottom: 1px solid #e2e8f0 !important;
-
         }
 
-
-
-        /* Remove idle input box borders & backgrounds at rest */
-
+        /* Cell inputs & selects - font size increased to 15px, height 36px, transparent idle background */
         #variantsTable tbody td .form-control,
-
         #variantsTable tbody td .form-control-sm,
-
         #variantsTable tbody td .form-select,
-
         #variantsTable tbody td .form-select-sm,
-
-        #variantsTable tbody td input[type="text"],
-
-        #variantsTable tbody td input[type="number"],
-
-        #variantsTable tbody td select {
-
-            height: 28px !important;
-
-            font-size: 12px !important;
-
+        #variantsTable tbody td input,
+        #variantsTable tbody td select,
+        #variantsTable tbody td .variant-location-input,
+        #variantsTable tbody td .variant-sky-pcode-input,
+        #variantsTable tbody td .variant-rot-pcode-input {
+            height: 36px !important;
+            font-size: 15px !important;
+            font-weight: 600 !important;
             border-radius: 4px !important;
-
             border: 1px solid transparent !important;
-
             background-color: transparent !important;
-
             box-shadow: none !important;
-
-            padding: 2px 6px !important;
-
+            padding: 4px 8px !important;
+            color: #0f172a !important;
             transition: border-color 0.15s ease, background-color 0.15s ease, box-shadow 0.15s ease;
-
         }
-
-
 
         /* Hover on cell input */
-
         #variantsTable tbody td .form-control:hover,
-
         #variantsTable tbody td .form-select:hover,
-
-        #variantsTable tbody td input[type="text"]:hover,
-
-        #variantsTable tbody td input[type="number"]:hover,
-
+        #variantsTable tbody td input:hover,
         #variantsTable tbody td select:hover {
-
-            border-color: #cbd5e1 !important;
-
-            background-color: #ffffff !important;
-
+            border-color: #94a3b8 !important;
+            background-color: rgba(255, 255, 255, 0.7) !important;
         }
 
-
-
-        /* On Click / Focus: highlight only active box */
-
+        /* On Click / Focus: highlight active box */
         #variantsTable tbody td .form-control:focus,
-
         #variantsTable tbody td .form-select:focus,
-
-        #variantsTable tbody td input[type="text"]:focus,
-
-        #variantsTable tbody td input[type="number"]:focus,
-
+        #variantsTable tbody td input:focus,
         #variantsTable tbody td select:focus {
-
             border: 1.5px solid #2563eb !important;
-
             background-color: #ffffff !important;
-
-            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.18) !important;
-
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.22) !important;
             outline: none !important;
-
         }
 
-
-
-        /* Readonly inputs (e.g. P-Codes) */
-
+        /* Readonly inputs (e.g. P-Codes, Serial) */
         #variantsTable tbody td input[readonly] {
-
             border: 1px solid transparent !important;
-
             background-color: transparent !important;
-
             cursor: default;
-
+            font-weight: 700 !important;
+            color: #334155 !important;
+            font-size: 15px !important;
         }
 
         #variantsTable tbody td input[readonly]:focus {
-
             border: 1.5px solid #94a3b8 !important;
-
-            background-color: #f8fafc !important;
-
+            background-color: #ffffff !important;
             box-shadow: 0 0 0 2px rgba(148, 163, 184, 0.2) !important;
-
         }
-
-
 
         /* Hide number spinner buttons (up/down +/- buttons) */
-
         #variantsTable input[type=number]::-webkit-outer-spin-button,
-
         #variantsTable input[type=number]::-webkit-inner-spin-button,
-
         .config-attr-table input[type=number]::-webkit-outer-spin-button,
-
         .config-attr-table input[type=number]::-webkit-inner-spin-button {
-
             -webkit-appearance: none !important;
-
             margin: 0 !important;
-
         }
-
-
 
         #variantsTable input[type=number],
-
         .config-attr-table input[type=number] {
-
             -moz-appearance: textfield !important;
-
         }
 
-
-
-        /* Draggable Column Headers */
-
+        /* Draggable Column Headers (reordering position) */
         #variantsTable thead th[draggable="true"] {
-
             cursor: grab !important;
-
             user-select: none !important;
-
         }
 
         #variantsTable thead th[draggable="true"]:active {
-
             cursor: grabbing !important;
-
         }
 
         #variantsTable thead th.th-dragging {
-
             opacity: 0.4 !important;
-
             background: #e0e7ff !important;
-
         }
 
         #variantsTable thead th.th-drag-over-left {
-
             border-left: 3px solid #2563eb !important;
-
+            background-color: #e0e7ff !important;
         }
 
         #variantsTable thead th.th-drag-over-right {
-
             border-right: 3px solid #2563eb !important;
-
+            background-color: #e0e7ff !important;
         }
 
-
+        /* Specific Cell Highlights */
+        #variantsTable td.col-serial input {
+            font-size: 15px !important;
+            font-weight: 800 !important;
+        }
+        #variantsTable td.col-item-number input {
+            font-size: 15px !important;
+            font-weight: 700 !important;
+        }
+        #variantsTable td.col-ref input {
+            font-size: 14.5px !important;
+            font-weight: 600 !important;
+        }
+        #variantsTable td.col-name {
+            font-size: 15px !important;
+            font-weight: 600 !important;
+        }
+        #variantsTable input.stock-input {
+            font-size: 16px !important;
+            font-weight: 800 !important;
+        }
+        #variantsTable input.conv-factor-input {
+            font-size: 15px !important;
+            font-weight: 700 !important;
+            height: 36px !important;
+        }
+        #variantsTable input.piece-wt-display {
+            font-size: 15px !important;
+            font-weight: 600 !important;
+            height: 36px !important;
+        }
+        #variantsTable input.variant-sky-pcode-input,
+        #variantsTable input.variant-rot-pcode-input {
+            font-size: 15px !important;
+            font-weight: 800 !important;
+            letter-spacing: 0.5px !important;
+        }
+        #variantsTable .variant-location-input {
+            font-size: 14.5px !important;
+            height: 36px !important;
+            font-weight: 600 !important;
+        }
 
         /* Action Buttons */
 
@@ -4215,13 +4310,13 @@
 
             border: none;
 
-            padding: 7px 20px;
+            padding: 8px 22px !important;
 
             border-radius: var(--radius-md);
 
             font-weight: 700;
 
-            font-size: 13px;
+            font-size: 14.5px !important;
 
             display: inline-flex;
 
@@ -4255,13 +4350,13 @@
 
             border: 1px solid var(--border-strong);
 
-            padding: 7px 18px;
+            padding: 8px 20px !important;
 
             border-radius: var(--radius-md);
 
             font-weight: 600;
 
-            font-size: 13px;
+            font-size: 14.5px !important;
 
             text-decoration: none;
 
@@ -4385,7 +4480,7 @@
 
 
 
-    <div class="page-container">
+    <div class="container-fluid page-container px-2 px-md-3 py-2">
 
 
 
@@ -4813,7 +4908,7 @@
 
                                                 </label>
 
-                                                <span class="badge bg-success bg-opacity-10 text-success fw-bold px-2 py-0" style="font-size:10px;" id="trackInventoryBadge">Active</span>
+                                                <span class="badge bg-success bg-opacity-10 text-success fw-bold px-2 py-0" style="font-size:12px; padding:3px 8px;" id="trackInventoryBadge">Active</span>
 
                                             </div>
 
@@ -4855,7 +4950,7 @@
 
                                                     <button type="button" class="btn-quick-add" data-bs-toggle="modal" data-bs-target="#unitModal" data-toggle="modal" data-target="#unitModal" title="Add Unit">+</button>
 
-                                                    <button type="button" class="btn btn-outline-primary btn-sm px-2 py-1 fw-bold shadow-sm d-inline-flex align-items-center" id="btnOpenUomModal" data-toggle="modal" data-target="#quickbooksUomModal" data-bs-toggle="modal" data-bs-target="#quickbooksUomModal" style="font-size: 11px; height: 31px; border-radius: 4px;" title="Open QuickBooks Unit of Measure Configuration">
+                                                    <button type="button" class="btn btn-outline-primary btn-sm px-2 py-1 fw-bold shadow-sm d-inline-flex align-items-center" id="btnOpenUomModal" data-toggle="modal" data-target="#quickbooksUomModal" data-bs-toggle="modal" data-bs-target="#quickbooksUomModal" style="font-size: 13px; height: 38px; border-radius: 4px;" title="Open QuickBooks Unit of Measure Configuration">
 
                                                         <i class="fas fa-layer-group me-1 text-primary"></i> Units
 
@@ -4867,7 +4962,7 @@
 
                                                     @if(!empty($product->uom_data) && is_array($product->uom_data) && !empty($product->uom_data['units']))
 
-                                                        <span class="badge bg-soft-primary text-primary border border-primary-subtle" style="font-size: 10px;">
+                                                        <span class="badge bg-soft-primary text-primary border border-primary-subtle" style="font-size: 12px;">
 
                                                             <i class="fas fa-check-circle me-1"></i> QB Units: {{ count($product->uom_data['units']) }} defined
 
@@ -4881,7 +4976,7 @@
 
                                                 <input type="hidden" name="uom_data" id="product_uom_data" value="{{ is_array($product->uom_data) ? json_encode($product->uom_data) : ($product->uom_data ?? '') }}">
 
-                                                <small class="text-muted" style="font-size:11px;">
+                                                <small class="text-muted" style="font-size:12.5px;">
 
                                                     <i class="fas fa-link text-primary me-1"></i> Base unit for inventory valuation & QuickBooks multi-unit conversions
 
@@ -4957,7 +5052,7 @@
 
                                                     <div class="d-flex justify-content-between align-items-center mt-1">
 
-                                                        <small class="text-muted" id="standardPackingHint" style="font-size:11px;">
+                                                        <small class="text-muted" id="standardPackingHint" style="font-size:12.5px;">
 
                                                             <i class="fas fa-box-open text-primary me-1"></i> <span id="standardPackingHintText">Choose predefined box/carton packing</span>
 
@@ -4987,7 +5082,7 @@
 
                                                                 <input type="number" class="odoo-input text-center fw-bold" name="custom_pieces_per_box" id="custom_pieces_per_box" min="1" value="{{ $product->pieces_per_box ?? 1 }}" placeholder="Pcs">
 
-                                                                <span class="input-group-text py-0 px-2 bg-light text-muted" style="font-size:11px;" id="customPiecesBadge">Pcs/Pk</span>
+                                                                <span class="input-group-text py-0 px-2 bg-light text-muted" style="font-size:12.5px;" id="customPiecesBadge">Pcs/Pk</span>
 
                                                             </div>
 
@@ -4995,7 +5090,7 @@
 
                                                     </div>
 
-                                                    <small class="text-muted" style="font-size:11px;">
+                                                    <small class="text-muted" style="font-size:12.5px;">
 
                                                         <i class="fas fa-edit text-info me-1"></i> Specify custom pieces per pack/box for this product
 
@@ -5035,7 +5130,7 @@
 
                                         </h6>
 
-                                        <span class="badge bg-primary bg-opacity-10 text-primary border border-primary border-opacity-25" style="font-size:11px;">
+                                        <span class="badge bg-primary bg-opacity-10 text-primary border border-primary border-opacity-25" style="font-size:12.5px; padding: 5px 10px;">
 
                                             <i class="fas fa-info-circle me-1"></i> Pricing managed in Variants Matrix
 
@@ -5393,7 +5488,7 @@
 
                                         </h6>
 
-                                        <small class="text-muted" style="font-size:11px;">Private staff notes</small>
+                                        <small class="text-muted" style="font-size:12.5px;">Private staff notes</small>
 
                                     </div>
 
@@ -8203,7 +8298,7 @@
 
 
 
-            return '<select class="form-select form-select-sm variant-location-input" name="variant_location[]" style="font-size:11px; padding: 2px 6px; height: 28px; min-width: 120px;">' +
+            return '<select class="form-select form-select-sm variant-location-input" name="variant_location[]" style="font-size:14.5px; padding: 3px 8px; height: 36px; min-width: 140px;">' +
 
                 optionsHtml +
 
@@ -13977,7 +14072,7 @@
 
                         <td class="p-1 col-serial text-center">
 
-                            <input type="text" class="form-control form-control-sm text-center fw-bold text-primary font-monospace" name="variant_serial_no[]" value="${vSerial}" placeholder="SN" style="font-size:11px; max-width:95px;">
+                            <input type="text" class="form-control form-control-sm text-center fw-bold text-primary font-monospace" name="variant_serial_no[]" value="${vSerial}" placeholder="SN" style="font-size:15px; max-width:125px;">
 
                         </td>
 
@@ -13993,7 +14088,7 @@
 
                         </td>
 
-                        <td class="p-1 fw-semibold text-dark col-name" style="font-size: 12.5px; max-width: 140px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="${comboName}">
+                        <td class="p-1 fw-semibold text-dark col-name" style="font-size: 15px; max-width: 180px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="${comboName}">
 
                             ${productName}
 
@@ -14025,7 +14120,7 @@
 
                         <td class="p-0 conv-col col-conv">
 
-                            <input type="text" inputmode="decimal" class="form-control form-control-sm conv-factor-input text-center fw-bold text-success" name="variant_conv_factor[]" value="${vConv}" placeholder="1" style="border-radius:0; border:1px solid #198754; height:28px;">
+                            <input type="text" inputmode="decimal" class="form-control form-control-sm conv-factor-input text-center fw-bold text-success" name="variant_conv_factor[]" value="${vConv}" placeholder="1" style="border-radius:0; border:1px solid #198754; height:36px; font-size:15px;">
 
                         </td>
 
@@ -14033,7 +14128,7 @@
 
                             <div style="position:relative;">
 
-                                <input type="number" class="form-control form-control-sm piece-wt-display" name="variant_weight_per_piece[]" step="any" value="" placeholder="—" readonly style="padding-right:16px; border-radius:0; border:1px solid #dee2e6; height:28px; background:#f0fff4; color:#198754; font-weight:600;">
+                                <input type="number" class="form-control form-control-sm piece-wt-display" name="variant_weight_per_piece[]" step="any" value="" placeholder="—" readonly style="padding-right:16px; border-radius:0; border:1px solid #dee2e6; height:36px; font-size:15px; background:#f0fff4; color:#198754; font-weight:600;">
 
                                 <span style="position:absolute;right:4px;top:50%;transform:translateY(-50%);font-size:9px;color:#198754;pointer-events:none;font-weight:700;">g</span>
 
@@ -14043,13 +14138,13 @@
 
                         <td class="p-1 col-sale"><input type="number" class="form-control form-control-sm sale-price-input" name="variant_sale_price[]" step="any" value="${vSale}" required></td>
 
-                        <td class="p-1 col-sky-pcode"><input type="text" class="form-control form-control-sm variant-sky-pcode-input font-monospace text-uppercase fw-bold bg-light" name="variant_sky_pcode[]" value="${window.encodeToPCode ? window.encodeToPCode(vSale || 0) : ''}" readonly style="font-size:11px;" title="Sky P-Code"></td>
+                        <td class="p-1 col-sky-pcode"><input type="text" class="form-control form-control-sm variant-sky-pcode-input font-monospace text-uppercase fw-bold bg-light" name="variant_sky_pcode[]" value="${window.encodeToPCode ? window.encodeToPCode(vSale || 0) : ''}" readonly style="font-size:15px;" title="Sky P-Code"></td>
 
                         <td class="p-1 col-cost"><input type="number" class="form-control form-control-sm purch-price-input" name="variant_purchase_price[]" step="any" value="${vPurch}" required></td>
 
                         <td class="p-1 col-wholesale"><input type="number" class="form-control form-control-sm wholesale-price-input" name="variant_wholesale_price[]" step="any" value="${vWholesale}"></td>
 
-                        <td class="p-1 col-rot-pcode"><input type="text" class="form-control form-control-sm variant-rot-pcode-input font-monospace text-uppercase fw-bold bg-light" name="variant_rot_pcode[]" value="${window.encodeToPCode ? window.encodeToPCode(vWholesale || 0) : ''}" readonly style="font-size:11px;" title="Rot P-Code"></td>
+                        <td class="p-1 col-rot-pcode"><input type="text" class="form-control form-control-sm variant-rot-pcode-input font-monospace text-uppercase fw-bold bg-light" name="variant_rot_pcode[]" value="${window.encodeToPCode ? window.encodeToPCode(vWholesale || 0) : ''}" readonly style="font-size:15px;" title="Rot P-Code"></td>
 
                         <td class="p-1 col-barcode"><input type="text" class="form-control form-control-sm font-monospace" name="variant_barcode[]" value="${vBarcode}" placeholder="Barcode"></td>
 
@@ -14197,7 +14292,7 @@
 
                     <td class="p-1 col-serial text-center">
 
-                        <input type="text" class="form-control form-control-sm text-center fw-bold text-primary font-monospace" name="variant_serial_no[]" value="${baseSerial}" placeholder="SN" style="font-size:11px; max-width:95px;">
+                        <input type="text" class="form-control form-control-sm text-center fw-bold text-primary font-monospace" name="variant_serial_no[]" value="${baseSerial}" placeholder="SN" style="font-size:15px; max-width:125px;">
 
                     </td>
 
@@ -14219,7 +14314,7 @@
 
                     </td>
 
-                    <td class="p-1 text-muted fst-italic col-attrs" style="font-size:11px;">
+                    <td class="p-1 text-muted fst-italic col-attrs" style="font-size:14px;">
 
                         Standard (No Attributes)
 
@@ -14263,13 +14358,13 @@
 
                     <td class="p-1 col-sale"><input type="number" class="form-control form-control-sm base-sale-input" name="variant_sale_price[]" step="any" value="${initSale}" placeholder="0.00" required></td>
 
-                    <td class="p-1 col-sky-pcode"><input type="text" class="form-control form-control-sm variant-sky-pcode-input font-monospace text-uppercase fw-bold bg-light" name="variant_sky_pcode[]" value="${window.encodeToPCode ? window.encodeToPCode(initSale || 0) : ''}" readonly style="font-size:11px;" title="Sky P-Code"></td>
+                    <td class="p-1 col-sky-pcode"><input type="text" class="form-control form-control-sm variant-sky-pcode-input font-monospace text-uppercase fw-bold bg-light" name="variant_sky_pcode[]" value="${window.encodeToPCode ? window.encodeToPCode(initSale || 0) : ''}" readonly style="font-size:15px;" title="Sky P-Code"></td>
 
                     <td class="p-1 col-cost"><input type="number" class="form-control form-control-sm base-purch-input" name="variant_purchase_price[]" step="any" value="${initCost}" placeholder="0.00" required></td>
 
                     <td class="p-1 col-wholesale"><input type="number" class="form-control form-control-sm base-wholesale-input" name="variant_wholesale_price[]" step="any" placeholder="0.00" value="${baseWholesale}"></td>
 
-                    <td class="p-1 col-rot-pcode"><input type="text" class="form-control form-control-sm variant-rot-pcode-input font-monospace text-uppercase fw-bold bg-light" name="variant_rot_pcode[]" value="${window.encodeToPCode ? window.encodeToPCode(baseWholesale || 0) : ''}" readonly style="font-size:11px;" title="Rot P-Code"></td>
+                    <td class="p-1 col-rot-pcode"><input type="text" class="form-control form-control-sm variant-rot-pcode-input font-monospace text-uppercase fw-bold bg-light" name="variant_rot_pcode[]" value="${window.encodeToPCode ? window.encodeToPCode(baseWholesale || 0) : ''}" readonly style="font-size:15px;" title="Rot P-Code"></td>
 
                     <td class="p-1 col-barcode"><input type="text" class="form-control form-control-sm font-monospace" name="variant_barcode[]" value="${baseBarcode}" placeholder="Barcode"></td>
 
@@ -14319,7 +14414,11 @@
         // =========================================================
         // Drag-and-Drop Column Reordering for Variants Table
         // =========================================================
+        // =========================================================
+        // Drag-and-Drop Column Reordering & Width Resizing for Variants Table
+        // =========================================================
         const VAR_COL_ORDER_KEY = 'kent_variants_col_order_v3';
+        const VAR_COL_WIDTHS_KEY = 'kent_variants_col_widths_v2';
 
         function getColKey(el) {
             if (!el) return '';
@@ -14344,6 +14443,20 @@
         window.saveVariantColOrder = function(orderArray) {
             try {
                 localStorage.setItem(VAR_COL_ORDER_KEY, JSON.stringify(orderArray));
+            } catch(e) {}
+        };
+
+        window.getSavedVariantColWidths = function() {
+            try {
+                const saved = localStorage.getItem(VAR_COL_WIDTHS_KEY);
+                if (saved) return JSON.parse(saved);
+            } catch(e) {}
+            return {};
+        };
+
+        window.saveVariantColWidths = function(widths) {
+            try {
+                localStorage.setItem(VAR_COL_WIDTHS_KEY, JSON.stringify(widths));
             } catch(e) {}
         };
 
@@ -14397,6 +14510,7 @@
             });
         };
 
+        // 1. Column Reordering by Header Drag & Drop (Changes Column Position)
         window.initDraggableVariantColumns = function() {
             const table = document.getElementById('variantsTable');
             if (!table) return;
@@ -14415,62 +14529,149 @@
 
                 th.setAttribute('draggable', 'true');
                 th.style.cursor = 'grab';
-                th.title = (th.title ? th.title + ' | ' : '') + 'Drag to reorder column';
+                th.title = (th.title ? th.title.replace(/ \| Drag to reorder column/g, '') + ' | ' : '') + 'Drag to reorder column';
 
-                th.addEventListener('dragstart', function(e) {
-                    window.draggedVariantColTh = this;
-                    this.classList.add('th-dragging');
-                    e.dataTransfer.effectAllowed = 'move';
-                    e.dataTransfer.setData('text/plain', getColKey(this));
-                });
+                if (!th.dataset.dragColBound) {
+                    th.dataset.dragColBound = 'true';
 
-                th.addEventListener('dragend', function() {
-                    this.classList.remove('th-dragging');
-                    ths.forEach(t => t.classList.remove('th-drag-over-left', 'th-drag-over-right'));
-                    window.draggedVariantColTh = null;
-                });
+                    th.addEventListener('dragstart', function(e) {
+                        if (e.target.closest('.vt-col-resizer') || e.target.closest('button') || e.target.closest('input')) {
+                            e.preventDefault();
+                            return;
+                        }
+                        window.draggedVariantColTh = this;
+                        this.classList.add('th-dragging');
+                        e.dataTransfer.effectAllowed = 'move';
+                        e.dataTransfer.setData('text/plain', getColKey(this));
+                    });
 
-                th.addEventListener('dragover', function(e) {
-                    e.preventDefault();
-                    if (!window.draggedVariantColTh || window.draggedVariantColTh === this) return;
-                    e.dataTransfer.dropEffect = 'move';
+                    th.addEventListener('dragend', function() {
+                        this.classList.remove('th-dragging');
+                        ths.forEach(t => t.classList.remove('th-drag-over-left', 'th-drag-over-right'));
+                        window.draggedVariantColTh = null;
+                    });
 
-                    const rect = this.getBoundingClientRect();
-                    const relX = e.clientX - rect.left;
-                    ths.forEach(t => t.classList.remove('th-drag-over-left', 'th-drag-over-right'));
-                    if (relX < rect.width / 2) {
-                        this.classList.add('th-drag-over-left');
-                    } else {
-                        this.classList.add('th-drag-over-right');
+                    th.addEventListener('dragover', function(e) {
+                        e.preventDefault();
+                        if (!window.draggedVariantColTh || window.draggedVariantColTh === this) return;
+                        e.dataTransfer.dropEffect = 'move';
+
+                        const rect = this.getBoundingClientRect();
+                        const relX = e.clientX - rect.left;
+                        ths.forEach(t => t.classList.remove('th-drag-over-left', 'th-drag-over-right'));
+                        if (relX < rect.width / 2) {
+                            this.classList.add('th-drag-over-left');
+                        } else {
+                            this.classList.add('th-drag-over-right');
+                        }
+                    });
+
+                    th.addEventListener('drop', function(e) {
+                        e.preventDefault();
+                        ths.forEach(t => t.classList.remove('th-drag-over-left', 'th-drag-over-right'));
+                        const srcTh = window.draggedVariantColTh;
+                        if (!srcTh || srcTh === this) return;
+
+                        const rect = this.getBoundingClientRect();
+                        const relX = e.clientX - rect.left;
+                        const insertBefore = relX < rect.width / 2;
+
+                        if (insertBefore) {
+                            headerRow.insertBefore(srcTh, this);
+                        } else {
+                            headerRow.insertBefore(srcTh, this.nextSibling);
+                        }
+
+                        const newThOrder = Array.from(headerRow.children)
+                            .map(h => getColKey(h))
+                            .filter(k => k && k !== 'col-select' && k !== 'col-action');
+
+                        window.saveVariantColOrder(newThOrder);
+                        window.applySavedColumnOrder();
+                        if (window.initVariantColResizers) window.initVariantColResizers();
+                    });
+                }
+            });
+        };
+
+        // 2. Column Width Resizing (Changes Column Portion / Width by Dragging Edge)
+        window.initVariantColResizers = function() {
+            const table = document.getElementById('variantsTable');
+            if (!table) return;
+            const savedWidths = window.getSavedVariantColWidths();
+
+            const ths = table.querySelectorAll('thead th');
+            ths.forEach(th => {
+                const colKey = getColKey(th);
+                if (!colKey || colKey === 'col-select') return;
+
+                // Apply saved width if available
+                if (savedWidths[colKey]) {
+                    const w = parseInt(savedWidths[colKey], 10);
+                    if (w > 35) {
+                        th.style.width = w + 'px';
+                        th.style.minWidth = w + 'px';
                     }
-                });
+                }
 
-                th.addEventListener('dragleave', function() {
-                    this.classList.remove('th-drag-over-left', 'th-drag-over-right');
-                });
+                // Remove existing resizer if present to avoid duplicate handlers
+                const existing = th.querySelector('.vt-col-resizer');
+                if (existing) existing.remove();
 
-                th.addEventListener('drop', function(e) {
+                const resizer = document.createElement('div');
+                resizer.className = 'vt-col-resizer';
+                resizer.title = 'Drag to adjust column portion / width (Double-click to reset)';
+                th.appendChild(resizer);
+
+                resizer.addEventListener('mousedown', function(e) {
                     e.preventDefault();
-                    ths.forEach(t => t.classList.remove('th-drag-over-left', 'th-drag-over-right'));
-                    const srcTh = window.draggedVariantColTh;
-                    if (!srcTh || srcTh === this) return;
+                    e.stopPropagation();
 
-                    const rect = this.getBoundingClientRect();
-                    const relX = e.clientX - rect.left;
-                    const insertBefore = relX < rect.width / 2;
+                    const startX = e.pageX;
+                    const startW = th.offsetWidth;
+                    let hasMoved = false;
 
-                    if (insertBefore) {
-                        headerRow.insertBefore(srcTh, this);
-                    } else {
-                        headerRow.insertBefore(srcTh, this.nextSibling);
+                    resizer.classList.add('is-resizing');
+                    document.body.classList.add('vt-col-resizing');
+
+                    function onMouseMove(moveEvent) {
+                        const diff = moveEvent.pageX - startX;
+                        if (Math.abs(diff) > 2) hasMoved = true;
+
+                        const minW = 50;
+                        const newW = Math.max(minW, Math.round(startW + diff));
+
+                        th.style.width = newW + 'px';
+                        th.style.minWidth = newW + 'px';
                     }
 
-                    const newThOrder = Array.from(headerRow.children)
-                        .map(h => getColKey(h))
-                        .filter(k => k && k !== 'col-select' && k !== 'col-action');
+                    function onMouseUp() {
+                        document.removeEventListener('mousemove', onMouseMove);
+                        document.removeEventListener('mouseup', onMouseUp);
 
-                    window.saveVariantColOrder(newThOrder);
-                    window.applySavedColumnOrder();
+                        resizer.classList.remove('is-resizing');
+                        document.body.classList.remove('vt-col-resizing');
+
+                        if (hasMoved) {
+                            const curWidths = window.getSavedVariantColWidths();
+                            curWidths[colKey] = th.offsetWidth;
+                            window.saveVariantColWidths(curWidths);
+                        }
+                    }
+
+                    document.addEventListener('mousemove', onMouseMove);
+                    document.addEventListener('mouseup', onMouseUp);
+                });
+
+                // Double click to reset width
+                resizer.addEventListener('dblclick', function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    th.style.width = '';
+                    th.style.minWidth = '';
+                    const curWidths = window.getSavedVariantColWidths();
+                    delete curWidths[colKey];
+                    window.saveVariantColWidths(curWidths);
                 });
             });
         };
@@ -14478,6 +14679,8 @@
         function toggleFactorColumns() {
 
                 if (window.applySavedColumnOrder) window.applySavedColumnOrder();
+                if (window.initDraggableVariantColumns) window.initDraggableVariantColumns();
+                if (window.initVariantColResizers) window.initVariantColResizers();
 
                 if (!unitDropdown) return;
 
@@ -14607,7 +14810,7 @@
 
                         <td class="p-1 col-serial text-center">
 
-                            <input type="text" class="form-control form-control-sm text-center fw-bold text-primary font-monospace" name="variant_serial_no[]" value="" placeholder="SN" style="font-size:11px; max-width:95px;">
+                            <input type="text" class="form-control form-control-sm text-center fw-bold text-primary font-monospace" name="variant_serial_no[]" value="" placeholder="SN" style="font-size:15px; max-width:125px;">
 
                         </td>
 
@@ -14633,9 +14836,9 @@
 
                             <div class="d-flex gap-1">
 
-                                <input type="text" class="form-control form-control-sm" name="variant_size[]" placeholder="Size" style="width:50%;font-size:11px;">
+                                <input type="text" class="form-control form-control-sm" name="variant_size[]" placeholder="Size" style="width:50%;font-size:14px;height:36px;">
 
-                                <input type="text" class="form-control form-control-sm" name="variant_color[]" placeholder="Color" style="width:50%;font-size:11px;">
+                                <input type="text" class="form-control form-control-sm" name="variant_color[]" placeholder="Color" style="width:50%;font-size:14px;height:36px;">
 
                             </div>
 
@@ -14655,19 +14858,19 @@
 
                         <td class="p-1 col-stock"><input type="number" class="form-control form-control-sm text-center fw-bold text-primary stock-input" name="variant_stock[]" value="0"></td>
 
-                        <td class="p-0 conv-col col-conv"><input type="text" class="form-control form-control-sm text-center fw-bold text-success" name="variant_conv_factor[]" value="${defaultConv}" style="border-radius:0; border:1px solid #198754; height:28px;"></td>
+                        <td class="p-0 conv-col col-conv"><input type="text" class="form-control form-control-sm text-center fw-bold text-success" name="variant_conv_factor[]" value="${defaultConv}" style="border-radius:0; border:1px solid #198754; height:36px; font-size:15px;"></td>
 
                         <td class="p-0 piece-wt-only-col col-weight"><input type="number" class="form-control form-control-sm" name="variant_weight_per_piece[]" value="1000" readonly style="border-radius:0; border:1px solid #dee2e6; height:28px;"></td>
 
                         <td class="p-1 col-sale"><input type="number" class="form-control form-control-sm sale-price-input" name="variant_sale_price[]" value="${genSaleInput?.value || '1.00'}" required></td>
 
-                        <td class="p-1 col-sky-pcode"><input type="text" class="form-control form-control-sm variant-sky-pcode-input font-monospace text-uppercase fw-bold bg-light" name="variant_sky_pcode[]" value="${window.encodeToPCode ? window.encodeToPCode(genSaleInput?.value || 1.00) : ''}" readonly style="font-size:11px;" title="Sky P-Code"></td>
+                        <td class="p-1 col-sky-pcode"><input type="text" class="form-control form-control-sm variant-sky-pcode-input font-monospace text-uppercase fw-bold bg-light" name="variant_sky_pcode[]" value="${window.encodeToPCode ? window.encodeToPCode(genSaleInput?.value || 1.00) : ''}" readonly style="font-size:15px;" title="Sky P-Code"></td>
 
                         <td class="p-1 col-cost"><input type="number" class="form-control form-control-sm purch-price-input" name="variant_purchase_price[]" value="${genCostInput?.value || '0.00'}" required></td>
 
                         <td class="p-1 col-wholesale"><input type="number" class="form-control form-control-sm wholesale-price-input" name="variant_wholesale_price[]" value="0.00"></td>
 
-                        <td class="p-1 col-rot-pcode"><input type="text" class="form-control form-control-sm variant-rot-pcode-input font-monospace text-uppercase fw-bold bg-light" name="variant_rot_pcode[]" value="${window.encodeToPCode ? window.encodeToPCode(0) : ''}" readonly style="font-size:11px;" title="Rot P-Code"></td>
+                        <td class="p-1 col-rot-pcode"><input type="text" class="form-control form-control-sm variant-rot-pcode-input font-monospace text-uppercase fw-bold bg-light" name="variant_rot_pcode[]" value="${window.encodeToPCode ? window.encodeToPCode(0) : ''}" readonly style="font-size:15px;" title="Rot P-Code"></td>
 
                         <td class="p-1 col-barcode"><input type="text" class="form-control form-control-sm font-monospace" name="variant_barcode[]" value="${generateRandomBarcode()}" placeholder="Barcode"></td>
 
@@ -16035,6 +16238,10 @@
                 applyVariantColVisibility();
 
             }
+
+            if (window.applySavedColumnOrder) window.applySavedColumnOrder();
+            if (window.initDraggableVariantColumns) window.initDraggableVariantColumns();
+            if (window.initVariantColResizers) window.initVariantColResizers();
 
         });
 

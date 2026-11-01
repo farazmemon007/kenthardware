@@ -841,7 +841,7 @@
                     <span class="badge bg-primary bg-opacity-10 text-primary border border-primary-subtle px-2 py-1">
                         <i class="fas fa-layer-group me-1"></i> <strong>QuickBooks UOM Set:</strong> ${baseName} (Base), ${unitSummaries}
                     </span>
-                    <span class="text-muted ms-2" style="font-size: 11px;">(Sell: <b>${uom.sell_unit || baseName}</b>, Order: <b>${uom.order_unit || baseName}</b>)</span>
+                    <span class="text-muted ms-2" style="font-size: 12.5px;">(Sell: <b>${uom.sell_unit || baseName}</b>, Order: <b>${uom.order_unit || baseName}</b>)</span>
                 `);
             } else {
                 $badge.html(`
