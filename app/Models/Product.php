@@ -15,6 +15,8 @@ class Product extends Model
     protected $casts = [
         'uom_data' => 'array',
         'attributes_data' => 'array',
+        'can_be_sold' => 'boolean',
+        'can_be_purchased' => 'boolean',
     ];
 
     public function getAttributesDataAttribute($value)

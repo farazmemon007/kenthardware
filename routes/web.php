@@ -132,10 +132,18 @@ Route::middleware('auth')->group(function () {
     Route::get('/Brand/delete/{id}', [BrandController::class, 'delete'])->middleware('permission:brands.delete')->name('delete.Brand');
     route::post('/Brand/store', [BrandController::class, 'store'])->middleware('permission:brands.create|brands.edit')->name('store.Brand');
 
+    // Units Management & JSON API Routes
+    Route::get('/units/all', [UnitController::class, 'getAllUnits'])->name('units.all');
+    Route::get('/unit/all', [UnitController::class, 'getAllUnits']);
+    Route::get('/Unit/all', [UnitController::class, 'getAllUnits']);
     route::get('/Unit', [UnitController::class, 'index'])->middleware('permission:units.view')->name('Unit.home');
+    Route::get('/unit', [UnitController::class, 'index'])->middleware('permission:units.view')->name('unit.index');
     Route::get('/Unit/show/{id}', [UnitController::class, 'show'])->middleware('permission:units.view')->name('show.Unit');
+    Route::get('/unit/show/{id}', [UnitController::class, 'show'])->middleware('permission:units.view')->name('unit.show');
     Route::get('/Unit/delete/{id}', [UnitController::class, 'delete'])->middleware('permission:units.delete')->name('delete.Unit');
+    Route::get('/unit/delete/{id}', [UnitController::class, 'delete'])->middleware('permission:units.delete')->name('unit.delete');
     route::post('/Unit/store', [UnitController::class, 'store'])->middleware('permission:units.create|units.edit')->name('store.Unit');
+    Route::post('/unit/store', [UnitController::class, 'store'])->middleware('permission:units.create|units.edit')->name('unit.store');
     Route::post('/package-type/store', [ProductController::class, 'storePackageType'])->name('store.package_type');
 
     // P-Code Mapping & Encoding Routes

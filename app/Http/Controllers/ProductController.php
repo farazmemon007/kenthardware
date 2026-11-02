@@ -98,11 +98,27 @@ class ProductController extends Controller
         $term = $request->get('term') ?? $request->get('q') ?? '';
         $productId = $request->get('product_id');
 
+        $context = strtolower($request->get('for') ?? $request->get('type') ?? $request->get('context') ?? '');
+        if (empty($context)) {
+            $referer = strtolower($request->headers->get('referer', ''));
+            if (str_contains($referer, 'purchase') || str_contains($referer, 'inward')) {
+                $context = 'purchase';
+            } elseif (str_contains($referer, 'sale') || str_contains($referer, 'pos') || str_contains($referer, 'booking')) {
+                $context = 'sale';
+            }
+        }
+
         $query = Product::query()
-            ->select('id', 'item_name', 'item_code', 'item_number', 'barcode_path', 'size_mode', 'unit_id', 'height', 'width', 'pieces_per_box', 'purchase_price_per_box', 'purchase_price_per_m2', 'purchase_price_per_piece', 'pieces_per_m2', 'purchase_discount_percent', 'sale_discount_percent', 'color', 'sale_price_per_piece', 'wholesale_price', 'p_code', 'rot_p_code', 'uom_data', 'image', 'web_main_image')
+            ->select('id', 'item_name', 'item_code', 'item_number', 'barcode_path', 'size_mode', 'unit_id', 'height', 'width', 'pieces_per_box', 'purchase_price_per_box', 'purchase_price_per_m2', 'purchase_price_per_piece', 'pieces_per_m2', 'purchase_discount_percent', 'sale_discount_percent', 'color', 'sale_price_per_piece', 'wholesale_price', 'p_code', 'rot_p_code', 'uom_data', 'image', 'web_main_image', 'can_be_sold', 'can_be_purchased')
             ->with(['unit'])
             ->withSum('warehouseStocks', 'total_pieces') /* Sum PIECES, not boxes */
             ->where('is_active', true); /* Only active products */
+
+        if ($context === 'sale') {
+            $query->where('can_be_sold', 1);
+        } elseif ($context === 'purchase') {
+            $query->where('can_be_purchased', 1);
+        }
 
         if (!empty($productId)) {
             $query->where('id', $productId);
@@ -557,10 +573,27 @@ class ProductController extends Controller
     {
         $term = $request->get('q', '');
 
-        $products = Product::with('category_relation', 'sub_category_relation', 'brand')
+        $context = strtolower($request->get('for') ?? $request->get('type') ?? $request->get('context') ?? '');
+        if (empty($context)) {
+            $referer = strtolower($request->headers->get('referer', ''));
+            if (str_contains($referer, 'purchase') || str_contains($referer, 'inward')) {
+                $context = 'purchase';
+            } elseif (str_contains($referer, 'sale') || str_contains($referer, 'booking')) {
+                $context = 'sale';
+            }
+        }
+
+        $query = Product::with('category_relation', 'sub_category_relation', 'brand')
             ->withSum('warehouseStocks', 'total_pieces')
-            ->where('is_active', true) /* Only active products */
-            ->when($term, function ($query) use ($term) {
+            ->where('is_active', true); /* Only active products */
+
+        if ($context === 'sale') {
+            $query->where('can_be_sold', 1);
+        } elseif ($context === 'purchase') {
+            $query->where('can_be_purchased', 1);
+        }
+
+        $products = $query->when($term, function ($query) use ($term) {
                 $query->where('item_name', 'like', "%{$term}%")
                     ->orWhere('item_code', 'like', "%{$term}%")
                     ->orWhere('item_number', 'like', "%{$term}%")
@@ -859,6 +892,7 @@ class ProductController extends Controller
         $search = trim((string)($request->get('search') ?? $request->get('q') ?? ''));
 
         $query = Product::where('is_active', true)
+            ->where('can_be_sold', 1)
             ->select('id', 'item_name', 'item_code', 'item_number', 'sale_price_per_piece', 'wholesale_price', 'color', 'p_code', 'rot_p_code', 'category_id', 'image', 'web_main_image')
             ->withSum('warehouseStocks', 'total_pieces');
 
@@ -1355,6 +1389,8 @@ class ProductController extends Controller
                 'alert_quantity' => $request->alert_quantity,
                 'alert_carton_quantity' => $request->alert_carton_quantity,
                 'is_active' => $request->has('is_active') ? $request->boolean('is_active') : true,
+                'can_be_sold' => $request->has('can_be_sold') ? ($request->boolean('can_be_sold') ? 1 : 0) : 1,
+                'can_be_purchased' => $request->has('can_be_purchased') ? ($request->boolean('can_be_purchased') ? 1 : 0) : 1,
 
                 // New Fields
                 'size_mode' => $mode,
@@ -1887,6 +1923,9 @@ class ProductController extends Controller
                     'creater_id' => $userId,
                     'category_id' => $request->category_id,
                     'sub_category_id' => $request->sub_category_id,
+                    'is_active' => $request->has('is_active') ? ($request->boolean('is_active') ? 1 : 0) : (Product::where('id', $id)->value('is_active') ?? 1),
+                    'can_be_sold' => $request->has('can_be_sold') ? ($request->boolean('can_be_sold') ? 1 : 0) : (Product::where('id', $id)->value('can_be_sold') ?? 1),
+                    'can_be_purchased' => $request->has('can_be_purchased') ? ($request->boolean('can_be_purchased') ? 1 : 0) : (Product::where('id', $id)->value('can_be_purchased') ?? 1),
                     'item_code' => $request->item_code ?? Product::where('id', $id)->value('item_code'),
                     'item_number' => !empty($request->item_number) ? trim($request->item_number) : (!empty($variants[0]['item_number']) ? $variants[0]['item_number'] : Product::where('id', $id)->value('item_number')),
                     'item_name' => $request->product_name,

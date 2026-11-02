@@ -4594,6 +4594,7 @@
 
                             <label class="odoo-check-label">
 
+                                <input type="hidden" name="can_be_sold" value="0">
                                 <input type="checkbox" name="can_be_sold" id="can_be_sold" value="1" {{ ($product->can_be_sold ?? 1) ? 'checked' : '' }}>
 
                                 <span>Sales</span>
@@ -4604,21 +4605,10 @@
 
                             <label class="odoo-check-label">
 
+                                <input type="hidden" name="can_be_purchased" value="0">
                                 <input type="checkbox" name="can_be_purchased" id="can_be_purchased" value="1" {{ ($product->can_be_purchased ?? 1) ? 'checked' : '' }}>
 
                                 <span>Purchase</span>
-
-                            </label>
-
-
-
-                            <label class="odoo-check-label">
-
-                                <input type="checkbox" name="point_of_sale" id="point_of_sale" value="1" {{ ($product->point_of_sale ?? 0) ? 'checked' : '' }}>
-
-                                <span>Point of Sale</span>
-
-                                <span class="tooltip-icon" data-bs-toggle="tooltip" title="Available in Point of Sale (POS) register"><i class="fas fa-question-circle"></i></span>
 
                             </label>
 
@@ -4950,7 +4940,7 @@
 
                                                     <button type="button" class="btn-quick-add" data-bs-toggle="modal" data-bs-target="#unitModal" data-toggle="modal" data-target="#unitModal" title="Add Unit">+</button>
 
-                                                    <button type="button" class="btn btn-outline-primary btn-sm px-2 py-1 fw-bold shadow-sm d-inline-flex align-items-center" id="btnOpenUomModal" data-toggle="modal" data-target="#quickbooksUomModal" data-bs-toggle="modal" data-bs-target="#quickbooksUomModal" style="font-size: 13px; height: 38px; border-radius: 4px;" title="Open QuickBooks Unit of Measure Configuration">
+                                                    <button type="button" class="btn btn-outline-primary btn-sm px-2 py-1 fw-bold shadow-sm d-inline-flex align-items-center" id="btnOpenUomModal" data-toggle="modal" data-target="#quickbooksUomModal" data-bs-toggle="modal" data-bs-target="#quickbooksUomModal" onclick="if(window.QuickbooksUom && typeof window.QuickbooksUom.openModal === 'function') { window.QuickbooksUom.openModal(); }" style="font-size: 13px; height: 38px; border-radius: 4px;" title="Open QuickBooks Unit of Measure Configuration">
 
                                                         <i class="fas fa-layer-group me-1 text-primary"></i> Units
 
@@ -15342,6 +15332,8 @@
                 const definedAttrs = getDefinedAttributes();
 
                 formData.set('attributes_data', JSON.stringify(definedAttrs));
+                formData.set('can_be_sold', document.getElementById('can_be_sold') && document.getElementById('can_be_sold').checked ? 1 : 0);
+                formData.set('can_be_purchased', document.getElementById('can_be_purchased') && document.getElementById('can_be_purchased').checked ? 1 : 0);
 
                 const remInp = document.getElementById('removeImageInput');
 
@@ -16253,13 +16245,20 @@
 
         window.initialProductStock = {{ (float) ($product->warehouseStocks ? $product->warehouseStocks->sum('total_pieces') : 0) }};
 
-        window.allUnitsList = {!! json_encode(isset($units) ? $units->pluck('name')->values()->all() : []) !!};
+        window.baseUrl = "{{ url('/') }}";
 
-        window.allUomSets = {!! json_encode(isset($units) ? $units->toArray() : []) !!};
+        window.allUnitsList = {!! json_encode(isset($units) ? $units->pluck('name')->values()->all() : [], JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP) !!};
+
+        window.allUomSets = {!! json_encode(isset($units) ? $units->toArray() : [], JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP) !!};
 
     </script>
 
     <script src="{{ asset('assets/js/quickbooks_uom.js') . '?v=' . time() }}"></script>
+    <script>
+        if (typeof window.QuickbooksUom === 'undefined') {
+            document.write('<script src="{{ url('/assets/js/quickbooks_uom.js') }}"><\/script>');
+        }
+    </script>
 
 @endsection
 

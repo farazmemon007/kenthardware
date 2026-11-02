@@ -1076,7 +1076,8 @@
                         data: function(params) {
                             return {
                                 term: params.term,
-                                page: params.page || 1
+                                page: params.page || 1,
+                                for: 'purchase'
                             };
                         },
                         processResults: function(data, params) {

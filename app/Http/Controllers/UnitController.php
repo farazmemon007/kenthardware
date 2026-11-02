@@ -8,10 +8,31 @@ use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Auth;
 class UnitController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
         $unit = Unit::orderBy('id', 'desc')->get();
+        if ($request->ajax() || $request->wantsJson() || $request->has('json')) {
+            return response()->json($unit);
+        }
         return view("admin_panel.unit.index", compact('unit'));
+    }
+
+    public function getAllUnits(Request $request)
+    {
+        $units = Unit::orderBy('name')->get();
+        return response()->json([
+            'status' => 'success',
+            'units' => $units->map(function($u) {
+                return [
+                    'id' => $u->id,
+                    'name' => $u->name,
+                    'base_unit' => $u->base_unit ?? $u->name,
+                    'unit_type' => $u->unit_type ?? 'Count',
+                    'uom_data' => $u->uom_data
+                ];
+            }),
+            'names' => $units->pluck('name')->values()->all()
+        ]);
     }
 
     public function show($id)

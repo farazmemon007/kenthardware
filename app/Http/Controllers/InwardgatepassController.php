@@ -280,6 +280,8 @@ class InwardgatepassController extends Controller
     {
         $q = $request->get('q', '');
         $products = Product::with('brand')
+            ->where('is_active', true)
+            ->where('can_be_purchased', 1)
             ->where(function ($x) use ($q) {
                 $x->where('item_name', 'like', "%{$q}%")
                     ->orWhere('item_code', 'like', "%{$q}%");

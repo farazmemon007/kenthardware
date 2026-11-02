@@ -490,7 +490,8 @@
                     url: "{{ route('search-products') }}",
                     type: 'GET',
                     data: {
-                        q
+                        q,
+                        for: 'sale'
                     },
                     success: function(data) {
                         let html = '';

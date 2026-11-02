@@ -10,6 +10,7 @@
         currentUomData: null,
         baseStock: 0,
         baseUnitName: '',
+        _fetchedFromServer: false,
 
         init: function(options) {
             const self = this;
@@ -21,7 +22,7 @@
             });
 
             // Also re-render whenever modal is opened via Bootstrap data-toggle
-            $(document).on('show.bs.modal', '#quickbooksUomModal', function() {
+            $(document).on('show.bs.modal shown.bs.modal', '#quickbooksUomModal', function() {
                 self.loadInitialData();
                 self.renderModal();
             });
@@ -67,6 +68,7 @@
             $(document).on('hidden.bs.modal', '#unitModal', function() {
                 if ($('#quickbooksUomModal').hasClass('show') || $('#quickbooksUomModal').is(':visible')) {
                     $('body').addClass('modal-open');
+                    self.populateBaseUnitDropdown();
                     self.updateDropdowns();
                 }
             });
@@ -115,6 +117,91 @@
             // Load existing data on page load
             self.loadInitialData();
             self.updateSummaryBadge();
+
+            // Background fetch live units & preset UOM sets from server
+            self.fetchUnitsFromServer();
+        },
+
+        safeParseJson: function(data) {
+            if (!data) return null;
+            if (typeof data === 'object') return data;
+            try {
+                let parsed = JSON.parse(data);
+                if (typeof parsed === 'string') {
+                    try { parsed = JSON.parse(parsed); } catch(e2) {}
+                }
+                return parsed;
+            } catch(e) {
+                return null;
+            }
+        },
+
+        fetchUnitsFromServer: function(callback) {
+            const self = this;
+            const baseUrl = window.baseUrl || '';
+            const endpoints = [
+                baseUrl + '/units/all',
+                baseUrl + '/unit/all',
+                baseUrl + '/Unit?json=1',
+                '/units/all',
+                '/unit/all'
+            ];
+
+            function tryFetch(idx) {
+                if (idx >= endpoints.length) {
+                    if (typeof callback === 'function') callback(false);
+                    return;
+                }
+                $.ajax({
+                    url: endpoints[idx],
+                    method: 'GET',
+                    dataType: 'json',
+                    timeout: 6000,
+                    headers: { 'X-Requested-With': 'XMLHttpRequest' }
+                }).done(function(res) {
+                    let units = [];
+                    let names = [];
+                    if (res && res.status === 'success' && Array.isArray(res.units)) {
+                        units = res.units;
+                        names = res.names || res.units.map(u => u.name);
+                    } else if (Array.isArray(res)) {
+                        units = res;
+                        names = res.map(u => (typeof u === 'string' ? u : (u.name || '')));
+                    }
+
+                    if (units.length > 0 || names.length > 0) {
+                        window.allUnitsList = names.filter(Boolean);
+                        window.allUomSets = units;
+
+                        self.syncUnitsToMainDropdown(units.length > 0 ? units : names);
+                        self.populatePresetDropdown();
+                        self.populateBaseUnitDropdown();
+                        self.updateDropdowns();
+                    }
+                    self._fetchedFromServer = true;
+                    if (typeof callback === 'function') callback(true);
+                }).fail(function() {
+                    tryFetch(idx + 1);
+                });
+            }
+
+            tryFetch(0);
+        },
+
+        syncUnitsToMainDropdown: function(units) {
+            const $gen = $('#general_unit_id');
+            if (!$gen.length || !Array.isArray(units)) return;
+            units.forEach(u => {
+                const name = typeof u === 'string' ? u.trim() : (u && u.name ? u.name.trim() : '');
+                const id = typeof u === 'object' && u ? (u.id || name) : name;
+                if (!name) return;
+                const exists = $gen.find('option').filter(function() {
+                    return $(this).text().trim().toLowerCase() === name.toLowerCase();
+                }).length > 0;
+                if (!exists) {
+                    $gen.append(new Option(name, id, false, false));
+                }
+            });
         },
 
         getBaseUnitName: function() {
@@ -150,6 +237,7 @@
         onBaseUnitChanged: function(newBase) {
             const self = this;
             if (!newBase) return;
+            newBase = newBase.trim();
             self.baseUnitName = newBase;
 
             $('#qbHeaderBaseUnitName').text(newBase);
@@ -157,14 +245,8 @@
             $('#qb_base_unit_input').val(newBase);
             $('.qb-base-unit-suffix').text(newBase);
 
-            // Synchronize modal select if changed externally/via preset
-            const $modalSelect = $('#qb_base_unit_select');
-            if ($modalSelect.length && $modalSelect.val() !== newBase) {
-                if ($modalSelect.find(`option[value="${newBase}"]`).length === 0) {
-                    $modalSelect.append(new Option(newBase, newBase, true, true));
-                } else {
-                    $modalSelect.val(newBase);
-                }
+            if ($('#qb_base_unit_select').length && $('#qb_base_unit_select').val() !== newBase) {
+                $('#qb_base_unit_select').val(newBase);
             }
 
             // Re-render related units card headers (e.g. "(16 Pcs)")
@@ -172,7 +254,6 @@
                 self.updateCardHeader($(this));
             });
 
-            // Re-render Ordering and Selling dropdowns
             self.updateDropdowns();
             self.updateSummaryBadge();
 
@@ -182,13 +263,13 @@
                 let matched = false;
                 $gen.find('option').each(function() {
                     if ($(this).text().trim().toLowerCase() === newBase.toLowerCase()) {
-                        $gen.val($(this).val());
+                        $gen.val($(this).val()).trigger('change');
                         matched = true;
                         return false;
                     }
                 });
                 if (!matched) {
-                    $gen.append(new Option(newBase, newBase, true, true));
+                    $gen.append(new Option(newBase, newBase, true, true)).trigger('change');
                 }
             }
         },
@@ -199,7 +280,7 @@
                 return parseFloat(window.initialProductStock) || 0;
             }
             const pieceQty = $('#piece_quantity').val() || $('#total_stock_qty').val() || $('#initial_stock').val();
-            if (pieceQty !== undefined && pieceQty !== '') {
+            if (pieceQty !== undefined && pieceQty !== null && pieceQty !== '') {
                 return parseFloat(pieceQty) || 0;
             }
             return 0;
@@ -216,22 +297,28 @@
         loadInitialData: function() {
             const raw = $('#product_uom_data').val();
             if (raw) {
-                try {
-                    this.currentUomData = typeof raw === 'string' ? JSON.parse(raw) : raw;
-                } catch(e) {
-                    this.currentUomData = null;
-                }
+                this.currentUomData = this.safeParseJson(raw);
+            } else {
+                this.currentUomData = null;
             }
             this.baseUnitName = this.getBaseUnitName();
             this.baseStock = this.getBaseStock();
         },
 
         openModal: function() {
+            const self = this;
             try {
-                this.loadInitialData();
-                this.renderModal();
+                self.loadInitialData();
+                self.renderModal();
             } catch (err) {
                 console.error('[QuickbooksUom] Error preparing modal data:', err);
+            }
+
+            // Always ensure units are fresh from server if empty
+            if (!window.allUomSets || window.allUomSets.length === 0 || !window.allUnitsList || window.allUnitsList.length === 0) {
+                self.fetchUnitsFromServer(function() {
+                    self.renderModal();
+                });
             }
 
             const modalEl = document.getElementById('quickbooksUomModal');
@@ -282,6 +369,39 @@
             }
         },
 
+        populateBaseUnitDropdown: function() {
+            const self = this;
+            const allMasters = self.getAllMasterUnits();
+            const currentVal = $('#qb_base_unit_select').val() || self.baseUnitName || 'Pcs';
+            let baseSelectHtml = '';
+            allMasters.forEach(u => {
+                const isSel = (u.toLowerCase() === (currentVal || '').toLowerCase()) ? 'selected' : '';
+                baseSelectHtml += `<option value="${u}" ${isSel}>${u}</option>`;
+            });
+            $('#qb_base_unit_select').html(baseSelectHtml);
+            if (currentVal) {
+                $('#qb_base_unit_select').val(currentVal);
+            }
+        },
+
+        populatePresetDropdown: function() {
+            const self = this;
+            if (!window.allUomSets || !Array.isArray(window.allUomSets) || window.allUomSets.length === 0) {
+                $('#qb_preset_uom_set').html('<option value="">-- Apply from Pre-defined UOM Set --</option>');
+                return;
+            }
+            let presetHtml = '<option value="">-- Apply from Pre-defined UOM Set --</option>';
+            window.allUomSets.forEach(function(s) {
+                if (!s || !s.name) return;
+                const base = s.base_unit || s.name;
+                const uData = self.safeParseJson(s.uom_data) || {};
+                const uCount = (uData && uData.units && Array.isArray(uData.units)) ? uData.units.length : 0;
+                const extra = uCount > 0 ? ` (${uCount} related units)` : '';
+                presetHtml += `<option value="${s.id}">${s.name} [Base: ${base}]${extra}</option>`;
+            });
+            $('#qb_preset_uom_set').html(presetHtml);
+        },
+
         renderModal: function() {
             const self = this;
             self.baseUnitName = self.getBaseUnitName();
@@ -294,16 +414,7 @@
             $('#qb_base_qoh').val(self.formatNumber(self.baseStock));
 
             // Dynamically populate Base Unit dropdown with all master units from system
-            const allMasters = self.getAllMasterUnits();
-            let baseSelectHtml = '';
-            allMasters.forEach(u => {
-                const isSel = (u.toLowerCase() === (self.baseUnitName || '').toLowerCase()) ? 'selected' : '';
-                baseSelectHtml += `<option value="${u}" ${isSel}>${u}</option>`;
-            });
-            $('#qb_base_unit_select').html(baseSelectHtml);
-            if (self.baseUnitName) {
-                $('#qb_base_unit_select').val(self.baseUnitName);
-            }
+            self.populateBaseUnitDropdown();
 
             const uom = self.currentUomData;
 
@@ -345,17 +456,7 @@
             }
 
             // Populate preset UOM sets dropdown if available
-            if (window.allUomSets && Array.isArray(window.allUomSets)) {
-                let presetHtml = '<option value="">-- Apply from Pre-defined UOM Set --</option>';
-                window.allUomSets.forEach(function(s) {
-                    const base = s.base_unit || s.name;
-                    const uData = (typeof s.uom_data === 'string') ? JSON.parse(s.uom_data) : (s.uom_data || {});
-                    const uCount = (uData && uData.units) ? uData.units.length : 0;
-                    const extra = uCount > 0 ? ` (${uCount} related units)` : '';
-                    presetHtml += `<option value="${s.id}">${s.name} [Base: ${base}]${extra}</option>`;
-                });
-                $('#qb_preset_uom_set').html(presetHtml);
-            }
+            self.populatePresetDropdown();
         },
 
         applyPresetUomSet: function(uomId) {
@@ -365,7 +466,7 @@
             if (!found) return;
 
             const base = found.base_unit || found.name;
-            const uData = (typeof found.uom_data === 'string') ? JSON.parse(found.uom_data) : (found.uom_data || {});
+            const uData = self.safeParseJson(found.uom_data) || {};
 
             self.onBaseUnitChanged(base);
 
@@ -413,7 +514,7 @@
 
             const ratio = parseFloat(data.ratio) || 0;
             let qohDisplay = '0';
-            if (ratio > 0) {
+            if (ratio > 0 && self.baseStock > 0) {
                 qohDisplay = self.formatNumber(self.baseStock / ratio);
             }
 
@@ -422,12 +523,12 @@
 
             const cardHtml = `
                 <div class="card mb-3 border shadow-none qb-unit-card qb-related-unit-card" data-is-base="false" style="background: #ffffff; border-color: #cbd5e1 !important; border-radius: 6px;">
-                    <div class="card-header py-1 px-3 d-flex justify-content-between align-items-center bg-light border-bottom">
-                        <span class="fw-bold text-dark qb-unit-header-title" style="font-size: 13px;">
-                            <i class="fas fa-boxes text-secondary me-1"></i> Unit of Measure <span class="qb-unit-num">${num}</span><span class="qb-unit-header-extra">${titleName}${titleRatio}</span>
+                    <div class="card-header py-1 px-3 d-flex justify-content-between align-items-center" style="background: #f8fafc; border-bottom: 1px solid #e2e8f0;">
+                        <span class="fw-bold text-dark" style="font-size: 13px;">
+                            <i class="fas fa-box text-secondary me-1"></i> Step 2: Unit of Measure <span class="qb-unit-num">${num}</span><span class="qb-unit-header-extra">${titleName}${titleRatio}</span>
                         </span>
-                        <button type="button" class="btn btn-link text-danger p-0 btn-remove-qb-unit" title="Remove this unit" style="font-size: 13px; text-decoration: none;">
-                            <i class="fas fa-trash-alt"></i>
+                        <button type="button" class="btn btn-outline-danger btn-sm py-0 px-2 btn-remove-qb-unit" title="Remove this Unit of Measure" style="font-size: 11px; height: 22px; border-radius: 3px;">
+                            <i class="fas fa-trash-alt me-1"></i> Remove
                         </button>
                     </div>
                     <div class="card-body p-3">
@@ -451,19 +552,19 @@
                         <div class="row g-2">
                             <div class="col-md-3">
                                 <label class="form-label small text-muted mb-0">UPC / Barcode:</label>
-                                <input type="text" class="form-control form-control-sm qb-uom-upc" placeholder="UPC" value="${data.upc || ''}">
+                                <input type="text" class="form-control form-control-sm qb-uom-upc" placeholder="Optional UPC" value="${data.upc || ''}">
                             </div>
                             <div class="col-md-3">
-                                <label class="form-label small text-muted mb-0">Alternate Lookup:</label>
-                                <input type="text" class="form-control form-control-sm qb-uom-alu" placeholder="ALU" value="${data.alu || ''}">
+                                <label class="form-label small text-muted mb-0">Alternate Lookup (ALU):</label>
+                                <input type="text" class="form-control form-control-sm qb-uom-alu" placeholder="Optional ALU" value="${data.alu || ''}">
                             </div>
                             <div class="col-md-3">
                                 <label class="form-label small text-muted mb-0">Regular Price:</label>
-                                <input type="number" step="any" class="form-control form-control-sm text-end qb-uom-price" placeholder="0.00" value="${data.price !== undefined ? data.price : ''}">
+                                <input type="number" step="any" class="form-control form-control-sm text-end qb-uom-price" placeholder="Auto-calc" value="${data.price !== undefined && data.price !== '' ? data.price : ''}">
                             </div>
                             <div class="col-md-3">
                                 <label class="form-label small text-muted mb-0">Average Cost:</label>
-                                <input type="number" step="any" class="form-control form-control-sm text-end qb-uom-cost" placeholder="0.00" value="${data.cost !== undefined ? data.cost : ''}">
+                                <input type="number" step="any" class="form-control form-control-sm text-end qb-uom-cost" placeholder="Auto-calc" value="${data.cost !== undefined && data.cost !== '' ? data.cost : ''}">
                             </div>
                         </div>
                     </div>
@@ -508,7 +609,7 @@
             const self = this;
             const set = new Set();
 
-            // 1. From window.allUnitsList (passed from controller / blade)
+            // 1. From window.allUnitsList (passed from controller / blade or AJAX)
             if (window.allUnitsList && Array.isArray(window.allUnitsList)) {
                 window.allUnitsList.forEach(u => {
                     const name = typeof u === 'string' ? u.trim() : (u && u.name ? u.name.trim() : '');
@@ -516,7 +617,17 @@
                 });
             }
 
-            // 2. From #general_unit_id dropdown options in DOM
+            // 2. From window.allUomSets
+            if (window.allUomSets && Array.isArray(window.allUomSets)) {
+                window.allUomSets.forEach(u => {
+                    const name = u && u.name ? u.name.trim() : '';
+                    if (name) set.add(name);
+                    const base = u && u.base_unit ? u.base_unit.trim() : '';
+                    if (base) set.add(base);
+                });
+            }
+
+            // 3. From #general_unit_id dropdown options in DOM
             $('#general_unit_id option').each(function() {
                 const name = $(this).text().trim();
                 const val = $(this).val();
@@ -525,9 +636,9 @@
                 }
             });
 
-            // 3. Defaults if none found
+            // 4. Defaults if none found
             if (set.size === 0) {
-                ['Pcs', 'Carton', 'Box', 'Dozen', 'Kg', 'Gm', 'Meter', 'Ft', 'Roll', 'Set', 'Feet', 'mm'].forEach(u => set.add(u));
+                ['Pcs', 'Carton', 'Box', 'Dozen', 'Kg', 'Gm', 'Meter', 'Ft', 'Roll', 'Set', 'Feet', 'mm', 'Piece', 'Kilogram'].forEach(u => set.add(u));
             }
 
             return Array.from(set);
@@ -547,7 +658,7 @@
             const currentOrder = $('#qb_order_unit').val();
             const currentSell = $('#qb_sell_unit').val();
 
-            const baseUnit = self.baseUnitName || 'Feet';
+            const baseUnit = self.baseUnitName || 'Pcs';
 
             // 1. Product-specific units: Base unit + related units currently typed in cards
             const productUnits = [baseUnit];
@@ -564,7 +675,7 @@
             const buildOptions = function(selectedVal) {
                 let html = '';
 
-                // Group 1: Product Units (Base & Configured Related Units)
+                // Group 1: Product Units (Base & Multi-tier)
                 html += '<optgroup label="Product Units (Base & Multi-tier)">';
                 productUnits.forEach(u => {
                     const isBase = (u === baseUnit);
@@ -630,7 +741,7 @@
                     $('#modalUnitNameInput').focus();
                 }, 150);
             } else if (typeof Swal !== 'undefined') {
-                // Fallback SweetAlert prompt if unitModal is not in DOM
+                const storeUrl = (window.baseUrl || '') + '/Unit/store';
                 Swal.fire({
                     title: 'New Unit of Measure',
                     input: 'text',
@@ -645,7 +756,7 @@
                             return false;
                         }
                         return $.ajax({
-                            url: '/Unit/store',
+                            url: storeUrl,
                             method: 'POST',
                             data: {
                                 name: name.trim(),
@@ -690,20 +801,16 @@
             }
 
             // 2. Add to Base Unit dropdown inside modal if missing
-            const $baseSel = $('#qb_base_unit_select');
-            if ($baseSel.length) {
-                const exists = $baseSel.find('option').filter(function() { return $(this).text().trim().toLowerCase() === unitName.toLowerCase(); }).length > 0;
-                if (!exists) {
-                    $baseSel.append(new Option(unitName, unitName, false, false));
-                }
-            }
-
+            self.populateBaseUnitDropdown();
             self.updateDropdowns();
 
             // 3. Set value in target field if specified
             if (targetField && $(targetField).length) {
                 $(targetField).val(unitName).trigger('change');
             }
+
+            // Background fetch to keep everything synced
+            self.fetchUnitsFromServer();
 
             $('body').addClass('modal-open');
         },
@@ -718,8 +825,8 @@
             const baseUnitObj = {
                 name: self.baseUnitName,
                 ratio: 1.0,
-                upc: $('#qb_base_upc').val().trim(),
-                alu: $('#qb_base_alu').val().trim(),
+                upc: ($('#qb_base_upc').val() || '').trim(),
+                alu: ($('#qb_base_alu').val() || '').trim(),
                 price: parseFloat($('#qb_base_price').val()) || 0,
                 cost: parseFloat($('#qb_base_cost').val()) || 0
             };
@@ -730,8 +837,8 @@
             $('#qbRelatedUnitsContainer .qb-related-unit-card').each(function() {
                 const name = $(this).find('.qb-uom-name').val().trim();
                 const ratio = parseFloat($(this).find('.qb-uom-ratio').val()) || 0;
-                const upc = $(this).find('.qb-uom-upc').val().trim();
-                const alu = $(this).find('.qb-uom-alu').val().trim();
+                const upc = ($(this).find('.qb-uom-upc').val() || '').trim();
+                const alu = ($(this).find('.qb-uom-alu').val() || '').trim();
                 const price = $(this).find('.qb-uom-price').val() !== '' ? (parseFloat($(this).find('.qb-uom-price').val()) || 0) : (baseUnitObj.price * ratio);
                 const cost = $(this).find('.qb-uom-cost').val() !== '' ? (parseFloat($(this).find('.qb-uom-cost').val()) || 0) : (baseUnitObj.cost * ratio);
 
@@ -807,7 +914,7 @@
                 if (!closed) {
                     modalEl.classList.remove('show');
                     modalEl.style.display = 'none';
-                    modalEl.setAttribute('aria-hidden', 'true');
+                    modalEl.removeAttribute('aria-hidden');
                     modalEl.removeAttribute('aria-modal');
                     document.body.classList.remove('modal-open');
                     const backdrop = document.querySelector('.modal-backdrop');
@@ -830,7 +937,6 @@
             const self = this;
             const uom = self.currentUomData;
             const $badge = $('#uomSummaryBadge');
-            const $text = $('#uomSummaryText');
 
             if (!$badge.length) return;
 
@@ -864,9 +970,13 @@
         }
     }
 
-    $(document).ready(initQuickbooksUom);
+    if (typeof jQuery !== 'undefined') {
+        jQuery(document).ready(initQuickbooksUom);
+    }
     if (document.readyState === 'complete' || document.readyState === 'interactive') {
         setTimeout(initQuickbooksUom, 50);
+    } else {
+        document.addEventListener('DOMContentLoaded', initQuickbooksUom);
     }
 
 })(jQuery);

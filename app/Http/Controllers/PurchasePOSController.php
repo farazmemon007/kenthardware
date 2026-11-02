@@ -15,7 +15,7 @@ class PurchasePOSController extends Controller
 {
     public function index(Request $request)
     {
-        $products = Product::where("is_active", true)->with("warehouseStocks")->get();
+        $products = Product::where("is_active", true)->where('can_be_purchased', 1)->with("warehouseStocks")->get();
 
         $posProducts = [];
         foreach ($products as $p) {

@@ -82,7 +82,8 @@
                 data: function(params) {
                     return {
                         term: params.term,
-                        page: params.page || 1
+                        page: params.page || 1,
+                        for: 'sale'
                     };
                 },
                 processResults: function(data, params) {
@@ -1227,7 +1228,7 @@
 
             modal.show();
 
-            const params = productId ? { product_id: productId } : {};
+            const params = productId ? { product_id: productId, for: 'sale' } : { for: 'sale' };
             $.get('{{ route('products.ajax.search') }}', params)
                 .done(function(res) {
                     currentPickerVariants = res.results || [];
@@ -1341,7 +1342,7 @@
             // If nothing found or query is longer than 2 chars and row had no product, search backend
             if ((!currentPickerVariants.length || (q.length >= 2 && currentPickerVariants.length <= 1)) && q.length >= 2) {
                 pickerSearchTimer = setTimeout(function() {
-                    $.get('{{ route('products.ajax.search') }}', { term: q }).done(function(res) {
+                    $.get('{{ route('products.ajax.search') }}', { term: q, for: 'sale' }).done(function(res) {
                         currentPickerVariants = res.results || [];
                         renderVariantPickerRows(currentPickerVariants);
                     });

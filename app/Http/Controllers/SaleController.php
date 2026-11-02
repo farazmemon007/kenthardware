@@ -172,7 +172,7 @@ class SaleController extends Controller
         $activePrefix = $defaultSeries ? $defaultSeries->prefix : 'INV';
         $nextInvoiceNumber = \App\Models\InvoiceSeries::generateNextNo($activePrefix);
 
-        $recentProducts = Product::latest()->take(12)->get();
+        $recentProducts = Product::where('is_active', true)->where('can_be_sold', 1)->latest()->take(12)->get();
         $salesOfficers = \App\Models\SalesOfficer::orderBy('name')->get();
         $vendors = \App\Models\Vendor::orderBy('name')->get();
         $carpenters = \App\Models\Carpenter::active()->orderBy('name')->get();
@@ -208,6 +208,7 @@ class SaleController extends Controller
                     ->where('warehouse_stocks.warehouse_id', $warehouseId);
             })
             ->where('products.is_active', true) /* Only active products */
+            ->where('products.can_be_sold', 1)
             ->where(function ($query) use ($q) {
                 $query->where('products.item_name', 'like', "%{$q}%")
                     ->orWhere('products.item_code', 'like', "%{$q}%")
@@ -1062,7 +1063,7 @@ class SaleController extends Controller
         $allSeries = \App\Models\InvoiceSeries::orderBy('prefix', 'asc')->get();
         $defaultSeries = $allSeries->where('is_default', 1)->first() ?: $allSeries->first();
         $activePrefix = $defaultSeries ? $defaultSeries->prefix : 'INV';
-        $recentProducts = Product::latest()->take(12)->get();
+        $recentProducts = Product::where('is_active', true)->where('can_be_sold', 1)->latest()->take(12)->get();
         $salesOfficers = \App\Models\SalesOfficer::orderBy('name')->get();
         $vendors = \App\Models\Vendor::orderBy('name')->get();
         $carpenters = \App\Models\Carpenter::active()->orderBy('name')->get();

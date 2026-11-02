@@ -23,6 +23,14 @@
     RewriteCond %{REQUEST_FILENAME} !-f
     RewriteRule ^uploads/(.*)$ public/uploads/$1 [L]
 
+    # Serve assets from public/assets if requested via root /assets/
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteRule ^assets/(.*)$ public/assets/$1 [L]
+
+    # Serve build from public/build if requested via root /build/
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteRule ^build/(.*)$ public/build/$1 [L]
+
     # Redirect Trailing Slashes If Not A Folder...
     RewriteCond %{REQUEST_FILENAME} !-d
     RewriteCond %{REQUEST_URI} (.+)/$

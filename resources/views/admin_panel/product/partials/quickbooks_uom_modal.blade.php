@@ -169,3 +169,28 @@
         </div>
     </div>
 </div>
+
+<script>
+    (function() {
+        function triggerQbModalRender() {
+            if (window.QuickbooksUom) {
+                if (typeof window.QuickbooksUom.loadInitialData === 'function') {
+                    window.QuickbooksUom.loadInitialData();
+                }
+                if (typeof window.QuickbooksUom.renderModal === 'function') {
+                    window.QuickbooksUom.renderModal();
+                }
+            }
+        }
+
+        if (typeof $ !== 'undefined') {
+            $(document).on('show.bs.modal shown.bs.modal', '#quickbooksUomModal', triggerQbModalRender);
+        } else {
+            document.addEventListener('DOMContentLoaded', function() {
+                if (typeof $ !== 'undefined') {
+                    $(document).on('show.bs.modal shown.bs.modal', '#quickbooksUomModal', triggerQbModalRender);
+                }
+            });
+        }
+    })();
+</script>

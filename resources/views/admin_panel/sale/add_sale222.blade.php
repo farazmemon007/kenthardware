@@ -5278,7 +5278,7 @@ $(document).ready(function() {
         $.ajax({
             url: '{{ route('products.ajax.search', [], false) }}',
             dataType: 'json',
-            data: { term: term },
+            data: { term: term, for: 'sale' },
             success: function(data) {
                 const results = data.results || [];
                 renderItemDropdown(results);
@@ -5347,7 +5347,7 @@ $(document).ready(function() {
             $.ajax({
                 url: '{{ route('products.ajax.search', [], false) }}',
                 dataType: 'json',
-                data: { term: term },
+                data: { term: term, for: 'sale' },
                 success: function(data) {
                     const results = data.results || [];
                     if (results.length > 0) {
@@ -7825,7 +7825,7 @@ $(document).ready(function() {
             // Load complete product details via ajax search and pass to pipeline
             $.ajax({
                 url: '{{ route('products.ajax.search', [], false) }}',
-                data: { product_id: pId },
+                data: { product_id: pId, for: 'sale' },
                 dataType: 'json',
                 success: function(res) {
                     if (res && res.results && res.results.length) {
@@ -7924,7 +7924,7 @@ $(document).ready(function() {
 
         // Fetch flattened variants and product details
         $.when(
-            $.ajax({ url: '{{ route('products.ajax.search', [], false) }}', data: { product_id: productId }, dataType: 'json' }),
+            $.ajax({ url: '{{ route('products.ajax.search', [], false) }}', data: { product_id: productId, for: 'sale' }, dataType: 'json' }),
             $.ajax({ url: '/productview/' + productId, dataType: 'json' }).catch(function() { return null; })
         ).done(function(searchRes, prodRes) {
             $('#pickerLoadingSpinner').addClass('d-none');
@@ -9308,7 +9308,7 @@ $(document).ready(function() {
         $.ajax({
             url: '{{ route('products.ajax.search', [], false) }}',
             dataType: 'json',
-            data: { product_id: pId },
+            data: { product_id: pId, for: 'sale' },
             success: function(data) {
                 if (data.results && data.results.length) {
                     $('#modalQuickPickItems').modal('hide');

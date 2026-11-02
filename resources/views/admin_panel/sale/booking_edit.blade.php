@@ -1056,7 +1056,8 @@
                       data: function(params) {
                           return {
                               term: params.term, // search term
-                              page: params.page || 1
+                              page: params.page || 1,
+                              for: 'sale'
                           };
                       },
                       processResults: function(data, params) {

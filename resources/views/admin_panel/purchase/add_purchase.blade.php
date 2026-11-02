@@ -605,7 +605,8 @@
                 url: "{{ route('search-products') }}",
                 type: 'GET',
                 data: {
-                    q
+                    q,
+                    for: 'purchase'
                 },
                 success: function(data) {
                     let html = '';
